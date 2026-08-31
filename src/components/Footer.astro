@@ -7,7 +7,9 @@ import { footerCols } from '../data/landing';
   <div style="max-width:1240px;margin:0 auto">
     <div class="footer-grid" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:64px;padding-bottom:96px">
       <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
-        <div style="--text-doc-dark:#F0F2FF"><Logo height={28} /></div>
+        <a href="/" class="logo-link" aria-label="Squai — inicio" style="--text-doc-dark:#F0F2FF">
+          <Logo height={30} />
+        </a>
         <p style="margin:0;font-size:14px;font-weight:300;line-height:1.6;color:#F0F2FF;max-width:280px">
           Formación en IA para profesionales, equipos e instituciones.
         </p>
@@ -22,14 +24,19 @@ import { footerCols } from '../data/landing';
             <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8E97BB">
               {col.h}
             </div>
-            {col.links.map((lnk) => (
-              <span
-                data-scroll-to={lnk.target ?? undefined}
-                style="font-size:14px;font-weight:400;color:#F0F2FF;cursor:pointer"
-              >
-                {lnk.t}
-              </span>
-            ))}
+            {col.links.map((lnk) =>
+              lnk.target ? (
+                <a
+                  href={`/#${lnk.target}`}
+                  data-scroll-to={lnk.target}
+                  style="font-size:14px;font-weight:400;color:#F0F2FF;cursor:pointer;text-decoration:none"
+                >
+                  {lnk.t}
+                </a>
+              ) : (
+                <span style="font-size:14px;font-weight:400;color:#F0F2FF;cursor:pointer">{lnk.t}</span>
+              )
+            )}
           </div>
         ))
       }
@@ -40,8 +47,8 @@ import { footerCols } from '../data/landing';
     >
       <span style="font-size:12px;color:#A9B2CC">© 2026 Squai · Todos los derechos reservados&nbsp;</span>
       <div style="display:flex;gap:20px">
-        <span style="font-size:12px;font-weight:600;color:#A9B2CC;cursor:pointer">Términos de Servicio</span>
-        <span style="font-size:12px;font-weight:600;color:#A9B2CC;cursor:pointer">Política de Privacidad</span>
+        <a href="/terminos-de-servicio" style="font-size:12px;font-weight:600;color:#A9B2CC;cursor:pointer;text-decoration:none">Términos de Servicio</a>
+        <a href="/politica-de-privacidad" style="font-size:12px;font-weight:600;color:#A9B2CC;cursor:pointer;text-decoration:none">Política de Privacidad</a>
       </div>
     </div>
   </div>

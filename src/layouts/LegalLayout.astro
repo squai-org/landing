@@ -1,0 +1,39 @@
+---
+import Layout from './Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pageTitle: string;
+  updated: string;
+}
+
+const { title, description, pageTitle, updated } = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <div style="padding: 0 0 40px; background-color: #F4F6FF">
+    <Header />
+
+    <div class="content-shell legal-content" style="max-width:880px;margin:150px auto 0;padding:0 32px 80px">
+      <h1
+        class="h2-title"
+        style="margin:0;font-family:'Urbanist',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-0.03em;color:#0D1B2A"
+      >
+        {pageTitle}
+      </h1>
+      <p style="margin:10px 0 40px;font-size:14px;font-weight:400;color:#888">Última actualización: {updated}</p>
+
+      <div
+        class="section-pad legal-card"
+        style="background:#FFFFFF;border:1px solid rgba(13,27,42,.07);border-radius:28px;padding:48px;box-shadow:0 1px 2px rgba(13,27,42,.03), 0 24px 60px -40px rgba(13,27,42,.35);display:flex;flex-direction:column;gap:28px"
+      >
+        <slot />
+      </div>
+    </div>
+
+    <Footer />
+  </div>
+</Layout>
