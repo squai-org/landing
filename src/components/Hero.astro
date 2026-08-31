@@ -1,0 +1,97 @@
+---
+import { logistics } from '../data/landing';
+---
+
+<div
+  style="position: relative; background: #7C8CFF; border-radius: 28px; padding: 170px 64px 0; overflow: hidden; margin: 0 12px; z-index: 0; padding-top: 129px"
+>
+  <div style="max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center">
+    <div
+      style="display:flex;align-items:center;gap:10px;padding:8px 18px;background:#fff;border-radius:100px;box-shadow:0 8px 24px -14px rgba(13,27,42,.5)"
+    >
+      <span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background-color: #44D4C8"></span>
+      <span style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#0D1B2A"
+        >Inscripciones por lista de espera · Cupos limitados por cohorte</span
+      >
+    </div>
+    <h1
+      style="margin: 0; font-family: Urbanist; font-weight: 900; font-size: 82px; line-height: 0.98; letter-spacing: -0.035em; color: #0D1B2A; max-width: 1000px; text-wrap: balance"
+    >
+      Fundamentos de Inteligencia Artificial Generativa
+    </h1>
+    <p style="margin:0;font-size:22px;font-weight:400;line-height:1.45;color:#F0F2FF;max-width:700px;text-wrap:pretty">
+      Desarrolla el criterio para entender la IA, aprende a razonar con ella y domina las bases para usar cualquier
+      herramienta con confianza.
+    </p>
+
+    <div style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px">
+      <button
+        data-scroll-to="lista"
+        class="btn-gold-lift"
+        style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;color:#3B2B05;background:linear-gradient(180deg, #F7D96A 0%, #EFC13C 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 0 0 1px rgba(255,255,255,.55), 0 1px 2px rgba(13,27,42,.08), 0 8px 20px -8px rgba(13,27,42,.22)"
+      >
+        Reservar mi lugar
+      </button>
+      <button
+        data-scroll-to="programa"
+        class="btn-ghost"
+        style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;color:#FFFFFF;background:linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.13) 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 0 0 1px rgba(255,255,255,.3), 0 8px 20px -10px rgba(13,27,42,.35)"
+      >
+        Ver el programa ↓
+      </button>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px;max-width:920px">
+      {
+        logistics.map((lg) => (
+          <span style="padding:9px 18px;border:1px solid rgba(255,255,255,.34);border-radius:100px;font-size:13px;font-weight:400;color:#FFFFFF">
+            {lg}
+          </span>
+        ))
+      }
+    </div>
+  </div>
+  <div
+    style="max-width: none; margin: 72px 0 0; background: #FFFFFF; border-radius: 24px 24px 0 0; box-shadow: 0 -1px 0 rgba(13,27,42,.06), 0 -30px 80px -40px rgba(13,27,42,.5); overflow: hidden; width: 847px; max-width: 100%; height: 272px; position: static; margin-right: auto; margin-left: auto; margin-top: 24px"
+  >
+    <div style="display:flex;align-items:center;gap:8px;padding:16px 20px;border-bottom:1px solid rgba(13,27,42,.07)">
+      <span style="width:11px;height:11px;border-radius:50%;background:#F2C94C"></span>
+      <span style="width:11px;height:11px;border-radius:50%;background:#44D4C8"></span>
+      <span style="width:11px;height:11px;border-radius:50%;background:#C4CEFF"></span>
+      <span style="width:200px;height:12px;border-radius:100px;background:#F4F6FF;margin-left:14px"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:200px 1fr;min-height:300px">
+      <div
+        style="border-right:1px solid rgba(13,27,42,.07);padding:22px 20px;display:flex;flex-direction:column;gap:14px;background:#FBFCFF"
+      >
+        <span style="width:70%;height:10px;border-radius:100px;background:#E8ECFF"></span>
+        <span style="width:90%;height:10px;border-radius:100px;background:#EFF1F8"></span>
+        <span style="width:55%;height:10px;border-radius:100px;background:#EFF1F8"></span>
+        <span style="width:80%;height:10px;border-radius:100px;background:#EFF1F8"></span>
+        <span style="width:40%;height:10px;border-radius:100px;background:#EFF1F8"></span>
+      </div>
+      <div style="padding:26px 30px;display:flex;flex-direction:column;gap:16px">
+        <div
+          style="align-self:flex-end;width:52%;background:#E8ECFF;border-radius:16px 16px 4px 16px;padding:16px;display:flex;flex-direction:column;gap:8px"
+        >
+          <span style="width:90%;height:9px;border-radius:100px;background:#C4CEFF"></span>
+          <span style="width:60%;height:9px;border-radius:100px;background:#C4CEFF"></span>
+        </div>
+        <div
+          style="align-self:flex-start;width:74%;background:#F4F6FF;border-radius:16px 16px 16px 4px;padding:18px;display:flex;flex-direction:column;gap:9px"
+        >
+          <span style="width:34%;height:9px;border-radius:100px;background:#44D4C8"></span>
+          <span style="width:96%;height:9px;border-radius:100px;background:#DDE2F0"></span>
+          <span style="width:88%;height:9px;border-radius:100px;background:#DDE2F0"></span>
+          <span style="width:92%;height:9px;border-radius:100px;background:#DDE2F0"></span>
+          <span style="width:54%;height:9px;border-radius:100px;background:#DDE2F0"></span>
+        </div>
+        <div
+          style="margin-top:6px;display:flex;align-items:center;gap:10px;border:1px solid rgba(13,27,42,.09);border-radius:100px;padding:12px 16px"
+        >
+          <span style="flex:1;height:10px;border-radius:100px;background:#EFF1F8"></span>
+          <span style="width:34px;height:34px;border-radius:50%;background:#F2C94C;flex:none"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

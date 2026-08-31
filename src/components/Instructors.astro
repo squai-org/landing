@@ -1,0 +1,63 @@
+---
+import { instructors } from '../data/landing';
+---
+
+<div id="instructores" style="padding:80px 64px">
+  <div style="max-width:1000px;margin:0 auto">
+    <h2
+      style="margin:0 0 44px;font-family:'Urbanist',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-0.03em;color:#0D1B2A;text-align:center"
+    >
+      Tus instructores en esta cohorte
+    </h2>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">
+      {
+        instructors.map((ins) => (
+          <div
+            class="card-instructor"
+            style="display:flex;align-items:center;gap:24px;background:#FFFFFF;border:1px solid rgba(13,27,42,.07);border-radius:28px;padding:24px;box-shadow:0 1px 2px rgba(13,27,42,.03), 0 24px 60px -44px rgba(13,27,42,.4)"
+          >
+            <img
+              src={ins.img}
+              alt={ins.name}
+              width="143"
+              height="164"
+              style="width: 143px; height: 164px; flex: none; object-fit: cover; border-radius: 22px; background: #E8ECFF"
+            />
+            <div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-family:'Urbanist',sans-serif;font-weight:800;font-size:21px;letter-spacing:-0.01em;color:#0D1B2A">
+                  {ins.name}
+                </span>
+                <a
+                  href={ins.linkedin}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={ins.aria}
+                  style="display:flex;align-items:center;color:#3D50CC"
+                >
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                    <rect x="2" y="9" width="4" height="12" />
+                    <circle cx="4" cy="4" r="2" />
+                  </svg>
+                </a>
+              </div>
+              <div style="font-size:15px;font-weight:400;line-height:1.5;color:#3D50CC;margin-top:6px;max-width:220px">
+                {ins.role}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>
