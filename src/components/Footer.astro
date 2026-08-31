@@ -1,0 +1,48 @@
+---
+import Logo from './Logo.astro';
+import { footerCols } from '../data/landing';
+---
+
+<div class="footer-pad" style="background: #12152A; border-radius: 28px; padding: 104px 88px 40px; margin: 28px 12px 12px; margin-bottom: -27px">
+  <div style="max-width:1240px;margin:0 auto">
+    <div class="footer-grid" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:64px;padding-bottom:96px">
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="--text-doc-dark:#F0F2FF"><Logo height={28} /></div>
+        <p style="margin:0;font-size:14px;font-weight:300;line-height:1.6;color:#F0F2FF;max-width:280px">
+          Formación en IA para profesionales, equipos e instituciones.
+        </p>
+        <span
+          style="font-family:'Gloria Hallelujah',cursive;font-size:14px;color:#F2C94C;transform:rotate(-1deg);display:inline-block"
+          >Aprende IA. Potencia tus habilidades</span
+        >
+      </div>
+      {
+        footerCols.map((col) => (
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8E97BB">
+              {col.h}
+            </div>
+            {col.links.map((lnk) => (
+              <span
+                data-scroll-to={lnk.target ?? undefined}
+                style="font-size:14px;font-weight:400;color:#F0F2FF;cursor:pointer"
+              >
+                {lnk.t}
+              </span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+    <div
+      class="footer-bottom"
+      style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 0 0;border-top:1px solid rgba(240,242,255,.14)"
+    >
+      <span style="font-size:12px;color:#A9B2CC">© 2026 Squai · Todos los derechos reservados&nbsp;</span>
+      <div style="display:flex;gap:20px">
+        <span style="font-size:12px;font-weight:600;color:#A9B2CC;cursor:pointer">Términos de Servicio</span>
+        <span style="font-size:12px;font-weight:600;color:#A9B2CC;cursor:pointer">Política de Privacidad</span>
+      </div>
+    </div>
+  </div>
+</div>

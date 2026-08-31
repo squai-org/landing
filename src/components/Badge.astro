@@ -1,0 +1,22 @@
+---
+type Audience = 'personas' | 'equipos' | 'instituciones';
+
+interface Props {
+  audience?: Audience;
+}
+
+const AUDIENCE: Record<Audience, { background: string; color: string }> = {
+  personas: { background: 'var(--periwinkle-tint)', color: 'var(--periwinkle-darker)' },
+  equipos: { background: 'var(--teal-tint)', color: 'var(--teal-dark)' },
+  instituciones: { background: 'var(--gold)', color: '#111111' },
+};
+
+const { audience } = Astro.props;
+const v = audience ? AUDIENCE[audience] : { background: 'var(--periwinkle-ghost)', color: 'var(--text-secondary)' };
+---
+
+<span
+  style={`display:inline-block;padding:4px 14px;border-radius:var(--radius-pill);font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:${v.background};color:${v.color}`}
+>
+  <slot />
+</span>
