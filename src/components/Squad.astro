@@ -2,9 +2,10 @@
 import { squadGrid } from '../data/landing';
 ---
 
-<div id="equipo" style="background:#0D1B2A;border-radius:40px;padding:80px 64px">
+<div id="equipo" class="section-pad" style="background:#0D1B2A;border-radius:40px;padding:80px 64px">
   <div style="max-width:1000px;margin:0 auto">
     <h2
+      class="h2-title"
       style="margin:0 0 8px;font-family:'Urbanist',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-0.03em;color:#F0F2FF;text-align:center"
     >
       Respaldados por el equipo Squai
@@ -19,11 +20,11 @@ import { squadGrid } from '../data/landing';
     >
       El contenido se nutre de un equipo con distintas especialidades que aportan su experiencia a lo que enseñamos.
     </p>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px">
+    <div class="grid-2" style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px">
       {
         squadGrid.map((m) => (
           <div
-            class="card-squad"
+            class="card-squad squad-card"
             style="display:flex;align-items:flex-start;gap:20px;background:#FFFFFF;border-radius:26px;padding:22px"
           >
             <img
@@ -31,6 +32,7 @@ import { squadGrid } from '../data/landing';
               alt={m.name}
               width="132"
               height="119"
+              class="squad-photo"
               style="width: 132px; height: 119px; flex: none; object-fit: cover; border-radius: 18px; background: #E8ECFF"
             />
             <div>

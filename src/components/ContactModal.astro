@@ -6,6 +6,7 @@ const fieldStyle =
 <div
   data-modal
   hidden
+  class="modal-backdrop"
   style="position:fixed;inset:0;z-index:200;background:rgba(13,27,42,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:32px;overflow-y:auto"
 >
   <div data-modal-panel style="position:relative;width:100%;max-width:600px;margin:auto">
@@ -16,6 +17,7 @@ const fieldStyle =
       >×</button
     >
     <div
+      class="card-pad-lg"
       style="border-radius: 32px; padding: 36px; box-shadow: 0 1px 2px rgba(0,0,0,.2), 0 40px 80px -50px rgba(0,0,0,.9); background-color: #FFFFFF"
     >
       <div
@@ -23,7 +25,7 @@ const fieldStyle =
       >
         Agenda una llamada
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="field-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
         <input type="text" placeholder="Nombre completo" class="field" style={fieldStyle} />
         <input type="email" placeholder="Correo corporativo" class="field" style={fieldStyle} />
         <input type="text" placeholder="Organización" class="field" style={fieldStyle} />

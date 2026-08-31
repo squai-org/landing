@@ -2,15 +2,16 @@
 import { outcomes } from '../data/landing';
 ---
 
-<div style="padding:80px 64px">
-  <div style="max-width:1152px;margin:0 auto;display:grid;grid-template-columns:0.85fr 1.15fr;gap:80px;align-items:start">
-    <div style="position:sticky;top:120px">
+<div class="section-pad" style="padding:80px 64px">
+  <div class="grid-sidebar" style="max-width:1152px;margin:0 auto;display:grid;grid-template-columns:0.85fr 1.15fr;gap:80px;align-items:start">
+    <div class="sidebar-sticky" style="position:sticky;top:120px">
       <div
         style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5568EE;margin-bottom:18px"
       >
         Resultados
       </div>
       <h2
+        class="h2-title"
         style="margin:0;font-family:'Urbanist',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-0.03em;color:#0D1B2A;text-wrap:balance"
       >
         Al terminar este programa, vas a poder:
@@ -19,14 +20,14 @@ import { outcomes } from '../data/landing';
     <div style="display:flex;flex-direction:column">
       {
         outcomes.map((o) => (
-          <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;padding:28px 0;border-bottom:1px solid rgba(13,27,42,.09)">
+          <div class="grid-outcome-row" style="display:grid;grid-template-columns:auto 1fr;gap:24px;padding:28px 0;border-bottom:1px solid rgba(13,27,42,.09)">
             <div
               style={`width:40px;height:40px;border-radius:12px;background:${o.bg};display:flex;align-items:center;justify-content:center;font-family:'Urbanist',sans-serif;font-weight:900;font-size:17px;color:${o.fg}`}
             >
               {o.n}
             </div>
             <div>
-              <div style="font-family:'Urbanist',sans-serif;font-weight:800;font-size:23px;line-height:1.2;letter-spacing:-0.01em;color:#0D1B2A;margin-bottom:8px">
+              <div class="h3-title" style="font-family:'Urbanist',sans-serif;font-weight:800;font-size:23px;line-height:1.2;letter-spacing:-0.01em;color:#0D1B2A;margin-bottom:8px">
                 {o.t}
               </div>
               <div style="font-size:16px;font-weight:300;line-height:1.6;color:#333;max-width:560px">{o.d}</div>

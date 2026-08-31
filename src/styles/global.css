@@ -200,3 +200,153 @@ a:hover { color: #5568EE; }
 /* The modal carries an inline display:flex, which would otherwise win over the
    user-agent rule for [hidden]. */
 [hidden] { display: none !important; }
+
+/* ---------------------------------------------------------------------------
+   Responsive layer
+   The page markup carries the design's inline styles verbatim (desktop,
+   >=1024px, unchanged). Below that, these classes override those inline
+   values with !important — the only way to adapt fixed-px inline styles
+   without touching the desktop-accurate markup.
+--------------------------------------------------------------------------- */
+
+body { overflow-x: hidden; }
+
+/* Outer content wrapper (index.astro) */
+@media (max-width: 1023px) {
+  .content-shell { padding: 0 20px !important; gap: 20px !important; }
+}
+@media (max-width: 639px) {
+  .content-shell { padding: 0 14px !important; gap: 16px !important; }
+}
+
+/* Shared padding/radius for the big rounded (and plain) section blocks */
+@media (max-width: 1023px) {
+  .section-pad { padding: 56px 32px !important; border-radius: 28px !important; }
+}
+@media (max-width: 639px) {
+  .section-pad { padding: 40px 20px !important; border-radius: 20px !important; }
+}
+
+/* Section heading scale */
+@media (max-width: 1023px) {
+  .h2-title { font-size: 32px !important; line-height: 1.08 !important; }
+  .h2-title-lg { font-size: 38px !important; line-height: 1.08 !important; }
+}
+@media (max-width: 639px) {
+  .h2-title { font-size: 26px !important; }
+  .h2-title-lg { font-size: 28px !important; }
+  .h3-title { font-size: 19px !important; }
+  .module-num { font-size: 30px !important; }
+  .price-amount { font-size: 32px !important; }
+}
+
+/* Grids that collapse to a single column below desktop */
+@media (max-width: 1023px) {
+  .grid-3,
+  .grid-2,
+  .grid-6,
+  .grid-sidebar {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-sidebar { gap: 32px !important; }
+  .grid-6 > .span-item { grid-column: auto !important; }
+  .sidebar-sticky { position: static !important; top: auto !important; }
+}
+
+@media (max-width: 639px) {
+  .grid-outcome-row { gap: 14px !important; padding: 20px 0 !important; }
+  .grid-week { grid-template-columns: 56px 1fr !important; gap: 14px !important; padding: 22px 0 !important; }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .grid-week { gap: 20px !important; }
+}
+
+/* Header */
+@media (max-width: 1023px) {
+  .header-wrap { padding: 16px 16px 0 !important; }
+  .nav-bar { flex-wrap: wrap; row-gap: 10px; border-radius: 24px !important; padding: 12px 16px !important; }
+  .nav-links-row { flex-wrap: wrap; justify-content: center; width: 100%; gap: 6px !important; }
+  .nav-cta-wrap { margin-left: 0 !important; }
+  .nav-link { font-size: 13px !important; padding: 7px 10px !important; }
+}
+@media (max-width: 639px) {
+  .nav-link { font-size: 12px !important; padding: 6px 9px !important; }
+}
+
+/* Hero */
+@media (max-width: 1023px) {
+  .hero-shell { padding: 110px 32px 0 !important; border-radius: 24px !important; margin: 0 8px !important; }
+  .hero-title { font-size: 52px !important; line-height: 1.03 !important; }
+  .hero-subtitle { font-size: 18px !important; }
+  .hero-mockup { margin-top: 48px !important; height: auto !important; }
+  .hero-mockup-grid { grid-template-columns: 150px 1fr !important; min-height: 220px !important; }
+}
+@media (max-width: 639px) {
+  .hero-shell { padding: 90px 18px 0 !important; margin: 0 6px !important; }
+  .hero-title { font-size: 34px !important; letter-spacing: -0.02em !important; }
+  .hero-subtitle { font-size: 16px !important; }
+  .hero-actions { width: 100%; }
+  .hero-actions button { flex: 1 1 auto; justify-content: center; padding: 16px 22px !important; font-size: 15px !important; }
+  .hero-mockup-grid { grid-template-columns: 1fr !important; }
+  .hero-mockup-sidebar { display: none !important; }
+}
+
+/* Program */
+@media (max-width: 1023px) {
+  .program-card { padding: 8px 24px !important; }
+}
+@media (max-width: 639px) {
+  .program-card { padding: 4px 16px !important; }
+}
+
+/* Cards pairing a fixed-size photo with text (instructors, squad) */
+@media (max-width: 639px) {
+  .instructor-card,
+  .squad-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .instructor-photo,
+  .squad-photo {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 220px !important;
+    margin: 0 auto !important;
+  }
+  .instructor-photo { aspect-ratio: 143 / 164 !important; }
+  .squad-photo { aspect-ratio: 132 / 119 !important; }
+}
+
+/* Cards with generous fixed padding */
+@media (max-width: 1023px) {
+  .card-pad-lg { padding: 28px !important; }
+}
+@media (max-width: 639px) {
+  .card-pad-lg { padding: 22px !important; border-radius: 22px !important; }
+  .cert-banner { padding: 24px 20px !important; gap: 18px !important; }
+}
+@media (max-width: 1023px) {
+  .cert-banner { padding: 28px 28px !important; }
+}
+
+/* Form field grids (waitlist + contact modal) */
+@media (max-width: 639px) {
+  .field-grid-2 { grid-template-columns: 1fr !important; }
+}
+
+/* Modal */
+@media (max-width: 639px) {
+  .modal-backdrop { padding: 16px !important; }
+}
+
+/* Footer */
+@media (max-width: 1023px) {
+  .footer-pad { padding: 64px 40px 32px !important; margin: 20px 10px 10px !important; }
+  .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+}
+@media (max-width: 639px) {
+  .footer-pad { padding: 48px 20px 28px !important; margin: 16px 8px 8px !important; border-radius: 24px !important; }
+  .footer-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+  .footer-bottom { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+}

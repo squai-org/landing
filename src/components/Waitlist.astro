@@ -3,7 +3,7 @@ const fieldStyle =
   "width:100%;font-family:'Outfit',sans-serif;font-size:15px;font-weight:400;color:#0D1B2A;background:#F4F6FF;border:1px solid rgba(13,27,42,.07);border-radius:14px;padding:15px 18px;outline:none";
 ---
 
-<div id="lista" style="background:#F4F6FF;border-radius:40px;padding:80px 64px">
+<div id="lista" class="section-pad" style="background:#F4F6FF;border-radius:40px;padding:80px 64px">
   <div style="max-width:920px;margin:0 auto;text-align:center">
     <div
       style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#3D50CC;margin-bottom:14px"
@@ -11,6 +11,7 @@ const fieldStyle =
       Lista de espera
     </div>
     <h2
+      class="h2-title"
       style="margin:0 0 14px;font-family:'Urbanist',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-0.03em;color:#0D1B2A;text-wrap:balance"
     >
       Reserva tu lugar en la próxima cohorte
@@ -22,9 +23,10 @@ const fieldStyle =
       confirmadas y la información de pago.
     </p>
     <div
+      class="card-pad-lg"
       style="background:#FFFFFF;border:1px solid rgba(13,27,42,.07);border-radius:28px;padding:32px;box-shadow:0 1px 2px rgba(13,27,42,.03), 0 30px 70px -44px rgba(13,27,42,.45);text-align:left"
     >
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="field-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
         <input type="text" placeholder="Nombre completo" class="field" style={fieldStyle} />
         <input type="email" placeholder="Correo electrónico" class="field" style={fieldStyle} />
       </div>

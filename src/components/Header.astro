@@ -3,12 +3,13 @@ import Logo from './Logo.astro';
 import { navLinks } from '../data/landing';
 ---
 
-<div style="position:sticky;top:0;z-index:60;padding:26px 24px 0;margin-bottom:-76px">
+<div class="header-wrap" style="position:sticky;top:0;z-index:60;padding:26px 24px 0;margin-bottom:-76px">
   <div
+    class="nav-bar"
     style="max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 9px 10px 9px 24px; backdrop-filter: blur(16px); border: 1px solid rgba(13,27,42,.07); border-radius: 100px; box-shadow: 0 1px 2px rgba(13,27,42,.04), 0 14px 34px -22px rgba(13,27,42,.28); background-color: #FFFFFF77"
   >
     <Logo height={30} />
-    <div style="display:flex;align-items:center;gap:4px">
+    <div class="nav-links-row" style="display:flex;align-items:center;gap:4px">
       {
         navLinks.map((link) => (
           <a
@@ -21,7 +22,7 @@ import { navLinks } from '../data/landing';
           </a>
         ))
       }
-      <div style="margin-left:8px">
+      <div class="nav-cta-wrap" style="margin-left:8px">
         <button
           data-scroll-to="precio"
           class="btn-gold"
