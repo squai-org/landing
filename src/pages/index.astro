@@ -71,6 +71,30 @@ import ContactModal from '../components/ContactModal.astro';
     });
   });
 
+  // Mobile/tablet hamburger menu.
+  const navToggle = document.querySelector<HTMLElement>('[data-nav-toggle]');
+  const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
+
+  const setNavOpen = (open: boolean) => {
+    navMenu?.classList.toggle('nav-open', open);
+    navToggle?.setAttribute('aria-expanded', String(open));
+  };
+
+  navToggle?.addEventListener('click', () => {
+    setNavOpen(!navMenu?.classList.contains('nav-open'));
+  });
+
+  navMenu?.querySelectorAll('a, button').forEach((el) => {
+    el.addEventListener('click', () => setNavOpen(false));
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!navMenu?.classList.contains('nav-open')) return;
+    const target = event.target as Node;
+    if (navMenu.contains(target) || navToggle?.contains(target)) return;
+    setNavOpen(false);
+  });
+
   // FAQ accordion: one panel open at a time, closed on load.
   let openFaq: string | null = null;
 
