@@ -197,6 +197,23 @@ a:hover { color: #5568EE; }
 .field { transition: border-color .2s, box-shadow .2s; }
 .field:focus { border-color: rgba(124, 140, 255, .55); }
 
+/* Native <select> — force a visible chevron, unify option list colors, and
+   use the :invalid trick (required + an empty disabled placeholder option)
+   to grey out the placeholder the same way input ::placeholder text reads. */
+.select-field {
+  appearance: none;
+  cursor: pointer;
+  color: #0D1B2A;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23667085' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 12px 8px;
+}
+.select-field:invalid { color: #6B7280 !important; }
+.select-field option { color: #0D1B2A; background: #FFFFFF; }
+.select-field option[value=""] { color: #6B7280; }
+
 /* The modal carries an inline display:flex, which would otherwise win over the
    user-agent rule for [hidden]. */
 [hidden] { display: none !important; }
@@ -210,6 +227,56 @@ a:hover { color: #5568EE; }
 --------------------------------------------------------------------------- */
 
 body { overflow-x: hidden; }
+
+/* Logo as a home link — clickable, not selectable as text */
+.logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Legal pages (Términos de Servicio, Política de Privacidad) */
+.legal-card h2 {
+  margin: 0 0 4px;
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 800;
+  font-size: 23px;
+  letter-spacing: -0.01em;
+  color: #0D1B2A;
+}
+.legal-card p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: #333;
+}
+.legal-card ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.legal-card li {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: #333;
+}
+.legal-card strong { font-weight: 700; color: #0D1B2A; }
+.legal-card a { color: #3D50CC; text-decoration: underline; }
+
+@media (max-width: 1023px) {
+  .legal-content { margin-top: 130px !important; }
+}
+@media (max-width: 639px) {
+  .legal-content { margin-top: 120px !important; }
+  .legal-card h2 { font-size: 20px !important; }
+}
 
 /* Outer content wrapper (index.astro) */
 @media (max-width: 1023px) {
@@ -304,7 +371,8 @@ body { overflow-x: hidden; }
 
   .nav-link { width: 100%; text-align: center; padding: 12px !important; }
   .nav-cta-wrap { margin-left: 0 !important; width: 100%; margin-top: 6px; }
-  .nav-cta-wrap button { width: 100%; }
+  .nav-cta-wrap a,
+  .nav-cta-wrap button { width: 100%; text-align: center; }
 }
 
 /* Hero */

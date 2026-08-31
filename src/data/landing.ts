@@ -62,8 +62,8 @@ export interface Instructor {
 }
 
 export const instructors: Instructor[] = [
-  { img: '/images/team1.webp', name: 'Laura Villada', role: 'Estratega de Adopción de IA, Co-fundadora de Squai', linkedin: 'https://www.linkedin.com/', aria: 'LinkedIn de Laura Villada' },
-  { img: '/images/team2.webp', name: 'Sebastián Rico', role: 'Ingeniero de IA, Co-fundador de Squai', linkedin: 'https://www.linkedin.com/', aria: 'LinkedIn de Sebastián Rico' },
+  { img: '/images/team1.webp', name: 'Laura Villada', role: 'Estratega de Adopción de IA, Co-fundadora de Squai', linkedin: 'https://www.linkedin.com/in/laura-villadaa/', aria: 'LinkedIn de Laura Villada' },
+  { img: '/images/team2.webp', name: 'Sebastián Rico', role: 'Ingeniero de IA, Co-fundador de Squai', linkedin: 'https://www.linkedin.com/in/josesebastianricoleyton/', aria: 'LinkedIn de Sebastián Rico' },
 ];
 
 export interface SquadMember {

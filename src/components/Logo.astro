@@ -6,8 +6,16 @@ interface Props {
 
 const { height = 36, wordmark = true } = Astro.props;
 
-const scale = height / 1024;
-const svgWidth = Math.round(1008 * scale);
+// The mark's paths only occupy roughly x:[294,715] y:[298,727] of the source
+// 1008x1024 canvas — crop tight to that (plus a small margin) so the icon
+// fills its box instead of sitting in a sea of transparent padding.
+const VB_X = 278;
+const VB_Y = 283;
+const VB_WIDTH = 452;
+const VB_HEIGHT = 459;
+
+const scale = height / VB_HEIGHT;
+const svgWidth = Math.round(VB_WIDTH * scale);
 const wordmarkSize = Math.round(height * 0.62);
 
 const PATH_A =
@@ -18,8 +26,8 @@ const PATH_C =
   'M573.706 527.155C576.335 526.811 583.9 526.918 586.766 526.924L610.555 526.995L641.488 526.957C647.496 526.949 658.177 526.419 663.924 527.806C685.855 533.099 707.554 553.346 713.32 575.305C714.513 579.845 714.054 590.053 714.046 594.713L714.014 624.866L714.167 655.355C714.244 672.665 714.346 681.178 703.941 696.442C692.829 712.743 678.95 720.89 659.776 724.607C654.076 725.181 645.285 724.839 639.269 724.774C627.123 724.676 614.977 724.485 602.833 724.199C579.653 723.784 566.395 727.179 545.889 712.526C517.056 691.923 517.853 664.084 518.636 632.291C518.818 624.878 518.419 617.168 518.572 609.728C518.872 599.912 517.922 588.809 519.941 579.205C525.293 553.734 547.819 531.164 573.706 527.155Z';
 ---
 
-<div style="display:flex;align-items:center;gap:10px">
-  <svg width={svgWidth} height={height} viewBox="0 0 1008 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<div style="display:flex;align-items:center;gap:6px">
+  <svg width={svgWidth} height={height} viewBox={`${VB_X} ${VB_Y} ${VB_WIDTH} ${VB_HEIGHT}`} fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d={PATH_A} fill="#8A8EF9"></path>
     <path d={PATH_B} fill="#F9C24D"></path>
     <path d={PATH_C} fill="#F9C24D"></path>

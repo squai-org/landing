@@ -36,12 +36,12 @@ const fieldStyle =
         <input type="tel" placeholder="WhatsApp" class="field" style={fieldStyle} />
       </div>
       <div style="margin-top:14px">
-        <select class="field" style={`${fieldStyle};appearance:none;cursor:pointer`}>
-          <option>¿Cuántas personas se formarían?</option>
-          <option>Menos de 10</option>
-          <option>Entre 10 y 30</option>
-          <option>Entre 30 y 100</option>
-          <option>Más de 100</option>
+        <select class="field select-field" required style={fieldStyle}>
+          <option value="" disabled selected hidden>¿Cuántas personas se formarían?</option>
+          <option value="menos-10">Menos de 10</option>
+          <option value="10-30">Entre 10 y 30</option>
+          <option value="30-100">Entre 30 y 100</option>
+          <option value="mas-100">Más de 100</option>
         </select>
       </div>
 
