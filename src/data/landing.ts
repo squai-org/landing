@@ -11,8 +11,8 @@ export interface NavLink {
 }
 
 export const navLinks: NavLink[] = [
-  { label: 'Qué hacemos', target: 'ecosistemas' },
-  { label: 'Cómo enseñamos', target: 'metodo' },
+  { label: 'Ecosistemas', target: 'ecosistemas' },
+  { label: 'Método', target: 'metodo' },
   { label: 'Cohorte abierta', target: 'cohorte' },
   { label: 'Equipo', target: 'equipo' },
   { label: 'Preguntas frecuentes', target: 'faq' },
@@ -22,7 +22,7 @@ export const navLinks: NavLink[] = [
 
 export const tagline = 'Aprende IA, potencia tus habilidades.';
 
-export const heroStatement = ['Entender la IA', 'no debería exigir', 'ser técnico.'];
+export const heroStatement = ['Aprende IA.', 'potencia tus habilidades.'];
 
 export const heroSubtitle =
   'Squai enseña inteligencia artificial a personas, equipos y comunidades que no vienen de la tecnología. Sin jerga, sin humo y con las manos en la herramienta desde el primer día.';
@@ -151,7 +151,7 @@ export const ecosystems: Ecosystem[] = [
   {
     id: 'one',
     name: 'Squai One',
-    tab: 'Para mí',
+    tab: 'Squai One',
     territory: 'Aprender',
     audience: 'Personas',
     headline: 'Aprende IA sin depender de que alguien te la traduzca.',
@@ -169,7 +169,7 @@ export const ecosystems: Ecosystem[] = [
   {
     id: 'grow',
     name: 'Squai Grow',
-    tab: 'Para mi equipo',
+    tab: 'Squai Grow',
     territory: 'Integrar',
     audience: 'Equipos y organizaciones',
     headline: 'Que la IA entre a tus procesos sin desordenar lo que ya funciona.',
@@ -187,7 +187,7 @@ export const ecosystems: Ecosystem[] = [
   {
     id: 'learn',
     name: 'Squai Learn',
-    tab: 'Para mi institución',
+    tab: 'Squai Learn',
     territory: 'Preparar',
     audience: 'Comunidades educativas',
     headline: 'Preparar a estudiantes y docentes para un contexto que ya cambió.',
@@ -203,8 +203,6 @@ export const ecosystems: Ecosystem[] = [
     accent: '#F9C24D',
   },
 ];
-
-export const ecosystemsNote = 'Una metodología. Diferentes contextos.';
 
 /* --- Cohorte: qué vas a lograr ------------------------------------------- */
 
@@ -337,8 +335,8 @@ export const footerCols: FooterCol[] = [
   {
     h: 'Squai',
     links: [
-      { t: 'Qué hacemos', target: 'ecosistemas' },
-      { t: 'Cómo enseñamos', target: 'metodo' },
+      { t: 'Ecosistemas', target: 'ecosistemas' },
+      { t: 'Método', target: 'metodo' },
       { t: 'Cómo nació Squai', target: 'origen' },
       { t: 'El equipo', target: 'equipo' },
     ],

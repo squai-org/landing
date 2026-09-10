@@ -162,33 +162,45 @@ a:hover { color: var(--periwinkle-dark); }
 .nav-link { transition: background .2s, color .2s; }
 .nav-link:hover { background: var(--canvas); color: var(--ink); }
 
-.btn-gold { transition: background .2s, transform .2s, box-shadow .2s; }
+/* Gold pill button (header, hero, pricing card, waitlist, modal) */
+.btn-gold { transition: background .2s, transform .2s; }
 .btn-gold:hover {
-  background: #FBD173;
+  background: linear-gradient(180deg, #F9E183 0%, #F9C24D 100%);
   transform: translateY(-1px);
 }
 
-.btn-gold-lift { transition: transform .2s, box-shadow .2s, background .2s; }
+/* Gold pill button, elevated variant (hero + final CTA) */
+.btn-gold-lift { transition: transform .2s, box-shadow .2s; }
 .btn-gold-lift:hover {
-  background: #FBD173;
+  background: linear-gradient(180deg, #F9E183 0%, #F9C24D 100%);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(10, 12, 26, .12), 0 16px 30px -12px rgba(10, 12, 26, .45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 0 0 1px rgba(255, 255, 255, .7),
+    0 2px 4px rgba(10, 12, 26, .08),
+    0 14px 28px -10px rgba(10, 12, 26, .28);
 }
 
-.btn-ghost { transition: background .2s, transform .2s, border-color .2s; }
+/* Translucent hero button */
+.btn-ghost { transition: background .2s, transform .2s; }
 .btn-ghost:hover {
-  background: rgba(244, 246, 255, .12);
-  border-color: rgba(244, 246, 255, .55);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .36) 0%, rgba(255, 255, 255, .2) 100%);
   transform: translateY(-1px);
 }
 
+/* Dark pill button */
 .btn-dark { transition: background .2s, transform .2s; }
-.btn-dark:hover { background: #1B2038; transform: translateY(-1px); }
+.btn-dark:hover { background: #26262B; transform: translateY(-1px); }
 
+/* White pill button */
 .btn-white { transition: transform .2s, box-shadow .2s; }
 .btn-white:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(10, 12, 26, .06), 0 14px 26px -12px rgba(10, 12, 26, .26);
+  box-shadow:
+    inset 0 1px 0 #FFFFFF,
+    inset 0 0 0 1px rgba(10, 12, 26, .1),
+    0 2px 4px rgba(10, 12, 26, .06),
+    0 14px 26px -12px rgba(10, 12, 26, .26);
 }
 
 .card-instructor { transition: transform .25s, box-shadow .25s; }
@@ -258,9 +270,6 @@ a:hover { color: var(--periwinkle-dark); }
 
 .tab-service {
   flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
   border: 0;
   cursor: pointer;
   background: transparent;
@@ -274,23 +283,11 @@ a:hover { color: var(--periwinkle-dark); }
   transition: background .25s, color .25s, box-shadow .25s;
 }
 .tab-service:hover { color: var(--ink); background: rgba(255, 255, 255, .6); }
-.tab-service .tab-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
-  background: currentColor;
-  opacity: .35;
-  transition: opacity .25s, background .25s;
-}
 .tab-service[aria-selected="true"] {
   background: var(--surface);
   color: var(--ink);
   box-shadow: 0 1px 2px rgba(10, 12, 26, .06), 0 10px 22px -14px rgba(10, 12, 26, .5);
 }
-.tab-service[aria-selected="true"] .tab-dot { opacity: 1; }
-.tab-service[data-eco="one"][aria-selected="true"] .tab-dot { background: var(--periwinkle); }
-.tab-service[data-eco="grow"][aria-selected="true"] .tab-dot { background: var(--teal); }
-.tab-service[data-eco="learn"][aria-selected="true"] .tab-dot { background: var(--gold); }
 
 .service-panel[hidden] { display: none !important; }
 .service-panel { animation: panel-in .32s cubic-bezier(.22, .8, .3, 1) both; }
@@ -299,16 +296,8 @@ a:hover { color: var(--periwinkle-dark); }
   to { opacity: 1; transform: none; }
 }
 
-/* The Unión grows, the Bloque stays put (Brand Book §15.4) */
-.eco-figure .union { transform-origin: left center; animation: union-extend .5s cubic-bezier(.22, .8, .3, 1) both; }
-.eco-figure .block { animation: block-in .38s cubic-bezier(.22, .8, .3, 1) both; }
-@keyframes union-extend { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-@keyframes block-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
 @media (prefers-reduced-motion: reduce) {
-  .service-panel,
-  .eco-figure .union,
-  .eco-figure .block { animation: none !important; }
+  .service-panel { animation: none !important; }
   html { scroll-behavior: auto; }
 }
 
@@ -376,14 +365,12 @@ a:hover { color: var(--periwinkle-dark); }
   .grid-3,
   .grid-2,
   .grid-6,
-  .grid-sidebar,
-  .grid-eco {
+  .grid-sidebar {
     grid-template-columns: 1fr !important;
   }
   .grid-sidebar { gap: 32px !important; }
   .grid-6 > .span-item { grid-column: auto !important; }
   .sidebar-sticky { position: static !important; top: auto !important; }
-  .eco-figure-wrap { display: none !important; }
 }
 
 @media (max-width: 639px) {
@@ -495,10 +482,7 @@ a:hover { color: var(--periwinkle-dark); }
   .card-pad-lg { padding: 22px !important; border-radius: 22px !important; }
   .cert-banner { padding: 24px 20px !important; gap: 18px !important; }
   .service-panel { padding: 24px !important; border-radius: 24px !important; }
-  .tab-service { padding: 11px 18px !important; font-size: 14px !important; }
-  /* Wrapped meta lines must not start with a dangling separator dot. */
-  .hero-meta > span > span:first-child { display: none !important; }
-  .hero-meta { gap: 6px 16px !important; }
+  .tab-service { padding: 11px 16px !important; font-size: 13px !important; }
 }
 
 @media (max-width: 639px) {

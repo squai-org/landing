@@ -1,32 +1,22 @@
 ---
-import { cohort, cohortMeta, heroStatement, heroSubtitle, tagline } from '../data/landing';
+import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing';
 ---
 
-<!-- Night hero. Brand Book §14.6: statement first, no fake product UI. -->
+<!-- Night hero. Brand Book §14.6: statement first, no imagery, no fake product UI. -->
 <div
   class="hero-shell"
-  style="position:relative;background:#0A0C1A;border-radius:36px;padding:190px 64px 96px;overflow:hidden;margin:0 12px;z-index:0"
+  style="position:relative;background:#0A0C1A;border-radius:36px;padding:180px 64px 72px;overflow:hidden;margin:0 12px;z-index:0"
 >
-  <!-- Modular field: Bloque + Unión, held back to a whisper so the text leads. -->
-  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;opacity:.5">
-    <div style="position:absolute;right:-90px;top:120px;width:280px;height:280px;border-radius:96px;border:1px solid rgba(138,142,249,.22)"></div>
-    <div style="position:absolute;right:150px;top:-60px;width:180px;height:180px;border-radius:64px;border:1px solid rgba(68,212,200,.16)"></div>
-    <div style="position:absolute;left:-70px;bottom:-40px;width:220px;height:220px;border-radius:76px;border:1px solid rgba(249,194,77,.14)"></div>
-  </div>
-
-  <div style="position:relative;max-width:1120px;margin:0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:26px">
+  <div style="position:relative;max-width:1000px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:26px">
     <!-- Eyebrow = the cohort that is open right now. -->
     <a
       href="/#cohorte"
       data-scroll-to="cohorte"
       class="hero-eyebrow"
-      style="display:inline-flex;align-items:center;gap:12px;padding:9px 10px 9px 16px;background:rgba(244,246,255,.07);border:1px solid rgba(244,246,255,.16);border-radius:100px;text-decoration:none;max-width:100%"
+      style="display:inline-flex;align-items:center;gap:14px;padding:9px 10px 9px 18px;background:rgba(244,246,255,.07);border:1px solid rgba(244,246,255,.16);border-radius:100px;text-decoration:none;max-width:100%"
     >
-      <span style="display:inline-flex;align-items:center;gap:8px;flex:none">
-        <span class="pulse-dot" style="width:8px;height:8px;border-radius:50%;flex:none;background:#44D4C8"></span>
-        <span style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#44D4C8">
-          {cohort.status}
-        </span>
+      <span style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#44D4C8;flex:none">
+        {cohort.status}
       </span>
       <span class="hero-eyebrow-text" style="font-size:13px;color:#D7DBEC;min-width:0">
         {cohort.ecosystem} · {cohort.name}
@@ -39,21 +29,21 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle, tagline } from '../dat
 
     <h1
       class="hero-title"
-      style="margin:0;font-family:var(--font-display);font-weight:700;font-size:88px;line-height:.92;letter-spacing:-0.055em;color:#F4F6FF;max-width:15ch;text-wrap:balance"
+      style="margin:0;font-family:var(--font-display);font-weight:700;font-size:88px;line-height:.94;letter-spacing:-0.055em;color:#F4F6FF;text-wrap:balance"
     >
-      {heroStatement[0]}<br />{heroStatement[1]}<br /><span style="color:#8A8EF9">{heroStatement[2]}</span>
+      {heroStatement[0]}<br /><span style="color:#8A8EF9">{heroStatement[1]}</span>
     </h1>
 
     <p class="hero-subtitle" style="margin:0;font-size:20px;line-height:1.6;color:#B7BCD0;max-width:62ch;text-wrap:pretty">
       {heroSubtitle}
     </p>
 
-    <div class="hero-actions" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px">
+    <div class="hero-actions" style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px">
       <a
         href="/#lista"
         data-scroll-to="lista"
         class="btn-gold-lift"
-        style="display:inline-block;font-family:var(--font-display);font-size:17px;font-weight:700;letter-spacing:-0.01em;color:#0A0C1A;background:#F9C24D;border:0;border-radius:100px;padding:18px 34px;cursor:pointer;box-shadow:0 1px 2px rgba(10,12,26,.2), 0 10px 24px -12px rgba(249,194,77,.5)"
+        style="display:inline-block;font-family:var(--font-body);font-size:17px;font-weight:700;color:#3B2B05;background:linear-gradient(180deg, #F7D96A 0%, #EFC13C 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 0 0 1px rgba(255,255,255,.55), 0 1px 2px rgba(13,27,42,.08), 0 8px 20px -8px rgba(13,27,42,.22)"
       >
         Reservar mi lugar
       </a>
@@ -61,26 +51,36 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle, tagline } from '../dat
         href="/#ecosistemas"
         data-scroll-to="ecosistemas"
         class="btn-ghost"
-        style="display:inline-block;font-family:var(--font-display);font-size:17px;font-weight:700;letter-spacing:-0.01em;color:#F4F6FF;background:transparent;border:1px solid rgba(244,246,255,.28);border-radius:100px;padding:17px 32px;cursor:pointer"
+        style="display:inline-block;font-family:var(--font-body);font-size:17px;font-weight:700;color:#FFFFFF;background:linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.13) 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 0 0 1px rgba(255,255,255,.3), 0 8px 20px -10px rgba(13,27,42,.35)"
       >
-        Qué hacemos
+        Ver ecosistemas
       </a>
     </div>
 
-    <div class="hero-meta" style="display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:14px;font-size:13px;color:#8E94AC">
+    <div class="hero-meta" style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px;max-width:920px">
       {
-        cohortMeta.map((m, i) => (
-          <span style="display:inline-flex;align-items:center;gap:10px">
-            {i > 0 && <span style="width:4px;height:4px;border-radius:50%;background:#3A4058"></span>}
+        cohortMeta.map((m) => (
+          <span style="padding:9px 18px;border:1px solid rgba(255,255,255,.34);border-radius:100px;font-size:13px;color:#FFFFFF">
             {m}
           </span>
         ))
       }
     </div>
 
-    <p class="hand-note" style="margin:34px 0 0;font-family:var(--font-hand);font-size:21px;line-height:1.4;color:#8A8EF9;transform:rotate(-1.2deg)">
-      {tagline}
-    </p>
+    <!-- Scroll cue, same glass treatment as the nav bar. -->
+    <button
+      type="button"
+      data-scroll-to="dolor"
+      class="hero-scroll"
+      aria-label="Bajar al contenido"
+      style="margin-top:46px;display:inline-flex;align-items:center;gap:10px;padding:11px 12px 11px 20px;backdrop-filter:blur(16px);border:1px solid rgba(13,27,42,.07);border-radius:100px;box-shadow:0 1px 2px rgba(13,27,42,.04), 0 14px 34px -22px rgba(13,27,42,.28);background-color:#FFFFFF77;color:#0A0C1A;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer"
+    >
+      Seguir bajando
+      <span
+        style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(13,27,42,.07);font-size:14px;line-height:1"
+        aria-hidden="true">↓</span
+      >
+    </button>
   </div>
 </div>
 
@@ -88,17 +88,11 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle, tagline } from '../dat
   .hero-eyebrow { transition: background .2s, border-color .2s; }
   .hero-eyebrow:hover { background: rgba(244, 246, 255, .12); border-color: rgba(244, 246, 255, .3); }
 
-  .pulse-dot { animation: pulse 2.4s ease-in-out infinite; }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(68, 212, 200, .5); }
-    60% { box-shadow: 0 0 0 7px rgba(68, 212, 200, 0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .pulse-dot { animation: none; }
-  }
+  .hero-scroll { transition: transform .2s, background-color .2s; }
+  .hero-scroll:hover { transform: translateY(2px); background-color: #FFFFFFAA; }
 
   @media (max-width: 639px) {
-    .hero-eyebrow { flex-wrap: wrap; gap: 8px; padding: 10px 14px !important; }
+    .hero-eyebrow { flex-wrap: wrap; gap: 8px; padding: 10px 16px !important; }
     .hero-eyebrow-text { font-size: 12px !important; }
   }
 </style>
