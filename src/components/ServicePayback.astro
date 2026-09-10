@@ -1,0 +1,33 @@
+---
+interface Card {
+  t: string;
+  d: string;
+}
+
+interface Props {
+  headline: string;
+  cards: Card[];
+}
+
+const { headline, cards } = Astro.props;
+---
+
+<!-- Flat and light, same shape as the statement section on the home page. -->
+<section class="section tint">
+  <div class="shell" style="display:grid;gap:clamp(28px,3vw,52px)">
+    <h2 class="display d-h1" style="color:var(--ink)">Qué obtienes</h2>
+    <h3 class="display d-h2" style="max-width:22ch;color:var(--ink)">{headline}</h3>
+    <div style="display:flex;flex-direction:column;gap:20px;max-width:74ch">
+      {
+        cards.map((c) => (
+          <p class="lead" style="color:var(--ink-body)">
+            <strong style="font-family:var(--font-display);font-weight:700;letter-spacing:-0.02em;color:var(--ink)">
+              {c.t}.
+            </strong>{' '}
+            {c.d}
+          </p>
+        ))
+      }
+    </div>
+  </div>
+</section>

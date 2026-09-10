@@ -165,10 +165,23 @@ a:hover { color: var(--periwinkle-dark); }
    Full-bleed sections with a shared gutter, generous vertical spacing.
 --------------------------------------------------------------------------- */
 
-.shell { max-width: var(--shell); margin: 0 auto; padding-inline: var(--gutter); }
-.section { padding-block: var(--section-gap); }
-.section-tight { padding-block: calc(var(--section-gap) * 0.62); }
+.content-shell {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 clamp(14px, 2vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 1.6vw, 28px);
+}
+.section {
+  border-radius: clamp(20px, 2vw, 40px);
+  padding: var(--section-gap) clamp(20px, 4vw, 64px);
+}
+.section-tight { padding-block: calc(var(--section-gap) * 0.6); }
+.shell { max-width: 1200px; margin: 0 auto; }
 .night { background: var(--midnight); color: var(--canvas); }
+.tint { background: var(--canvas); }
+.surface { background: var(--surface); }
 
 /* Display type. Cap-height-tight leading, like the reference. */
 .display {
@@ -228,8 +241,10 @@ a:hover { color: var(--periwinkle-dark); }
 .span-6 { grid-column: span 6; }
 .row-2 { grid-row: span 2; }
 
-.card-link { transition: transform .25s, box-shadow .25s; text-decoration: none; color: inherit; }
-.card-link:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); color: inherit; }
+.card-link { transition: transform .25s, box-shadow .25s; text-decoration: none; }
+.card-link:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
+a.bento-card:hover { color: var(--ink); }
+a.bento-card.dark:hover { color: var(--night-text); }
 
 /* ---------------------------------------------------------------------------
    Interaction states
@@ -382,6 +397,7 @@ a:hover { color: var(--periwinkle-dark); }
 }
 
 @media (max-width: 1023px) {
+  .section { padding: calc(var(--section-gap) * 0.8) clamp(20px, 4vw, 40px); }
   .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .span-2, .span-3, .span-4 { grid-column: span 1; }
   .span-6 { grid-column: span 2; }
@@ -453,9 +469,11 @@ a:hover { color: var(--periwinkle-dark); }
 
 /* Footer */
 @media (max-width: 1023px) {
+  .footer-pad { padding: 64px 40px 32px !important; margin: 20px 10px 10px !important; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
 }
 @media (max-width: 639px) {
+  .footer-pad { padding: 48px 20px 28px !important; margin: 16px 8px 8px !important; border-radius: 24px !important; }
   .footer-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
   .footer-bottom { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
 }

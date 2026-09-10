@@ -2,11 +2,11 @@
 import { statement } from '../data/landing';
 ---
 
-<section id="statement" class="night section">
+<section id="statement" class="section tint">
   <div class="shell" style="display:grid;gap:clamp(28px,3vw,52px)">
-    <h2 class="display d-h2" style="max-width:22ch">{statement.headline}</h2>
+    <h2 class="display d-h2" style="max-width:22ch;color:var(--ink)">{statement.headline}</h2>
     <div style="display:flex;flex-direction:column;gap:18px;max-width:74ch">
-      {statement.body.map((para) => <p class="lead" style="color:#B7BCD0">{para}</p>)}
+      {statement.body.map((para) => <p class="lead" style="color:var(--ink-body)">{para}</p>)}
     </div>
   </div>
 </section>

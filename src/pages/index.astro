@@ -20,17 +20,24 @@ import { faqs } from '../data/landing';
   title="Squai — Aprende IA, potencia tus habilidades"
   description="Squai enseña inteligencia artificial a personas, equipos y comunidades educativas que no vienen de la tecnología. Sin jerga, sin humo y con práctica desde el primer día."
 >
-  <Header />
-  <Hero />
-  <Statement />
-  <WhatWeDo />
-  <Impact />
-  <ServicesGrid />
-  <Origin />
-  <Team />
-  <Faq items={faqs} />
-  <FinalCta />
-  <Follow />
-  <Footer />
+  <div style="padding:0 0 40px;background-color:#F4F6FF">
+    <Header />
+    <Hero />
+
+    <div class="content-shell" style="margin-top:clamp(16px,1.6vw,28px)">
+      <Statement />
+      <WhatWeDo />
+      <Impact />
+      <ServicesGrid />
+      <Origin />
+      <Team />
+      <Faq items={faqs} />
+      <FinalCta />
+      <Follow />
+    </div>
+
+    <Footer />
+  </div>
+
   <ContactModal />
 </Layout>

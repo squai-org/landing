@@ -18,7 +18,7 @@ const { label, title, headline, cards, tones = [], dark = false } = Astro.props;
 
 <!-- Payback and challenge share one symmetric bento instead of the reference's
      off-grid treatment. -->
-<section class={`section${dark ? ' night' : ''}`}>
+<section class={`section ${dark ? 'night' : 'tint'}`}>
   <div class="shell">
     {label && <p class="label" style="opacity:.6;margin-bottom:14px">{label}</p>}
     <h2 class="display d-h1" style={dark ? 'color:var(--canvas)' : 'color:var(--ink)'}>{title}</h2>

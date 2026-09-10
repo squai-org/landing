@@ -100,7 +100,7 @@ export const capabilities: Capability[] = [
     t: 'Cultura de IA',
     d: 'Lenguaje común y confianza para que el equipo pregunte en lugar de fingir que ya sabe.',
     span: 'span-2',
-    tone: '',
+    tone: 'dark',
   },
   {
     t: 'Estrategia de aplicación',

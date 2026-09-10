@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import ServiceHero from '../../components/ServiceHero.astro';
 import ServiceBento from '../../components/ServiceBento.astro';
+import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
 import Waitlist from '../../components/Waitlist.astro';
 import Faq from '../../components/Faq.astro';
@@ -19,15 +20,13 @@ const { service } = Astro.props;
 ---
 
 <Layout title={`${service.name} — Squai`} description={service.slogan}>
+  <div style="padding:0 0 40px;background-color:#F4F6FF">
   <Header />
   <ServiceHero service={service} />
 
-  <ServiceBento
-    title="Qué obtienes"
-    headline={service.payback.headline}
-    cards={service.payback.cards}
-    tones={['peri', '', 'teal']}
-  />
+  <div class="content-shell" style="margin-top:clamp(16px,1.6vw,28px)">
+
+  <ServicePayback headline={service.payback.headline} cards={service.payback.cards} />
 
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 
@@ -35,7 +34,7 @@ const { service } = Astro.props;
 
   {
     service.cta.modal ? (
-      <section class="section-tight">
+      <section class="section tint">
         <div class="shell" style="display:flex;flex-direction:column;align-items:flex-start;gap:clamp(20px,2.4vw,36px)">
           <h2 class="display d-h2" style="color:var(--ink);max-width:22ch">
             Cuéntanos dónde están hoy y armamos la propuesta sobre eso.
@@ -57,6 +56,10 @@ const { service } = Astro.props;
 
   <Faq items={service.faqs} />
   <Follow />
+  </div>
+
   <Footer />
+  </div>
+
   <ContactModal />
 </Layout>
