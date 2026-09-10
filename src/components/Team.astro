@@ -1,0 +1,67 @@
+---
+import { instructors, squadGrid } from '../data/landing';
+---
+
+<section id="equipo" class="section">
+  <div class="shell">
+    <h2 class="display d-h1" style="color:var(--ink)">Equipo</h2>
+    <p class="lead" style="margin-top:clamp(20px,2vw,32px);max-width:70ch;color:var(--ink-body)">
+      Los mismos que dan las clases en vivo y responden en la comunidad, con un equipo detrás que mira el tema desde
+      procesos, talento, datos y seguridad.
+    </p>
+
+    <div class="grid-2" style="display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,1.1vw,20px);margin-top:clamp(36px,4vw,64px)">
+      {
+        instructors.map((ins) => (
+          <div class="instructor-card bento-card" style="flex-direction:row;align-items:center;gap:clamp(20px,2vw,30px)">
+            <img
+              src={ins.img}
+              alt={ins.name}
+              loading="lazy"
+              class="instructor-photo"
+              style="width:143px;height:164px;flex:none;object-fit:cover;border-radius:20px;background:#E4E5FE"
+            />
+            <div style="min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+              <h3 class="display d-h3">{ins.name}</h3>
+              <p class="body" style="color:var(--ink-body)">{ins.role}</p>
+              <a
+                href={ins.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={ins.aria}
+                class="btn-white"
+                style="display:inline-flex;align-items:center;gap:9px;margin-top:6px;font-family:var(--font-body);font-size:14px;font-weight:700;color:#0D0D0D;background:linear-gradient(180deg, #FFFFFF 0%, #F1F3FA 100%);border:0;border-radius:100px;padding:11px 20px;cursor:pointer;box-shadow:inset 0 1px 0 #FFFFFF, inset 0 0 0 1px rgba(13,27,42,.07), 0 1px 2px rgba(13,27,42,.06), 0 8px 18px -10px rgba(13,27,42,.2)"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21.4 8.65 22 11 22 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21h-4V9Z" />
+                </svg>
+                LinkedIn
+              </a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="grid-2" style="display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,1.1vw,20px);margin-top:clamp(12px,1.1vw,20px)">
+      {
+        squadGrid.map((m) => (
+          <div class="squad-card bento-card dark" style="flex-direction:row;align-items:center;gap:clamp(18px,1.8vw,26px)">
+            <img
+              src={m.img}
+              alt={m.name}
+              loading="lazy"
+              class="squad-photo"
+              style="width:132px;height:119px;flex:none;object-fit:cover;border-radius:18px;background:#2C314D"
+            />
+            <div style="min-width:0;display:flex;flex-direction:column;gap:6px">
+              <h3 class="display d-h3" style="color:var(--canvas)">{m.name}</h3>
+              <p class="body" style="color:var(--teal)">{m.role}</p>
+              <p class="body" style="color:var(--night-text)">{m.d}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

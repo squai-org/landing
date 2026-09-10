@@ -5,15 +5,10 @@ const fieldStyle =
   'width:100%;font-family:var(--font-body);font-size:15px;color:#0A0C1A;background:#F4F6FF;border:1px solid #DCE1F0;border-radius:14px;padding:15px 18px;outline:none';
 ---
 
-<div id="lista" class="section-pad" style="background:#F4F6FF;border-radius:40px;padding:88px 64px">
-  <div style="max-width:920px;margin:0 auto;text-align:center">
-    <h2
-      class="h2-title"
-      style="margin:0 0 14px;font-family:var(--font-display);font-weight:700;font-size:46px;line-height:1;letter-spacing:-0.05em;color:#0A0C1A;text-wrap:balance"
-    >
-      Reserva tu lugar en la próxima cohorte
-    </h2>
-    <p style="margin:0 auto 34px;font-size:17px;line-height:1.7;color:#4B5167;max-width:60ch;text-wrap:pretty">
+<section id="lista" class="section" style="background:var(--canvas)">
+  <div class="shell" style="max-width:920px;text-align:center">
+    <h2 class="display d-h2" style="color:var(--ink)">Reserva tu lugar en la próxima cohorte</h2>
+    <p class="lead" style="margin:clamp(16px,1.6vw,24px) auto clamp(28px,3vw,44px);max-width:60ch;color:var(--ink-body)">
       {cohort.seats}. Déjanos tus datos y te avisamos apenas se abra la inscripción, con las fechas confirmadas y la
       información de pago.
     </p>
@@ -51,23 +46,7 @@ const fieldStyle =
       >
         Reservar mi lugar
       </button>
-      <div class="form-status" data-form-status role="status" aria-live="polite">
-        Te avisaremos cuando se abra la inscripción.
-      </div>
+      <div class="form-status" data-form-status role="status" aria-live="polite"></div>
     </form>
   </div>
-</div>
-
-<style>
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-  }
-</style>
+</section>

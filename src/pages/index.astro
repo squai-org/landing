@@ -2,45 +2,35 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
-import Problems from '../components/Problems.astro';
-import Manifesto from '../components/Manifesto.astro';
-import Method from '../components/Method.astro';
-import Services from '../components/Services.astro';
-import Cohorte from '../components/Cohorte.astro';
+import Statement from '../components/Statement.astro';
+import WhatWeDo from '../components/WhatWeDo.astro';
+import Impact from '../components/Impact.astro';
+import ServicesGrid from '../components/ServicesGrid.astro';
 import Origin from '../components/Origin.astro';
-import Instructors from '../components/Instructors.astro';
-import Squad from '../components/Squad.astro';
+import Team from '../components/Team.astro';
 import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
-import Waitlist from '../components/Waitlist.astro';
+import Follow from '../components/Follow.astro';
 import Footer from '../components/Footer.astro';
 import ContactModal from '../components/ContactModal.astro';
+import { faqs } from '../data/landing';
 ---
 
 <Layout
   title="Squai — Aprende IA, potencia tus habilidades"
   description="Squai enseña inteligencia artificial a personas, equipos y comunidades educativas que no vienen de la tecnología. Sin jerga, sin humo y con práctica desde el primer día."
 >
-  <div style="padding:0 0 40px;background-color:#F4F6FF">
-    <Header />
-    <Hero />
-
-    <div class="content-shell" style="max-width:1344px;margin:28px auto 0;padding:0 32px;display:flex;flex-direction:column;gap:28px">
-      <Problems />
-      <Manifesto />
-      <Method />
-      <Services />
-      <Cohorte />
-      <Origin />
-      <Instructors />
-      <Squad />
-      <Faq />
-      <FinalCta />
-      <Waitlist />
-    </div>
-
-    <Footer />
-  </div>
-
+  <Header />
+  <Hero />
+  <Statement />
+  <WhatWeDo />
+  <Impact />
+  <ServicesGrid />
+  <Origin />
+  <Team />
+  <Faq items={faqs} />
+  <FinalCta />
+  <Follow />
+  <Footer />
   <ContactModal />
 </Layout>

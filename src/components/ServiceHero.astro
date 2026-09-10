@@ -1,0 +1,62 @@
+---
+import type { Service } from '../data/landing';
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+---
+
+<!-- No background yet: the reference uses video, we do not have one. -->
+<section class="service-hero">
+  <div class="shell service-hero-inner">
+    <p class="service-crumb">
+      <a href="/#servicios" class="service-crumb-link">Servicios</a>
+      <span aria-hidden="true">→</span>
+      <span>{service.name}.</span>
+    </p>
+    <h1 class="display d-display service-name">{service.name}.</h1>
+    <p class="display d-h2 service-slogan">{service.slogan}</p>
+  </div>
+</section>
+
+<style>
+  .service-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--midnight);
+    border-radius: clamp(20px, 2vw, 36px);
+    margin: var(--hero-inset);
+    min-height: calc(100svh - var(--hero-inset) * 2);
+    padding-block: calc(var(--nav-space) + var(--gutter) * 0.7) calc(var(--gutter) * 1.3);
+    overflow: hidden;
+  }
+  .service-hero-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    gap: clamp(40px, 8vw, 120px);
+  }
+  .service-crumb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(15px, 1.3vw, 20px);
+    letter-spacing: -0.02em;
+    color: var(--canvas);
+  }
+  .service-crumb-link { color: var(--canvas); }
+  .service-crumb-link:hover { color: var(--periwinkle); }
+  .service-name { color: var(--canvas); font-size: max(40px, min(10.8vw, 19svh)); }
+  .service-slogan { margin: 0; color: var(--canvas); max-width: 20ch; }
+  @media (max-width: 639px) {
+    .service-hero { padding-block: calc(72px + var(--gutter) * 0.7) calc(var(--gutter) * 1.1); }
+  }
+</style>

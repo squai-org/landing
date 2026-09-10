@@ -3,19 +3,17 @@ import Logo from './Logo.astro';
 import { footerCols, tagline } from '../data/landing';
 ---
 
-<div class="footer-pad" style="background:#12162A;border-radius:32px;padding:96px 88px 40px;margin:28px 12px 12px">
-  <div style="max-width:1240px;margin:0 auto">
-    <div class="footer-grid" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:64px;padding-bottom:88px">
+<footer style="background:#12162A">
+  <div class="shell" style="padding-block:clamp(56px,6vw,96px) 40px">
+    <div class="footer-grid" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:clamp(32px,4vw,64px);padding-bottom:clamp(48px,6vw,88px)">
       <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
         <a href="/" class="logo-link" aria-label="Squai — inicio" style="--wordmark-color:#F4F6FF">
-          <Logo height={34} />
+          <Logo height={26} />
         </a>
-        <p style="margin:0;font-size:14px;line-height:1.65;color:#B7BCD0;max-width:300px">
+        <p class="body" style="color:#B7BCD0;max-width:300px">
           Formación en inteligencia artificial para personas, equipos y comunidades educativas.
         </p>
-        <span class="hand-note" style="font-family:var(--font-hand);font-size:16px;line-height:1.4;color:#8A8EF9">
-          {tagline}
-        </span>
+        <span style="font-family:var(--font-hand);font-size:16px;line-height:1.4;color:#8A8EF9">{tagline}</span>
       </div>
       {
         footerCols.map((col) => (
@@ -25,12 +23,7 @@ import { footerCols, tagline } from '../data/landing';
             </div>
             {col.links.map((lnk) =>
               lnk.target ? (
-                <a
-                  href={`/#${lnk.target}`}
-                  data-scroll-to={lnk.target}
-                  class="footer-link"
-                  style="font-size:14px;color:#F0F2FF;cursor:pointer"
-                >
+                <a href={`/#${lnk.target}`} data-scroll-to={lnk.target} class="footer-link" style="font-size:14px;color:#F0F2FF">
                   {lnk.t}
                 </a>
               ) : (
@@ -39,7 +32,7 @@ import { footerCols, tagline } from '../data/landing';
                   target={lnk.href?.startsWith('http') ? '_blank' : undefined}
                   rel={lnk.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
                   class="footer-link"
-                  style="font-size:14px;color:#F0F2FF;cursor:pointer"
+                  style="font-size:14px;color:#F0F2FF"
                 >
                   {lnk.t}
                 </a>
@@ -60,9 +53,4 @@ import { footerCols, tagline } from '../data/landing';
       </div>
     </div>
   </div>
-</div>
-
-<style>
-  .footer-link { text-decoration: none; transition: color .2s; }
-  .footer-link:hover { color: #8A8EF9; }
-</style>
+</footer>

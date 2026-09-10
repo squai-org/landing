@@ -1,49 +1,44 @@
 ---
-import { faqs } from '../data/landing';
+import type { Faq } from '../data/landing';
+
+interface Props {
+  items: Faq[];
+  title?: string;
+}
+
+const { items, title = 'Preguntas frecuentes' } = Astro.props;
 ---
 
-<div id="faq" class="section-pad" style="padding:88px 64px">
-  <div style="max-width:920px;margin:0 auto">
-    <h2
-      class="h2-title"
-      style="margin:0 0 36px;font-family:var(--font-display);font-weight:700;font-size:44px;line-height:1.02;letter-spacing:-0.045em;color:#0A0C1A"
-    >
-      Preguntas frecuentes
-    </h2>
-    <div style="border-top:1px solid #DCE1F0">
+<section id="faq" class="section">
+  <div class="shell">
+    <h2 class="display d-h1" style="color:var(--ink)">{title}</h2>
+    <div style="margin-top:clamp(36px,4vw,64px);max-width:960px;border-top:1px solid var(--line)">
       {
-        faqs.map((f, i) => (
-          <div style="border-bottom:1px solid #DCE1F0">
+        items.map((f, i) => (
+          <div style="border-bottom:1px solid var(--line)">
             <button
               type="button"
               class="faq-toggle"
               data-faq-toggle={String(i)}
               aria-expanded="false"
               aria-controls={`faq-panel-${i}`}
-              style="width:100%;display:flex;gap:24px;align-items:center;justify-content:space-between;background:transparent;border:0;padding:24px 4px;cursor:pointer;text-align:left"
+              style="width:100%;display:flex;gap:24px;align-items:center;justify-content:space-between;background:transparent;border:0;padding:clamp(20px,2vw,28px) 4px;cursor:pointer;text-align:left"
             >
-              <span style="font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-0.025em;color:#0A0C1A">
-                {f.q}
-              </span>
+              <span class="display d-h3">{f.q}</span>
               <span
                 data-faq-sign={String(i)}
                 aria-hidden="true"
-                style="flex:none;width:32px;height:32px;border-radius:50%;background:#E4E5FE;color:#4C50D8;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1"
+                style="flex:none;width:34px;height:34px;border-radius:50%;background:var(--periwinkle-tint);color:var(--periwinkle-ink);display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1"
               >
                 +
               </span>
             </button>
-            <div id={`faq-panel-${i}`} data-faq-panel={String(i)} hidden style="padding:0 4px 26px">
-              <p style="margin:0;font-size:16px;line-height:1.75;color:#4B5167;max-width:70ch">{f.a}</p>
+            <div id={`faq-panel-${i}`} data-faq-panel={String(i)} hidden style="padding:0 4px clamp(20px,2vw,28px)">
+              <p class="lead" style="max-width:70ch;color:var(--ink-body)">{f.a}</p>
             </div>
           </div>
         ))
       }
     </div>
   </div>
-</div>
-
-<style>
-  .faq-toggle:hover span:first-child { color: var(--periwinkle-ink); }
-  .faq-toggle span { transition: color .2s, background .2s; }
-</style>
+</section>

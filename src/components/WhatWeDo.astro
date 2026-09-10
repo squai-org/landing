@@ -1,0 +1,21 @@
+---
+import { capabilities, whatWeDo } from '../data/landing';
+---
+
+<section id="que-hacemos" class="section">
+  <div class="shell">
+    <h2 class="display d-h1" style="color:var(--ink)">{whatWeDo.title}</h2>
+    <p class="lead" style="margin-top:clamp(20px,2vw,32px);max-width:84ch;color:var(--ink-body)">{whatWeDo.body}</p>
+
+    <div class="bento" style="margin-top:clamp(36px,4vw,64px)">
+      {
+        capabilities.map((c) => (
+          <div class={`bento-card ${c.span} ${c.tone}`}>
+            <h3 class="display d-h3">{c.t}</h3>
+            <p class="body" style="opacity:.85">{c.d}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

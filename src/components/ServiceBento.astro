@@ -1,0 +1,43 @@
+---
+interface Card {
+  t: string;
+  d: string;
+}
+
+interface Props {
+  label?: string;
+  title: string;
+  headline?: string;
+  cards: Card[];
+  tones?: string[];
+  dark?: boolean;
+}
+
+const { label, title, headline, cards, tones = [], dark = false } = Astro.props;
+---
+
+<!-- Payback and challenge share one symmetric bento instead of the reference's
+     off-grid treatment. -->
+<section class={`section${dark ? ' night' : ''}`}>
+  <div class="shell">
+    {label && <p class="label" style="opacity:.6;margin-bottom:14px">{label}</p>}
+    <h2 class="display d-h1" style={dark ? 'color:var(--canvas)' : 'color:var(--ink)'}>{title}</h2>
+    {
+      headline && (
+        <p class="display d-h3" style={`margin-top:clamp(20px,2vw,32px);max-width:34ch;${dark ? 'color:var(--canvas)' : 'color:var(--ink)'}`}>
+          {headline}
+        </p>
+      )
+    }
+    <div class="bento" style="margin-top:clamp(36px,4vw,64px)">
+      {
+        cards.map((c, i) => (
+          <div class={`bento-card span-2 ${tones[i] ?? ''}`}>
+            <h3 class="display d-h3">{c.t}</h3>
+            <p class="body" style="opacity:.85">{c.d}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

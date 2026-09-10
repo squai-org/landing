@@ -90,40 +90,6 @@ const { title, description } = Astro.props;
   });
 
   /* ---------------------------------------------------------------------
-     Ecosystem switcher (Squai One / Grow / Learn). Homepage only.
-  --------------------------------------------------------------------- */
-  const serviceTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-service-tab]'));
-
-  const selectService = (id: string, focusTab: boolean) => {
-    serviceTabs.forEach((tab) => {
-      const active = tab.dataset.eco === id;
-      tab.setAttribute('aria-selected', String(active));
-      tab.tabIndex = active ? 0 : -1;
-      if (active && focusTab) tab.focus();
-    });
-    document.querySelectorAll<HTMLElement>('[data-service-panel]').forEach((panel) => {
-      panel.hidden = panel.dataset.servicePanel !== id;
-    });
-  };
-
-  serviceTabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => selectService(tab.dataset.eco!, false));
-    tab.addEventListener('keydown', (event) => {
-      const keys: Record<string, number> = {
-        ArrowRight: i + 1,
-        ArrowLeft: i - 1,
-        Home: 0,
-        End: serviceTabs.length - 1,
-      };
-      const next = keys[event.key];
-      if (next === undefined) return;
-      event.preventDefault();
-      const wrapped = (next + serviceTabs.length) % serviceTabs.length;
-      selectService(serviceTabs[wrapped].dataset.eco!, true);
-    });
-  });
-
-  /* ---------------------------------------------------------------------
      FAQ accordion: one panel open at a time, closed on load.
   --------------------------------------------------------------------- */
   let openFaq: string | null = null;
@@ -153,16 +119,14 @@ const { title, description } = Astro.props;
   const modalForm = document.querySelector<HTMLFormElement>('[data-form="contact"]');
   let lastFocused: HTMLElement | null = null;
 
-  const MODAL_COPY: Record<string, { eco: string; dot: string; copy: string; placeholder: string }> = {
+  const MODAL_COPY: Record<string, { eco: string; copy: string; placeholder: string }> = {
     grow: {
       eco: 'Squai Grow',
-      dot: '#44D4C8',
       copy: 'Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.',
       placeholder: '¿En qué procesos crees que la IA puede ayudar? (opcional)',
     },
     learn: {
       eco: 'Squai Learn',
-      dot: '#F9C24D',
       copy: 'Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.',
       placeholder: '¿Con qué grupo quieres empezar y para qué? (opcional)',
     },
@@ -172,10 +136,12 @@ const { title, description } = Astro.props;
     if (!modal) return;
     if (open && eco && MODAL_COPY[eco]) {
       const conf = MODAL_COPY[eco];
-      modal.querySelector<HTMLElement>('[data-modal-eco]')!.textContent = conf.eco;
-      modal.querySelector<HTMLElement>('[data-modal-dot]')!.style.background = conf.dot;
-      modal.querySelector<HTMLElement>('[data-modal-copy]')!.textContent = conf.copy;
-      modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]')!.placeholder = conf.placeholder;
+      const ecoEl = modal.querySelector<HTMLElement>('[data-modal-eco]');
+      const copyEl = modal.querySelector<HTMLElement>('[data-modal-copy]');
+      const textarea = modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]');
+      if (ecoEl) ecoEl.textContent = conf.eco;
+      if (copyEl) copyEl.textContent = conf.copy;
+      if (textarea) textarea.placeholder = conf.placeholder;
       modalForm?.setAttribute('data-eco', eco);
     }
     modal.hidden = !open;

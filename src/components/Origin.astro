@@ -1,26 +1,12 @@
 ---
-import { originNote, originStory } from '../data/landing';
+import { originStory } from '../data/landing';
 ---
 
-<div id="origen" class="section-pad" style="background:#F9C24D;border-radius:40px;padding:88px 64px">
-  <div class="grid-sidebar" style="max-width:1152px;margin:0 auto;display:grid;grid-template-columns:0.8fr 1.2fr;gap:72px;align-items:start">
-    <div class="sidebar-sticky" style="position:sticky;top:120px;display:flex;flex-direction:column;gap:26px">
-      <h2
-        class="h2-title"
-        style="margin:0;font-family:var(--font-display);font-weight:700;font-size:46px;line-height:1;letter-spacing:-0.05em;color:#0A0C1A;text-wrap:balance"
-      >
-        Cómo nació Squai
-      </h2>
-      <p class="hand-note" style="margin:0;font-family:var(--font-hand);font-size:21px;line-height:1.45;color:#0A0C1A;opacity:.75;transform:rotate(-1.2deg)">
-        {originNote}
-      </p>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:22px">
-      {
-        originStory.map((para) => (
-          <p style="margin:0;font-size:18px;line-height:1.75;color:#0A0C1A;opacity:.9;text-wrap:pretty">{para}</p>
-        ))
-      }
+<section id="origen" class="section" style="background:var(--gold)">
+  <div class="shell grid-sidebar" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
+    <h2 class="display d-h1 sidebar-sticky" style="position:sticky;top:120px;color:var(--midnight)">Cómo nació Squai</h2>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      {originStory.map((para) => <p class="lead" style="color:var(--midnight);opacity:.9">{para}</p>)}
     </div>
   </div>
-</div>
+</section>
