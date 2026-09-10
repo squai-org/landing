@@ -1,0 +1,49 @@
+---
+import { methodNote, methodSteps } from '../data/landing';
+---
+
+<div id="metodo" class="section-pad" style="padding:88px 64px">
+  <div style="max-width:1152px;margin:0 auto">
+    <div style="max-width:820px">
+      <div class="eyebrow" style="margin-bottom:18px">Cómo enseñamos</div>
+      <h2
+        class="h2-title"
+        style="margin:0;font-family:var(--font-display);font-weight:700;font-size:48px;line-height:1;letter-spacing:-0.045em;color:#0A0C1A;text-wrap:balance"
+      >
+        Entender. Experimentar. Ampliar.
+      </h2>
+      <p style="margin:20px 0 0;font-size:18px;line-height:1.7;color:#4B5167;max-width:62ch;text-wrap:pretty">
+        Es el mismo recorrido en los tres ecosistemas. Cambia el contexto y la intensidad; no cambia el orden, porque
+        saltarse el primer paso es exactamente lo que deja a la gente copiando prompts sin saber por qué funcionan.
+      </p>
+    </div>
+
+    <div class="method-track" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px;align-items:stretch">
+      {
+        methodSteps.map((s, i) => (
+          <div style="position:relative;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;border:1px solid #DCE1F0;border-radius:28px;padding:30px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style={`width:38px;height:14px;border-radius:7px;background:${s.accent}`} />
+              {i < 2 && <span style="flex:1;height:1px;background:#DCE1F0" />}
+              <span style="font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.12em;color:#5F657A">
+                {s.n}
+              </span>
+            </div>
+            <h3
+              class="h3-title"
+              style="margin:0;font-family:var(--font-display);font-weight:700;font-size:30px;letter-spacing:-0.035em;color:#0A0C1A"
+            >
+              {s.t}
+            </h3>
+            <p style="margin:0;font-family:var(--font-hand);font-size:17px;line-height:1.45;color:#4C50D8">{s.quote}</p>
+            <p style="margin:0;font-size:16px;line-height:1.65;color:#4B5167">{s.d}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <p style="margin:28px 0 0;font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-0.02em;color:#0A0C1A">
+      {methodNote}
+    </p>
+  </div>
+</div>

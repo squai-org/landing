@@ -1,0 +1,179 @@
+---
+import { ecosystems, ecosystemsNote } from '../data/landing';
+---
+
+<!--
+  Ecosystem switcher. One tablist, one panel: the visitor picks the context
+  (yo / mi equipo / mi institución) instead of scanning three parallel cards.
+  Shapes follow the Bloque + Unión system — same DNA per ecosystem, only the
+  accent and the arrangement change (Brand Book §14.9).
+-->
+<div id="ecosistemas" class="section-pad" style="background:#F4F6FF;border-radius:40px;padding:80px 64px">
+  <div style="max-width:1152px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:end;justify-content:space-between">
+      <div style="max-width:640px">
+        <div class="eyebrow" style="margin-bottom:18px">Qué hacemos</div>
+        <h2
+          class="h2-title"
+          style="margin:0;font-family:var(--font-display);font-weight:700;font-size:48px;line-height:1;letter-spacing:-0.045em;color:#0A0C1A;text-wrap:balance"
+        >
+          Una metodología, tres contextos
+        </h2>
+      </div>
+      <p style="margin:0;max-width:380px;font-size:17px;line-height:1.65;color:#4B5167">
+        Elige desde dónde llegas y te mostramos cómo trabajamos ahí.
+      </p>
+    </div>
+
+    <div
+      class="service-tabs"
+      role="tablist"
+      aria-label="Ecosistemas Squai"
+      data-service-tablist
+      style="margin-top:36px"
+    >
+      {
+        ecosystems.map((eco, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${eco.id}`}
+            class="tab-service"
+            data-eco={eco.id}
+            data-service-tab
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-controls={`panel-${eco.id}`}
+            tabindex={i === 0 ? 0 : -1}
+          >
+            <span class="tab-dot" />
+            {eco.tab}
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      ecosystems.map((eco, i) => (
+        <div
+          class="service-panel"
+          role="tabpanel"
+          id={`panel-${eco.id}`}
+          aria-labelledby={`tab-${eco.id}`}
+          data-service-panel={eco.id}
+          hidden={i !== 0}
+          tabindex="0"
+          style="margin-top:22px;background:#FFFFFF;border:1px solid #DCE1F0;border-radius:32px;padding:44px"
+        >
+          <div class="grid-eco" style="display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center">
+            <div>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <span style={`display:inline-flex;align-items:center;gap:9px;padding:7px 14px 7px 11px;border-radius:100px;background:${eco.accent}`}>
+                  <span style="width:14px;height:14px;border-radius:5px;background:#0A0C1A" />
+                  <span style="font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:-0.01em;color:#0A0C1A">
+                    {eco.name}
+                  </span>
+                </span>
+                <span style="font-size:13px;color:#5F657A">{eco.audience}</span>
+              </div>
+
+              <div
+                style="margin:26px 0 0;font-family:var(--font-display);font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#5F657A"
+              >
+                Territorio
+              </div>
+              <div
+                class="h2-title"
+                style="margin:2px 0 0;font-family:var(--font-display);font-weight:700;font-size:52px;line-height:1;letter-spacing:-0.05em;color:#0A0C1A"
+              >
+                {eco.territory}
+              </div>
+
+              <h3
+                class="h3-title"
+                style="margin:26px 0 0;font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-0.03em;color:#0A0C1A;max-width:26ch"
+              >
+                {eco.headline}
+              </h3>
+              <p style="margin:14px 0 0;font-size:17px;line-height:1.7;color:#4B5167;max-width:58ch;text-wrap:pretty">
+                {eco.copy}
+              </p>
+
+              <ul style="margin:24px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+                {eco.points.map((point) => (
+                  <li style="display:flex;gap:12px;align-items:flex-start;font-size:16px;line-height:1.55;color:#0A0C1A">
+                    <span style={`flex:none;margin-top:7px;width:20px;height:9px;border-radius:5px;background:${eco.accent}`} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+
+              {eco.ctaModal ? (
+                <button
+                  type="button"
+                  class="btn-dark"
+                  data-open-modal={eco.ctaModal}
+                  style="margin-top:30px;font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-0.01em;color:#F4F6FF;background:#0A0C1A;border:0;border-radius:100px;padding:16px 30px;cursor:pointer"
+                >
+                  {eco.ctaLabel}
+                </button>
+              ) : (
+                <a
+                  href={`/#${eco.ctaTarget}`}
+                  data-scroll-to={eco.ctaTarget}
+                  class="btn-dark"
+                  style="display:inline-block;margin-top:30px;font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-0.01em;color:#F4F6FF;background:#0A0C1A;border:0;border-radius:100px;padding:16px 30px;cursor:pointer"
+                >
+                  {eco.ctaLabel}
+                </a>
+              )}
+            </div>
+
+            <div class="eco-figure-wrap" style="display:flex;justify-content:center">
+              <svg
+                class="eco-figure"
+                viewBox="0 0 360 300"
+                width="100%"
+                style="max-width:360px;height:auto"
+                role="img"
+                aria-label={`Composición modular de ${eco.name}: ${eco.territory}`}
+              >
+                {eco.id === 'one' && (
+                  <g>
+                    <rect class="union" x="118" y="132" width="120" height="34" rx="17" fill="#0A0C1A" />
+                    <rect class="block" x="34" y="108" width="84" height="84" rx="28" fill={eco.accent} />
+                    <rect class="block" x="238" y="118" width="64" height="64" rx="22" fill="#C9CEE4" />
+                  </g>
+                )}
+                {eco.id === 'grow' && (
+                  <g>
+                    <rect class="union" x="104" y="76" width="104" height="30" rx="15" fill="#0A0C1A" />
+                    <rect class="union" x="104" y="196" width="104" height="30" rx="15" fill="#0A0C1A" />
+                    <rect class="union" x="178" y="106" width="30" height="90" rx="15" fill="#0A0C1A" />
+                    <rect class="block" x="30" y="52" width="78" height="78" rx="26" fill={eco.accent} />
+                    <rect class="block" x="30" y="172" width="78" height="78" rx="26" fill={eco.accent} />
+                    <rect class="block" x="204" y="112" width="78" height="78" rx="26" fill="#0A0C1A" />
+                  </g>
+                )}
+                {eco.id === 'learn' && (
+                  <g>
+                    <rect class="union" x="60" y="138" width="240" height="26" rx="13" fill="#0A0C1A" />
+                    <rect class="block" x="46" y="46" width="62" height="62" rx="20" fill={eco.accent} />
+                    <rect class="block" x="132" y="46" width="62" height="62" rx="20" fill="#C9CEE4" />
+                    <rect class="block" x="218" y="46" width="62" height="62" rx="20" fill={eco.accent} />
+                    <rect class="block" x="46" y="194" width="62" height="62" rx="20" fill="#C9CEE4" />
+                    <rect class="block" x="132" y="194" width="62" height="62" rx="20" fill={eco.accent} />
+                    <rect class="block" x="218" y="194" width="62" height="62" rx="20" fill="#C9CEE4" />
+                  </g>
+                )}
+              </svg>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+
+    <p style="margin:26px 0 0;font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-0.02em;color:#0A0C1A">
+      {ecosystemsNote}
+    </p>
+  </div>
+</div>

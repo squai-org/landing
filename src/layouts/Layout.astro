@@ -16,8 +16,8 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" href="/fonts/urbanist-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
   </head>
   <body>
@@ -26,11 +26,19 @@ const { title, description } = Astro.props;
 </html>
 
 <script>
-  // Smooth scroll to a section, matching the easing and 96px offset of the design.
+  /* ---------------------------------------------------------------------
+     Smooth scroll — 96px offset clears the sticky nav bar.
+  --------------------------------------------------------------------- */
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
     const target = el.getBoundingClientRect().top + window.scrollY - 96;
+    if (prefersReducedMotion) {
+      window.scrollTo(0, target);
+      return;
+    }
     const start = window.scrollY;
     const dist = target - start;
     const dur = 450;
@@ -49,13 +57,15 @@ const { title, description } = Astro.props;
       const id = el.dataset.scrollTo!;
       // No matching section on this page (e.g. a header/footer link on a
       // legal page) — let the link's href navigate back to "/#id" normally.
-      if (!document.getElementById(id)) return;
+      if (!id || !document.getElementById(id)) return;
       event.preventDefault();
       scrollToSection(id);
     });
   });
 
-  // Mobile/tablet hamburger menu.
+  /* ---------------------------------------------------------------------
+     Mobile/tablet hamburger menu.
+  --------------------------------------------------------------------- */
   const navToggle = document.querySelector<HTMLElement>('[data-nav-toggle]');
   const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
 
@@ -79,8 +89,43 @@ const { title, description } = Astro.props;
     setNavOpen(false);
   });
 
-  // FAQ accordion: one panel open at a time, closed on load. (Homepage only —
-  // the queries below simply match nothing on pages without a FAQ section.)
+  /* ---------------------------------------------------------------------
+     Ecosystem switcher (Squai One / Grow / Learn). Homepage only.
+  --------------------------------------------------------------------- */
+  const serviceTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-service-tab]'));
+
+  const selectService = (id: string, focusTab: boolean) => {
+    serviceTabs.forEach((tab) => {
+      const active = tab.dataset.eco === id;
+      tab.setAttribute('aria-selected', String(active));
+      tab.tabIndex = active ? 0 : -1;
+      if (active && focusTab) tab.focus();
+    });
+    document.querySelectorAll<HTMLElement>('[data-service-panel]').forEach((panel) => {
+      panel.hidden = panel.dataset.servicePanel !== id;
+    });
+  };
+
+  serviceTabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => selectService(tab.dataset.eco!, false));
+    tab.addEventListener('keydown', (event) => {
+      const keys: Record<string, number> = {
+        ArrowRight: i + 1,
+        ArrowLeft: i - 1,
+        Home: 0,
+        End: serviceTabs.length - 1,
+      };
+      const next = keys[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      const wrapped = (next + serviceTabs.length) % serviceTabs.length;
+      selectService(serviceTabs[wrapped].dataset.eco!, true);
+    });
+  });
+
+  /* ---------------------------------------------------------------------
+     FAQ accordion: one panel open at a time, closed on load.
+  --------------------------------------------------------------------- */
   let openFaq: string | null = null;
 
   document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((toggle) => {
@@ -94,23 +139,134 @@ const { title, description } = Astro.props;
       document.querySelectorAll<HTMLElement>('[data-faq-sign]').forEach((sign) => {
         sign.textContent = sign.dataset.faqSign === openFaq ? '−' : '+';
       });
+      document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((btn) => {
+        btn.setAttribute('aria-expanded', String(btn.dataset.faqToggle === openFaq));
+      });
     });
   });
 
-  // "Agendar llamada" modal. (Homepage only.)
+  /* ---------------------------------------------------------------------
+     "Agendar llamada" modal — one form, two destinations (Grow / Learn).
+  --------------------------------------------------------------------- */
   const modal = document.querySelector<HTMLElement>('[data-modal]');
   const modalPanel = document.querySelector<HTMLElement>('[data-modal-panel]');
+  const modalForm = document.querySelector<HTMLFormElement>('[data-form="contact"]');
+  let lastFocused: HTMLElement | null = null;
 
-  const setModal = (open: boolean) => {
-    if (modal) modal.hidden = !open;
+  const MODAL_COPY: Record<string, { eco: string; dot: string; copy: string; placeholder: string }> = {
+    grow: {
+      eco: 'Squai Grow',
+      dot: '#44D4C8',
+      copy: 'Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.',
+      placeholder: '¿En qué procesos crees que la IA puede ayudar? (opcional)',
+    },
+    learn: {
+      eco: 'Squai Learn',
+      dot: '#F9C24D',
+      copy: 'Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.',
+      placeholder: '¿Con qué grupo quieres empezar y para qué? (opcional)',
+    },
+  };
+
+  const setModal = (open: boolean, eco?: string) => {
+    if (!modal) return;
+    if (open && eco && MODAL_COPY[eco]) {
+      const conf = MODAL_COPY[eco];
+      modal.querySelector<HTMLElement>('[data-modal-eco]')!.textContent = conf.eco;
+      modal.querySelector<HTMLElement>('[data-modal-dot]')!.style.background = conf.dot;
+      modal.querySelector<HTMLElement>('[data-modal-copy]')!.textContent = conf.copy;
+      modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]')!.placeholder = conf.placeholder;
+      modalForm?.setAttribute('data-eco', eco);
+    }
+    modal.hidden = !open;
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      modal.querySelector<HTMLInputElement>('input, select, textarea')?.focus();
+    } else {
+      lastFocused?.focus();
+    }
   };
 
   document.querySelectorAll<HTMLElement>('[data-open-modal]').forEach((el) => {
-    el.addEventListener('click', () => setModal(true));
+    el.addEventListener('click', () => {
+      lastFocused = el;
+      setModal(true, el.dataset.openModal || 'grow');
+    });
   });
   document.querySelectorAll<HTMLElement>('[data-close-modal]').forEach((el) => {
     el.addEventListener('click', () => setModal(false));
   });
   modal?.addEventListener('click', () => setModal(false));
   modalPanel?.addEventListener('click', (event) => event.stopPropagation());
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal && !modal.hidden) setModal(false);
+  });
+
+  /* ---------------------------------------------------------------------
+     Forms. The site is static; each form posts JSON straight to the API.
+     Field names in the payload are the input `name` attributes.
+  --------------------------------------------------------------------- */
+  const setStatus = (form: HTMLFormElement, text: string, state: '' | 'ok' | 'error') => {
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    if (!status) return;
+    status.textContent = text;
+    if (state) status.dataset.state = state;
+    else delete status.dataset.state;
+  };
+
+  document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (!form.checkValidity()) {
+        setStatus(form, 'Revisa los campos marcados: faltan datos o el correo no es válido.', 'error');
+        form.reportValidity();
+        return;
+      }
+
+      const kind = form.dataset.form!;
+      const eco = form.dataset.eco || 'grow';
+      const endpoint =
+        kind === 'contact' ? form.dataset[eco === 'learn' ? 'endpointLearn' : 'endpointGrow'] : form.dataset.endpoint;
+      if (!endpoint) return;
+
+      const payload: Record<string, string> = {};
+      new FormData(form).forEach((value, key) => {
+        payload[key] = String(value).trim();
+      });
+      if (kind === 'contact') payload.ecosystem = eco;
+
+      const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const label = submit?.textContent ?? '';
+      if (submit) {
+        submit.disabled = true;
+        submit.textContent = 'Enviando…';
+      }
+      setStatus(form, 'Enviando…', '');
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        setStatus(
+          form,
+          kind === 'contact'
+            ? '¡Listo! Te escribimos en menos de 24 horas hábiles.'
+            : '¡Listo! Ya estás en la lista. Te avisamos cuando se abra la inscripción.',
+          'ok'
+        );
+      } catch {
+        setStatus(form, 'No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.', 'error');
+      } finally {
+        if (submit) {
+          submit.disabled = false;
+          submit.textContent = label;
+        }
+      }
+    });
+  });
 </script>
