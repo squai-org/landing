@@ -114,33 +114,57 @@ CORS.
 
 Docs: [Custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 
-## 8. Rate limiting en el WAF
+## 8. Rate limiting
 
-Dashboard → selecciona la zona `squai.io` → **Security** → **WAF** →
-**Rate limiting rules** → **Create rule** (en la navegación nueva:
-**Security** → **Security rules**).
+Hay dos capas posibles. La primera ya viene implementada en el código; la
+segunda es opcional.
 
-- **Expresión** (editor de expresiones):
+### 8.1 Binding de rate limiting del Worker (ya activo)
+
+`wrangler.jsonc` declara:
+
+```jsonc
+"ratelimits": [
+  { "name": "API_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }
+]
+```
+
+5 peticiones por minuto y por IP sobre `/api/waitlist` y `/api/contact`; la
+sexta recibe `429` con `{"error":{"code":"rate_limited"}}`. El conteo ocurre
+antes de leer el cuerpo y antes de tocar D1, así que un abuso no gasta
+escrituras de la cuota diaria.
+
+No requiere configuración en el panel y no consume la regla de zona. `period`
+solo admite `10` o `60` segundos. Requiere Wrangler 4.36.0 o superior.
+
+Docs: [Rate Limiting binding](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) ·
+[GA en septiembre de 2025](https://developers.cloudflare.com/changelog/post/2025-09-19-ratelimit-workers-ga/)
+
+### 8.2 Regla de rate limiting del WAF (opcional)
+
+**Es a nivel de zona, no de cuenta.** La sección "Application security → WAF"
+del menú de la cuenta es un add-on Enterprise y no sirve aquí.
+
+Dashboard → **Domains** → `squai.io` → **Security** → **WAF** →
+**Rate limiting rules** → **Create rule**.
+
+- **Expresión**:
   ```
   (starts_with(http.request.uri.path, "/api/") and http.request.method eq "POST")
   ```
-- **Characteristics**: `IP` (IP source address).
-- **Period**: 1 minuto.
-- **Requests per period**: 5.
-- **Action**: Block.
-- **Duration** (mitigation timeout): 1 minuto.
+- **Characteristics**: `IP` · **Period**: 1 minuto · **Requests**: 5
+- **Action**: Block · **Duration**: 1 minuto
 
-> **Verificar en el panel**: el plan Free incluye reglas de rate limiting sin
-> costo extra, pero **no pude confirmar** cuántas reglas permite hoy ni si los
-> valores *period = 60s* y *duration = 60s* están habilitados en Free (la
-> documentación dice que no todos los periodos están disponibles en todos los
-> planes). Si el selector no ofrece 1 minuto, usa el valor más cercano
-> disponible y ajusta el umbral proporcionalmente.
+El plan Free incluye **una** regla de rate limiting por zona (Pro 2, Business 5),
+así que conviene reservarla para una protección más amplia que `/api/*`, que ya
+está cubierto por el binding del Worker.
+
+Solo aplica al tráfico que pasa por el proxy de Cloudflare; con el Custom Domain
+del paso 7, todo `squai.io` lo hace.
 
 Docs: [Rate limiting rules](https://developers.cloudflare.com/waf/rate-limiting-rules/) ·
 [Parámetros](https://developers.cloudflare.com/waf/rate-limiting-rules/parameters/) ·
-[Crear la regla en el dashboard](https://developers.cloudflare.com/waf/rate-limiting-rules/create-zone-dashboard/) ·
-[Buenas prácticas](https://developers.cloudflare.com/waf/rate-limiting-rules/best-practices/)
+[Crear la regla en el dashboard](https://developers.cloudflare.com/waf/rate-limiting-rules/create-zone-dashboard/)
 
 ## 9. Revisar logs y cuotas
 

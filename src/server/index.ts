@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { onError, onNotFound } from './middleware/error';
 import { jsonRequest } from './middleware/json-request';
+import { rateLimit } from './middleware/rate-limit';
 import { requestMeta } from './middleware/request-meta';
 import { sameOrigin } from './middleware/same-origin';
 import { securityHeaders } from './middleware/security-headers';
@@ -27,8 +28,8 @@ api.use('*', requestMeta());
 // Sonda de salud: no recibe cuerpo, por eso va antes del guard de JSON.
 api.get('/health', (c) => c.json({ ok: true }));
 
-api.use('/waitlist', jsonRequest());
-api.use('/contact', jsonRequest());
+api.use('/waitlist', rateLimit(), jsonRequest());
+api.use('/contact', rateLimit(), jsonRequest());
 
 api.route('/waitlist', waitlistRoute);
 api.route('/contact', contactRoute);

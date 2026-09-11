@@ -2,12 +2,24 @@ import { env } from 'cloudflare:test';
 import { beforeEach, describe, expect, it } from 'vitest';
 import app from '../../src/server/index';
 
+/**
+ * El rate limiter agrupa por IP, así que cada petición usa una IP distinta
+ * salvo que el test quiera justamente compartirla.
+ */
+let ipCounter = 0;
+const nextIp = () => `198.51.100.${++ipCounter % 250}`;
+
 const post = (path: string, body: unknown, headers: Record<string, string> = {}) =>
   app.request(
     `https://squai.io${path}`,
     {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Origin: 'https://squai.io', ...headers },
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: 'https://squai.io',
+        'CF-Connecting-IP': nextIp(),
+        ...headers,
+      },
       body: JSON.stringify(body),
     },
     env
@@ -119,12 +131,41 @@ describe('POST /api/contact', () => {
   it('exige Content-Type JSON', async () => {
     const res = await app.request(
       'https://squai.io/api/contact',
-      { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: 'full_name=Luis' },
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain', 'CF-Connecting-IP': nextIp() },
+        body: 'full_name=Luis',
+      },
       env
     );
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toMatchObject({ error: { code: 'unsupported_content_type' } });
+  });
+});
+
+describe('Rate limiting', () => {
+  it('corta a partir de la sexta petición del mismo minuto y la misma IP', async () => {
+    const send = () =>
+      app.request(
+        'https://squai.io/api/waitlist',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: 'https://squai.io',
+            'CF-Connecting-IP': '203.0.113.7',
+          },
+          body: JSON.stringify(waitlistPayload),
+        },
+        env
+      );
+
+    const statuses: number[] = [];
+    for (let i = 0; i < 6; i++) statuses.push((await send()).status);
+
+    expect(statuses.slice(0, 5).every((status) => status < 400)).toBe(true);
+    expect(statuses[5]).toBe(429);
   });
 });
 
@@ -134,7 +175,11 @@ describe('Turnstile', () => {
       'https://squai.io/api/waitlist',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Origin: 'https://squai.io' },
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: 'https://squai.io',
+          'CF-Connecting-IP': nextIp(),
+        },
         body: JSON.stringify(waitlistPayload),
       },
       { ...env, TURNSTILE_SECRET_KEY: 'test-secret' }

@@ -24,6 +24,20 @@
       "migrations_dir": "migrations"
     }
   ],
+  // 5 peticiones por minuto y por IP en /api/*, contadas en el edge.
+  // El binding es gratuito y no consume la única regla de rate limiting que
+  // el plan Free permite por zona.
+  // https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
+  "ratelimits": [
+    {
+      "name": "API_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
+    }
+  ],
   "vars": {
     // "true" permite correos personales (gmail, hotmail...) en /api/contact.
     "ALLOW_PERSONAL_EMAIL": "false"

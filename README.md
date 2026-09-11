@@ -92,7 +92,9 @@ donde `fields` mapea campo → mensaje para pintarlo en el formulario.
   `ALLOW_PERSONAL_EMAIL` sea `"true"`.
 - **Origen**: la API no emite cabeceras CORS y rechaza cualquier `Origin`
   distinto al host de la petición.
-- **Rate limiting**: regla del WAF sobre `/api/*` (ver `docs/cloudflare-setup.md`).
+- **Rate limiting**: 5 peticiones por minuto y por IP con el binding nativo de
+  Workers (`ratelimits` en `wrangler.jsonc`), contadas antes de leer el cuerpo y
+  de tocar D1. La regla del WAF queda como capa opcional.
 - **Privacidad**: se guarda el país (`CF-IPCountry`), no la IP del visitante.
 
 ### Configuración en Cloudflare
