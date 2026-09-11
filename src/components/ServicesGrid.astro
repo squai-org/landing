@@ -27,16 +27,17 @@ import { services } from '../data/landing';
 
 <style>
   .discover { align-self: flex-end; }
-  .card-link:hover .discover { background: var(--night-line); transform: translateY(-1px); }
+  .card-link:hover .discover { background: #26262B; transform: translateY(-1px); }
+  .card-link:hover .discover .btn-lead { width: 19px; margin-right: 14px; opacity: 1; transform: none; }
 
-  /* Responsive only: a light button reads better against tinted cards once
+  /* Responsive only: a light pill reads better against the tinted cards once
      the grid stacks to one column. */
   @media (max-width: 1023px) {
     .discover {
-      background: var(--surface);
+      background: #FFFFFF;
       color: var(--ink);
       box-shadow: inset 0 0 0 1px rgba(10, 12, 26, .08);
     }
-    .card-link:hover .discover { background: var(--canvas); }
+    .card-link:hover .discover { background: #F1F3FA; }
   }
 </style>

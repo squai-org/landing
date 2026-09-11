@@ -179,8 +179,10 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     .hero-subtitle { max-width: 42ch; }
   }
 
-  /* Responsive (tablet and phone): smaller eyebrow and larger headline. */
+  /* Responsive (tablet and phone): a smaller eyebrow, a bigger headline, and
+     the duration/format pills are dropped — the subtitle already says it. */
   @media (max-width: 1023px) {
+    .hero-meta { display: none; }
     .hero-eyebrow { padding: 8px 18px; gap: 10px; }
     .hero-eyebrow-status, .hero-eyebrow-text { font-size: 12px; }
     .hero-line { font-size: clamp(46px, 11.5vw, 96px); }
