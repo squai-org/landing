@@ -249,90 +249,92 @@ a.bento-card.dark:hover { color: var(--night-text); }
 
 /* ---------------------------------------------------------------------------
    Buttons
-   One shape everywhere: secondary face, bold, uppercase, 17px. At rest the
-   label sits left and an arrow sits right; on hover a second arrow slides in
-   from the left and pushes the label across. Variants only change colour.
+   One stable Block-like shape. Periwinkle is the semantic primary; expressive
+   accents stay optional. UI copy remains sentence case for faster scanning.
 --------------------------------------------------------------------------- */
 
 .btn {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  min-height: 56px;
+  justify-content: center;
+  gap: 12px;
+  min-height: 52px;
   max-width: 100%;
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 17px;
-  line-height: 1;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: .01em;
   text-decoration: none;
-  border: 0;
-  border-radius: var(--radius-pill);
-  padding: 14px 26px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 13px 22px;
   cursor: pointer;
-  overflow: hidden;
-  transition: background .2s, transform .2s, box-shadow .2s, color .2s;
+  transition: background-color .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease,
+    color .18s ease;
 }
-.btn:disabled { cursor: not-allowed; }
-
-.btn-lead,
-.btn-tail { display: inline-flex; align-items: center; flex: none; }
-
-/* The lead arrow has no width until the pointer arrives. */
-.btn-lead {
-  width: 0;
-  margin-right: 0;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: width .3s cubic-bezier(.3, .8, .3, 1), margin-right .3s cubic-bezier(.3, .8, .3, 1),
-    opacity .22s ease, transform .3s cubic-bezier(.3, .8, .3, 1);
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: .48;
+  filter: saturate(.45);
 }
-.btn:hover .btn-lead,
-.btn:focus-visible .btn-lead { width: 19px; margin-right: 14px; opacity: 1; transform: none; }
-.btn:disabled:hover .btn-lead { width: 0; margin-right: 0; opacity: 0; transform: translateX(-10px); }
+.btn:disabled:hover { transform: none; }
 
-.btn-label { min-width: 0; text-wrap: balance; }
-.btn-plain { justify-content: center; }
+.btn-label { min-width: 0; text-wrap: pretty; }
+.btn-compact { min-height: 44px; padding-block: 10px; }
 
-.btn-gold { background: linear-gradient(180deg, #F7D96A 0%, #EFC13C 100%); color: #3B2B05; }
-.btn-gold:hover { background: linear-gradient(180deg, #F9E183 0%, #F9C24D 100%); color: #3B2B05; }
+.btn-primary { background: var(--periwinkle); color: var(--midnight); }
+.btn-primary:hover { background: var(--periwinkle-soft); color: var(--midnight); }
+
+.btn-gold { background: var(--gold); color: var(--midnight); }
+.btn-gold:hover { background: var(--gold-tint); color: var(--midnight); }
 
 .btn-teal { background: var(--teal); color: var(--midnight); }
-.btn-teal:hover { background: #63DED4; color: var(--midnight); }
+.btn-teal:hover { background: var(--teal-tint); color: var(--midnight); }
 
-.btn-dark { background: #0D0D0D; color: #FFFFFF; }
-.btn-dark:hover { background: #26262B; color: #FFFFFF; }
+.btn-dark { background: var(--midnight); color: var(--canvas); }
+.btn-dark:hover { background: var(--night-line); color: var(--canvas); }
 
-.btn-white { background: #FFFFFF; color: var(--ink); box-shadow: inset 0 0 0 1px rgba(10, 12, 26, .08); }
-.btn-white:hover { background: #F1F3FA; color: var(--ink); }
+.btn-white { background: var(--canvas); color: var(--midnight); border-color: rgba(244, 246, 255, .7); }
+.btn-white:hover { background: var(--surface); color: var(--midnight); }
 
-.btn-ghost { background: transparent; color: var(--canvas); box-shadow: inset 0 0 0 1px rgba(244, 246, 255, .38); }
-.btn-ghost:hover { background: rgba(244, 246, 255, .1); color: var(--canvas); }
+.btn-ghost { background: transparent; color: var(--canvas); border-color: rgba(244, 246, 255, .55); }
+.btn-ghost:hover { background: rgba(244, 246, 255, .1); border-color: var(--canvas); color: var(--canvas); }
 
 .btn-block { width: 100%; }
 
-.btn:focus-visible { outline: 3px solid var(--periwinkle); outline-offset: 3px; }
+.btn:focus-visible {
+  outline: 3px solid var(--midnight);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--canvas);
+}
 
-/* Round icon-only button (team LinkedIn). */
-.btn-round {
+/* Social icon button: same structural Block shape as the main button atom. */
+.social-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  border: 0;
-  background: #0D0D0D;
-  color: #FFFFFF;
-  transition: background .2s, transform .2s;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--midnight);
+  background: var(--midnight);
+  color: var(--canvas);
+  transition: background-color .18s ease, transform .18s ease, filter .18s ease;
 }
-.btn-round:hover { background: #26262B; color: #FFFFFF; transform: translateY(-2px); }
-.btn-round:focus-visible { outline: 3px solid var(--periwinkle); outline-offset: 3px; }
+.social-button:hover {
+  background: var(--periwinkle);
+  color: var(--midnight);
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+.social-button:focus-visible { outline: 3px solid var(--periwinkle); outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn-lead { transition: none; }
+  .btn, .social-button { transition: none; }
+  .btn:hover, .btn:active, .social-button:hover { transform: none; }
 }
 
 /* ---------------------------------------------------------------------------
@@ -364,51 +366,9 @@ a.bento-card.dark:hover { color: var(--night-text); }
   .header-wrap.over-hero .nav-links-row .nav-link:hover { background: var(--canvas); color: var(--ink) !important; }
 }
 
-.btn-gold { transition: background .2s, transform .2s; }
-.btn-gold:hover { background: linear-gradient(180deg, #F9E183 0%, #F9C24D 100%); transform: translateY(-1px); }
-
-.btn-gold-lift { transition: transform .2s, box-shadow .2s; }
-.btn-gold-lift:hover {
-  background: linear-gradient(180deg, #F9E183 0%, #F9C24D 100%);
-  transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .95),
-    inset 0 0 0 1px rgba(255, 255, 255, .7),
-    0 2px 4px rgba(10, 12, 26, .08),
-    0 14px 28px -10px rgba(10, 12, 26, .28);
-}
-
-.btn-ghost { transition: background .2s, transform .2s; }
-.btn-ghost:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, .36) 0%, rgba(255, 255, 255, .2) 100%);
-  transform: translateY(-1px);
-}
-
-.btn-dark { transition: background .2s, transform .2s; }
-.btn-dark:hover { background: #26262B; transform: translateY(-1px); }
-
-.btn-white { transition: transform .2s, box-shadow .2s; }
-.btn-white:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 0 #FFFFFF,
-    inset 0 0 0 1px rgba(10, 12, 26, .1),
-    0 2px 4px rgba(10, 12, 26, .06),
-    0 14px 26px -12px rgba(10, 12, 26, .26);
-}
-
-.btn-teal { transition: background .2s, transform .2s; }
-.btn-teal:hover { background: #63DED4; transform: translateY(-1px); }
-
 .field { transition: border-color .2s, box-shadow .2s; }
 .field:focus { border-color: rgba(138, 142, 249, .65); box-shadow: 0 0 0 3px rgba(138, 142, 249, .18); }
 
-.btn-gold:focus-visible,
-.btn-gold-lift:focus-visible,
-.btn-ghost:focus-visible,
-.btn-dark:focus-visible,
-.btn-white:focus-visible,
-.btn-teal:focus-visible,
 .nav-link:focus-visible,
 .card-link:focus-visible,
 .faq-toggle:focus-visible {
@@ -460,7 +420,8 @@ a.bento-card.dark:hover { color: var(--night-text); }
 .skip-link:focus-visible { transform: translate(-50%, 0); outline: 3px solid var(--periwinkle); outline-offset: 3px; }
 
 .nav-toggle:focus-visible,
-.social:focus-visible,
+.modal-close:focus-visible,
+.social-button:focus-visible,
 .hero-eyebrow:focus-visible,
 .hero-scroll:focus-visible,
 .footer-link:focus-visible,
@@ -469,7 +430,11 @@ a.bento-card.dark:hover { color: var(--night-text); }
   outline-offset: 3px;
 }
 
-.btn-round.is-inert { opacity: .45; pointer-events: none; }
+.modal-close { transition: background-color .18s ease, transform .18s ease; }
+.modal-close:hover { background: var(--periwinkle) !important; transform: translateY(-2px); }
+.modal-close:active { transform: none; }
+
+.social-button.is-inert { opacity: .45; pointer-events: none; }
 
 .sr-only {
   position: absolute;
@@ -587,7 +552,7 @@ a.bento-card.dark:hover { color: var(--night-text); }
     justify-content: center;
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: var(--radius-md);
   }
   .nav-toggle:hover { background: rgba(244, 246, 255, .12); }
 
@@ -631,7 +596,7 @@ a.bento-card.dark:hover { color: var(--night-text); }
     gap: 18px !important;
   }
   .instructor-photo { width: 128px !important; height: 146px !important; }
-  .instructor-card > .btn-round { position: absolute; top: 22px; right: 22px; }
+  .instructor-card > .social-button { position: absolute; top: 22px; right: 22px; }
 
   .card-pad-lg { padding: 22px !important; border-radius: 22px !important; }
   .field-grid-2 { grid-template-columns: 1fr !important; }

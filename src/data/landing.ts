@@ -55,17 +55,6 @@ export const cohort: Cohort = {
   seats: 'Cupos limitados · inscripción por lista de espera',
 };
 
-export interface HeroMeta {
-  text: string;
-  color: string;
-}
-
-export const cohortMeta: HeroMeta[] = [
-  { text: '5 semanas · 20 horas', color: '#8A8EF9' },
-  { text: 'Clases en vivo + grabaciones', color: '#44D4C8' },
-  { text: 'Sin conocimientos previos', color: '#F9C24D' },
-];
-
 /* --- Statement bajo el hero ----------------------------------------------- */
 
 export const statement = {

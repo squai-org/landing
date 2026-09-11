@@ -27,13 +27,13 @@ const ICONS: Record<string, string> = {
           {
             socials.map((s) =>
               s.href ? (
-                <a href={s.href} aria-label={s.name} class="social" style={`background:${ACCENTS[s.name]}`} target="_blank" rel="noopener noreferrer">
+                <a href={s.href} aria-label={s.name} class="social-button" style={`background:${ACCENTS[s.name]}`} target="_blank" rel="noopener noreferrer">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d={ICONS[s.name]} />
                   </svg>
                 </a>
               ) : (
-                <span class="social is-inert" aria-hidden="true" style={`background:${ACCENTS[s.name]}`}>
+                <span class="social-button is-inert" aria-hidden="true" style={`background:${ACCENTS[s.name]}`}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d={ICONS[s.name]} />
                   </svg>
@@ -48,16 +48,4 @@ const ICONS: Record<string, string> = {
 
 <style>
   .follow-card { display: flex; flex-wrap: wrap; gap: clamp(28px, 4vw, 72px); align-items: center; }
-  .social {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 0;
-    color: var(--midnight);
-    transition: background .2s, transform .2s;
-  }
-  .social:hover { color: var(--midnight); transform: translateY(-2px); filter: brightness(1.08); }
 </style>

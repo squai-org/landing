@@ -1,6 +1,6 @@
 ---
 import Button from './Button.astro';
-import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
+import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
 ---
 
 <!--
@@ -30,20 +30,10 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     <p class="hero-subtitle">{heroSubtitle}</p>
 
     <div class="hero-actions">
-      <Button variant="gold" href="/servicios/squai-one#lista">Reservar mi lugar</Button>
+      <Button variant="primary" href="/servicios/squai-one#lista">Reservar mi lugar</Button>
       <Button variant="white" href="/#servicios" data-scroll-to="servicios">Ver servicios</Button>
     </div>
 
-    <p class="hero-meta">
-      {
-        cohortMeta.map((m, i) => (
-          <>
-            {i > 0 && <span class="hero-meta-sep" aria-hidden="true"> / </span>}
-            <span style={`color:${m.color}`}>{m.text}</span>
-          </>
-        ))
-      }
-    </p>
   </div>
 
   <button type="button" data-scroll-to="statement" class="hero-scroll" data-hero-scroll>
@@ -152,16 +142,6 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
 
   .hero-actions { display: flex; gap: 14px; align-items: stretch; justify-content: center; flex-wrap: wrap; }
 
-  .hero-meta {
-    margin: 4px 0 0;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(17px, 1.25vw, 20px);
-    letter-spacing: -0.01em;
-    line-height: 1.7;
-  }
-  .hero-meta-sep { color: #3A4058; }
-
   .hero-scroll {
     position: absolute;
     left: 50%;
@@ -171,17 +151,25 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     align-items: center;
     gap: 10px;
     padding: 12px 24px;
-    border: 1px solid rgba(244, 246, 255, .5);
-    border-radius: var(--radius-pill);
-    background: rgba(244, 246, 255, .92);
-    color: var(--ink);
+    border: 1px solid rgba(244, 246, 255, .16);
+    border-radius: var(--radius-md);
+    background: rgba(18, 22, 42, .5);
+    color: var(--canvas);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 1px 2px rgba(13, 27, 42, .04), 0 14px 34px -22px rgba(13, 27, 42, .28);
     font-family: var(--font-body);
     font-size: 17px;
     font-weight: 700;
     cursor: pointer;
     transition: transform .2s, background-color .2s;
   }
-  .hero-scroll:hover { transform: translateX(-50%) translateY(2px); background-color: #FFFFFF; }
+  .hero-scroll:hover {
+    transform: translateX(-50%) translateY(2px);
+    background-color: rgba(18, 22, 42, .72);
+    border-color: rgba(244, 246, 255, .3);
+    color: var(--canvas);
+  }
   .hero-scroll { transition: transform .2s, background-color .2s, opacity .3s, visibility .3s; }
   .hero-scroll.is-hidden { opacity: 0; visibility: hidden; }
 
@@ -191,15 +179,20 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     .hero-subtitle { max-width: 42ch; }
   }
 
+  /* Responsive (tablet and phone): smaller eyebrow and larger headline. */
+  @media (max-width: 1023px) {
+    .hero-eyebrow { padding: 8px 18px; gap: 10px; }
+    .hero-eyebrow-status, .hero-eyebrow-text { font-size: 12px; }
+    .hero-line { font-size: clamp(46px, 11.5vw, 96px); }
+    .hero-line-mid { font-size: clamp(42px, calc(11.5vw - 4px), 92px); }
+  }
+
   @media (max-width: 640px) {
     .hero { --nav-space: 84px; }
-    /* Lift the headline so it outweighs the actions under it. */
-    .hero-line { font-size: clamp(42px, 13vw, 66px); }
-    .hero-line-mid { font-size: clamp(38px, calc(13vw - 4px), 62px); }
-    .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 10px 16px; }
-    .hero-meta-sep { display: none; }
-    /* Wrapped row rather than a stacked column: same legibility, less height. */
-    .hero-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; }
+    /* Lift the headline further so it outweighs the actions under it. */
+    .hero-line { font-size: clamp(50px, 16vw, 78px); }
+    .hero-line-mid { font-size: clamp(46px, calc(16vw - 4px), 74px); }
+    .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 8px 16px; }
     .hero-scroll { display: none; }
   }
 </style>

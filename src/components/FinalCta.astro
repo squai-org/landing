@@ -2,7 +2,7 @@
 import Button from './Button.astro';
 ---
 
-<section class="section" style="background:var(--teal)">
+<section class="section final-cta" style="background:var(--teal)">
   <div class="shell grid-sidebar" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
     <h2 class="display d-h2 sidebar-sticky" style="position:sticky;top:120px;color:var(--midnight);max-width:16ch">
       La IA ya no es opcional, es una habilidad para la vida
@@ -19,8 +19,15 @@ import Button from './Button.astro';
         decisiones.
       </p>
       <div style="align-self:stretch;display:flex;justify-content:flex-end;margin-top:12px">
-        <Button variant="gold" href="/servicios/squai-one#lista">Reservar mi lugar en la próxima cohorte</Button>
+        <Button variant="dark" href="/servicios/squai-one#lista">Reservar mi lugar en la próxima cohorte</Button>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* Responsive only: periwinkle instead of teal. */
+  @media (max-width: 1023px) {
+    .final-cta { background: var(--periwinkle) !important; }
+  }
+</style>
