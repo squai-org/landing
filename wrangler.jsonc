@@ -19,8 +19,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "squai-leads",
-      "database_id": "REEMPLAZAR_CON_EL_ID_REAL",
+      "database_name": "squai",
+      "database_id": "e4929a67-be39-4bc1-b0e1-ac37ceffa1db",
       "migrations_dir": "migrations"
     }
   ],
