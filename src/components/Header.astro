@@ -4,7 +4,7 @@ import Button from './Button.astro';
 import { navLinks } from '../data/landing';
 ---
 
-<div class="header-wrap over-hero" data-header style="position:fixed;top:0;left:0;right:0;z-index:60;padding:30px 24px 0">
+<header class="header-wrap over-hero" data-header style="position:fixed;top:0;left:0;right:0;z-index:60;padding:30px 24px 0">
   <div
     class="nav-bar"
     style="max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 9px 10px 9px 24px; backdrop-filter: blur(16px); border-radius: 100px; box-shadow: 0 1px 2px rgba(13,27,42,.04), 0 14px 34px -22px rgba(13,27,42,.28)"
@@ -26,7 +26,7 @@ import { navLinks } from '../data/landing';
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
     </button>
-    <div id="site-nav" class="nav-links-row" data-nav-menu style="display:flex;align-items:center;gap:4px">
+    <nav id="site-nav" class="nav-links-row" data-nav-menu aria-label="Principal" style="display:flex;align-items:center;gap:4px">
       {
         navLinks.map((link) => (
           <a
@@ -42,6 +42,6 @@ import { navLinks } from '../data/landing';
       <div class="nav-cta-wrap" style="margin-left:8px">
         <Button variant="gold" href="/servicios/squai-one#lista" plain class="nav-cta">Inscribirme</Button>
       </div>
-    </div>
+    </nav>
   </div>
-</div>
+</header>

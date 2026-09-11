@@ -12,7 +12,7 @@ import { services } from '../data/landing';
         services.map((s) => (
           <a href={`/servicios/${s.slug}`} class={`bento-card card-link ${s.span} ${s.tone}`} style="justify-content:space-between;gap:clamp(24px,3vw,48px)">
             <div style="display:flex;flex-direction:column;gap:12px">
-              <span class="label" style="opacity:.6">{s.audience}</span>
+              <span class="label" style="font-weight:400">{s.audience}</span>
               <h3 class="display d-h2">{s.name}</h3>
               <p class="body" style="max-width:44ch">{s.cardCopy}</p>
             </div>

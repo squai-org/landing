@@ -35,18 +35,21 @@ const members = [
               <p class="body" style="color:var(--ink-body)">{m.role}</p>
               {m.note && <p class="body" style="color:var(--ink-muted)">{m.note}</p>}
             </div>
-            <a
-              class="btn-round"
-              href={m.linkedin || undefined}
-              target={m.linkedin ? '_blank' : undefined}
-              rel={m.linkedin ? 'noopener noreferrer' : undefined}
-              aria-label={`LinkedIn de ${m.name}`}
-              aria-disabled={m.linkedin ? undefined : 'true'}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d={LINKEDIN_PATH} />
-              </svg>
-            </a>
+            {
+              m.linkedin ? (
+                <a class="btn-round" href={m.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`LinkedIn de ${m.name}`}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d={LINKEDIN_PATH} />
+                  </svg>
+                </a>
+              ) : (
+                <span class="btn-round is-inert" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d={LINKEDIN_PATH} />
+                  </svg>
+                </span>
+              )
+            }
           </div>
         ))
       }

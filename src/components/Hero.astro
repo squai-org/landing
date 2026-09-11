@@ -63,8 +63,7 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     /* Equal inset on all four sides, whatever the viewport. */
     margin: var(--hero-inset);
     min-height: calc(100svh - var(--hero-inset) * 2);
-    padding: calc(var(--nav-space) + var(--gutter) * 0.4) var(--gutter) calc(var(--gutter) * 2.2);
-    overflow: hidden;
+    padding: calc(var(--nav-space) + clamp(6px, 2svh, 44px)) var(--gutter) clamp(18px, 7svh, 110px);
   }
 
   .hero-inner {
@@ -75,7 +74,7 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: clamp(14px, 1.6vw, 24px);
+    gap: clamp(6px, 1.7svh, 24px);
   }
 
   /* One dot shape for the eyebrow and the scroll cue, no stock glyphs. */
@@ -117,7 +116,7 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     font-weight: 700;
     letter-spacing: -0.055em;
     line-height: 0.94;
-    font-size: max(34px, min(9.6vw, 12svh));
+    font-size: clamp(40px, 9.6vw, 150px);
   }
   /* The middle line keeps the reading face at the same size. */
   /* Four pixels shy of the display lines so it reads as a step down. */
@@ -125,7 +124,7 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     font-family: var(--font-body);
     font-weight: 300;
     letter-spacing: -0.02em;
-    font-size: calc(max(34px, min(9.6vw, 12svh)) - 4px);
+    font-size: clamp(36px, calc(9.6vw - 4px), 146px);
   }
   .hero-line-last { color: var(--periwinkle); }
 
@@ -186,27 +185,18 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
   .hero-scroll { transition: transform .2s, background-color .2s, opacity .3s, visibility .3s; }
   .hero-scroll.is-hidden { opacity: 0; visibility: hidden; }
 
-  /* Short viewports: tighten so the panel still fits one screen exactly. */
-  @media (max-height: 860px) {
-    .hero { padding-bottom: calc(var(--gutter) * 1.6); }
-    .hero-inner { gap: clamp(10px, 1.2vw, 18px); }
+  /* The cue needs room of its own; on short screens it goes. */
+  @media (max-height: 720px) {
+    .hero-scroll { display: none; }
+    .hero-subtitle { max-width: 42ch; }
   }
 
-  @media (max-height: 700px) {
-    .hero { padding-bottom: calc(var(--gutter) * 0.7); }
-    .hero-inner { gap: 8px; }
-    .hero-eyebrow { padding: 8px 16px; }
-    .hero-line { font-size: max(26px, min(7.6vw, 10svh)); }
-    .hero-line-mid { font-size: calc(max(26px, min(7.6vw, 10svh)) - 4px); }
-    .hero-subtitle { font-size: 17px; }
-    .hero-meta { font-size: 17px; }
-  }
-
-  @media (max-width: 639px) {
-    .hero { --nav-space: 76px; }
+  @media (max-width: 640px) {
+    .hero { --nav-space: 84px; }
     .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 10px 16px; }
     .hero-meta-sep { display: none; }
-    .hero-meta { display: flex; flex-direction: column; gap: 4px; }
+    /* Wrapped row rather than a stacked column: same legibility, less height. */
+    .hero-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; }
     .hero-scroll { display: none; }
   }
 </style>

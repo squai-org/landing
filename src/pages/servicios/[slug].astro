@@ -23,6 +23,8 @@ const { service } = Astro.props;
 <Layout title={`${service.name} — Squai`} description={service.slogan}>
   <div style="padding:0 0 40px;background-color:#F4F6FF">
   <Header />
+
+  <main id="contenido">
   <ServiceHero service={service} />
 
   <div class="content-shell" style="margin-top:clamp(16px,1.6vw,28px)">
@@ -51,6 +53,7 @@ const { service } = Astro.props;
   <Faq items={service.faqs} />
   <Follow />
   </div>
+  </main>
 
   <Footer />
   </div>

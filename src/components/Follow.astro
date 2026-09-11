@@ -23,21 +23,23 @@ const ICONS: Record<string, string> = {
         <p class="lead" style="color:var(--night-text);max-width:46ch">
           Seguimos en LinkedIn, Instagram y X. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
         </p>
-        <div style="display:flex;gap:14px;justify-content:flex-end">
+        <div class="social-row" style="display:flex;gap:14px;justify-content:flex-end;flex-wrap:wrap">
           {
-            socials.map((s) => (
-              <a
-                href={s.href || undefined}
-                aria-label={s.name}
-                class="social"
-                style={`background:${ACCENTS[s.name]}`}
-                aria-disabled={s.href ? undefined : 'true'}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d={ICONS[s.name]} />
-                </svg>
-              </a>
-            ))
+            socials.map((s) =>
+              s.href ? (
+                <a href={s.href} aria-label={s.name} class="social" style={`background:${ACCENTS[s.name]}`} target="_blank" rel="noopener noreferrer">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d={ICONS[s.name]} />
+                  </svg>
+                </a>
+              ) : (
+                <span class="social is-inert" aria-hidden="true" style={`background:${ACCENTS[s.name]}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d={ICONS[s.name]} />
+                  </svg>
+                </span>
+              )
+            )
           }
         </div>
       </div>

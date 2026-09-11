@@ -22,19 +22,22 @@ import { faqs } from '../data/landing';
 >
   <div style="padding:0 0 40px;background-color:#F4F6FF">
     <Header />
-    <Hero />
 
-    <div class="content-shell" style="margin-top:clamp(16px,1.6vw,28px)">
-      <Statement />
-      <WhatWeDo />
-      <Impact />
-      <ServicesGrid />
-      <Origin />
-      <Team />
-      <Faq items={faqs} />
-      <FinalCta />
-      <Follow />
-    </div>
+    <main id="contenido">
+      <Hero />
+
+      <div class="content-shell" style="margin-top:clamp(16px,1.6vw,28px)">
+        <Statement />
+        <WhatWeDo />
+        <Impact />
+        <ServicesGrid />
+        <Origin />
+        <Team />
+        <Faq items={faqs} />
+        <FinalCta />
+        <Follow />
+      </div>
+    </main>
 
     <Footer />
   </div>

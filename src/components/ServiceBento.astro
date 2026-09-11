@@ -20,7 +20,7 @@ const { label, title, headline, cards, tones = [], dark = false } = Astro.props;
      off-grid treatment. -->
 <section class={`section ${dark ? 'night' : 'tint'}`}>
   <div class="shell">
-    {label && <p class="label" style="opacity:.6;margin-bottom:14px">{label}</p>}
+    {label && <p class="label" style="font-weight:400;margin-bottom:14px">{label}</p>}
     <h2 class="display d-h1" style={dark ? 'color:var(--canvas)' : 'color:var(--ink)'}>{title}</h2>
     {
       headline && (
@@ -34,7 +34,7 @@ const { label, title, headline, cards, tones = [], dark = false } = Astro.props;
         cards.map((c, i) => (
           <div class={`bento-card span-2 ${tones[i] ?? ''}`}>
             <h3 class="display d-h3">{c.t}</h3>
-            <p class="body" style="opacity:.85">{c.d}</p>
+            <p class="body">{c.d}</p>
           </div>
         ))
       }
