@@ -1,5 +1,4 @@
 ---
-import Button from './Button.astro';
 import { instructors, squadGrid } from '../data/landing';
 
 const LINKEDIN_PATH =
@@ -31,26 +30,23 @@ const members = [
               class="instructor-photo"
               style="width:143px;height:164px;flex:none;object-fit:cover;border-radius:20px;background:#E4E5FE"
             />
-            <div style="min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+            <div style="min-width:0;flex:1;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
               <h3 class="display d-h3">{m.name}</h3>
               <p class="body" style="color:var(--ink-body)">{m.role}</p>
               {m.note && <p class="body" style="color:var(--ink-muted)">{m.note}</p>}
-              {
-                m.linkedin && (
-                  <Button
-                    variant="dark"
-                    icon="linkedin"
-                    href={m.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={m.aria}
-                    class="team-linkedin"
-                  >
-                    LinkedIn
-                  </Button>
-                )
-              }
             </div>
+            <a
+              class="btn-round"
+              href={m.linkedin || undefined}
+              target={m.linkedin ? '_blank' : undefined}
+              rel={m.linkedin ? 'noopener noreferrer' : undefined}
+              aria-label={`LinkedIn de ${m.name}`}
+              aria-disabled={m.linkedin ? undefined : 'true'}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d={LINKEDIN_PATH} />
+              </svg>
+            </a>
           </div>
         ))
       }

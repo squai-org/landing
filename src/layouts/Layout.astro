@@ -31,10 +31,16 @@ const { title, description } = Astro.props;
   --------------------------------------------------------------------- */
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Clear the fixed nav bar plus a little breathing room. */
+  const navOffset = () => {
+    const bar = document.querySelector<HTMLElement>('.nav-bar');
+    return (bar ? bar.getBoundingClientRect().bottom + window.scrollY : 96) + 28;
+  };
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const target = el.getBoundingClientRect().top + window.scrollY - 96;
+    const target = el.getBoundingClientRect().top + window.scrollY - navOffset();
     if (prefersReducedMotion) {
       window.scrollTo(0, target);
       return;
@@ -70,9 +76,12 @@ const { title, description } = Astro.props;
   const hero = document.querySelector<HTMLElement>('[data-hero]');
 
   if (header) {
+    const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
+
     const syncHeader = () => {
       const limit = hero ? hero.offsetTop + hero.offsetHeight - 96 : 0;
       header.classList.toggle('over-hero', window.scrollY < limit);
+      scrollCue?.classList.toggle('is-hidden', window.scrollY > 24);
     };
     syncHeader();
     let ticking = false;
@@ -89,6 +98,58 @@ const { title, description } = Astro.props;
       { passive: true }
     );
     window.addEventListener('resize', syncHeader);
+  }
+
+  /* ---------------------------------------------------------------------
+     Reveal on scroll. Sections rise into place once; grids stagger their
+     own cards instead of moving as one block.
+  --------------------------------------------------------------------- */
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    const targets: HTMLElement[] = [];
+
+    document.querySelectorAll<HTMLElement>('.section').forEach((section) => {
+      const shell = section.querySelector<HTMLElement>(':scope > .shell') ?? section;
+      const children = Array.from(shell.children) as HTMLElement[];
+
+      children.forEach((child) => {
+        const cards = Array.from(child.querySelectorAll<HTMLElement>(':scope > .bento-card')) as HTMLElement[];
+        if (cards.length > 1) {
+          cards.forEach((card, i) => {
+            card.style.setProperty('--reveal-delay', `${i * 70}ms`);
+            targets.push(card);
+          });
+        } else {
+          targets.push(child);
+        }
+      });
+    });
+
+    // The hero is above the fold; give it the same entrance on load.
+    const heroInner = document.querySelector<HTMLElement>('.hero-inner');
+    if (heroInner) {
+      Array.from(heroInner.children).forEach((child, i) => {
+        const el = child as HTMLElement;
+        el.style.setProperty('--reveal-delay', `${i * 80}ms`);
+        targets.push(el);
+      });
+    }
+
+    targets.forEach((el) => el.classList.add('reveal'));
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
+    );
+
+    targets.forEach((el) => io.observe(el));
   }
 
   /* ---------------------------------------------------------------------
