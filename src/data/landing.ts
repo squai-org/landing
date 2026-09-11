@@ -623,10 +623,14 @@ export const footerCols: FooterCol[] = [
 
 /* --- API ------------------------------------------------------------------ */
 
-const API_BASE = 'https://api-squai.io/api';
-
+/*
+ * Rutas relativas: el mismo Worker que sirve el sitio estático atiende /api/*,
+ * así que no hay segundo origen ni CORS.
+ * El modal de contacto comparte endpoint para Grow y Learn; el ecosistema viaja
+ * en el campo `ecosystem` del cuerpo.
+ */
 export const endpoints = {
-  waitlist: `${API_BASE}/one/waitlist/1/`,
-  grow: `${API_BASE}/grow/client/`,
-  learn: `${API_BASE}/learn/client/`,
+  waitlist: '/api/waitlist',
+  grow: '/api/contact',
+  learn: '/api/contact',
 };

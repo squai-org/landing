@@ -21,3 +21,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# wrangler / estado local de miniflare
+.wrangler/
+
+# secrets locales de wrangler dev
+.dev.vars
+.dev.vars.*

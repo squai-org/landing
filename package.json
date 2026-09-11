@@ -7,14 +7,30 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "preview:worker": "astro build && wrangler dev",
+    "deploy": "astro build && wrangler deploy",
+    "typecheck": "tsc -p src/server",
+    "test": "vitest run",
+    "cf-typegen": "wrangler types",
+    "db:create": "wrangler d1 create squai-leads",
+    "db:migrate:local": "wrangler d1 migrations apply squai-leads --local",
+    "db:migrate:remote": "wrangler d1 migrations apply squai-leads --remote",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.2.10"
+    "astro": "^7.2.10",
+    "hono": "^4.13.7",
+    "zod": "^4.6.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "esbuild",
+      "workerd"
     ]
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.131.1"
   }
 }

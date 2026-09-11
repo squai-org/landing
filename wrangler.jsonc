@@ -1,7 +1,31 @@
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "landing-page",
+  "main": "src/server/index.ts",
   "compatibility_date": "2026-08-31",
+  "observability": {
+    "enabled": true
+  },
+  // El Worker sirve el sitio estático de Astro y, además, atiende /api/*.
+  // https://developers.cloudflare.com/workers/static-assets/
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    // Sin esta lista, Cloudflare intenta primero servir un asset y solo invoca
+    // al Worker cuando no existe. Con ella, /api/* entra siempre al Worker.
+    // https://developers.cloudflare.com/workers/static-assets/routing/worker-script/
+    "run_worker_first": ["/api/*"]
+  },
+  // https://developers.cloudflare.com/d1/worker-api/
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "squai-leads",
+      "database_id": "REEMPLAZAR_CON_EL_ID_REAL",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    // "true" permite correos personales (gmail, hotmail...) en /api/contact.
+    "ALLOW_PERSONAL_EMAIL": "false"
   }
 }

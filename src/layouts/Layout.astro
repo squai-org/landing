@@ -7,6 +7,11 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+// Clave pública del widget de Turnstile. Si no está definida, el sitio sigue
+// funcionando sin verificación (el backend también la omite).
+// https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <!doctype html>
@@ -29,6 +34,25 @@ const { title, description } = Astro.props;
       }
     </style>
     <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+    <script is:inline>
+      // Turnstile invoca este callback por nombre desde window, así que vive
+      // fuera del módulo. Mantiene el botón de envío deshabilitado hasta que el
+      // widget entrega un token válido.
+      window.squaiTurnstileSync = function () {
+        document.querySelectorAll('form[data-form]').forEach(function (form) {
+          if (!form.querySelector('.cf-turnstile')) return;
+          var token = form.querySelector('input[name="cf-turnstile-response"]');
+          var submit = form.querySelector('button[type="submit"]');
+          if (submit) submit.disabled = !(token && token.value);
+        });
+      };
+      document.addEventListener('DOMContentLoaded', window.squaiTurnstileSync);
+    </script>
+    {
+      turnstileSiteKey && (
+        <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+      )
+    }
     <title>{title}</title>
   </head>
   <body>
@@ -297,6 +321,11 @@ const { title, description } = Astro.props;
      Forms. The site is static; each form posts JSON straight to the API.
      Field names in the payload are the input `name` attributes.
   --------------------------------------------------------------------- */
+  interface ApiResponse {
+    ok: boolean;
+    error?: { code: string; message: string; fields?: Record<string, string> };
+  }
+
   const setStatus = (form: HTMLFormElement, text: string, state: '' | 'ok' | 'error') => {
     const status = form.querySelector<HTMLElement>('[data-form-status]');
     if (!status) return;
@@ -335,13 +364,24 @@ const { title, description } = Astro.props;
       }
       setStatus(form, 'Enviando…', '');
 
+      const fallbackError = 'No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.';
+
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error(String(res.status));
+
+        /* La API responde { ok: true, ... } o { ok: false, error: { code, message, fields } }. */
+        const data = (await res.json().catch(() => null)) as ApiResponse | null;
+
+        if (!res.ok) {
+          const fieldMessage = data?.error?.fields ? Object.values(data.error.fields)[0] : undefined;
+          setStatus(form, fieldMessage ?? data?.error?.message ?? fallbackError, 'error');
+          return;
+        }
+
         form.reset();
         setStatus(
           form,
@@ -351,11 +391,17 @@ const { title, description } = Astro.props;
           'ok'
         );
       } catch {
-        setStatus(form, 'No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.', 'error');
+        setStatus(form, fallbackError, 'error');
       } finally {
         if (submit) {
           submit.disabled = false;
           submit.textContent = label;
+        }
+        /* Cada token de Turnstile se puede validar una sola vez. */
+        const widget = form.querySelector<HTMLElement>('.cf-turnstile');
+        if (widget) {
+          window.turnstile?.reset(widget);
+          window.squaiTurnstileSync?.();
         }
       }
     });
