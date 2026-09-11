@@ -31,7 +31,7 @@ export const heroVerbs = [
 
 export const heroLines = { object: 'IA.', middle: 'potencia tus', last: 'Habilidades.' };
 
-export const heroSubtitle = 'Training en IA para personas, equipos y comunidades que no vienen de la tecnología.';
+export const heroSubtitle = 'Training en inteligencia artificial para personas, equipos y comunidades educativas.';
 
 /* --- Cohorte abierta (hero eyebrow) --------------------------------------- */
 

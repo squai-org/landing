@@ -618,12 +618,20 @@ a.bento-card.dark:hover { color: var(--night-text); }
   .bento { grid-template-columns: minmax(0, 1fr); }
   .span-2, .span-3, .span-4, .span-6 { grid-column: span 1; }
 
-  .hero-actions { width: 100%; flex-direction: column; align-items: stretch; }
-  .hero-actions .btn { width: 100%; }
+  /* Actions stack but stay narrower than the headline above them. */
+  .hero-actions { flex-direction: column; align-items: center; }
+  .btn { padding-inline: 18px; gap: 12px; letter-spacing: .04em; }
+  .hero-actions .btn { width: auto; }
 
-  .instructor-card, .squad-card { flex-wrap: wrap; gap: 18px !important; }
-  .instructor-photo, .squad-photo { width: 112px !important; height: 128px !important; }
-  .instructor-card > a { margin-left: auto; }
+  /* Photo on top, the person's details underneath it. */
+  .instructor-card {
+    position: relative;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 18px !important;
+  }
+  .instructor-photo { width: 128px !important; height: 146px !important; }
+  .instructor-card > .btn-round { position: absolute; top: 22px; right: 22px; }
 
   .card-pad-lg { padding: 22px !important; border-radius: 22px !important; }
   .field-grid-2 { grid-template-columns: 1fr !important; }

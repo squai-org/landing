@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { footerCols, tagline } from '../data/landing';
+import { footerCols, heroSubtitle, tagline } from '../data/landing';
 ---
 
 <footer class="footer-pad" style="background:var(--midnight);border-radius:28px;padding:clamp(56px,6vw,104px) clamp(24px,5vw,88px) 40px;margin:28px 12px 12px">
@@ -11,7 +11,7 @@ import { footerCols, tagline } from '../data/landing';
           <Logo size={34} />
         </a>
         <p style="margin:0;font-size:var(--t-body);line-height:1.7;color:#F0F2FF;max-width:34ch">
-          Formación en inteligencia artificial para personas, equipos y comunidades educativas.
+          {heroSubtitle}
         </p>
         <span style="font-family:var(--font-hand);font-size:var(--t-body);line-height:1.5;color:#F9C24D">{tagline}</span>
       </div>

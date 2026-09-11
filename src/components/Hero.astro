@@ -193,6 +193,9 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
 
   @media (max-width: 640px) {
     .hero { --nav-space: 84px; }
+    /* Lift the headline so it outweighs the actions under it. */
+    .hero-line { font-size: clamp(42px, 13vw, 66px); }
+    .hero-line-mid { font-size: clamp(38px, calc(13vw - 4px), 62px); }
     .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 10px 16px; }
     .hero-meta-sep { display: none; }
     /* Wrapped row rather than a stacked column: same legibility, less height. */

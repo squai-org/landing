@@ -34,6 +34,7 @@ const { service } = Astro.props;
   }
   .service-hero-inner {
     width: 100%;
+    padding-inline: var(--gutter);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -55,7 +56,19 @@ const { service } = Astro.props;
   .service-crumb-link:hover { color: var(--periwinkle); }
   .service-name { color: var(--canvas); font-size: max(40px, min(10.8vw, 19svh)); }
   .service-slogan { margin: 0; color: var(--canvas); max-width: 20ch; }
-  @media (max-width: 639px) {
-    .service-hero { padding-block: calc(72px + var(--gutter) * 0.7) calc(var(--gutter) * 1.1); }
+  /* Below desktop the full-height split leaves a dead middle, so the block
+     settles at the bottom of a shorter panel instead. */
+  @media (max-width: 900px) {
+    .service-hero {
+      min-height: min(72svh, calc(100svh - var(--hero-inset) * 2));
+      padding-block: calc(var(--nav-space) + clamp(10px, 3svh, 40px)) clamp(28px, 6svh, 72px);
+    }
+    .service-hero-inner { justify-content: flex-end; gap: clamp(20px, 4svh, 48px); }
+    .service-crumb { margin-bottom: auto; }
+  }
+
+  @media (max-width: 640px) {
+    .service-hero { --nav-space: 84px; min-height: min(66svh, calc(100svh - var(--hero-inset) * 2)); }
+    .service-slogan { max-width: 24ch; }
   }
 </style>
