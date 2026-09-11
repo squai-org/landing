@@ -191,15 +191,22 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     .hero-subtitle { max-width: 42ch; }
   }
 
+  /* Responsive (tablet and phone): a smaller eyebrow, a bigger headline, and
+     the duration/format pills are dropped — the subtitle already says it. */
+  @media (max-width: 1023px) {
+    .hero-meta { display: none; }
+    .hero-eyebrow { padding: 8px 18px; gap: 10px; }
+    .hero-eyebrow-status, .hero-eyebrow-text { font-size: 12px; }
+    .hero-line { font-size: clamp(46px, 11.5vw, 96px); }
+    .hero-line-mid { font-size: clamp(42px, calc(11.5vw - 4px), 92px); }
+  }
+
   @media (max-width: 640px) {
     .hero { --nav-space: 84px; }
-    /* Lift the headline so it outweighs the actions under it. */
-    .hero-line { font-size: clamp(42px, 13vw, 66px); }
-    .hero-line-mid { font-size: clamp(38px, calc(13vw - 4px), 62px); }
-    .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 10px 16px; }
-    .hero-meta-sep { display: none; }
-    /* Wrapped row rather than a stacked column: same legibility, less height. */
-    .hero-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; }
+    /* Lift the headline further so it outweighs the actions under it. */
+    .hero-line { font-size: clamp(50px, 16vw, 78px); }
+    .hero-line-mid { font-size: clamp(46px, calc(16vw - 4px), 74px); }
+    .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 8px 16px; }
     .hero-scroll { display: none; }
   }
 </style>
