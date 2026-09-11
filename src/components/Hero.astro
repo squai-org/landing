@@ -1,4 +1,5 @@
 ---
+import Button from './Button.astro';
 import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
 ---
 
@@ -11,36 +12,26 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     <a href="/servicios/squai-one" class="hero-eyebrow">
       <span class="hero-dot" aria-hidden="true"></span>
       <span class="hero-eyebrow-status">{cohort.status}</span>
-      <span class="hero-eyebrow-text">{cohort.ecosystem} · {cohort.name}</span>
+      <span class="hero-eyebrow-text">{cohort.name}</span>
     </a>
 
     <h1 class="hero-title">
-      <span class="hero-line-1">
-        <span class="hero-verb" data-hero-verb style={`color:${heroVerbs[0].color}`}>{heroVerbs[0].word}</span>
+      <span class="hero-line">
+        <span class="hero-verb" data-hero-verb style={`color:${heroVerbs[0].color}`}>{heroVerbs[0].word}</span><span
+          class="hero-caret"
+          data-hero-caret
+          aria-hidden="true"></span>
         {' '}{heroLines.object}
       </span>
-      <span class="hero-line-2">{heroLines.middle}</span>
-      <span class="hero-line-3">{heroLines.last}</span>
+      <span class="hero-line hero-line-mid">{heroLines.middle}</span>
+      <span class="hero-line hero-line-last">{heroLines.last}</span>
     </h1>
 
     <p class="hero-subtitle">{heroSubtitle}</p>
 
     <div class="hero-actions">
-      <a
-        href="/servicios/squai-one#lista"
-        class="btn-gold-lift"
-        style="display:inline-block;font-family:var(--font-body);font-size:17px;font-weight:700;color:#3B2B05;background:linear-gradient(180deg, #F7D96A 0%, #EFC13C 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 0 0 1px rgba(255,255,255,.55), 0 1px 2px rgba(13,27,42,.08), 0 8px 20px -8px rgba(13,27,42,.22)"
-      >
-        Reservar mi lugar
-      </a>
-      <a
-        href="/#servicios"
-        data-scroll-to="servicios"
-        class="btn-ghost"
-        style="display:inline-block;font-family:var(--font-body);font-size:17px;font-weight:700;color:#FFFFFF;background:linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.13) 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 0 0 1px rgba(255,255,255,.3), 0 8px 20px -10px rgba(13,27,42,.35)"
-      >
-        Ver servicios
-      </a>
+      <Button variant="gold" href="/servicios/squai-one#lista">Reservar mi lugar</Button>
+      <Button variant="ghost" href="/#servicios" data-scroll-to="servicios">Ver servicios</Button>
     </div>
 
     <p class="hero-meta">
@@ -93,7 +84,7 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: var(--gold);
+    background: var(--teal);
   }
 
   .hero-eyebrow {
@@ -101,7 +92,7 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     align-items: center;
     gap: 12px;
     max-width: 100%;
-    padding: 9px 20px;
+    padding: 10px 22px;
     background: rgba(244, 246, 255, .92);
     border: 1px solid rgba(244, 246, 255, .5);
     border-radius: var(--radius-pill);
@@ -111,41 +102,39 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
   .hero-eyebrow:hover { background: #FFFFFF; transform: translateY(-1px); }
   .hero-eyebrow-status {
     flex: none;
-    font-family: var(--font-display);
-    font-size: 11px;
+    font-family: var(--font-body);
+    font-size: 17px;
     font-weight: 700;
-    letter-spacing: .14em;
+    letter-spacing: .08em;
     text-transform: uppercase;
     color: var(--periwinkle-ink);
   }
-  .hero-eyebrow-text { font-size: 13px; color: var(--ink-body); min-width: 0; }
+  .hero-eyebrow-text { font-size: 17px; color: var(--ink-body); min-width: 0; }
 
-  .hero-title {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--canvas);
-  }
-  .hero-line-1,
-  .hero-line-3 {
+  .hero-title { margin: 0; display: flex; flex-direction: column; align-items: center; color: var(--canvas); }
+  .hero-line {
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.055em;
     line-height: 0.94;
     font-size: max(34px, min(9.6vw, 12svh));
   }
-  /* The middle line steps down into the reading face on purpose. */
-  .hero-line-2 {
-    font-family: var(--font-body);
-    font-weight: 300;
-    letter-spacing: -0.01em;
-    line-height: 1.15;
-    font-size: max(18px, min(4.2vw, 5.4svh));
-    color: #B7BCD0;
+  /* The middle line keeps the reading face at the same size. */
+  .hero-line-mid { font-family: var(--font-body); font-weight: 300; letter-spacing: -0.02em; }
+  .hero-line-last { color: var(--periwinkle); }
+
+  /* The verb is typed in and out rather than cross-faded. */
+  .hero-caret {
+    display: inline-block;
+    width: .06em;
+    height: .72em;
+    margin-left: .04em;
+    vertical-align: baseline;
+    background: currentColor;
+    color: var(--teal);
+    animation: caret 1s steps(1, end) infinite;
   }
-  .hero-verb { transition: opacity .28s ease, color .28s ease; }
-  .hero-verb.is-out { opacity: 0; }
+  @keyframes caret { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
 
   .hero-subtitle {
     margin: 0;
@@ -162,7 +151,7 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     margin: 4px 0 0;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(14px, 1.15vw, 18px);
+    font-size: clamp(17px, 1.25vw, 20px);
     letter-spacing: -0.01em;
     line-height: 1.7;
   }
@@ -176,33 +165,37 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 22px;
+    padding: 12px 24px;
     border: 1px solid rgba(244, 246, 255, .5);
     border-radius: var(--radius-pill);
     background: rgba(244, 246, 255, .92);
     color: var(--ink);
     font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 700;
     cursor: pointer;
     transition: transform .2s, background-color .2s;
   }
   .hero-scroll:hover { transform: translateX(-50%) translateY(2px); background-color: #FFFFFF; }
 
   /* Short viewports: tighten so the panel still fits one screen exactly. */
+  @media (max-height: 860px) {
+    .hero { padding-bottom: calc(var(--gutter) * 1.6); }
+    .hero-inner { gap: clamp(10px, 1.2vw, 18px); }
+  }
+
   @media (max-height: 700px) {
-    .hero-inner { gap: 10px; }
-    .hero-line-1, .hero-line-3 { font-size: max(26px, min(7.6vw, 10svh)); }
-    .hero-line-2 { font-size: max(16px, min(3.4vw, 4.6svh)); }
-    .hero-subtitle { font-size: 14px; }
-    .hero-meta { font-size: 13px; }
-    .hero-actions a { padding: 13px 24px !important; font-size: 14px !important; }
+    .hero { padding-bottom: calc(var(--gutter) * 0.7); }
+    .hero-inner { gap: 8px; }
+    .hero-eyebrow { padding: 8px 16px; }
+    .hero-line { font-size: max(26px, min(7.6vw, 10svh)); }
+    .hero-subtitle { font-size: 17px; }
+    .hero-meta { font-size: 17px; }
   }
 
   @media (max-width: 639px) {
     .hero { --nav-space: 76px; }
     .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 10px 16px; }
-    .hero-eyebrow-text { font-size: 12px; }
     .hero-meta-sep { display: none; }
     .hero-meta { display: flex; flex-direction: column; gap: 4px; }
     .hero-scroll { display: none; }
@@ -215,16 +208,37 @@ import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/
   const verb = document.querySelector<HTMLElement>('[data-hero-verb]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (verb && !reduced && heroVerbs.length > 1) {
-    let i = 0;
-    setInterval(() => {
-      verb.classList.add('is-out');
-      window.setTimeout(() => {
-        i = (i + 1) % heroVerbs.length;
-        verb.textContent = heroVerbs[i].word;
-        verb.style.color = heroVerbs[i].color;
-        verb.classList.remove('is-out');
-      }, 280);
-    }, 2600);
+  if (verb && heroVerbs.length > 1) {
+    if (reduced) {
+      document.querySelector('[data-hero-caret]')?.remove();
+    } else {
+      const TYPE = 70;
+      const ERASE = 45;
+      const HOLD = 2200;
+      let index = 0;
+
+      const wait = (ms: number) => new Promise((done) => window.setTimeout(done, ms));
+
+      const run = async () => {
+        // Keep the longest word reserved so the line never reflows mid-type.
+        for (;;) {
+          await wait(HOLD);
+          const current = heroVerbs[index].word;
+          for (let i = current.length; i >= 0; i--) {
+            verb.textContent = current.slice(0, i);
+            await wait(ERASE);
+          }
+          index = (index + 1) % heroVerbs.length;
+          const next = heroVerbs[index];
+          verb.style.color = next.color;
+          for (let i = 1; i <= next.word.length; i++) {
+            verb.textContent = next.word.slice(0, i);
+            await wait(TYPE);
+          }
+        }
+      };
+
+      run();
+    }
   }
 </script>

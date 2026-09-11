@@ -1,4 +1,5 @@
 ---
+import Button from './Button.astro';
 import { impact } from '../data/landing';
 ---
 
@@ -8,14 +9,7 @@ import { impact } from '../data/landing';
     <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:clamp(24px,2.6vw,40px)">
       <p class="lead" style="color:#B7BCD0;max-width:52ch">{impact.copy}</p>
       <!-- Client stories are not organised yet; the button is intentionally inert. -->
-      <button
-        type="button"
-        class="btn-teal"
-        disabled
-        style="font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#0A0C1A;background:#44D4C8;border:0;border-radius:100px;padding:15px 28px;cursor:not-allowed"
-      >
-        {impact.ctaLabel}
-      </button>
+      <Button variant="teal" disabled>{impact.ctaLabel}</Button>
     </div>
   </div>
 </section>

@@ -23,15 +23,15 @@ export const tagline = 'Aprende IA, potencia tus habilidades.';
 
 /** The verb cycles; the rest of the headline is fixed. */
 export const heroVerbs = [
-  { word: 'Aprende', color: '#8A8EF9' },
+  { word: 'Aprende', color: '#F4F6FF' },
   { word: 'Practica', color: '#44D4C8' },
   { word: 'Integra', color: '#F9C24D' },
-  { word: 'Adopta', color: '#B4B7FB' },
+  { word: 'Adopta', color: '#8A8EF9' },
 ];
 
 export const heroLines = { object: 'IA.', middle: 'potencia tus', last: 'Habilidades.' };
 
-export const heroSubtitle = 'Formación en IA para personas, equipos y comunidades que no vienen de la tecnología.';
+export const heroSubtitle = 'Training en IA para personas, equipos y comunidades que no vienen de la tecnología.';
 
 /* --- Cohorte abierta (hero eyebrow) --------------------------------------- */
 
