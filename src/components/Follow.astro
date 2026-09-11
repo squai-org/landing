@@ -10,14 +10,14 @@ const ICONS: Record<string, string> = {
 };
 ---
 
-<section class="section surface">
+<section class="section night">
   <div class="shell follow-card">
-      <h2 class="display d-h1" style="color:var(--ink);flex:1 1 280px;min-width:0">Síguenos</h2>
+      <h2 class="display d-h1" style="color:var(--canvas);flex:1 1 280px;min-width:0">Síguenos</h2>
       <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:clamp(20px,2.4vw,36px)">
-        <p class="lead" style="color:var(--ink-body);max-width:46ch">
+        <p class="lead" style="color:var(--night-text);max-width:46ch">
           Seguimos en LinkedIn, Instagram y X. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
         </p>
-        <div style="display:flex;gap:14px">
+        <div style="display:flex;gap:14px;justify-content:flex-end">
           {
             socials.map((s) => (
               <a
@@ -46,9 +46,10 @@ const ICONS: Record<string, string> = {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    border: 1px solid var(--line);
-    color: var(--ink);
-    transition: background .2s, transform .2s, color .2s;
+    border: 0;
+    background: var(--gold);
+    color: var(--midnight);
+    transition: background .2s, transform .2s;
   }
-  .social:hover { background: var(--canvas); color: var(--ink); transform: translateY(-2px); }
+  .social:hover { background: #FBD173; color: var(--midnight); transform: translateY(-2px); }
 </style>

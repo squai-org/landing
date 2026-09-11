@@ -3,27 +3,27 @@ import Logo from './Logo.astro';
 import { footerCols, tagline } from '../data/landing';
 ---
 
-<div class="footer-pad" style="background:#12152A;border-radius:28px;padding:104px 88px 40px;margin:28px 12px 12px">
+<div class="footer-pad" style="background:#12152A;border-radius:28px;padding:clamp(56px,6vw,104px) clamp(24px,5vw,88px) 40px;margin:28px 12px 12px">
   <div style="max-width:1240px;margin:0 auto">
-    <div class="footer-grid" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:64px;padding-bottom:96px">
+    <div class="footer-grid" style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:clamp(32px,4vw,64px);padding-bottom:clamp(56px,6vw,96px)">
       <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
         <a href="/" class="logo-link" aria-label="Squai — inicio" style="--wordmark-color:#F0F2FF">
           <Logo size={34} />
         </a>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#F0F2FF;max-width:280px">
+        <p style="margin:0;font-size:var(--t-body);line-height:1.7;color:#F0F2FF;max-width:34ch">
           Formación en inteligencia artificial para personas, equipos y comunidades educativas.
         </p>
-        <span style="font-family:var(--font-hand);font-size:15px;line-height:1.4;color:#F9C24D">{tagline}</span>
+        <span style="font-family:var(--font-hand);font-size:var(--t-body);line-height:1.5;color:#F9C24D">{tagline}</span>
       </div>
       {
         footerCols.map((col) => (
           <div style="display:flex;flex-direction:column;gap:12px">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8E97BB">
+            <div style="font-family:var(--font-display);font-size:var(--t-label);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8E97BB">
               {col.h}
             </div>
             {col.links.map((lnk) =>
               lnk.target ? (
-                <a href={`/#${lnk.target}`} data-scroll-to={lnk.target} class="footer-link" style="font-size:14px;color:#F0F2FF">
+                <a href={`/#${lnk.target}`} data-scroll-to={lnk.target} class="footer-link" style="font-size:var(--t-body);color:#F0F2FF">
                   {lnk.t}
                 </a>
               ) : (
@@ -46,10 +46,10 @@ import { footerCols, tagline } from '../data/landing';
       class="footer-bottom"
       style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08)"
     >
-      <span style="font-size:12px;color:#A9B2CC">© 2026 Squai · Todos los derechos reservados</span>
+      <span style="font-size:13px;color:#A9B2CC">© 2026 Squai · Todos los derechos reservados</span>
       <div style="display:flex;gap:20px">
-        <a href="/terminos-de-servicio" class="footer-link" style="font-size:12px;font-weight:600;color:#A9B2CC">Términos de Servicio</a>
-        <a href="/politica-de-privacidad" class="footer-link" style="font-size:12px;font-weight:600;color:#A9B2CC">Política de Privacidad</a>
+        <a href="/terminos-de-servicio" class="footer-link" style="font-size:13px;font-weight:700;color:#A9B2CC">Términos de Servicio</a>
+        <a href="/politica-de-privacidad" class="footer-link" style="font-size:13px;font-weight:700;color:#A9B2CC">Política de Privacidad</a>
       </div>
     </div>
   </div>

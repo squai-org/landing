@@ -64,6 +64,34 @@ const { title, description } = Astro.props;
   });
 
   /* ---------------------------------------------------------------------
+     Nav chrome follows the section under it: light over the hero, ink after.
+  --------------------------------------------------------------------- */
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+
+  if (header) {
+    const syncHeader = () => {
+      const limit = hero ? hero.offsetTop + hero.offsetHeight - 96 : 0;
+      header.classList.toggle('over-hero', window.scrollY < limit);
+    };
+    syncHeader();
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          syncHeader();
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', syncHeader);
+  }
+
+  /* ---------------------------------------------------------------------
      Mobile/tablet hamburger menu.
   --------------------------------------------------------------------- */
   const navToggle = document.querySelector<HTMLElement>('[data-nav-toggle]');

@@ -16,16 +16,14 @@ const VB_Y = 283;
 const VB_WIDTH = 452;
 const VB_HEIGHT = 459;
 
-// Familjen Grotesk Bold, measured: the "S" is 0.67em tall and its baseline
-// sits 0.90em below the top of a line-height:1 box, so the cap band starts
-// 0.23em down. Aligning the mark to that band is what makes the lockup read
-// as one object.
-const CAP = 0.67;
-const CAP_TOP = 0.23;
-
-const markHeight = Math.round(size * CAP);
-const svgWidth = Math.round(VB_WIDTH * (markHeight / VB_HEIGHT));
-const gap = Math.round(markHeight * 0.15);
+// Proportions taken from the reference lockup SVG: the mark is exactly as
+// tall as the ink of the "S" (0.675em) and sits on the same optical band,
+// which starts 0.238em below the top of a line-height:1 box. The gap between
+// them is 0.181em — wider than the 0.15 of the mark height the brand book
+// states, and the reference is what we match.
+const CAP = 0.675;
+const CAP_TOP = 0.221;
+const GAP = 0.181;
 
 const PATH_A =
   'M667.299 496.021C660.393 498.244 648.638 497.554 641.034 497.531L598.273 497.507C590.329 497.508 578.095 497.155 570.551 498.379C558.006 500.413 541.775 507.42 531.091 514.673C510.344 528.756 494.709 554.287 490.491 578.903C489.406 585.232 489.598 598.536 489.58 605.458L489.553 644.125C489.547 652.121 489.94 666.615 488.485 673.902C484.754 690.534 475.301 704.329 461.355 713.843C444.968 725.022 434.837 724.558 416.006 724.461L384.188 724.231C373.603 724.153 362.975 724.296 352.403 724.112C332.371 723.764 314.682 711.671 303.868 695.298C293.874 680.168 293.893 669.715 293.984 652.597L294.112 623.927C294.11 611.78 294.048 599.493 293.923 587.301C293.778 573.194 298.704 561.874 307.527 550.865C326 527.817 344.915 526.89 372.002 526.925L411.242 526.991C424.235 527.016 434.157 527.776 446.888 524.145C481.341 514.318 508.631 486.971 516.794 451.897C519.006 442.389 518.681 428.195 518.75 418.411L518.84 380.581C518.851 371.88 518.304 357.285 520.119 349.42C523.754 333.67 533.784 318.109 547.734 309.68C552.812 306.611 564.166 300.971 569.998 300.537C581.843 299.655 597.23 299.762 609.28 299.991C625.138 300.292 643.598 299.188 659.038 299.969C661.651 300.098 664.246 300.476 666.788 301.096C682.997 305.072 697.664 316.142 706.179 330.458C708.468 334.306 713.09 344.223 713.497 348.528C714.723 361.498 714.11 376.13 714.18 389.313C714.13 407.131 714.562 424.932 714.166 442.751C713.979 451.12 712.124 454.263 708.527 461.609C701.865 475.209 694.088 482.805 681.101 490.246C676.645 492.501 672.032 494.431 667.299 496.021Z';
@@ -36,11 +34,11 @@ const PATH_C =
 ---
 
 <div
-  style={`display:flex;align-items:flex-start;gap:${gap}px;font-family:var(--font-display);font-weight:700;font-size:${size}px;line-height:1;letter-spacing:-0.055em`}
+  style={`display:flex;align-items:flex-start;gap:${GAP}em;font-family:var(--font-display);font-weight:700;font-size:${size}px;line-height:1;letter-spacing:-0.063em`}
 >
   <svg
-    width={svgWidth}
-    height={markHeight}
+    width={Math.round(VB_WIDTH * ((size * CAP) / VB_HEIGHT))}
+    height={Math.round(size * CAP)}
     viewBox={`${VB_X} ${VB_Y} ${VB_WIDTH} ${VB_HEIGHT}`}
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

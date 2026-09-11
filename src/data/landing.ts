@@ -21,10 +21,17 @@ export const tagline = 'Aprende IA, potencia tus habilidades.';
 
 /* --- Hero ---------------------------------------------------------------- */
 
-export const heroStatement = ['Aprende IA.', 'potencia tus habilidades.'];
+/** The verb cycles; the rest of the headline is fixed. */
+export const heroVerbs = [
+  { word: 'Aprende', color: '#8A8EF9' },
+  { word: 'Practica', color: '#44D4C8' },
+  { word: 'Integra', color: '#F9C24D' },
+  { word: 'Adopta', color: '#B4B7FB' },
+];
 
-export const heroSubtitle =
-  'Squai enseña inteligencia artificial a personas, equipos y comunidades que no vienen de la tecnología. Sin jerga, sin humo y con las manos en la herramienta desde el primer día.';
+export const heroLines = { object: 'IA.', middle: 'potencia tus', last: 'Habilidades.' };
+
+export const heroSubtitle = 'Formación en IA para personas, equipos y comunidades que no vienen de la tecnología.';
 
 /* --- Cohorte abierta (hero eyebrow) --------------------------------------- */
 

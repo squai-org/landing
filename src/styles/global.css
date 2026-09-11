@@ -250,8 +250,30 @@ a.bento-card.dark:hover { color: var(--night-text); }
    Interaction states
 --------------------------------------------------------------------------- */
 
+/* Nav chrome: light type while the bar floats over the hero, ink once the
+   page has scrolled past it. */
+.nav-bar {
+  background-color: #FFFFFF77;
+  border: 1px solid rgba(13, 27, 42, .07);
+  transition: background-color .25s, border-color .25s;
+}
+.header-wrap.over-hero .nav-bar {
+  background-color: rgba(18, 22, 42, .5);
+  border-color: rgba(244, 246, 255, .16);
+}
+.header-wrap.over-hero .logo-link { --wordmark-color: #F4F6FF; }
+.header-wrap.over-hero .nav-toggle { color: var(--canvas); }
+.header-wrap.over-hero .nav-link { color: #E4E7F2; }
+.header-wrap.over-hero .nav-link:hover { background: rgba(244, 246, 255, .12); color: #FFFFFF; }
+
 .nav-link { transition: background .2s, color .2s; }
 .nav-link:hover { background: var(--canvas); color: var(--ink); }
+
+/* The dropdown menu is a light panel at any scroll position. */
+@media (max-width: 1023px) {
+  .header-wrap.over-hero .nav-links-row .nav-link { color: var(--ink-body); }
+  .header-wrap.over-hero .nav-links-row .nav-link:hover { background: var(--canvas); color: var(--ink); }
+}
 
 .btn-gold { transition: background .2s, transform .2s; }
 .btn-gold:hover { background: linear-gradient(180deg, #F9E183 0%, #F9C24D 100%); transform: translateY(-1px); }

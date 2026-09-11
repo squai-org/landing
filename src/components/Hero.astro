@@ -1,21 +1,26 @@
 ---
-import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing';
+import { cohort, cohortMeta, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
 ---
 
 <!--
   Night hero. Always the same inset on every side until the visitor scrolls,
   so it reads as one full panel on any device. No imagery (Brand Book §14.6).
 -->
-<section class="hero">
+<section class="hero" data-hero>
   <div class="hero-inner">
     <a href="/servicios/squai-one" class="hero-eyebrow">
+      <span class="hero-dot" aria-hidden="true"></span>
       <span class="hero-eyebrow-status">{cohort.status}</span>
       <span class="hero-eyebrow-text">{cohort.ecosystem} · {cohort.name}</span>
-      <span class="hero-eyebrow-arrow" aria-hidden="true">→</span>
     </a>
 
-    <h1 class="display d-display hero-title">
-      {heroStatement[0]}<br /><span style="color:#8A8EF9">{heroStatement[1]}</span>
+    <h1 class="hero-title">
+      <span class="hero-line-1">
+        <span class="hero-verb" data-hero-verb style={`color:${heroVerbs[0].color}`}>{heroVerbs[0].word}</span>
+        {' '}{heroLines.object}
+      </span>
+      <span class="hero-line-2">{heroLines.middle}</span>
+      <span class="hero-line-3">{heroLines.last}</span>
     </h1>
 
     <p class="hero-subtitle">{heroSubtitle}</p>
@@ -50,9 +55,9 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing
     </p>
   </div>
 
-  <button type="button" data-scroll-to="statement" class="hero-scroll" aria-label="Bajar al contenido">
+  <button type="button" data-scroll-to="statement" class="hero-scroll">
+    <span class="hero-dot" aria-hidden="true"></span>
     Seguir bajando
-    <span class="hero-scroll-icon" aria-hidden="true">↓</span>
   </button>
 </section>
 
@@ -67,7 +72,7 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing
     /* Equal inset on all four sides, whatever the viewport. */
     margin: var(--hero-inset);
     min-height: calc(100svh - var(--hero-inset) * 2);
-    padding: calc(var(--nav-space) + var(--gutter) * 0.5) var(--gutter) calc(var(--gutter) * 1.2);
+    padding: calc(var(--nav-space) + var(--gutter) * 0.4) var(--gutter) calc(var(--gutter) * 2.2);
     overflow: hidden;
   }
 
@@ -82,19 +87,28 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing
     gap: clamp(14px, 1.6vw, 24px);
   }
 
+  /* One dot shape for the eyebrow and the scroll cue, no stock glyphs. */
+  .hero-dot {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
   .hero-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     max-width: 100%;
-    padding: 9px 10px 9px 18px;
-    background: rgba(244, 246, 255, .07);
-    border: 1px solid rgba(244, 246, 255, .16);
+    padding: 9px 20px;
+    background: rgba(244, 246, 255, .92);
+    border: 1px solid rgba(244, 246, 255, .5);
     border-radius: var(--radius-pill);
     text-decoration: none;
-    transition: background .2s, border-color .2s;
+    transition: background .2s, transform .2s;
   }
-  .hero-eyebrow:hover { background: rgba(244, 246, 255, .12); border-color: rgba(244, 246, 255, .3); }
+  .hero-eyebrow:hover { background: #FFFFFF; transform: translateY(-1px); }
   .hero-eyebrow-status {
     flex: none;
     font-family: var(--font-display);
@@ -102,28 +116,40 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing
     font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--teal);
+    color: var(--periwinkle-ink);
   }
-  .hero-eyebrow-text { font-size: 13px; color: #D7DBEC; min-width: 0; }
-  .hero-eyebrow-arrow {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: rgba(244, 246, 255, .1);
-    color: var(--canvas);
-    font-size: 13px;
-  }
+  .hero-eyebrow-text { font-size: 13px; color: var(--ink-body); min-width: 0; }
 
-  /* Bound by height as well as width so the panel always fits one screen. */
-  .hero-title { color: var(--canvas); font-size: max(38px, min(10.8vw, 13.5svh)); }
+  .hero-title {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--canvas);
+  }
+  .hero-line-1,
+  .hero-line-3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 0.94;
+    font-size: max(34px, min(9.6vw, 12svh));
+  }
+  /* The middle line steps down into the reading face on purpose. */
+  .hero-line-2 {
+    font-family: var(--font-body);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    font-size: max(18px, min(4.2vw, 5.4svh));
+    color: #B7BCD0;
+  }
+  .hero-verb { transition: opacity .28s ease, color .28s ease; }
+  .hero-verb.is-out { opacity: 0; }
 
   .hero-subtitle {
     margin: 0;
-    max-width: 62ch;
+    max-width: 52ch;
     font-size: var(--t-lead);
     line-height: 1.5;
     color: #B7BCD0;
@@ -150,12 +176,10 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 11px 12px 11px 20px;
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(13, 27, 42, .07);
+    padding: 12px 22px;
+    border: 1px solid rgba(244, 246, 255, .5);
     border-radius: var(--radius-pill);
-    box-shadow: 0 1px 2px rgba(13, 27, 42, .04), 0 14px 34px -22px rgba(13, 27, 42, .28);
-    background-color: #FFFFFF77;
+    background: rgba(244, 246, 255, .92);
     color: var(--ink);
     font-family: var(--font-body);
     font-size: 14px;
@@ -163,36 +187,44 @@ import { cohort, cohortMeta, heroStatement, heroSubtitle } from '../data/landing
     cursor: pointer;
     transition: transform .2s, background-color .2s;
   }
-  .hero-scroll:hover { transform: translateX(-50%) translateY(2px); background-color: #FFFFFFAA; }
-  .hero-scroll-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(13, 27, 42, .07);
-    font-size: 14px;
-    line-height: 1;
-  }
+  .hero-scroll:hover { transform: translateX(-50%) translateY(2px); background-color: #FFFFFF; }
 
   /* Short viewports: tighten so the panel still fits one screen exactly. */
   @media (max-height: 700px) {
     .hero-inner { gap: 10px; }
-    .hero-title { font-size: max(28px, min(8.4vw, 11svh)); }
+    .hero-line-1, .hero-line-3 { font-size: max(26px, min(7.6vw, 10svh)); }
+    .hero-line-2 { font-size: max(16px, min(3.4vw, 4.6svh)); }
     .hero-subtitle { font-size: 14px; }
     .hero-meta { font-size: 13px; }
     .hero-actions a { padding: 13px 24px !important; font-size: 14px !important; }
   }
 
   @media (max-width: 639px) {
-    .hero { --nav-space: 72px; }
-    .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px; padding: 10px 16px; }
+    .hero { --nav-space: 76px; }
+    .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 10px 16px; }
     .hero-eyebrow-text { font-size: 12px; }
-    .hero-eyebrow-arrow { display: none; }
-    /* A wrapped line must not begin or end with a dangling separator. */
     .hero-meta-sep { display: none; }
     .hero-meta { display: flex; flex-direction: column; gap: 4px; }
     .hero-scroll { display: none; }
   }
 </style>
+
+<script>
+  import { heroVerbs } from '../data/landing';
+
+  const verb = document.querySelector<HTMLElement>('[data-hero-verb]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (verb && !reduced && heroVerbs.length > 1) {
+    let i = 0;
+    setInterval(() => {
+      verb.classList.add('is-out');
+      window.setTimeout(() => {
+        i = (i + 1) % heroVerbs.length;
+        verb.textContent = heroVerbs[i].word;
+        verb.style.color = heroVerbs[i].color;
+        verb.classList.remove('is-out');
+      }, 280);
+    }, 2600);
+  }
+</script>
