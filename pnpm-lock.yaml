@@ -14,6 +14,9 @@ importers:
       hono:
         specifier: ^4.13.7
         version: 4.13.7
+      sharp:
+        specifier: 0.35.4
+        version: 0.35.4
       zod:
         specifier: ^4.6.2
         version: 4.6.2

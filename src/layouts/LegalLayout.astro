@@ -14,22 +14,16 @@ const { title, description, pageTitle, updated } = Astro.props;
 ---
 
 <Layout title={title} description={description}>
-  <div style="padding: 0 0 40px; background-color: #F4F6FF">
+  <div class="legal-page-frame">
     <Header />
 
-    <main id="contenido" class="content-shell legal-content" style="max-width:880px;margin:150px auto 0;padding:0 32px 80px">
-      <h1
-        class="h2-title"
-        style="margin:0;font-family:var(--font-display);font-weight:700;font-size:var(--t-h2);line-height:1;letter-spacing:-0.05em;color:#0A0C1A"
-      >
+    <main id="contenido" class="content-shell legal-content">
+      <h1 class="h2-title legal-title">
         {pageTitle}
       </h1>
-      <p style="margin:10px 0 40px;font-size:17px;color:var(--ink-muted)">Última actualización: {updated}</p>
+      <p class="legal-updated">Última actualización: {updated}</p>
 
-      <div
-        class="legal-card"
-        style="background:#FFFFFF;border:1px solid rgba(13,27,42,.07);border-radius:28px;padding:clamp(24px,4vw,48px);box-shadow:0 1px 2px rgba(13,27,42,.03), 0 24px 60px -40px rgba(13,27,42,.35);display:flex;flex-direction:column;gap:28px"
-      >
+      <div class="legal-card">
         <slot />
       </div>
     </main>
@@ -37,3 +31,18 @@ const { title, description, pageTitle, updated } = Astro.props;
     <Footer />
   </div>
 </Layout>
+
+<style>
+  .legal-page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .legal-content { max-width: 880px; margin: 150px auto 0; padding: 0 32px 80px; }
+  .legal-title { margin: 0; color: var(--ink); font-family: var(--font-display); font-size: var(--t-h2); font-weight: 700; letter-spacing: -.05em; line-height: 1; }
+  .legal-updated { margin: 10px 0 40px; color: var(--ink-muted); font-size: 17px; }
+  .legal-card { display: flex; padding: clamp(24px, 4vw, 48px); flex-direction: column; gap: 28px; border: 1px solid rgba(13, 27, 42, .07); border-radius: 28px; background: var(--surface); box-shadow: 0 1px 2px rgba(13, 27, 42, .03), 0 24px 60px -40px rgba(13, 27, 42, .35); }
+  @media (max-width: 1023px) {
+    .legal-content { margin-top: 130px; }
+  }
+  @media (max-width: 639px) {
+    .legal-content { margin-top: 120px; }
+    .legal-card :global(h2) { font-size: 20px; }
+  }
+</style>

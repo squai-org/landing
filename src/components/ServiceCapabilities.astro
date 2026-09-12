@@ -11,15 +11,15 @@ const { headline, groups } = Astro.props;
 
 <section class="section tint">
   <div class="shell">
-    <h2 class="display d-h1" style="color:var(--ink)">{headline}</h2>
-    <div class="bento" style="margin-top:clamp(36px,4vw,64px)">
+    <h2 class="display d-h1 capabilities-title">{headline}</h2>
+    <div class="bento capabilities-grid">
       {
         groups.map((g) => (
-          <div class={`bento-card span-2 ${g.tone}`} style="gap:clamp(28px,3vw,56px);justify-content:space-between;min-height:clamp(260px,26vw,420px)">
+          <div class={`bento-card span-2 capability-card ${g.tone}`}>
             <h3 class="display d-h2">{g.t}</h3>
-            <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px">
+            <ul class="capability-list">
               {g.items.map((item) => (
-                <li class="body" style="font-weight:700">{item}</li>
+                <li class="body capability-item">{item}</li>
               ))}
             </ul>
           </div>
@@ -28,3 +28,11 @@ const { headline, groups } = Astro.props;
     </div>
   </div>
 </section>
+
+<style>
+  .capabilities-title { color: var(--ink); }
+  .capabilities-grid { margin-top: clamp(36px, 4vw, 64px); }
+  .capability-card { min-height: clamp(260px, 26vw, 420px); justify-content: space-between; gap: clamp(28px, 3vw, 56px); }
+  .capability-list { display: flex; margin: 0; padding: 0; flex-direction: column; gap: 10px; list-style: none; }
+  .capability-item { font-weight: 700; }
+</style>

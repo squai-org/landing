@@ -21,13 +21,13 @@ const { service } = Astro.props;
 ---
 
 <Layout title={`${service.name} — Squai`} description={service.slogan}>
-  <div style="padding:0 0 40px;background-color:#F4F6FF">
+  <div class="page-frame">
   <Header />
 
   <main id="contenido">
   <ServiceHero service={service} />
 
-  <div class="content-shell" style="margin-top:clamp(16px,1.6vw,28px)">
+  <div class="content-shell content-shell-spaced">
 
   <ServicePayback headline={service.payback.headline} cards={service.payback.cards} />
 
@@ -38,8 +38,8 @@ const { service } = Astro.props;
   {
     service.cta.modal ? (
       <section class="section tint">
-        <div class="shell" style="display:flex;flex-direction:column;align-items:flex-start;gap:clamp(20px,2.4vw,36px)">
-          <h2 class="display d-h2" style="color:var(--ink);max-width:22ch">
+        <div class="shell service-contact-shell">
+          <h2 class="display d-h2 service-contact-title">
             Cuéntanos dónde están hoy y armamos la propuesta sobre eso.
           </h2>
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.cta.label}</Button>
@@ -60,3 +60,10 @@ const { service } = Astro.props;
 
   <ContactModal />
 </Layout>
+
+<style>
+  .page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
+  .service-contact-shell { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(20px, 2.4vw, 36px); }
+  .service-contact-title { max-width: 22ch; color: var(--ink); }
+</style>

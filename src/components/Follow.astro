@@ -18,12 +18,12 @@ const ICONS: Record<string, string> = {
 
 <section class="section night follow-section">
   <div class="shell follow-card">
-      <h2 class="display d-h1" style="color:var(--canvas);flex:1 1 280px;min-width:0">Síguenos</h2>
+      <h2 class="display d-h1 follow-title">Síguenos</h2>
       <div class="follow-content">
         <p class="lead follow-copy">
           Seguimos en LinkedIn, Instagram y X. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
         </p>
-        <div class="social-row" style="display:flex;gap:14px;justify-content:flex-end;flex-wrap:wrap">
+        <div class="social-row">
           {
             socials.map((s) =>
               s.href ? (
@@ -33,8 +33,8 @@ const ICONS: Record<string, string> = {
                   </svg>
                 </a>
               ) : (
-                <span class="social-button is-inert" aria-hidden="true" style={`background:${ACCENTS[s.name]}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <span class="social-button social-button-static" aria-hidden="true" style={`--social-accent:${ACCENTS[s.name]};background:${ACCENTS[s.name]}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d={ICONS[s.name]} />
                   </svg>
                 </span>
@@ -64,6 +64,18 @@ const ICONS: Record<string, string> = {
     align-items: flex-end;
     gap: clamp(20px, 2.4vw, 36px);
   }
+  .follow-title { min-width: 0; flex: 1 1 280px; color: var(--canvas); }
+  .social-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 14px; }
+  .social-button-static {
+    pointer-events: none;
+    cursor: default;
+  }
+  .social-button-static:hover {
+    background: var(--social-accent);
+    color: var(--canvas);
+    transform: none;
+    filter: none;
+  }
   .follow-copy {
     max-width: 46ch;
     margin-left: auto;
@@ -82,7 +94,7 @@ const ICONS: Record<string, string> = {
       text-align: left;
     }
     .follow-card .social-row {
-      justify-content: flex-start !important;
+      justify-content: flex-start;
     }
   }
 </style>

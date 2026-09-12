@@ -2,13 +2,12 @@
 import Logo from './Logo.astro';
 import Button from './Button.astro';
 import { navLinks } from '../data/landing';
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
-<header class="header-wrap over-hero" data-header style="position:fixed;top:0;left:0;right:0;z-index:60;padding:30px 24px 0">
-  <div
-    class="nav-bar"
-    style="max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 9px 10px 9px 24px; backdrop-filter: blur(16px); border-radius: 100px; box-shadow: 0 1px 2px rgba(13,27,42,.04), 0 14px 34px -22px rgba(13,27,42,.28)"
-  >
+<header class="header-wrap over-hero" data-header>
+  <div class="nav-bar">
     <a href="/" class="logo-link" aria-label="Squai — inicio">
       <Logo size={34} />
     </a>
@@ -26,22 +25,75 @@ import { navLinks } from '../data/landing';
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
     </button>
-    <nav id="site-nav" class="nav-links-row" data-nav-menu aria-label="Principal" style="display:flex;align-items:center;gap:4px">
+    <nav id="site-nav" class="nav-links-row" data-nav-menu aria-label="Principal">
       {
         navLinks.map((link) => (
           <a
             href={`/#${link.target}`}
             data-scroll-to={link.target}
+            data-nav-section={link.target}
             class="nav-link"
-            style="font-size:17px;font-weight:600;color:#333;cursor:pointer;padding:9px 14px;border-radius:100px"
           >
             {link.label}
           </a>
         ))
       }
-      <div class="nav-cta-wrap" style="margin-left:8px">
-        <Button variant="primary" href="/servicios/squai-one#lista" compact class="nav-cta">Inscribirme</Button>
+      <div class="nav-cta-wrap">
+        <Button variant="primary" href="/servicios/squai-one#lista" compact class="nav-cta" aria-current={currentPath === '/servicios/squai-one' ? 'page' : undefined}>Lista de espera</Button>
       </div>
     </nav>
   </div>
 </header>
+
+<style>
+  .header-wrap { position: fixed; inset: 0 0 auto; z-index: 60; padding: 30px 24px 0; }
+  .nav-bar {
+    display: flex;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 9px 10px 9px 24px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border-radius: var(--radius-pill);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 1px 2px rgba(13, 27, 42, .04), 0 14px 34px -22px rgba(13, 27, 42, .28);
+  }
+  .nav-links-row { display: flex; align-items: center; gap: 4px; }
+  .nav-link {
+    padding: 9px 14px;
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .nav-cta-wrap { margin-left: 8px; }
+  .nav-toggle { display: none; border: 0; background: transparent; color: var(--ink); cursor: pointer; flex: none; }
+
+  @media (max-width: 1023px) {
+    .header-wrap { padding: 18px 16px 0; }
+    .nav-bar { position: relative; padding: 9px 9px 9px 18px; }
+    .nav-toggle { display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: var(--radius-md); }
+    .nav-toggle:hover { background: rgba(244, 246, 255, .12); }
+    .nav-links-row {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      left: 0;
+      display: none;
+      padding: 12px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      border: 1px solid var(--line-soft);
+      border-radius: 24px;
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgba(10, 12, 26, .04), 0 20px 40px -16px rgba(10, 12, 26, .3);
+    }
+    .nav-links-row.nav-open { display: flex; }
+    .nav-link { width: 100%; padding: 14px; text-align: center; }
+    .nav-cta-wrap { width: 100%; margin-top: 6px; margin-left: 0; }
+    .nav-cta-wrap :global(.btn) { width: 100%; }
+  }
+</style>

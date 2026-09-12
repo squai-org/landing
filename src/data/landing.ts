@@ -33,7 +33,7 @@ export const heroLines = { object: 'IA.', middle: 'potencia tus', last: 'Habilid
 
 export const heroSubtitle = 'Entrenamiento en inteligencia artificial para personas, equipos y comunidades educativas.';
 
-/* --- Cohorte abierta (hero eyebrow) --------------------------------------- */
+/* --- Próxima cohorte: registro en lista de espera ------------------------- */
 
 export interface Cohort {
   status: string;
@@ -46,13 +46,13 @@ export interface Cohort {
 }
 
 export const cohort: Cohort = {
-  status: 'Cohorte abierta',
+  status: 'Lista de espera abierta',
   name: 'Fundamentos de Inteligencia Artificial Generativa',
   ecosystem: 'Squai One',
   duration: '5 semanas · 20 horas',
   schedule: 'Martes y jueves, 6:30 p. m. a 8:30 p. m. (hora Colombia)',
   modality: '100% virtual, en vivo y con grabaciones',
-  seats: 'Cupos limitados · inscripción por lista de espera',
+  seats: 'La inscripción todavía no está abierta',
 };
 
 /* --- Statement bajo el hero ----------------------------------------------- */
@@ -117,7 +117,6 @@ export const capabilities: Capability[] = [
 export const impact = {
   title: 'Nuestro impacto',
   copy: 'Trabajamos con personas, equipos y comunidades educativas que llegan sin saber por dónde empezar y salen usando IA en su día a día con criterio propio.',
-  ctaLabel: 'Conoce a nuestros clientes',
 };
 
 /* --- Servicios ------------------------------------------------------------
@@ -166,7 +165,7 @@ export const services: Service[] = [
     audience: 'Personas',
     slogan: 'Aprende IA sin que nadie te la tenga que traducir.',
     cardCopy:
-      'Cohortes en vivo para personas que quieren entender la IA de una vez, no coleccionar tutoriales. Aquí vive la cohorte abierta.',
+      'Cohortes en vivo para personas que quieren entender la IA de una vez, no coleccionar tutoriales. Aquí puedes unirte a la lista de espera de la próxima cohorte.',
     accent: '#8A8EF9',
     span: 'span-3 row-2',
     tone: 'peri',
@@ -236,7 +235,7 @@ export const services: Service[] = [
         },
       ],
     },
-    cta: { label: 'Reservar mi lugar', modal: '', target: 'lista' },
+    cta: { label: 'Unirme a la lista de espera', modal: '', target: 'lista' },
     faqs: [
       {
         q: '¿Necesito conocimientos previos de tecnología?',
@@ -339,7 +338,7 @@ export const services: Service[] = [
         },
       ],
     },
-    cta: { label: 'Agendar una llamada', modal: 'grow', target: '' },
+    cta: { label: 'Solicitar una llamada', modal: 'grow', target: '' },
     faqs: [
       {
         q: '¿Desde cuántas personas trabajan con un equipo?',
@@ -438,7 +437,7 @@ export const services: Service[] = [
         },
       ],
     },
-    cta: { label: 'Agendar una llamada', modal: 'learn', target: '' },
+    cta: { label: 'Solicitar una llamada', modal: 'learn', target: '' },
     faqs: [
       {
         q: '¿Trabajan con colegios o solo con universidades?',
@@ -564,7 +563,7 @@ export const faqs: Faq[] = [
   },
   {
     q: '¿Cómo empiezo?',
-    a: 'Si es para ti, entra a Squai One y reserva tu lugar en la lista de espera. Si es para una organización o una institución, agenda una llamada desde la página del servicio y lo conversamos.',
+    a: 'Si es para ti, entra a Squai One y únete a la lista de espera. Si es para una organización o una institución, solicita una llamada desde la página del servicio y te escribimos en menos de 24 horas hábiles.',
   },
 ];
 

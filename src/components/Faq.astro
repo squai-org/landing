@@ -11,35 +11,25 @@ const { items, title = 'Preguntas frecuentes' } = Astro.props;
 
 <section id="faq" class="section tint">
   <div class="shell">
-    <h2 class="display d-h1" style="color:var(--ink)">{title}</h2>
-    <div style="margin-top:clamp(36px,4vw,64px);max-width:960px;display:flex;flex-direction:column;gap:clamp(10px,1vw,16px)">
+    <h2 class="display d-h1 faq-title">{title}</h2>
+    <div class="faq-list">
       {
         items.map((f, i) => (
-          <div class="bento-card" style="gap:0;padding:0;overflow:hidden">
+          <div class="bento-card faq-item">
             <button
               type="button"
               class="faq-toggle"
               data-faq-toggle={String(i)}
               aria-expanded="false"
               aria-controls={`faq-panel-${i}`}
-              style="width:100%;display:flex;gap:24px;align-items:center;justify-content:space-between;background:transparent;border:0;padding:clamp(20px,2vw,28px) clamp(22px,2.2vw,34px);cursor:pointer;text-align:left"
             >
               <span class="display d-h3">{f.q}</span>
-              <span
-                data-faq-sign={String(i)}
-                aria-hidden="true"
-                style="flex:none;width:34px;height:34px;border-radius:50%;background:var(--periwinkle-tint);color:var(--periwinkle-ink);display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1"
-              >
+              <span data-faq-sign={String(i)} aria-hidden="true" class="faq-sign">
                 +
               </span>
             </button>
-            <div
-              id={`faq-panel-${i}`}
-              data-faq-panel={String(i)}
-              hidden
-              style="padding:0 clamp(22px,2.2vw,34px) clamp(22px,2.2vw,30px)"
-            >
-              <p class="lead" style="max-width:70ch;color:var(--ink-body)">{f.a}</p>
+            <div id={`faq-panel-${i}`} data-faq-panel={String(i)} hidden class="faq-panel">
+              <p class="lead faq-answer">{f.a}</p>
             </div>
           </div>
         ))
@@ -47,3 +37,24 @@ const { items, title = 'Preguntas frecuentes' } = Astro.props;
     </div>
   </div>
 </section>
+
+<style>
+  .faq-title { color: var(--ink); }
+  .faq-list { display: flex; max-width: 960px; margin-top: clamp(36px, 4vw, 64px); flex-direction: column; gap: clamp(10px, 1vw, 16px); }
+  .faq-item { gap: 0; padding: 0; overflow: hidden; }
+  .faq-toggle {
+    display: flex;
+    width: 100%;
+    padding: clamp(20px, 2vw, 28px) clamp(22px, 2.2vw, 34px);
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+  }
+  .faq-sign { display: flex; width: 34px; height: 34px; flex: none; align-items: center; justify-content: center; border-radius: 50%; background: var(--periwinkle-tint); color: var(--periwinkle-ink); font-size: 18px; line-height: 1; }
+  .faq-panel { padding: 0 clamp(22px, 2.2vw, 34px) clamp(22px, 2.2vw, 30px); }
+  .faq-answer { max-width: 70ch; color: var(--ink-body); }
+</style>

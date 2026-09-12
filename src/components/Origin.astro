@@ -2,12 +2,12 @@
 import { originStory } from '../data/landing';
 ---
 
-<section id="origen" class="section origin-section" style="background:var(--gold)">
+<section id="origen" class="section origin-section">
   <img class="brand-shape origin-shape" src="/images/shape-origin-light.svg" alt="" aria-hidden="true" />
-  <div class="shell grid-sidebar origin-content" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
-    <h2 class="display d-h1 sidebar-sticky" style="position:sticky;top:120px;color:var(--midnight)">Cómo nació Squai</h2>
-    <div style="display:flex;flex-direction:column;gap:20px">
-      {originStory.map((para) => <p class="lead" style="color:var(--midnight);opacity:.9">{para}</p>)}
+  <div class="shell grid-sidebar origin-content">
+    <h2 class="display d-h1 sidebar-sticky origin-title">Cómo nació Squai</h2>
+    <div class="origin-copy-list">
+      {originStory.map((para) => <p class="lead origin-copy">{para}</p>)}
     </div>
   </div>
 </section>
@@ -17,6 +17,7 @@ import { originStory } from '../data/landing';
     position: relative;
     overflow: hidden;
     border: 1px solid var(--line);
+    background: var(--gold);
   }
   .origin-shape {
     position: absolute;
@@ -29,6 +30,14 @@ import { originStory } from '../data/landing';
     pointer-events: none;
     user-select: none;
   }
-  .origin-content { position: relative; z-index: 1; }
+  .origin-content { position: relative; z-index: 1; display: grid; grid-template-columns: .8fr 1.2fr; align-items: start; gap: clamp(32px, 5vw, 80px); }
+  .origin-title { position: sticky; top: 120px; color: var(--midnight); }
+  .origin-copy-list { display: flex; flex-direction: column; gap: 20px; }
+  .origin-copy { color: var(--midnight); opacity: .9; }
+
+  @media (max-width: 900px) {
+    .origin-content { grid-template-columns: 1fr; gap: clamp(24px, 4vw, 40px); }
+    .origin-title { position: static; }
+  }
 
 </style>

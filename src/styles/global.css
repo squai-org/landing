@@ -368,20 +368,57 @@ a.bento-card.dark:hover { color: var(--night-text); }
 }
 .header-wrap.over-hero .logo-link { --wordmark-color: #F4F6FF; }
 .header-wrap.over-hero .nav-toggle { color: var(--canvas); }
-.header-wrap.over-hero .nav-link { color: #E4E7F2 !important; }
-.header-wrap.over-hero .nav-link:hover { background: rgba(244, 246, 255, .12); color: #FFFFFF !important; }
+.header-wrap.over-hero .nav-link { color: #E4E7F2; }
+.header-wrap.over-hero .nav-link:hover { background: rgba(244, 246, 255, .12); color: var(--surface); }
 
 .nav-link { transition: background .2s, color .2s; }
 .nav-link:hover { background: var(--canvas); color: var(--ink); }
 
 /* The dropdown menu is a light panel at any scroll position. */
 @media (max-width: 1023px) {
-  .header-wrap.over-hero .nav-links-row .nav-link { color: var(--ink-body) !important; }
-  .header-wrap.over-hero .nav-links-row .nav-link:hover { background: var(--canvas); color: var(--ink) !important; }
+  .header-wrap.over-hero .nav-links-row .nav-link { color: var(--ink-body); }
+  .header-wrap.over-hero .nav-links-row .nav-link:hover { background: var(--canvas); color: var(--ink); }
 }
 
-.field { transition: border-color .2s, box-shadow .2s; }
+.field-grid-2,
+.field-grid-phone {
+  display: grid;
+  gap: 14px;
+}
+.field-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.field-grid-phone { grid-template-columns: 110px minmax(0, 1fr); margin-top: 14px; }
+.field-group { display: flex; min-width: 0; flex-direction: column; gap: 7px; }
+.field-group-spaced { margin-top: 14px; }
+.field-label {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.field-label > [aria-hidden='true'],
+.form-instructions > [aria-hidden='true'] { color: #B3261E; }
+.field-optional { color: var(--ink-muted); font-family: var(--font-body); font-weight: 400; }
+.form-instructions { margin: 0 0 14px; color: var(--ink-muted); font-size: 14px; }
+.field {
+  width: 100%;
+  min-height: 52px;
+  padding: 15px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  outline: none;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  transition: border-color .2s, box-shadow .2s;
+}
+textarea.field { min-height: 120px; resize: vertical; }
 .field:focus { border-color: rgba(138, 142, 249, .65); box-shadow: 0 0 0 3px rgba(138, 142, 249, .18); }
+.field[aria-invalid='true'] { border-color: #B3261E; box-shadow: 0 0 0 2px rgba(179, 38, 30, .12); }
+.field-error { min-height: 1.25em; color: #B3261E; font-size: 14px; line-height: 1.25; }
+.field-error:empty { min-height: 0; }
+.form-submit { margin-top: 18px; }
 
 .nav-link:focus-visible,
 .card-link:focus-visible,
@@ -400,7 +437,7 @@ a.bento-card.dark:hover { color: var(--night-text); }
   background-position: right 18px center;
   background-size: 12px 8px;
 }
-.select-field:invalid { color: var(--ink-muted) !important; }
+.select-field:invalid { color: var(--ink-muted); }
 .select-field option { color: var(--ink); background: var(--surface); }
 .select-field option[value=""] { color: var(--ink-muted); }
 
@@ -443,12 +480,6 @@ a.bento-card.dark:hover { color: var(--night-text); }
   outline: 3px solid var(--periwinkle);
   outline-offset: 3px;
 }
-
-.modal-close { transition: background-color .18s ease, transform .18s ease; }
-.modal-close:hover { background: var(--periwinkle) !important; transform: translateY(-2px); }
-.modal-close:active { transform: none; }
-
-.social-button.is-inert { opacity: .45; pointer-events: none; }
 
 .sr-only {
   position: absolute;
@@ -512,28 +543,11 @@ a.bento-card.dark:hover { color: var(--night-text); }
 .legal-card strong { font-weight: 700; color: var(--ink); }
 .legal-card a { color: var(--periwinkle-ink); text-decoration: underline; }
 
-@media (max-width: 1023px) {
-  .legal-content { margin-top: 130px !important; }
-}
-@media (max-width: 639px) {
-  .legal-content { margin-top: 120px !important; }
-  .legal-card h2 { font-size: 20px !important; }
-}
-
 /* ---------------------------------------------------------------------------
    Responsive layer
    Breakpoints move layout and spacing only — the type scale is fluid and
    never drops below its floor.
 --------------------------------------------------------------------------- */
-
-.nav-toggle {
-  display: none;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  flex: none;
-}
 
 /* Tablet and below: three-up grids become two-up. */
 @media (max-width: 1100px) {
@@ -550,46 +564,6 @@ a.bento-card.dark:hover { color: var(--night-text); }
   /* Small cards stay two-up; wide ones take the full row. */
   .span-2 { grid-column: span 1; }
   .span-3, .span-4, .span-6 { grid-column: span 2; }
-  .grid-2, .grid-sidebar, .split { grid-template-columns: 1fr !important; }
-  .grid-sidebar { gap: clamp(24px, 4vw, 40px) !important; }
-  .sidebar-sticky { position: static !important; top: auto !important; }
-  .impact-row > * { flex: 1 1 100% !important; }
-}
-
-@media (max-width: 1023px) {
-  .header-wrap { padding: 18px 16px 0 !important; }
-  .nav-bar { padding: 9px 9px 9px 18px !important; position: relative; }
-
-  .nav-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-md);
-  }
-  .nav-toggle:hover { background: rgba(244, 246, 255, .12); }
-
-  .nav-links-row {
-    display: none !important;
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 0;
-    right: 0;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 4px !important;
-    background: var(--surface);
-    border: 1px solid var(--line-soft);
-    border-radius: 24px;
-    padding: 12px !important;
-    box-shadow: 0 1px 2px rgba(10, 12, 26, .04), 0 20px 40px -16px rgba(10, 12, 26, .3);
-  }
-  .nav-links-row.nav-open { display: flex !important; }
-
-  .nav-link { width: 100%; text-align: center; padding: 14px !important; }
-  .nav-cta-wrap { margin-left: 0 !important; width: 100%; margin-top: 6px; }
-  .nav-cta-wrap .btn { width: 100%; }
 }
 
 /* Phones: single column, full-width actions, generous touch targets. */
@@ -602,29 +576,6 @@ a.bento-card.dark:hover { color: var(--night-text); }
   .btn { padding-inline: 18px; gap: 12px; letter-spacing: .04em; }
   .hero-actions .btn { width: auto; }
 
-  /* Photo on top, the person's details underneath it. */
-  .instructor-card {
-    position: relative;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 18px !important;
-  }
-  .instructor-photo { width: 128px !important; height: 146px !important; }
-  .instructor-card > .social-button { position: absolute; top: 22px; right: 22px; }
-
-  .card-pad-lg { padding: 22px !important; border-radius: 22px !important; }
-  .field-grid-2 { grid-template-columns: 1fr !important; }
-  .field-grid-phone { grid-template-columns: 84px 1fr !important; }
-  .modal-backdrop { padding: 30px 12px 12px !important; }
-}
-
-/* Footer */
-@media (max-width: 1023px) {
-  .footer-pad { padding: 64px 40px 32px !important; margin: 20px 10px 10px !important; }
-  .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
-}
-@media (max-width: 640px) {
-  .footer-pad { padding: 48px 22px 28px !important; margin: 16px 8px 8px !important; border-radius: 24px !important; }
-  .footer-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
-  .footer-bottom { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+  .field-grid-2 { grid-template-columns: 1fr; }
+  .field-grid-phone { grid-template-columns: 84px minmax(0, 1fr); }
 }
