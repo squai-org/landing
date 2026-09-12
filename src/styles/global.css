@@ -146,6 +146,20 @@
 
 * { box-sizing: border-box; }
 
+.brand-shape {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (max-width: 1023px) {
+  .brand-shape { display: none; }
+}
+
+@media (forced-colors: active) {
+  .brand-shape { display: none; }
+}
+
 body {
   margin: 0;
   background: var(--canvas);
@@ -306,9 +320,9 @@ a.bento-card.dark:hover { color: var(--night-text); }
 .btn-block { width: 100%; }
 
 .btn:focus-visible {
-  outline: 3px solid var(--midnight);
+  outline: 2px solid transparent;
   outline-offset: 2px;
-  box-shadow: 0 0 0 5px var(--canvas);
+  box-shadow: 0 0 0 3px var(--canvas), 0 0 0 6px var(--periwinkle-ink);
 }
 
 /* Social icon button: same structural Block shape as the main button atom. */
@@ -539,7 +553,7 @@ a.bento-card.dark:hover { color: var(--night-text); }
   .grid-2, .grid-sidebar, .split { grid-template-columns: 1fr !important; }
   .grid-sidebar { gap: clamp(24px, 4vw, 40px) !important; }
   .sidebar-sticky { position: static !important; top: auto !important; }
-  .impact-row > *, .follow-card > * { flex: 1 1 100% !important; }
+  .impact-row > * { flex: 1 1 100% !important; }
 }
 
 @media (max-width: 1023px) {
@@ -600,9 +614,8 @@ a.bento-card.dark:hover { color: var(--night-text); }
 
   .card-pad-lg { padding: 22px !important; border-radius: 22px !important; }
   .field-grid-2 { grid-template-columns: 1fr !important; }
-  .field-grid-phone { grid-template-columns: 96px 1fr !important; }
-  .modal-backdrop { padding: 12px !important; }
-  .follow-card .social-row { justify-content: flex-start !important; }
+  .field-grid-phone { grid-template-columns: 84px 1fr !important; }
+  .modal-backdrop { padding: 30px 12px 12px !important; }
 }
 
 /* Footer */

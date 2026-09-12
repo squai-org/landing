@@ -28,3 +28,4 @@ pnpm-debug.log*
 # secrets locales de wrangler dev
 .dev.vars
 .dev.vars.*
+.gstack/

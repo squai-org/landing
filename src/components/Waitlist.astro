@@ -38,7 +38,7 @@ const fieldStyle =
         </label>
         <label>
           <span class="sr-only">Número de teléfono</span>
-          <input type="tel" name="phone" required autocomplete="tel-national" placeholder="Número de teléfono" class="field" style={fieldStyle} />
+          <input type="tel" name="phone" required autocomplete="tel-national" placeholder="Teléfono" class="field" style={fieldStyle} />
         </label>
       </div>
       <Turnstile action="waitlist" />
@@ -49,3 +49,9 @@ const fieldStyle =
     </form>
   </div>
 </section>
+
+<style>
+  @media (max-width: 400px) {
+    .field { padding-inline: 14px !important; }
+  }
+</style>

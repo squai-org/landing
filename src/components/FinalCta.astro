@@ -3,7 +3,7 @@ import Button from './Button.astro';
 ---
 
 <section class="section final-cta" style="background:var(--teal)">
-  <img class="final-shape" src="/images/shape-final-dark.svg" alt="" aria-hidden="true" />
+  <img class="brand-shape final-shape" src="/images/shape-final-dark.svg" alt="" aria-hidden="true" />
   <div class="shell grid-sidebar final-content" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
     <h2 class="display d-h2 sidebar-sticky" style="position:sticky;top:120px;color:var(--midnight);max-width:16ch">
       La IA ya no es opcional, es una habilidad para la vida
@@ -42,14 +42,9 @@ import Button from './Button.astro';
   .final-content { position: relative; z-index: 1; }
   .final-copy { color: var(--canvas); opacity: .9; }
 
-  /* Responsive only: periwinkle instead of teal. */
   @media (max-width: 1023px) {
     .final-cta { background: var(--periwinkle) !important; }
-    .final-shape { width: 165%; height: 92%; left: -32%; top: 28%; }
-    .final-copy-column { padding-top: clamp(48px, 12vw, 92px); }
-  }
-
-  @media (max-width: 640px) {
-    .final-shape { width: 215%; left: -58%; top: 31%; }
+    .final-copy { color: var(--midnight); opacity: 1; }
+    .final-copy-column > div { justify-content: flex-start !important; }
   }
 </style>

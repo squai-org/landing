@@ -186,9 +186,16 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
 
   @media (max-width: 640px) {
     .team-member {
-      --photo-col: 112px;
-      grid-template-columns: var(--photo-col) minmax(0, 1fr);
-      column-gap: calc(var(--photo-col) + 16px);
+      --photo-col: clamp(140px, 42vw, 184px);
+      grid-template-columns: minmax(0, 1fr);
+      column-gap: 0;
+      row-gap: 18px;
+      align-items: start;
+      padding: 0;
+    }
+
+    .team-photo-frame {
+      width: var(--photo-col);
     }
 
     .team-member-name {
@@ -197,19 +204,8 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
 
     .team-member-role,
     .team-member-description {
-      font-size: 14px;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .team-member {
-      --photo-col: 92px;
-      grid-template-columns: var(--photo-col) minmax(0, 1fr);
-      column-gap: calc(var(--photo-col) + 12px);
-    }
-
-    .team-member-name {
-      font-size: 21px;
+      max-width: none;
+      font-size: 15px;
     }
   }
 

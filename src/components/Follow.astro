@@ -75,10 +75,14 @@ const ICONS: Record<string, string> = {
       grid-template-columns: 1fr;
       gap: 28px;
     }
-  }
-  @media (max-width: 640px) {
+    .follow-content { align-items: flex-start; }
+    .follow-copy {
+      margin-left: 0;
+      max-width: none;
+      text-align: left;
+    }
     .follow-card .social-row {
-      justify-content: flex-end !important;
+      justify-content: flex-start !important;
     }
   }
 </style>
