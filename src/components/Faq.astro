@@ -1,43 +1,49 @@
 ---
-import { faqs } from '../data/landing';
+import type { Faq } from '../data/landing';
+
+interface Props {
+  items: Faq[];
+  title?: string;
+}
+
+const { items, title = 'Preguntas frecuentes' } = Astro.props;
 ---
 
-<div id="faq" class="section-pad" style="padding:80px 64px">
-  <div style="max-width:880px;margin:0 auto">
-    <h2
-      class="h2-title"
-      style="margin:0 0 44px;font-family:'Urbanist',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-0.03em;color:#0D1B2A;text-align:center"
-    >
-      Preguntas frecuentes
-    </h2>
-    <div style="border-top:1px solid rgba(13,27,42,.1)">
+<section id="faq" class="section tint">
+  <div class="shell">
+    <h2 class="display d-h1" style="color:var(--ink)">{title}</h2>
+    <div style="margin-top:clamp(36px,4vw,64px);max-width:960px;display:flex;flex-direction:column;gap:clamp(10px,1vw,16px)">
       {
-        faqs.map((f, i) => (
-          <div style="border-bottom:1px solid rgba(13,27,42,.1)">
-            <div
-              data-faq-toggle={i}
-              style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:26px 4px;cursor:pointer"
+        items.map((f, i) => (
+          <div class="bento-card" style="gap:0;padding:0;overflow:hidden">
+            <button
+              type="button"
+              class="faq-toggle"
+              data-faq-toggle={String(i)}
+              aria-expanded="false"
+              aria-controls={`faq-panel-${i}`}
+              style="width:100%;display:flex;gap:24px;align-items:center;justify-content:space-between;background:transparent;border:0;padding:clamp(20px,2vw,28px) clamp(22px,2.2vw,34px);cursor:pointer;text-align:left"
             >
-              <div style="font-family:'Urbanist',sans-serif;font-weight:800;font-size:20px;letter-spacing:-0.01em;color:#0D1B2A">
-                {f.q}
-              </div>
+              <span class="display d-h3">{f.q}</span>
               <span
-                data-faq-sign={i}
-                style="width:32px;height:32px;border-radius:50%;background:#F4F6FF;color:#3D50CC;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex:none"
+                data-faq-sign={String(i)}
+                aria-hidden="true"
+                style="flex:none;width:34px;height:34px;border-radius:50%;background:var(--periwinkle-tint);color:var(--periwinkle-ink);display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1"
               >
                 +
               </span>
-            </div>
+            </button>
             <div
-              data-faq-panel={i}
+              id={`faq-panel-${i}`}
+              data-faq-panel={String(i)}
               hidden
-              style="padding:0 60px 28px 4px;font-size:16px;font-weight:300;line-height:1.7;color:#333"
+              style="padding:0 clamp(22px,2.2vw,34px) clamp(22px,2.2vw,30px)"
             >
-              {f.a}
+              <p class="lead" style="max-width:70ch;color:var(--ink-body)">{f.a}</p>
             </div>
           </div>
         ))
       }
     </div>
   </div>
-</div>
+</section>

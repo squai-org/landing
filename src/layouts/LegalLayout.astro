@@ -17,22 +17,22 @@ const { title, description, pageTitle, updated } = Astro.props;
   <div style="padding: 0 0 40px; background-color: #F4F6FF">
     <Header />
 
-    <div class="content-shell legal-content" style="max-width:880px;margin:150px auto 0;padding:0 32px 80px">
+    <main id="contenido" class="content-shell legal-content" style="max-width:880px;margin:150px auto 0;padding:0 32px 80px">
       <h1
         class="h2-title"
-        style="margin:0;font-family:'Urbanist',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-0.03em;color:#0D1B2A"
+        style="margin:0;font-family:var(--font-display);font-weight:700;font-size:var(--t-h2);line-height:1;letter-spacing:-0.05em;color:#0A0C1A"
       >
         {pageTitle}
       </h1>
-      <p style="margin:10px 0 40px;font-size:14px;font-weight:400;color:#888">Última actualización: {updated}</p>
+      <p style="margin:10px 0 40px;font-size:17px;color:var(--ink-muted)">Última actualización: {updated}</p>
 
       <div
-        class="section-pad legal-card"
-        style="background:#FFFFFF;border:1px solid rgba(13,27,42,.07);border-radius:28px;padding:48px;box-shadow:0 1px 2px rgba(13,27,42,.03), 0 24px 60px -40px rgba(13,27,42,.35);display:flex;flex-direction:column;gap:28px"
+        class="legal-card"
+        style="background:#FFFFFF;border:1px solid rgba(13,27,42,.07);border-radius:28px;padding:clamp(24px,4vw,48px);box-shadow:0 1px 2px rgba(13,27,42,.03), 0 24px 60px -40px rgba(13,27,42,.35);display:flex;flex-direction:column;gap:28px"
       >
         <slot />
       </div>
-    </div>
+    </main>
 
     <Footer />
   </div>

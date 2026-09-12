@@ -1,0 +1,33 @@
+---
+interface Props {
+  variant?: 'primary' | 'gold' | 'teal' | 'dark' | 'ghost' | 'white';
+  href?: string;
+  type?: 'button' | 'submit';
+  block?: boolean;
+  compact?: boolean;
+  disabled?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  variant = 'primary',
+  href,
+  type = 'button',
+  block = false,
+  compact = false,
+  disabled = false,
+  class: extraClass = '',
+  ...rest
+} = Astro.props;
+
+const classes = ['btn', `btn-${variant}`, block ? 'btn-block' : '', compact ? 'btn-compact' : '', extraClass]
+  .filter(Boolean)
+  .join(' ');
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag class={classes} href={href} type={href ? undefined : type} disabled={href ? undefined : disabled} {...rest}>
+  <span class="btn-label"><slot /></span>
+</Tag>

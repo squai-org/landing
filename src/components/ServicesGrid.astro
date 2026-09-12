@@ -1,0 +1,88 @@
+---
+import { services } from '../data/landing';
+---
+
+<section id="servicios" class="section tint">
+  <div class="shell">
+    <h2 class="display d-h1" style="color:var(--ink)">Servicios</h2>
+
+    <div class="bento" style="margin-top:clamp(36px,4vw,64px)">
+      {
+        services.map((s) => (
+          <a href={`/servicios/${s.slug}`} class={`bento-card card-link ${s.span} ${s.tone}`} style="justify-content:space-between;gap:clamp(24px,3vw,48px)">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <span class="service-eyebrow">
+                <span class="service-eyebrow-dot" style={`background:${s.accent}`}></span>
+                <span class="service-eyebrow-text">{s.audience}</span>
+              </span>
+              <p class="body" style="max-width:44ch">{s.cardCopy}</p>
+            </div>
+            <div class={`service-card-footer${s.slug === 'squai-one' ? ' service-title-rise' : ''}`}>
+              <h3 class="display d-h1">{s.name}</h3>
+              <span class="btn btn-dark discover" aria-hidden="true">
+                <span class="btn-label">Descubrir</span>
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-eyebrow {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 12px;
+    max-width: 100%;
+    padding: 10px 22px;
+    background: rgba(244, 246, 255, .92);
+    border: 1px solid rgba(244, 246, 255, .5);
+    border-radius: var(--radius-pill);
+  }
+  .service-eyebrow-dot {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+  }
+  .service-eyebrow-text {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--periwinkle-ink);
+  }
+
+  .service-card-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 16px;
+  }
+  .service-card-footer h3 {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .service-card-footer .discover {
+    flex: none;
+  }
+  .service-title-rise {
+    will-change: transform;
+  }
+  .card-link:hover .discover { background: #26262B; transform: translateY(-1px); }
+  .card-link:hover .discover .btn-lead { width: 19px; margin-right: 14px; opacity: 1; transform: none; }
+
+  @media (max-width: 640px) {
+    .service-card-footer {
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .service-card-footer h3 { flex: 1 1 100%; }
+  }
+</style>

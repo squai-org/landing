@@ -1,0 +1,35 @@
+---
+/**
+ * Widget de Turnstile en modo implícito: el script api.js (cargado en Layout)
+ * busca los elementos con clase `cf-turnstile` y añade al formulario el input
+ * oculto `cf-turnstile-response`, que el backend valida contra siteverify.
+ * https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/
+ *
+ * Sin PUBLIC_TURNSTILE_SITE_KEY no se renderiza nada y el formulario funciona
+ * igual: el Worker omite la verificación cuando falta el secret.
+ */
+interface Props {
+  /** Etiqueta del envío, visible en la analítica de Turnstile. */
+  action: string;
+}
+
+const { action } = Astro.props;
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+{
+  siteKey && (
+    <div style="margin-top:18px">
+      <div
+        class="cf-turnstile"
+        data-sitekey={siteKey}
+        data-action={action}
+        data-theme="light"
+        data-callback="squaiTurnstileSync"
+        data-expired-callback="squaiTurnstileSync"
+        data-error-callback="squaiTurnstileSync"
+        data-timeout-callback="squaiTurnstileSync"
+      />
+    </div>
+  )
+}
