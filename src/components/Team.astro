@@ -1,21 +1,5 @@
 ---
 import { instructors, squadGrid } from '../data/landing';
-import { Image } from 'astro:assets';
-import team1 from '../assets/team1.webp';
-import team2 from '../assets/team2.webp';
-import team3 from '../assets/team3.webp';
-import team4 from '../assets/team4.webp';
-import team5 from '../assets/team5.webp';
-import team6 from '../assets/team6.webp';
-
-const teamImages = {
-  '/images/team1.webp': team1,
-  '/images/team2.webp': team2,
-  '/images/team3.webp': team3,
-  '/images/team4.webp': team4,
-  '/images/team5.webp': team5,
-  '/images/team6.webp': team6,
-};
 
 const members = [
   ...instructors.map((member) => ({
@@ -36,16 +20,6 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
 ---
 
 <section id="equipo" class="section tint team-section">
-  <svg class="team-clip-defs" width="0" height="0" aria-hidden="true" focusable="false">
-    <defs>
-      <clipPath id="team-photo-shape" clipPathUnits="objectBoundingBox">
-        <path
-          transform="scale(0.005102040816 0.005025125628)"
-          d="M7.51802 164.975C5.32902 160.664 0.624022 151.145 0.484022 146.395C-0.423978 115.719 0.226017 84.8005 0.216017 54.0845C0.215017 51.4015 1.02502 48.0845 1.84202 45.5495C7.32502 28.4965 19.407 14.3475 35.391 6.26151C48.539 -0.284486 56.497 0.201506 70.606 0.247506L96.772 0.33851C112.214 0.37351 136.433 -1.35647 150.447 2.68553C172.527 9.05453 191.769 31.1435 194.515 53.9125C195.402 60.0135 195.097 67.4515 195.114 73.7035L195.134 103.453C195.126 113.057 195.827 130.356 195.035 139.245C194.558 144.257 193.453 149.189 191.748 153.926C185.564 171.101 173.734 184.626 157.072 192.424C142.92 199.048 133.784 198.113 118.575 198.07C101.272 198.021 83.659 198.109 66.326 198.024C56.926 198.07 51.939 197.052 43.045 194.486C25.396 187.436 17.488 180.875 7.51802 164.975Z"
-        />
-      </clipPath>
-    </defs>
-  </svg>
   <div class="team-shell">
     <div class="team-heading">
       <h2 class="display d-h1 team-title">Equipo</h2>
@@ -62,11 +36,9 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
             {row.map((member) => (
               <article class="team-member">
                 <div class="team-photo-frame">
-                  <Image
-                    src={teamImages[member.img as keyof typeof teamImages]}
+                  <img
+                    src={member.img}
                     alt={member.name}
-                    widths={[140, 168, 280, 336, 528, 672, 850]}
-                    sizes="(max-width: 640px) 42vw, clamp(264px, 24vw, 336px)"
                     loading="lazy"
                     decoding="async"
                     class="team-photo"
@@ -90,12 +62,6 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
   .team-section {
     padding-top: clamp(76px, 8vw, 132px);
     padding-bottom: clamp(76px, 8vw, 132px);
-  }
-
-  .team-clip-defs {
-    position: absolute;
-    overflow: hidden;
-    pointer-events: none;
   }
 
   .team-shell {
@@ -131,7 +97,7 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
   }
 
   .team-member {
-    --photo-col: clamp(264px, 24vw, 336px);
+    --photo-col: clamp(132px, 12vw, 168px);
     position: relative;
     z-index: 1;
     min-width: 0;
@@ -139,16 +105,21 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
     display: grid;
     grid-template-columns: var(--photo-col) minmax(0, 1fr);
     align-items: center;
-    column-gap: clamp(18px, 2.4vw, 34px);
+    column-gap: calc(var(--photo-col) + clamp(18px, 2.4vw, 34px));
   }
 
   .team-photo-frame {
-    width: 100%;
+    width: 200%;
     aspect-ratio: 196 / 199;
     overflow: hidden;
     background: var(--periwinkle);
-    clip-path: url(#team-photo-shape);
-    transition: box-shadow 220ms ease;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 196 199'%3E%3Cpath d='M7.51802 164.975C5.32902 160.664 0.624022 151.145 0.484022 146.395C-0.423978 115.719 0.226017 84.8005 0.216017 54.0845C0.215017 51.4015 1.02502 48.0845 1.84202 45.5495C7.32502 28.4965 19.407 14.3475 35.391 6.26151C48.539 -0.284486 56.497 0.201506 70.606 0.247506L96.772 0.33851C112.214 0.37351 136.433 -1.35647 150.447 2.68553C172.527 9.05453 191.769 31.1435 194.515 53.9125C195.402 60.0135 195.097 67.4515 195.114 73.7035L195.134 103.453C195.126 113.057 195.827 130.356 195.035 139.245C194.558 144.257 193.453 149.189 191.748 153.926C185.564 171.101 173.734 184.626 157.072 192.424C142.92 199.048 133.784 198.113 118.575 198.07C101.272 198.021 83.659 198.109 66.326 198.024C56.926 198.07 51.939 197.052 43.045 194.486C25.396 187.436 17.488 180.875 7.51802 164.975Z' fill='white'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 196 199'%3E%3Cpath d='M7.51802 164.975C5.32902 160.664 0.624022 151.145 0.484022 146.395C-0.423978 115.719 0.226017 84.8005 0.216017 54.0845C0.215017 51.4015 1.02502 48.0845 1.84202 45.5495C7.32502 28.4965 19.407 14.3475 35.391 6.26151C48.539 -0.284486 56.497 0.201506 70.606 0.247506L96.772 0.33851C112.214 0.37351 136.433 -1.35647 150.447 2.68553C172.527 9.05453 191.769 31.1435 194.515 53.9125C195.402 60.0135 195.097 67.4515 195.114 73.7035L195.134 103.453C195.126 113.057 195.827 130.356 195.035 139.245C194.558 144.257 193.453 149.189 191.748 153.926C185.564 171.101 173.734 184.626 157.072 192.424C142.92 199.048 133.784 198.113 118.575 198.07C101.272 198.021 83.659 198.109 66.326 198.024C56.926 198.07 51.939 197.052 43.045 194.486C25.396 187.436 17.488 180.875 7.51802 164.975Z' fill='white'/%3E%3C/svg%3E");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    transition: box-shadow 220ms ease, transform 220ms ease;
   }
 
   .team-photo {
@@ -157,11 +128,17 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
     display: block;
     object-fit: cover;
     object-position: center 24%;
-    image-rendering: auto;
+    transition: filter 260ms ease, transform 260ms cubic-bezier(0, 0, 0.2, 1);
   }
 
   .team-photo-frame:hover {
+    transform: translateY(-2px);
     box-shadow: 0 18px 30px -22px rgba(138, 142, 249, 0.85);
+  }
+
+  .team-photo-frame:hover .team-photo {
+    transform: scale(1.045);
+    filter: brightness(1.06) saturate(1.04);
   }
 
   .team-member-copy {
