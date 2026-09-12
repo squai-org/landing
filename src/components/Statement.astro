@@ -2,8 +2,9 @@
 import { statement } from '../data/landing';
 ---
 
-<section id="statement" class="section" style="background:var(--periwinkle)">
-  <div class="shell grid-sidebar" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
+<section id="statement" class="section statement-section" style="background:var(--periwinkle)">
+  <img class="statement-shape" src="/images/shape-statement-light.svg" alt="" aria-hidden="true" />
+  <div class="shell grid-sidebar statement-content" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
     <h2 class="display d-h2 sidebar-sticky" style="position:sticky;top:120px;color:var(--midnight);max-width:16ch">
       {statement.headline}
     </h2>
@@ -12,3 +13,24 @@ import { statement } from '../data/landing';
     </div>
   </div>
 </section>
+
+<style>
+  .statement-section {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .statement-shape {
+    position: absolute;
+    z-index: 0;
+    width: 57.855%;
+    height: auto;
+    left: 41.876%;
+    top: -9.608%;
+    transform: rotate(104.9deg);
+    pointer-events: none;
+    user-select: none;
+  }
+  .statement-content { position: relative; z-index: 1; }
+
+</style>

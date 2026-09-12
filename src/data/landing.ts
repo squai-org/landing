@@ -23,15 +23,15 @@ export const tagline = 'Aprende IA, potencia tus habilidades.';
 
 /** The verb cycles; the rest of the headline is fixed. */
 export const heroVerbs = [
-  { word: 'Aprende', color: '#F4F6FF' },
+  { word: 'Aprende', color: '#8A8EF9' },
   { word: 'Practica', color: '#44D4C8' },
   { word: 'Integra', color: '#F9C24D' },
-  { word: 'Adopta', color: '#8A8EF9' },
+  { word: 'Adopta', color: '#F4F6FF' },
 ];
 
 export const heroLines = { object: 'IA.', middle: 'potencia tus', last: 'Habilidades.' };
 
-export const heroSubtitle = 'Training en inteligencia artificial para personas, equipos y comunidades educativas.';
+export const heroSubtitle = 'Entrenamiento en inteligencia artificial para personas, equipos y comunidades educativas.';
 
 /* --- Cohorte abierta (hero eyebrow) --------------------------------------- */
 
@@ -168,7 +168,7 @@ export const services: Service[] = [
     cardCopy:
       'Cohortes en vivo para personas que quieren entender la IA de una vez, no coleccionar tutoriales. Aquí vive la cohorte abierta.',
     accent: '#8A8EF9',
-    span: 'span-4 row-2',
+    span: 'span-3 row-2',
     tone: 'peri',
     payback: {
       headline: 'Criterio propio para usar cualquier herramienta de IA: la de hoy y la que salga mañana.',
@@ -271,7 +271,7 @@ export const services: Service[] = [
     slogan: 'Que la IA entre a tus procesos sin desordenar lo que ya funciona.',
     cardCopy: 'Entrenamiento a la medida sobre los procesos que tu equipo ya tiene, no sobre ejemplos genéricos.',
     accent: '#44D4C8',
-    span: 'span-2',
+    span: 'span-3',
     tone: 'teal',
     payback: {
       headline: 'Un equipo que usa IA en su trabajo real, con reglas claras y sin frenar la operación.',
@@ -370,7 +370,7 @@ export const services: Service[] = [
     slogan: 'Preparar a docentes y estudiantes para un aula que ya cambió.',
     cardCopy: 'Formación en IA para colegios, universidades y programas educativos, con criterio y uso responsable.',
     accent: '#F9C24D',
-    span: 'span-2',
+    span: 'span-3',
     tone: 'gold',
     payback: {
       headline: 'Docentes que enseñan con IA y estudiantes que la usan sin dejar de aprender.',

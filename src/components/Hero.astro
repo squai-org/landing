@@ -8,6 +8,9 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
   so it reads as one full panel on any device. No imagery (Brand Book §14.6).
 -->
 <section class="hero" data-hero>
+  <img class="hero-shape hero-shape-gold" src="/images/shape-hero-gold.svg" alt="" aria-hidden="true" />
+  <img class="hero-shape hero-shape-periwinkle" src="/images/shape-hero-periwinkle.svg" alt="" aria-hidden="true" />
+
   <div class="hero-inner">
     <a href="/servicios/squai-one" class="hero-eyebrow">
       <span class="hero-dot" aria-hidden="true"></span>
@@ -54,9 +57,33 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     margin: var(--hero-inset);
     min-height: calc(100svh - var(--hero-inset) * 2);
     padding: calc(var(--nav-space) + clamp(6px, 2svh, 44px)) var(--gutter) clamp(18px, 7svh, 110px);
+    overflow: hidden;
+  }
+
+  .hero-shape {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+  .hero-shape-gold {
+    width: 46.81%;
+    height: auto;
+    left: -19.55%;
+    top: -44.13%;
+    transform: rotate(-60deg);
+  }
+  .hero-shape-periwinkle {
+    width: 69.48%;
+    height: auto;
+    left: 64.17%;
+    top: -24.63%;
+    transform: rotate(-22.64deg);
   }
 
   .hero-inner {
+    position: relative;
+    z-index: 1;
     max-width: var(--shell);
     width: 100%;
     margin: 0 auto;
@@ -116,7 +143,7 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     letter-spacing: -0.02em;
     font-size: clamp(36px, calc(9.6vw - 4px), 146px);
   }
-  .hero-line-last { color: var(--periwinkle); }
+  .hero-line-last { color: #F4F6FF; }
 
   /* The verb is typed in and out rather than cross-faded. */
   .hero-caret {
@@ -144,6 +171,7 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
 
   .hero-scroll {
     position: absolute;
+    z-index: 2;
     left: 50%;
     bottom: calc(var(--gutter) * 0.6);
     transform: translateX(-50%);
