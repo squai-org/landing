@@ -1,5 +1,20 @@
 ---
 import { instructors, squadGrid } from '../data/landing';
+import team1 from '../assets/team1.webp';
+import team2 from '../assets/team2.webp';
+import team3 from '../assets/team3.webp';
+import team4 from '../assets/team4.webp';
+import team5 from '../assets/team5.webp';
+import team6 from '../assets/team6.webp';
+
+const teamImages = {
+  '/images/team1.webp': team1,
+  '/images/team2.webp': team2,
+  '/images/team3.webp': team3,
+  '/images/team4.webp': team4,
+  '/images/team5.webp': team5,
+  '/images/team6.webp': team6,
+};
 
 const members = [
   ...instructors.map((member) => ({
@@ -37,8 +52,10 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
               <article class="team-member">
                 <div class="team-photo-frame">
                   <img
-                    src={member.img}
+                    src={teamImages[member.img as keyof typeof teamImages].src}
                     alt={member.name}
+                    width={teamImages[member.img as keyof typeof teamImages].width}
+                    height={teamImages[member.img as keyof typeof teamImages].height}
                     loading="lazy"
                     decoding="async"
                     class="team-photo"
