@@ -5,7 +5,7 @@ import { contactSchema } from '../schemas/contact.schema';
 import { submitContactRequest } from '../services/leads.service';
 import type { AppBindings } from '../types';
 
-/** POST /api/contact — "Agenda una llamada" para Squai Grow y Squai Learn. */
+/** POST /api/contact — solicitud de llamada para Squai Grow y Squai Learn. */
 export const contactRoute = new Hono<AppBindings>().post('/', async (c) => {
   const raw = await c.req.json().catch(() => {
     throw badRequest('invalid_json', 'El cuerpo de la petición no es JSON válido.');

@@ -257,6 +257,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const setNavOpen = (open: boolean) => {
     navMenu?.classList.toggle('nav-open', open);
     navToggle?.setAttribute('aria-expanded', String(open));
+    navToggle?.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
   };
 
   navToggle?.addEventListener('click', () => {
@@ -273,6 +274,38 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (navMenu.contains(target) || navToggle?.contains(target)) return;
     setNavOpen(false);
   });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !navMenu?.classList.contains('nav-open')) return;
+    setNavOpen(false);
+    navToggle?.focus();
+  });
+
+  const desktopNav = window.matchMedia('(min-width: 1024px)');
+  desktopNav.addEventListener('change', (event) => {
+    if (event.matches) setNavOpen(false);
+  });
+
+  const navSectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-section]'));
+  if (location.pathname === '/' && navSectionLinks.length && 'IntersectionObserver' in window) {
+    const currentSectionObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        navSectionLinks.forEach((link) => {
+          if (link.dataset.navSection === visible.target.id) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      },
+      { rootMargin: '-25% 0px -60% 0px', threshold: [0, .25, .5] }
+    );
+    navSectionLinks.forEach((link) => {
+      const section = document.getElementById(link.dataset.navSection || '');
+      if (section) currentSectionObserver.observe(section);
+    });
+  }
 
   /* ---------------------------------------------------------------------
      FAQ accordion: one panel open at a time, closed on load.
@@ -297,23 +330,38 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   });
 
   /* ---------------------------------------------------------------------
-     "Agendar llamada" modal — one form, two destinations (Grow / Learn).
+     Contact request modal — one form, two destinations (Grow / Learn).
   --------------------------------------------------------------------- */
   const modal = document.querySelector<HTMLElement>('[data-modal]');
   const modalPanel = document.querySelector<HTMLElement>('[data-modal-panel]');
   const modalForm = document.querySelector<HTMLFormElement>('[data-form="contact"]');
   let lastFocused: HTMLElement | null = null;
+  let backgroundInertState = new Map<HTMLElement, boolean>();
+
+  const setBackgroundInert = (inert: boolean) => {
+    if (!modal) return;
+    const background = Array.from(document.body.children).filter(
+      (element): element is HTMLElement => element instanceof HTMLElement && element !== modal && element.tagName !== 'SCRIPT'
+    );
+    if (inert) {
+      backgroundInertState = new Map(background.map((element) => [element, element.inert]));
+      background.forEach((element) => { element.inert = true; });
+      return;
+    }
+    backgroundInertState.forEach((wasInert, element) => { element.inert = wasInert; });
+    backgroundInertState.clear();
+  };
 
   const MODAL_COPY: Record<string, { eco: string; copy: string; placeholder: string }> = {
     grow: {
       eco: 'Squai Grow',
       copy: 'Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.',
-      placeholder: '¿En qué procesos crees que la IA puede ayudar? (opcional)',
+      placeholder: '¿En qué procesos crees que la IA puede ayudar?',
     },
     learn: {
       eco: 'Squai Learn',
       copy: 'Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.',
-      placeholder: '¿Con qué grupo quieres empezar y para qué? (opcional)',
+      placeholder: '¿Con qué grupo quieres empezar y para qué?',
     },
   };
 
@@ -330,6 +378,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       modalForm?.setAttribute('data-eco', eco);
     }
     modal.hidden = !open;
+    setBackgroundInert(open);
     document.body.style.overflow = open ? 'hidden' : '';
     if (open) {
       modal.querySelector<HTMLInputElement>('input, select, textarea')?.focus();
@@ -394,13 +443,36 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     else delete status.dataset.state;
   };
 
+  const clearFieldErrors = (form: HTMLFormElement) => {
+    form.querySelectorAll<HTMLElement>('[data-field-error]').forEach((error) => { error.textContent = ''; });
+    form.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
+  };
+
+  const setFieldError = (form: HTMLFormElement, name: string, message: string) => {
+    const field = form.elements.namedItem(name);
+    const error = form.querySelector<HTMLElement>(`[data-field-error="${CSS.escape(name)}"]`);
+    if (field instanceof HTMLElement) field.setAttribute('aria-invalid', 'true');
+    if (error) error.textContent = message;
+  };
+
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
+    form.addEventListener('input', (event) => {
+      const field = event.target;
+      if (!(field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement)) return;
+      field.removeAttribute('aria-invalid');
+      const error = form.querySelector<HTMLElement>(`[data-field-error="${CSS.escape(field.name)}"]`);
+      if (error) error.textContent = '';
+    });
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      clearFieldErrors(form);
 
       if (!form.checkValidity()) {
+        const invalidFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(':invalid'));
+        invalidFields.forEach((field) => setFieldError(form, field.name, field.validationMessage));
         setStatus(form, 'Revisa los campos marcados: faltan datos o el correo no es válido.', 'error');
-        form.reportValidity();
+        invalidFields[0]?.focus();
         return;
       }
 
@@ -417,11 +489,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       if (kind === 'contact') payload.ecosystem = eco;
 
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-      const label = submit?.textContent ?? '';
+      const labelNode = submit?.querySelector<HTMLElement>('.btn-label');
+      const label = labelNode?.textContent ?? '';
       if (submit) {
         submit.disabled = true;
-        submit.textContent = 'Enviando…';
+        submit.setAttribute('aria-busy', 'true');
       }
+      if (labelNode) labelNode.textContent = 'Enviando…';
       setStatus(form, 'Enviando…', '');
 
       const fallbackError = 'No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.';
@@ -437,12 +511,17 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         const data = (await res.json().catch(() => null)) as ApiResponse | null;
 
         if (!res.ok) {
+          if (data?.error?.fields) {
+            Object.entries(data.error.fields).forEach(([name, message]) => setFieldError(form, name, message));
+          }
           const fieldMessage = data?.error?.fields ? Object.values(data.error.fields)[0] : undefined;
           setStatus(form, fieldMessage ?? data?.error?.message ?? fallbackError, 'error');
+          form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
           return;
         }
 
         form.reset();
+        clearFieldErrors(form);
         setStatus(
           form,
           kind === 'contact'
@@ -455,8 +534,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       } finally {
         if (submit) {
           submit.disabled = false;
-          submit.textContent = label;
+          submit.removeAttribute('aria-busy');
         }
+        if (labelNode) labelNode.textContent = label;
         /* Cada token de Turnstile se puede validar una sola vez. */
         const widget = form.querySelector<HTMLElement>('.cf-turnstile');
         if (widget) {

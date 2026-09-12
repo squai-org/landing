@@ -34,7 +34,7 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 ```
 migrations/         Migraciones de D1 (wrangler d1 migrations)
 public/
-  fonts/            Outfit, Urbanist y Gloria Hallelujah (woff2, self-hosted)
+  fonts/            Familjen Grotesk, Atkinson Hyperlegible Next y Gloria Hallelujah (woff2, self-hosted)
   images/           Fotos del equipo (webp)
 src/
   components/       Cada sección de la página + Logo, Badge y Turnstile

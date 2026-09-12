@@ -2,15 +2,12 @@
 import Button from './Button.astro';
 import { cohort, endpoints } from '../data/landing';
 import Turnstile from './Turnstile.astro';
-
-const fieldStyle =
-  'width:100%;font-family:var(--font-body);font-size:17px;color:#0A0C1A;background:#F4F6FF;border:1px solid #DCE1F0;border-radius:14px;padding:15px 18px;outline:none';
 ---
 
 <section id="lista" class="section tint">
-  <div class="shell" style="max-width:920px;text-align:center">
-    <h2 class="display d-h2" style="color:var(--ink)">Reserva tu lugar en la próxima cohorte</h2>
-    <p class="lead" style="margin:clamp(16px,1.6vw,24px) auto clamp(28px,3vw,44px);max-width:60ch;color:var(--ink-body)">
+  <div class="shell waitlist-shell">
+    <h2 class="display d-h2 waitlist-title">Únete a la lista de espera</h2>
+    <p class="lead waitlist-copy">
       {cohort.seats}. Déjanos tus datos y te avisamos apenas se abra la inscripción, con las fechas confirmadas y la
       información de pago.
     </p>
@@ -18,32 +15,36 @@ const fieldStyle =
       data-form="waitlist"
       data-endpoint={endpoints.waitlist}
       novalidate
-      class="card-pad-lg"
-      style="background:#FFFFFF;border:1px solid #DCE1F0;border-radius:32px;padding:32px;box-shadow:0 1px 2px rgba(10,12,26,.03), 0 30px 70px -44px rgba(10,12,26,.45);text-align:left"
+      class="card-pad-lg waitlist-form"
     >
-      <div class="field-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <label>
-          <span class="sr-only">Nombre completo</span>
-          <input type="text" name="full_name" required autocomplete="name" placeholder="Nombre completo" class="field" style={fieldStyle} />
+      <p class="form-instructions"><span aria-hidden="true">*</span> Campos obligatorios.</p>
+      <div class="field-grid-2">
+        <label class="field-group" for="waitlist-full-name">
+          <span class="field-label">Nombre completo <span aria-hidden="true">*</span></span>
+          <input id="waitlist-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="waitlist-full-name-error" />
+          <span id="waitlist-full-name-error" class="field-error" data-field-error="full_name"></span>
         </label>
-        <label>
-          <span class="sr-only">Correo electrónico</span>
-          <input type="email" name="email" required autocomplete="email" placeholder="Correo electrónico" class="field" style={fieldStyle} />
+        <label class="field-group" for="waitlist-email">
+          <span class="field-label">Correo electrónico <span aria-hidden="true">*</span></span>
+          <input id="waitlist-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="waitlist-email-error" />
+          <span id="waitlist-email-error" class="field-error" data-field-error="email"></span>
         </label>
       </div>
-      <div class="field-grid-phone" style="display:grid;grid-template-columns:110px 1fr;gap:14px;margin-top:14px">
-        <label>
-          <span class="sr-only">Indicativo</span>
-          <input type="text" name="country_code" required value="+57" autocomplete="tel-country-code" placeholder="+57" class="field" style={fieldStyle} />
+      <div class="field-grid-phone">
+        <label class="field-group" for="waitlist-country-code">
+          <span class="field-label">Indicativo <span aria-hidden="true">*</span></span>
+          <input id="waitlist-country-code" type="text" name="country_code" required value="+57" autocomplete="tel-country-code" inputmode="tel" class="field" aria-describedby="waitlist-country-code-error" />
+          <span id="waitlist-country-code-error" class="field-error" data-field-error="country_code"></span>
         </label>
-        <label>
-          <span class="sr-only">Número de teléfono</span>
-          <input type="tel" name="phone" required autocomplete="tel-national" placeholder="Teléfono" class="field" style={fieldStyle} />
+        <label class="field-group" for="waitlist-phone">
+          <span class="field-label">Número de teléfono <span aria-hidden="true">*</span></span>
+          <input id="waitlist-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="waitlist-phone-error" />
+          <span id="waitlist-phone-error" class="field-error" data-field-error="phone"></span>
         </label>
       </div>
       <Turnstile action="waitlist" />
-      <div style="margin-top:18px">
-        <Button variant="primary" type="submit" block>Reservar mi lugar</Button>
+      <div class="form-submit">
+        <Button variant="primary" type="submit" block>Unirme a la lista de espera</Button>
       </div>
       <div class="form-status" data-form-status role="status" aria-live="polite"></div>
     </form>
@@ -51,7 +52,25 @@ const fieldStyle =
 </section>
 
 <style>
+  .waitlist-shell { max-width: 920px; text-align: center; }
+  .waitlist-title { color: var(--ink); }
+  .waitlist-copy {
+    max-width: 60ch;
+    margin: clamp(16px, 1.6vw, 24px) auto clamp(28px, 3vw, 44px);
+    color: var(--ink-body);
+  }
+  .waitlist-form {
+    padding: 32px;
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(10, 12, 26, .03), 0 30px 70px -44px rgba(10, 12, 26, .45);
+    text-align: left;
+  }
+  @media (max-width: 640px) {
+    .waitlist-form { padding: 22px; border-radius: 22px; }
+  }
   @media (max-width: 400px) {
-    .field { padding-inline: 14px !important; }
+    .field { padding-inline: 14px; }
   }
 </style>

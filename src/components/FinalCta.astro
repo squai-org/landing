@@ -2,13 +2,13 @@
 import Button from './Button.astro';
 ---
 
-<section class="section final-cta" style="background:var(--teal)">
+<section class="section final-cta">
   <img class="brand-shape final-shape" src="/images/shape-final-dark.svg" alt="" aria-hidden="true" />
-  <div class="shell grid-sidebar final-content" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
-    <h2 class="display d-h2 sidebar-sticky" style="position:sticky;top:120px;color:var(--midnight);max-width:16ch">
+  <div class="shell grid-sidebar final-content">
+    <h2 class="display d-h2 sidebar-sticky final-title">
       La IA ya no es opcional, es una habilidad para la vida
     </h2>
-    <div class="final-copy-column" style="display:flex;flex-direction:column;gap:20px;align-items:flex-start">
+    <div class="final-copy-column">
       <p class="lead final-copy">
         Aprender a usar inteligencia artificial dejó de ser un lujo o un tema solo para expertos. Hoy la diferencia está
         entre quienes resuelven cosas en minutos apoyados en IA y quienes siguen perdiendo horas en tareas manuales y
@@ -19,15 +19,15 @@ import Button from './Button.astro';
         podrías estar usando estas herramientas para simplificar tu día a día, aprender más rápido y tomar mejores
         decisiones.
       </p>
-      <div style="align-self:stretch;display:flex;justify-content:flex-end;margin-top:12px">
-        <Button variant="white" href="/servicios/squai-one#lista">Reservar mi lugar en la próxima cohorte</Button>
+      <div class="final-action">
+        <Button variant="white" href="/servicios/squai-one#lista">Unirme a la lista de espera</Button>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  .final-cta { position: relative; overflow: hidden; }
+  .final-cta { position: relative; overflow: hidden; background: var(--teal); }
   .final-shape {
     position: absolute;
     z-index: 0;
@@ -39,12 +39,19 @@ import Button from './Button.astro';
     pointer-events: none;
     user-select: none;
   }
-  .final-content { position: relative; z-index: 1; }
+  .final-content { position: relative; z-index: 1; display: grid; grid-template-columns: .8fr 1.2fr; align-items: start; gap: clamp(32px, 5vw, 80px); }
+  .final-title { position: sticky; top: 120px; max-width: 16ch; color: var(--midnight); }
+  .final-copy-column { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+  .final-action { display: flex; align-self: stretch; justify-content: flex-end; margin-top: 12px; }
   .final-copy { color: var(--canvas); opacity: .9; }
 
   @media (max-width: 1023px) {
-    .final-cta { background: var(--periwinkle) !important; }
+    .final-cta { background: var(--periwinkle); }
     .final-copy { color: var(--midnight); opacity: 1; }
-    .final-copy-column > div { justify-content: flex-start !important; }
+    .final-action { justify-content: flex-start; }
+  }
+  @media (max-width: 900px) {
+    .final-content { grid-template-columns: 1fr; gap: clamp(24px, 4vw, 40px); }
+    .final-title { position: static; }
   }
 </style>

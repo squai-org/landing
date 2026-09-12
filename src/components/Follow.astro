@@ -1,6 +1,9 @@
 ---
 import { socials } from '../data/landing';
 
+const availableSocials = socials.filter((social) => social.href.trim());
+const socialNames = availableSocials.map((social) => social.name).join(', ');
+
 const ACCENTS: Record<string, string> = {
   LinkedIn: 'var(--gold)',
   Instagram: 'var(--teal)',
@@ -16,35 +19,29 @@ const ICONS: Record<string, string> = {
 };
 ---
 
-<section class="section night follow-section">
+{availableSocials.length > 0 && <section class="section night follow-section">
   <div class="shell follow-card">
-      <h2 class="display d-h1" style="color:var(--canvas);flex:1 1 280px;min-width:0">Síguenos</h2>
+      <h2 class="display d-h1 follow-title">Síguenos</h2>
       <div class="follow-content">
         <p class="lead follow-copy">
-          Seguimos en LinkedIn, Instagram y X. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
+          Síguenos en {socialNames}. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
         </p>
-        <div class="social-row" style="display:flex;gap:14px;justify-content:flex-end;flex-wrap:wrap">
+        <div class="social-row">
           {
-            socials.map((s) =>
-              s.href ? (
+            availableSocials.map((s) =>
+              (
                 <a href={s.href} aria-label={s.name} class="social-button" style={`background:${ACCENTS[s.name]}`} target="_blank" rel="noopener noreferrer">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d={ICONS[s.name]} />
                   </svg>
                 </a>
-              ) : (
-                <span class="social-button is-inert" aria-hidden="true" style={`background:${ACCENTS[s.name]}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d={ICONS[s.name]} />
-                  </svg>
-                </span>
               )
             )
           }
         </div>
       </div>
   </div>
-</section>
+</section>}
 
 <style>
   .section.follow-section {
@@ -64,6 +61,8 @@ const ICONS: Record<string, string> = {
     align-items: flex-end;
     gap: clamp(20px, 2.4vw, 36px);
   }
+  .follow-title { min-width: 0; flex: 1 1 280px; color: var(--canvas); }
+  .social-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 14px; }
   .follow-copy {
     max-width: 46ch;
     margin-left: auto;
@@ -82,7 +81,7 @@ const ICONS: Record<string, string> = {
       text-align: left;
     }
     .follow-card .social-row {
-      justify-content: flex-start !important;
+      justify-content: flex-start;
     }
   }
 </style>

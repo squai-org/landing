@@ -1,18 +1,13 @@
 ---
-import Button from './Button.astro';
 import { impact } from '../data/landing';
 ---
 
 <section id="impacto" class="section night impact-section">
   <img class="brand-shape impact-shape" src="/images/shape-impact-gold.svg" alt="" aria-hidden="true" />
   <div class="shell impact-row">
-    <h2 class="display d-h1 impact-title" style="flex:1 1 320px;min-width:0">{impact.title}</h2>
-    <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:clamp(24px,2.6vw,40px)">
-      <p class="lead" style="color:#F4F6FF;max-width:52ch">{impact.copy}</p>
-      <!-- Client stories are not organised yet; the button is intentionally inert. -->
-      <div class="cta-clients" style="align-self:stretch;display:flex;justify-content:flex-end">
-        <Button variant="teal" disabled>{impact.ctaLabel}</Button>
-      </div>
+    <h2 class="display d-h1 impact-title">{impact.title}</h2>
+    <div class="impact-copy-column">
+      <p class="lead impact-copy">{impact.copy}</p>
     </div>
   </div>
 </section>
@@ -38,11 +33,23 @@ import { impact } from '../data/landing';
     gap: clamp(28px, 4vw, 72px);
     align-items: center;
   }
-  .impact-title { color: var(--midnight); }
+  .impact-title { min-width: 0; flex: 1 1 320px; color: var(--midnight); }
+  .impact-copy { max-width: 52ch; color: var(--canvas); }
+  .impact-copy-column {
+    display: flex;
+    flex: 1 1 420px;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(24px, 2.6vw, 40px);
+  }
 
   @media (max-width: 1023px) {
     .impact-title { color: var(--canvas); }
-    .cta-clients { justify-content: flex-start !important; }
+  }
+
+  @media (max-width: 900px) {
+    .impact-row > * { flex-basis: 100%; }
   }
 
 </style>

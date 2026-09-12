@@ -20,13 +20,13 @@ import { faqs } from '../data/landing';
   title="Squai — Aprende IA, potencia tus habilidades"
   description="Squai enseña inteligencia artificial a personas, equipos y comunidades educativas que no vienen de la tecnología. Sin jerga, sin humo y con práctica desde el primer día."
 >
-  <div style="padding:0 0 40px;background-color:#F4F6FF">
+  <div class="page-frame">
     <Header />
 
     <main id="contenido">
       <Hero />
 
-      <div class="content-shell" style="margin-top:clamp(16px,1.6vw,28px)">
+      <div class="content-shell content-shell-spaced">
         <Statement />
         <WhatWeDo />
         <Impact />
@@ -44,3 +44,8 @@ import { faqs } from '../data/landing';
 
   <ContactModal />
 </Layout>
+
+<style>
+  .page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
+</style>
