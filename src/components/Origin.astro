@@ -2,11 +2,33 @@
 import { originStory } from '../data/landing';
 ---
 
-<section id="origen" class="section" style="background:var(--gold)">
-  <div class="shell grid-sidebar" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
+<section id="origen" class="section origin-section" style="background:var(--gold)">
+  <img class="origin-shape" src="/images/shape-origin-light.svg" alt="" aria-hidden="true" />
+  <div class="shell grid-sidebar origin-content" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start">
     <h2 class="display d-h1 sidebar-sticky" style="position:sticky;top:120px;color:var(--midnight)">Cómo nació Squai</h2>
     <div style="display:flex;flex-direction:column;gap:20px">
       {originStory.map((para) => <p class="lead" style="color:var(--midnight);opacity:.9">{para}</p>)}
     </div>
   </div>
 </section>
+
+<style>
+  .origin-section {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .origin-shape {
+    position: absolute;
+    z-index: 0;
+    width: 61.596%;
+    height: auto;
+    left: -10.581%;
+    top: -8.957%;
+    transform: rotate(37.8deg);
+    pointer-events: none;
+    user-select: none;
+  }
+  .origin-content { position: relative; z-index: 1; }
+
+</style>

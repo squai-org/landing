@@ -46,7 +46,7 @@ const { title, description } = Astro.props;
   /* Clear the fixed nav bar plus a little breathing room. */
   const navOffset = () => {
     const bar = document.querySelector<HTMLElement>('.nav-bar');
-    return (bar ? bar.getBoundingClientRect().bottom + window.scrollY : 96) + 28;
+    return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
   };
 
   const scrollToSection = (id: string) => {
@@ -160,6 +160,66 @@ const { title, description } = Astro.props;
       },
       { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
     );
+
+    const riseEls = Array.from(document.querySelectorAll<HTMLElement>('.service-title-rise'));
+
+    if (riseEls.length) {
+      type Rise = { el: HTMLElement; card: HTMLElement; gap: number; current: number; target: number };
+      let rises: Rise[] = [];
+
+      const measureRises = () => {
+        const prev = new Map(rises.map((r) => [r.el, r]));
+        rises = [];
+        riseEls.forEach((el) => {
+          const card = el.closest<HTMLElement>('.bento-card');
+          const body = card?.querySelector<HTMLElement>('.body');
+          if (!card || !body) return;
+          const prevTransform = el.style.transform;
+          el.style.transform = 'none';
+          const gap = el.getBoundingClientRect().top - body.getBoundingClientRect().bottom;
+          el.style.transform = prevTransform;
+          if (gap > 0) {
+            const carried = prev.get(el);
+            rises.push({ el, card, gap, current: carried?.current ?? -gap, target: carried?.target ?? -gap });
+          }
+        });
+      };
+
+      const computeTargets = () => {
+        const vh = window.innerHeight;
+        rises.forEach((r) => {
+          const bottom = r.card.getBoundingClientRect().bottom;
+          const settled = Math.min(Math.max(vh - bottom, 0), r.gap);
+          r.target = settled - r.gap;
+        });
+      };
+
+      const tick = () => {
+        rises.forEach((r) => {
+          const diff = r.target - r.current;
+          r.current = Math.abs(diff) < 0.05 ? r.target : r.current + diff * 0.12;
+          r.el.style.transform = r.current === 0 ? '' : `translateY(${r.current}px)`;
+        });
+        requestAnimationFrame(tick);
+      };
+
+      let resizeTicking = false;
+      const onRiseResize = () => {
+        if (resizeTicking) return;
+        resizeTicking = true;
+        requestAnimationFrame(() => {
+          measureRises();
+          computeTargets();
+          resizeTicking = false;
+        });
+      };
+
+      measureRises();
+      computeTargets();
+      window.addEventListener('scroll', computeTargets, { passive: true });
+      window.addEventListener('resize', onRiseResize);
+      requestAnimationFrame(tick);
+    }
 
     targets.forEach((el) => io.observe(el));
   }

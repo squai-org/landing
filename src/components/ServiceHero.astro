@@ -16,7 +16,7 @@ const { service } = Astro.props;
       <span aria-hidden="true">→</span>
       <span>{service.name}.</span>
     </p>
-    <h1 class="display d-display service-name">{service.name}.</h1>
+    <h1 class="display d-display service-name" style={`color:${service.accent}`}>{service.name}.</h1>
     <p class="display d-h2 service-slogan">{service.slogan}</p>
   </div>
 </section>
