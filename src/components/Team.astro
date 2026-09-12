@@ -1,5 +1,6 @@
 ---
 import { instructors, squadGrid } from '../data/landing';
+import { getImage } from 'astro:assets';
 import team1 from '../assets/team1.webp';
 import team2 from '../assets/team2.webp';
 import team3 from '../assets/team3.webp';
@@ -15,6 +16,37 @@ const teamImages = {
   '/images/team5.webp': team5,
   '/images/team6.webp': team6,
 };
+
+type TeamPhoto = {
+  src: string;
+  srcset: string;
+  width: number;
+  height: number;
+};
+
+const responsiveTeamImages: Record<string, TeamPhoto> = Object.fromEntries(
+  await Promise.all(
+    Object.entries(teamImages).map(async ([legacyPath, image]) => {
+      const candidateWidths = [368, 672].filter((width) => width < image.width);
+      const variants = await Promise.all(
+        candidateWidths.map((width) => getImage({ src: image, width, quality: 100, format: 'webp' }))
+      );
+
+      return [
+        legacyPath,
+        {
+          src: image.src,
+          srcset: [
+            ...variants.map((variant, index) => `${variant.src} ${candidateWidths[index]}w`),
+            `${image.src} ${image.width}w`,
+          ].join(', '),
+          width: image.width,
+          height: image.height,
+        },
+      ];
+    })
+  )
+);
 
 const members = [
   ...instructors.map((member) => ({
@@ -52,10 +84,12 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
               <article class="team-member">
                 <div class="team-photo-frame">
                   <img
-                    src={teamImages[member.img as keyof typeof teamImages].src}
+                    src={responsiveTeamImages[member.img].src}
+                    srcset={responsiveTeamImages[member.img].srcset}
                     alt={member.name}
-                    width={teamImages[member.img as keyof typeof teamImages].width}
-                    height={teamImages[member.img as keyof typeof teamImages].height}
+                    sizes="(max-width: 640px) min(42vw, 184px), clamp(264px, 24vw, 336px)"
+                    width={responsiveTeamImages[member.img].width}
+                    height={responsiveTeamImages[member.img].height}
                     loading="lazy"
                     decoding="async"
                     class="team-photo"
