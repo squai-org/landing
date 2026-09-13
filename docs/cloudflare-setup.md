@@ -15,7 +15,7 @@ del layout del panel.
 
 ```bash
 pnpm wrangler login
-pnpm db:create            # wrangler d1 create squai-leads
+pnpm db:create            # wrangler d1 create squai
 ```
 
 El comando imprime un bloque con `database_id`. Cópialo en `wrangler.jsonc`, en
@@ -24,7 +24,7 @@ El comando imprime un bloque con `database_id`. Cópialo en `wrangler.jsonc`, en
 **Dashboard**
 
 1. <https://dash.cloudflare.com> → cuenta → **Storage & Databases** → **D1 SQL Database**.
-2. **Create database** → nombre `squai-leads` → **Create**.
+2. **Create database** → nombre `squai` → **Create**.
 3. Abre la base y copia el **Database ID** a `wrangler.jsonc`.
 
 Docs: [D1 · Get started](https://developers.cloudflare.com/d1/get-started/) ·
@@ -170,7 +170,7 @@ Docs: [Rate limiting rules](https://developers.cloudflare.com/waf/rate-limiting-
 
 - Logs en vivo: `pnpm wrangler tail`, o Worker → **Logs**. `observability` ya
   está activo en `wrangler.jsonc`.
-- Consumo de D1: Dashboard → **Storage & Databases** → `squai-leads` →
+- Consumo de D1: Dashboard → **Storage & Databases** → `squai` →
   **Metrics**.
 
 Límites del plan Free relevantes: 100.000 peticiones/día en Workers, y en D1
@@ -185,7 +185,7 @@ Docs: [Observability](https://developers.cloudflare.com/workers/observability/) 
 ## Consultar los leads
 
 ```bash
-pnpm wrangler d1 execute squai-leads --remote \
+pnpm wrangler d1 execute squai --remote \
   --command "SELECT created_at, full_name, email, phone_e164 FROM waitlist_signups ORDER BY created_at DESC LIMIT 20;"
 ```
 

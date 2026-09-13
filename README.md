@@ -24,7 +24,7 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm test`               | Tests del backend en workerd (vitest)                          |
 | `pnpm typecheck`          | `tsc` sobre el código del Worker                               |
 | `pnpm cf-typegen`         | Regenera `worker-configuration.d.ts` desde `wrangler.jsonc`     |
-| `pnpm db:create`          | Crea la base de datos D1 `squai-leads`                         |
+| `pnpm db:create`          | Crea la base de datos D1 `squai`                         |
 | `pnpm db:migrate:local`   | Aplica `migrations/` en el D1 local                            |
 | `pnpm db:migrate:remote`  | Aplica `migrations/` en el D1 de producción                    |
 | `pnpm deploy`             | Build + `wrangler deploy`                                      |
