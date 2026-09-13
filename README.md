@@ -59,10 +59,10 @@ src/server/
   types.ts          Env (bindings) y tipos del contexto
   routes/           Un archivo por endpoint, handlers inline
   schemas/          Validación con Zod de cada formulario
-  services/         Reglas de negocio: Turnstile, correo corporativo, teléfono
+  services/         Reglas de negocio: Turnstile y teléfono
   repositories/     Única capa que habla con D1, siempre con prepared statements
   middleware/       Errores JSON, guard de mismo origen, Content-Type, cabeceras
-  lib/              Utilidades puras: E.164, dominios de correo, siteverify
+  lib/              Utilidades puras: normalización, E.164 y siteverify
 ```
 
 Dependencia en un solo sentido: `routes → services → repositories → D1`. No hay
@@ -89,8 +89,8 @@ donde `fields` mapea campo → mensaje para pintarlo en el formulario.
   Worker. Sin `TURNSTILE_SECRET_KEY` la verificación se omite con un warning.
 - **Inyección SQL**: todas las consultas son prepared statements con `.bind()`.
 - **Validación**: Zod en el edge; normaliza nombre, correo (minúsculas) y
-  teléfono a E.164, y rechaza correos personales en `/api/contact` salvo que
-  `ALLOW_PERSONAL_EMAIL` sea `"true"`.
+  teléfono a E.164. Los formularios aceptan cualquier proveedor de correo
+  siempre que la dirección tenga un formato válido.
 - **Origen**: la API no emite cabeceras CORS y rechaza cualquier `Origin`
   distinto al host de la petición.
 - **Rate limiting**: 5 peticiones por minuto y por IP con el binding nativo de

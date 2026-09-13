@@ -106,14 +106,12 @@ describe('POST /api/contact', () => {
     });
   });
 
-  it('rechaza correos personales cuando ALLOW_PERSONAL_EMAIL no está activo', async () => {
-    const res = await post('/api/contact', { ...contactPayload, email: 'luis@gmail.com' });
+  it.each(['grow', 'learn'])('acepta correos personales para %s', async (ecosystem) => {
+    const res = await post('/api/contact', { ...contactPayload, ecosystem, email: 'luis@gmail.com' });
 
-    expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchObject({
-      ok: false,
-      error: { code: 'personal_email_rejected' },
-    });
+    expect(res.status).toBe(201);
+    const row = await env.DB.prepare('SELECT ecosystem, email FROM contact_requests').first<Record<string, string>>();
+    expect(row).toMatchObject({ ecosystem, email: 'luis@gmail.com' });
   });
 
   it('rechaza un team_size fuera del catálogo', async () => {

@@ -42,7 +42,7 @@ import Turnstile from './Turnstile.astro';
           <span id="contact-full-name-error" class="field-error" data-field-error="full_name"></span>
         </label>
         <label class="field-group" for="contact-email">
-          <span class="field-label">Correo corporativo <span aria-hidden="true">*</span></span>
+          <span class="field-label">Correo electrónico <span aria-hidden="true">*</span></span>
           <input id="contact-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="contact-email-error" />
           <span id="contact-email-error" class="field-error" data-field-error="email"></span>
         </label>
@@ -95,10 +95,10 @@ import Turnstile from './Turnstile.astro';
       <div class="form-submit">
         <Button variant="primary" type="submit" block>Solicitar una llamada</Button>
       </div>
-      <Turnstile action="contact" />
       <div class="form-status" data-form-status role="status" aria-live="polite">
         Respondemos en menos de 24 horas hábiles.
       </div>
+      <Turnstile action="contact" />
     </form>
   </div>
 </div>
