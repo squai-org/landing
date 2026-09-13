@@ -86,7 +86,7 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
                   <img
                     src={responsiveTeamImages[member.img].src}
                     srcset={responsiveTeamImages[member.img].srcset}
-                    alt={member.name}
+                    alt={`${member.name}, ${member.role} en Squai`}
                     sizes="(max-width: 640px) min(42vw, 184px), clamp(264px, 24vw, 336px)"
                     width={responsiveTeamImages[member.img].width}
                     height={responsiveTeamImages[member.img].height}

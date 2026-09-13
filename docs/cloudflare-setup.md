@@ -149,6 +149,35 @@ CORS.
 
 Docs: [Custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 
+### 7.1 Redirigir `www` al dominio canónico
+
+El sitio declara `https://squai.io` como canónico (`site` en `astro.config.mjs`
+y `SITE_URL` en `src/data/seo.ts`). Para que `www.squai.io` no sirva una segunda
+copia del sitio, hay que redirigirlo con un **301** desde Cloudflare, no desde
+el código: los assets estáticos los sirve la plataforma sin pasar por el Worker.
+
+Zona `squai.io` → **Rules** → **Redirect Rules** → **Create rule**:
+
+- **When incoming requests match**: `Hostname` `equals` `www.squai.io`
+- **Then**: `Dynamic` → `concat("https://squai.io", http.request.uri.path)`
+- **Status code**: `301` · **Preserve query string**: activado
+
+Sin esta regla, Google ve dos hosts con el mismo contenido; el `rel=canonical`
+ayuda pero un 301 es la señal fuerte.
+
+Docs: [Redirect Rules](https://developers.cloudflare.com/rules/url-forwarding/single-redirects/) ·
+[Consolidar URLs duplicadas](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
+
+### 7.2 Verificar el dominio en Search Console y Bing
+
+Una vez el dominio responda:
+
+1. [Google Search Console](https://search.google.com/search-console) → añadir
+   propiedad de tipo **Dominio** (verificación por registro TXT en el DNS de
+   Cloudflare) → **Sitemaps** → enviar `https://squai.io/sitemap-index.xml`.
+2. [Bing Webmaster Tools](https://www.bing.com/webmasters) → importar desde
+   Search Console (también alimenta el índice que usan otros buscadores).
+
 ## 8. Rate limiting
 
 Hay dos capas posibles. La primera ya viene implementada en el código; la

@@ -19,6 +19,7 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm install`            | Instala las dependencias                                      |
 | `pnpm dev`                | Servidor de Astro en `localhost:4321` (solo front, sin `/api`) |
 | `pnpm build`              | Compila el sitio estático en `./dist/`                        |
+| `pnpm og`                 | Regenera la imagen social y los iconos desde el logo vectorial |
 | `pnpm preview`            | Sirve localmente el resultado de `pnpm build`                  |
 | `pnpm preview:worker`     | Build + `wrangler dev`: front y `/api/*` con D1 local          |
 | `pnpm test`               | Tests del backend en workerd (vitest)                          |
@@ -37,11 +38,16 @@ migrations/         Migraciones de D1 (wrangler d1 migrations)
 public/
   fonts/            Familjen Grotesk, Atkinson Hyperlegible Next y Gloria Hallelujah (woff2, self-hosted)
   images/           Fotos del equipo (webp)
+  og/               Imagen social (1200x630) y logo para schema.org — generados
+  robots.txt        Reglas de rastreo, incluidos los bots de IA
+scripts/            generate-og.mjs + el lockup vectorial del que sale la imagen
 src/
-  components/       Cada sección de la página + Logo, Badge y Turnstile
+  components/       Cada sección de la página + Logo, Badge, Turnstile y Seo
   data/landing.ts   Todos los textos, listas y rutas de la API
+  data/seo.ts       Dominio canónico, metadatos por página y JSON-LD
   layouts/          Layout base (head, meta, fuentes) y el script de los forms
   pages/index.astro Composición de la página y scripts de interacción
+  pages/llms.txt.ts /llms.txt generado desde landing.ts
   styles/global.css @font-face, tokens de diseño y estados hover/focus
   server/           Backend del Worker (ver abajo)
 test/server/        Tests de la API contra un D1 local
@@ -103,3 +109,37 @@ donde `fields` mapea campo → mensaje para pintarlo en el formulario.
 Paso a paso en [`docs/cloudflare-setup.md`](docs/cloudflare-setup.md): crear D1,
 aplicar migraciones, widget de Turnstile, secrets, deploy, dominio y regla de
 rate limiting.
+
+## SEO
+
+Todo lo que afecta a indexación vive en tres sitios: `src/data/seo.ts` (dominio
+canónico, títulos, descripciones y constructores de JSON-LD),
+`src/components/Seo.astro` (las etiquetas del `<head>`) y `public/robots.txt`.
+
+| Pieza | Dónde | Qué hace |
+| :---- | :---- | :------- |
+| Canónicas | `src/components/Seo.astro` | Una URL por página, sin `.html` ni barra final, idéntica a la del sitemap |
+| Open Graph / Twitter | `src/components/Seo.astro` | Tarjeta con imagen 1200x630 al compartir el enlace |
+| `robots` meta | `src/components/Seo.astro` | `max-snippet:-1` y `max-image-preview:large`: sin límite a lo que se puede citar |
+| JSON-LD | `src/data/seo.ts` | Un `@graph` por página: Organization, WebSite, WebPage, Course/Service, FAQPage, BreadcrumbList |
+| Sitemap | `@astrojs/sitemap` | `/sitemap-index.xml`, generado en cada build |
+| `robots.txt` | `public/robots.txt` | Permite explícitamente a los buscadores clásicos y a los bots de IA |
+| `/llms.txt` | `src/pages/llms.txt.ts` | Resumen del sitio en Markdown para agentes y asistentes |
+
+Reglas para mantenerlo:
+
+- **Nada de datos sin verificar en JSON-LD.** No hay precios, fechas de cohorte,
+  direcciones ni perfiles sociales porque el sitio todavía no los declara.
+  Cuando existan, se añaden a `landing.ts` y desde ahí al schema.
+- El dominio está en dos lugares y tienen que coincidir: `site` en
+  `astro.config.mjs` y `SITE_URL` en `src/data/seo.ts`.
+- Al añadir una página nueva, pásale `title`, `description` y `schemas` al
+  layout; el sitemap la recoge sola.
+- Después de tocar el logo, `pnpm og` regenera `public/og/*` y el
+  `apple-touch-icon.png`.
+
+Comprobaciones tras cada despliegue: [Rich Results
+Test](https://search.google.com/test/rich-results),
+[Schema Markup Validator](https://validator.schema.org/),
+[PageSpeed Insights](https://pagespeed.web.dev/) y el informe de cobertura de
+Search Console.

@@ -14,12 +14,10 @@ import Follow from '../components/Follow.astro';
 import Footer from '../components/Footer.astro';
 import ContactModal from '../components/ContactModal.astro';
 import { faqs } from '../data/landing';
+import { homeGraph, homeSeo } from '../data/seo';
 ---
 
-<Layout
-  title="Squai — Aprende IA, potencia tus habilidades"
-  description="Squai enseña inteligencia artificial a personas, equipos y comunidades educativas que no vienen de la tecnología. Sin jerga, sin humo y con práctica desde el primer día."
->
+<Layout title={homeSeo.title} description={homeSeo.description} schemas={homeGraph()}>
   <div class="page-frame">
     <Header />
 
