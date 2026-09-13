@@ -264,7 +264,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     setNavOpen(!navMenu?.classList.contains('nav-open'));
   });
 
-  navMenu?.querySelectorAll('a, button').forEach((el) => {
+  // Los enlaces cierran la navegación después de elegir un destino. Los
+  // botones internos, como el disclosure de Servicios, deben conservarla
+  // abierta para poder mostrar y recorrer su subnivel.
+  navMenu?.querySelectorAll('a').forEach((el) => {
     el.addEventListener('click', () => setNavOpen(false));
   });
 

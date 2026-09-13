@@ -187,19 +187,30 @@ const serviceLinks = [
     .nav-list { flex-direction: column; align-items: stretch; }
     .nav-link { width: 100%; padding: 14px; text-align: center; }
     .nav-services { width: 100%; }
-    .nav-services-trigger { justify-content: center; }
+    .nav-services-trigger {
+      justify-content: space-between;
+      text-align: left;
+    }
     .services-submenu {
       position: static;
       display: none;
-      width: 100%;
-      margin-top: 2px;
+      width: calc(100% - 16px);
+      margin: 2px 8px 8px;
+      padding: 6px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--canvas);
       box-shadow: none;
       opacity: 1;
       visibility: visible;
       transform: none;
     }
     .nav-services.is-open .services-submenu { display: grid; transform: none; }
-    .service-menu-link { text-align: left; }
+    .service-menu-link {
+      min-height: 52px;
+      padding: 10px 12px;
+      text-align: left;
+    }
     .nav-cta-wrap { width: 100%; margin-top: 6px; margin-left: 0; }
     .nav-cta-wrap :global(.btn) { width: 100%; }
   }
