@@ -109,23 +109,32 @@ queda por detrás del código. Si una migración falla, el deploy no ocurre.
 código del Worker. `assets.run_worker_first: ["/api/*"]` es lo que hace que
 `/api/*` entre siempre al Worker en vez de buscar un archivo estático.
 
-### Automatizarlo
+### Automatizarlo con Workers Builds
 
-**Workers Builds** (CI de Cloudflare): Dashboard → **Workers & Pages** →
-**Create** → **Import a repository** → `squai-org/landing` → rama de
-producción. En **Settings** → **Build**:
+Dashboard → **Workers & Pages** → el Worker `landing-page` → **Settings** →
+**Build**:
 
-- Build command: `pnpm build`
-- Deploy command: `pnpm run deploy`
+| Campo | Valor |
+| :--- | :--- |
+| Build command | `pnpm build` |
+| Deploy command | `pnpm run deploy:ci` |
+| Non-production branch deploy command | dejar el valor por defecto (`npx wrangler versions upload`) |
 
-Como el script `deploy` ya incluye las migraciones, cada build las aplica solo.
-Cloudflare detecta y pre-rellena estos comandos cuando el `package.json` los
-declara.
+`deploy:ci` corre `db:migrate:remote && wrangler deploy`. No repite el build
+porque el build command ya lo hizo. Si la migración falla, no hay despliegue.
 
-**GitHub Actions** (alternativa, no ambas a la vez): `cloudflare/wrangler-action`
-con `preCommands` para las migraciones. Necesita los secrets
-`CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`, y el token debe poder editar
-Workers **y** D1.
+Dos detalles que deciden si esto funciona:
+
+1. **Solo la rama de producción ejecuta el deploy command.** Los commits a
+   cualquier otra rama usan el *preview deploy command*, que por defecto sube
+   una versión sin promoverla. Es decir: mientras el código viva en una rama
+   que no es la de producción, las migraciones no se aplican. Revisa qué rama
+   está configurada como producción en **Settings → Build**.
+2. **No pongas migraciones en el comando de preview.** Apuntaría a la misma D1
+   de producción desde cualquier rama.
+
+También hay que definir `PUBLIC_TURNSTILE_SITE_KEY` como variable del build
+(paso 4), porque Astro la inyecta en tiempo de compilación.
 
 Docs: [Workers Builds · Configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/) ·
 [Static Assets](https://developers.cloudflare.com/workers/static-assets/) ·
