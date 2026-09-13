@@ -1,6 +1,8 @@
 ---
 import { socials } from '../data/landing';
 
+const visibleSocials = socials.filter((social) => social.name === 'LinkedIn');
+
 const ACCENTS: Record<string, string> = {
   LinkedIn: 'var(--gold)',
   Instagram: 'var(--teal)',
@@ -21,11 +23,11 @@ const ICONS: Record<string, string> = {
       <h2 class="display d-h1 follow-title">Síguenos</h2>
       <div class="follow-content">
         <p class="lead follow-copy">
-          Seguimos en LinkedIn, Instagram y X. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
+          Síguenos en LinkedIn. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
         </p>
         <div class="social-row">
           {
-            socials.map((s) =>
+            visibleSocials.map((s) =>
               s.href ? (
                 <a href={s.href} aria-label={s.name} class="social-button" style={`background:${ACCENTS[s.name]}`} target="_blank" rel="noopener noreferrer">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
