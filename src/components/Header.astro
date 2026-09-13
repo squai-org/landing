@@ -129,12 +129,14 @@ const serviceLinks = [
     left: 50%;
     display: grid;
     z-index: 2;
-    width: min(296px, calc(100vw - 32px));
+    width: min(240px, calc(100vw - 32px));
     margin: 0;
     padding: 10px;
     border: 1px solid var(--line-soft);
     border-radius: 18px;
-    background: var(--surface);
+    background: #FFFFFF77;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     list-style: none;
     box-shadow: 0 18px 40px -18px rgba(10, 12, 26, .36);
     opacity: 0;
@@ -146,6 +148,17 @@ const serviceLinks = [
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, 0);
+  }
+  .header-wrap.over-hero .services-submenu {
+    border-color: rgba(244, 246, 255, .16);
+    background: rgba(18, 22, 42, .5);
+  }
+  .header-wrap.over-hero .service-menu-link { color: #E4E7F2; }
+  .header-wrap.over-hero .service-menu-subtitle { color: #C7CBD9; }
+  .header-wrap.over-hero .service-menu-link:hover,
+  .header-wrap.over-hero .service-menu-link:focus-visible {
+    background: rgba(244, 246, 255, .12);
+    color: var(--surface);
   }
   .service-menu-link {
     display: grid;
@@ -197,15 +210,26 @@ const serviceLinks = [
       width: calc(100% - 16px);
       margin: 2px 8px 8px;
       padding: 6px;
-      border: 0;
+      border: 1px solid rgba(13, 27, 42, .07);
       border-radius: 14px;
-      background: var(--canvas);
+      background: #FFFFFF77;
       box-shadow: none;
       opacity: 1;
       visibility: visible;
       transform: none;
     }
     .nav-services.is-open .services-submenu { display: grid; transform: none; }
+    .header-wrap.over-hero .services-submenu {
+      border-color: rgba(13, 27, 42, .07);
+      background: #FFFFFF77;
+    }
+    .header-wrap.over-hero .service-menu-link { color: var(--ink); }
+    .header-wrap.over-hero .service-menu-subtitle { color: var(--ink-muted); }
+    .header-wrap.over-hero .service-menu-link:hover,
+    .header-wrap.over-hero .service-menu-link:focus-visible {
+      background: var(--canvas);
+      color: var(--ink);
+    }
     .service-menu-link {
       min-height: 52px;
       padding: 10px 12px;
