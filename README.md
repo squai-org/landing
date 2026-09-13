@@ -39,7 +39,10 @@ public/
   images/           Fotos del equipo (webp)
 src/
   components/       Cada sección de la página + Logo, Badge y Turnstile
-  data/landing.ts   Todos los textos, listas y rutas de la API
+  config/           Configuración de runtime (endpoints de la API)
+  content/          Contenido editorial: copies.json + schema.ts (contrato Zod)
+  content.config.ts Colección `copies` del Content Layer (loader `file`)
+  lib/content.ts    getSiteContent(): único punto de acceso al contenido
   layouts/          Layout base (head, meta, fuentes) y el script de los forms
   pages/index.astro Composición de la página y scripts de interacción
   styles/global.css @font-face, tokens de diseño y estados hover/focus
@@ -48,8 +51,22 @@ test/server/        Tests de la API contra un D1 local
 docs/               Runbook de configuración en Cloudflare
 ```
 
-Los textos viven en `src/data/landing.ts`; el resto de las copias están inline
-en el componente de su sección.
+## Contenido
+
+Todos los textos viven en `src/content/copies.json` y se cargan con el Content
+Layer de Astro (`src/content.config.ts`). Los componentes nunca leen el JSON
+directo: usan `getSiteContent()` de `src/lib/content.ts`.
+
+- `src/content/schema.ts` es el contrato editorial. Se valida en build: si falta
+  un campo o un link es inválido, el build falla.
+- Para migrar a un CMS basta cambiar el `loader` de la colección; el schema y los
+  componentes no cambian.
+- Los campos de texto largo (`statement.body`, `whatWeDo.body`, `impact.body`,
+  `originStory`, `faqs[].a`, `ui.team.intro`, `ui.finalCta.body`, `ui.follow.copy`,
+  `ui.waitlist.copy`) aceptan una lista de párrafos o un string donde una línea
+  en blanco separa párrafos. Cada párrafo se renderiza como su propio `<p>`.
+- Rutas de la API y otra configuración de runtime van en `src/config/`, no en el
+  contenido.
 
 ## Backend
 

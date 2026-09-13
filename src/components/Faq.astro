@@ -1,12 +1,13 @@
 ---
-import type { Faq } from '../data/landing';
+import { getSiteContent, type Faq } from '../lib/content';
 
 interface Props {
   items: Faq[];
   title?: string;
 }
 
-const { items, title = 'Preguntas frecuentes' } = Astro.props;
+const { labels } = await getSiteContent();
+const { items, title = labels.faq } = Astro.props;
 ---
 
 <section id="faq" class="section tint">
@@ -29,7 +30,7 @@ const { items, title = 'Preguntas frecuentes' } = Astro.props;
               </span>
             </button>
             <div id={`faq-panel-${i}`} data-faq-panel={String(i)} hidden class="faq-panel">
-              <p class="lead faq-answer">{f.a}</p>
+              {f.a.map((paragraph) => <p class="lead faq-answer">{paragraph}</p>)}
             </div>
           </div>
         ))
@@ -57,4 +58,5 @@ const { items, title = 'Preguntas frecuentes' } = Astro.props;
   .faq-sign { display: flex; width: 34px; height: 34px; flex: none; align-items: center; justify-content: center; border-radius: 50%; background: var(--periwinkle-tint); color: var(--periwinkle-ink); font-size: 18px; line-height: 1; }
   .faq-panel { padding: 0 clamp(22px, 2.2vw, 34px) clamp(22px, 2.2vw, 30px); }
   .faq-answer { max-width: 70ch; color: var(--ink-body); }
+  .faq-answer + .faq-answer { margin-top: 12px; }
 </style>

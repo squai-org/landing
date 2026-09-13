@@ -1,4 +1,6 @@
 ---
+import { getSiteContent } from '../lib/content';
+const { labels } = await getSiteContent();
 interface Props {
   /** Wordmark font size in px. The isotype is derived from it: Brand Book
       §14.3 puts the mark at the cap height of the "S", with a 0.15 gap. */
@@ -48,5 +50,5 @@ const PATH_C =
     <path d={PATH_B} fill="#F9C24D"></path>
     <path d={PATH_C} fill="#F9C24D"></path>
   </svg>
-  {wordmark && <span style="font:inherit;letter-spacing:inherit;color:var(--wordmark-color, var(--ink))">Squai</span>}
+  {wordmark && <span style="font:inherit;letter-spacing:inherit;color:var(--wordmark-color, var(--ink))">{labels.brand}</span>}
 </div>

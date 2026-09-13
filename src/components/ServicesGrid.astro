@@ -1,10 +1,11 @@
 ---
-import { services } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { services, ui, labels } = await getSiteContent();
 ---
 
 <section id="servicios" class="section tint">
   <div class="shell">
-    <h2 class="display d-h1 services-title">Servicios</h2>
+    <h2 class="display d-h1 services-title">{labels.services}</h2>
 
     <div class="bento services-grid">
       {
@@ -20,7 +21,7 @@ import { services } from '../data/landing';
             <div class={`service-card-footer${s.slug === 'squai-one' ? ' service-title-rise' : ''}`}>
               <h3 class="display d-h1">{s.name}</h3>
               <span class="btn btn-dark discover" aria-hidden="true">
-                <span class="btn-label">Descubrir</span>
+                <span class="btn-label">{ui.services.discover}</span>
               </span>
             </div>
           </a>

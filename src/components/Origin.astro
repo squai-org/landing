@@ -1,11 +1,12 @@
 ---
-import { originStory } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { originStory, labels } = await getSiteContent();
 ---
 
 <section id="origen" class="section origin-section">
   <img class="brand-shape origin-shape" src="/images/shape-origin-light.svg" alt="" aria-hidden="true" />
   <div class="shell grid-sidebar origin-content">
-    <h2 class="display d-h1 sidebar-sticky origin-title">Cómo nació Squai</h2>
+    <h2 class="display d-h1 sidebar-sticky origin-title">{labels.origin}</h2>
     <div class="origin-copy-list">
       {originStory.map((para) => <p class="lead origin-copy">{para}</p>)}
     </div>

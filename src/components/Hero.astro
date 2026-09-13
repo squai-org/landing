@@ -1,13 +1,14 @@
 ---
 import Button from './Button.astro';
-import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSiteContent();
 ---
 
 <!--
   Night hero. Always the same inset on every side until the visitor scrolls,
   so it reads as one full panel on any device. No imagery (Brand Book §14.6).
 -->
-<section class="hero" data-hero>
+<section class="hero" data-hero data-hero-copy={JSON.stringify({ verbs: heroVerbs, ...ui.hero })}>
   <img class="brand-shape hero-shape hero-shape-gold" src="/images/shape-hero-gold.svg" alt="" aria-hidden="true" />
   <img class="brand-shape hero-shape hero-shape-periwinkle" src="/images/shape-hero-periwinkle.svg" alt="" aria-hidden="true" />
 
@@ -17,9 +18,9 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
         type="button"
         class="hero-animation-toggle"
         data-hero-animation-toggle
-        aria-label="Pausar palabras animadas"
+        aria-label={ui.hero.pause}
         aria-pressed="false"
-        title="Pausar palabras animadas"
+        title={ui.hero.pause}
       >
         <svg class="hero-animation-icon hero-animation-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M7 5h3v14H7V5Zm7 0h3v14h-3V5Z" />
@@ -52,8 +53,8 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     <p class="hero-subtitle">{heroSubtitle}</p>
 
     <div class="hero-actions">
-      <Button variant="primary" href="/servicios/squai-one#lista">Unirme a la lista de espera</Button>
-      <Button variant="white" href="/#servicios" data-scroll-to="servicios">Ver servicios</Button>
+      <Button variant="primary" href="/servicios/squai-one#lista">{labels.reserve}</Button>
+      <Button variant="white" href="/#servicios" data-scroll-to="servicios">{ui.hero.services}</Button>
     </div>
 
   </div>
@@ -62,7 +63,7 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     <span class="scroll-mouse" aria-hidden="true">
       <span class="scroll-wheel"></span>
     </span>
-    <span class="scroll-label">Seguir bajando</span>
+    <span class="scroll-label">{ui.hero.scroll}</span>
   </button>
 </section>
 
@@ -334,7 +335,9 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
 </style>
 
 <script>
-  import { heroVerbs } from '../data/landing';
+  import type { HeroClientCopy } from '../lib/content';
+  const heroCopy: HeroClientCopy = JSON.parse(document.querySelector<HTMLElement>('[data-hero-copy]')!.dataset.heroCopy!);
+  const heroVerbs = heroCopy.verbs;
 
   const verb = document.querySelector<HTMLElement>('[data-hero-verb]');
   const hero = document.querySelector<HTMLElement>('[data-hero]');
@@ -355,7 +358,7 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
       toggle?.addEventListener('click', () => {
         paused = !paused;
         toggle.setAttribute('aria-pressed', String(paused));
-        const label = paused ? 'Reanudar palabras animadas' : 'Pausar palabras animadas';
+        const label = paused ? heroCopy.resume : heroCopy.pause;
         toggle.setAttribute('aria-label', label);
         toggle.title = label;
         hero?.classList.toggle('animation-paused', paused);

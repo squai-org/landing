@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { getSiteContent } from '../lib/content';
 
 interface Props {
   title: string;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const { ui } = await getSiteContent();
 
 // Clave pública del widget de Turnstile. Si no está definida, el sitio sigue
 // funcionando sin verificación (el backend también la omite).
@@ -55,13 +57,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     }
     <title>{title}</title>
   </head>
-  <body>
-    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <body data-client-copy={JSON.stringify({ navigation: ui.navigation, modal: ui.modal, feedback: ui.feedback })}>
+    <a class="skip-link" href="#contenido">{ui.skip}</a>
     <slot />
   </body>
 </html>
 
 <script>
+  import type { ClientCopy } from '../lib/content';
+
+  /* Copy for client-side states, serialized on <body> from the content layer. */
+  const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
+
   /* ---------------------------------------------------------------------
      Smooth scroll — 96px offset clears the sticky nav bar.
   --------------------------------------------------------------------- */
@@ -257,7 +264,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const setNavOpen = (open: boolean) => {
     navMenu?.classList.toggle('nav-open', open);
     navToggle?.setAttribute('aria-expanded', String(open));
-    navToggle?.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    navToggle?.setAttribute('aria-label', open ? clientCopy.navigation.close : clientCopy.navigation.open);
   };
 
   navToggle?.addEventListener('click', () => {
@@ -352,16 +359,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     backgroundInertState.clear();
   };
 
-  const MODAL_COPY: Record<string, { copy: string; placeholder: string }> = {
-    grow: {
-      copy: 'Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.',
-      placeholder: '¿En qué procesos crees que la IA puede ayudar?',
-    },
-    learn: {
-      copy: 'Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.',
-      placeholder: '¿Con qué grupo quieres empezar y para qué?',
-    },
-  };
+  const MODAL_COPY: Record<string, { copy: string; placeholder: string }> = clientCopy.modal;
 
   const setModal = (open: boolean, eco?: string) => {
     if (!modal) return;
@@ -467,7 +465,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       if (!form.checkValidity()) {
         const invalidFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(':invalid'));
         invalidFields.forEach((field) => setFieldError(form, field.name, field.validationMessage));
-        setStatus(form, 'Revisa los campos marcados: faltan datos o el correo no es válido.', 'error');
+        setStatus(form, clientCopy.feedback.invalid, 'error');
         invalidFields[0]?.focus();
         return;
       }
@@ -491,10 +489,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         submit.disabled = true;
         submit.setAttribute('aria-busy', 'true');
       }
-      if (labelNode) labelNode.textContent = 'Enviando…';
-      setStatus(form, 'Enviando…', '');
+      if (labelNode) labelNode.textContent = clientCopy.feedback.sending;
+      setStatus(form, clientCopy.feedback.sending, '');
 
-      const fallbackError = 'No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.';
+      const fallbackError = clientCopy.feedback.error;
 
       try {
         const res = await fetch(endpoint, {
@@ -521,8 +519,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         setStatus(
           form,
           kind === 'contact'
-            ? '¡Listo! Te escribimos en menos de 24 horas hábiles.'
-            : '¡Listo! Ya estás en la lista. Te avisamos cuando se abra la inscripción.',
+            ? clientCopy.feedback.contactSuccess
+            : clientCopy.feedback.waitlistSuccess,
           'ok'
         );
       } catch {
