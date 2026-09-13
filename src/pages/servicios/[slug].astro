@@ -29,7 +29,7 @@ const { service } = Astro.props;
 
   <div class="content-shell content-shell-spaced">
 
-  <ServicePayback headline={service.payback.headline} cards={service.payback.cards} />
+  <ServicePayback headline={service.payback.headline} cards={service.payback.cards} cta={service.cta} />
 
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 

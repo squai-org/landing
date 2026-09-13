@@ -207,7 +207,7 @@ export const services: Service[] = [
       headline: 'Capacidades',
       groups: [
         {
-          t: 'Entender.',
+          t: 'Entender',
           tone: '',
           items: [
             'Cómo procesa un modelo lo que le escribes',
@@ -216,7 +216,7 @@ export const services: Service[] = [
           ],
         },
         {
-          t: 'Practicar.',
+          t: 'Practicar',
           tone: 'teal',
           items: [
             'Estructura de prompts que sí funcionan',
@@ -225,7 +225,7 @@ export const services: Service[] = [
           ],
         },
         {
-          t: 'Ampliar.',
+          t: 'Ampliar',
           tone: 'dark',
           items: [
             'Criterio para elegir herramienta según el problema',
@@ -310,7 +310,7 @@ export const services: Service[] = [
       headline: 'Capacidades',
       groups: [
         {
-          t: 'Diagnosticar.',
+          t: 'Diagnosticar',
           tone: '',
           items: [
             'Mapeo de procesos y tareas candidatas',
@@ -319,7 +319,7 @@ export const services: Service[] = [
           ],
         },
         {
-          t: 'Formar.',
+          t: 'Formar',
           tone: 'teal',
           items: [
             'Sesiones por área con sus propios casos',
@@ -328,7 +328,7 @@ export const services: Service[] = [
           ],
         },
         {
-          t: 'Sostener.',
+          t: 'Sostener',
           tone: 'dark',
           items: [
             'Reglas de uso seguro y responsable',
@@ -409,7 +409,7 @@ export const services: Service[] = [
       headline: 'Capacidades',
       groups: [
         {
-          t: 'Preparar.',
+          t: 'Preparar',
           tone: '',
           items: [
             'Diagnóstico del uso que ya existe en la institución',
@@ -418,7 +418,7 @@ export const services: Service[] = [
           ],
         },
         {
-          t: 'Enseñar.',
+          t: 'Enseñar',
           tone: 'gold',
           items: [
             'Fundamentos de IA sin tecnicismos',
@@ -427,7 +427,7 @@ export const services: Service[] = [
           ],
         },
         {
-          t: 'Acompañar.',
+          t: 'Acompañar',
           tone: 'dark',
           items: [
             'Lineamientos de uso para la institución',
