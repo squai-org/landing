@@ -40,6 +40,14 @@ pnpm db:migrate:remote    # D1 de producción
 
 Crea `waitlist_signups` y `contact_requests` desde `migrations/0001_init_leads.sql`.
 
+Los comandos apuntan al **binding** `DB`, no al nombre de la base, así que
+siguen funcionando aunque la base se llame distinto en cada cuenta. Es la
+recomendación de Cloudflare justamente para no romper el despliegue por un
+nombre que no coincide.
+
+En un entorno no interactivo (CI) Wrangler salta la confirmación y aplica las
+migraciones directamente.
+
 Docs: [D1 · Migrations](https://developers.cloudflare.com/d1/reference/migrations/)
 
 ## 3. Crear el widget de Turnstile
@@ -91,20 +99,38 @@ Docs: [Secrets](https://developers.cloudflare.com/workers/configuration/secrets/
 ## 6. Desplegar el Worker
 
 ```bash
-pnpm deploy               # astro build && wrangler deploy
+pnpm deploy    # astro build && pnpm db:migrate:remote && wrangler deploy
 ```
+
+El script encadena las migraciones antes del deploy, así que el esquema nunca
+queda por detrás del código. Si una migración falla, el deploy no ocurre.
 
 `wrangler deploy` sube `./dist` como static assets y `src/server/index.ts` como
 código del Worker. `assets.run_worker_first: ["/api/*"]` es lo que hace que
 `/api/*` entre siempre al Worker en vez de buscar un archivo estático.
 
-Alternativa con CI de Cloudflare: Dashboard → **Workers & Pages** → **Create** →
-**Import a repository** → elige `squai-org/landing` → rama de producción →
-build command `pnpm build`, deploy command `pnpm wrangler deploy`.
+### Automatizarlo
 
-Docs: [Static Assets](https://developers.cloudflare.com/workers/static-assets/) ·
+**Workers Builds** (CI de Cloudflare): Dashboard → **Workers & Pages** →
+**Create** → **Import a repository** → `squai-org/landing` → rama de
+producción. En **Settings** → **Build**:
+
+- Build command: `pnpm build`
+- Deploy command: `pnpm run deploy`
+
+Como el script `deploy` ya incluye las migraciones, cada build las aplica solo.
+Cloudflare detecta y pre-rellena estos comandos cuando el `package.json` los
+declara.
+
+**GitHub Actions** (alternativa, no ambas a la vez): `cloudflare/wrangler-action`
+con `preCommands` para las migraciones. Necesita los secrets
+`CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`, y el token debe poder editar
+Workers **y** D1.
+
+Docs: [Workers Builds · Configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/) ·
+[Static Assets](https://developers.cloudflare.com/workers/static-assets/) ·
 [Routing · Worker script](https://developers.cloudflare.com/workers/static-assets/routing/worker-script/) ·
-[`wrangler deploy`](https://developers.cloudflare.com/workers/wrangler/commands/#deploy)
+[GitHub Actions](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
 
 ## 7. Dominio propio
 

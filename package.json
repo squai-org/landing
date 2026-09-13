@@ -8,13 +8,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "preview:worker": "astro build && wrangler dev",
-    "deploy": "astro build && wrangler deploy",
+    "deploy": "astro build && pnpm db:migrate:remote && wrangler deploy",
     "typecheck": "tsc -p src/server",
     "test": "vitest run",
     "cf-typegen": "wrangler types",
     "db:create": "wrangler d1 create squai",
-    "db:migrate:local": "wrangler d1 migrations apply squai --local",
-    "db:migrate:remote": "wrangler d1 migrations apply squai --remote",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "astro": "astro"
   },
   "dependencies": {
