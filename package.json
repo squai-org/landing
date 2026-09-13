@@ -12,9 +12,9 @@
     "typecheck": "tsc -p src/server",
     "test": "vitest run",
     "cf-typegen": "wrangler types",
-    "db:create": "wrangler d1 create squai-leads",
-    "db:migrate:local": "wrangler d1 migrations apply squai-leads --local",
-    "db:migrate:remote": "wrangler d1 migrations apply squai-leads --remote",
+    "db:create": "wrangler d1 create squai",
+    "db:migrate:local": "wrangler d1 migrations apply squai --local",
+    "db:migrate:remote": "wrangler d1 migrations apply squai --remote",
     "astro": "astro"
   },
   "dependencies": {
