@@ -59,8 +59,10 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
   </div>
 
   <button type="button" data-scroll-to="statement" class="hero-scroll" data-hero-scroll>
-    <span class="hero-dot" aria-hidden="true"></span>
-    Seguir bajando
+    <span class="scroll-mouse" aria-hidden="true">
+      <span class="scroll-wheel"></span>
+    </span>
+    <span class="scroll-label">Seguir bajando</span>
   </button>
 </section>
 
@@ -224,33 +226,81 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     position: absolute;
     z-index: 2;
     left: 50%;
-    bottom: calc(var(--gutter) * 0.6);
+    bottom: clamp(12px, 2.2svh, 24px);
     transform: translateX(-50%);
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 12px 24px;
-    border: 1px solid rgba(244, 246, 255, .16);
+    gap: 8px;
+    min-width: 118px;
+    min-height: 76px;
+    padding: 8px 16px 7px;
+    border: 1px solid transparent;
     border-radius: var(--radius-md);
-    background: rgba(18, 22, 42, .5);
+    background: transparent;
     color: var(--canvas);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 1px 2px rgba(13, 27, 42, .04), 0 14px 34px -22px rgba(13, 27, 42, .28);
     font-family: var(--font-body);
-    font-size: 17px;
-    font-weight: 700;
     cursor: pointer;
-    transition: transform .2s, background-color .2s;
+    transition: transform .2s, background-color .2s, border-color .2s;
   }
   .hero-scroll:hover {
-    transform: translateX(-50%) translateY(2px);
-    background-color: rgba(18, 22, 42, .72);
-    border-color: rgba(244, 246, 255, .3);
+    transform: translateX(-50%) translateY(3px);
+    background-color: rgba(244, 246, 255, .08);
+    border-color: rgba(244, 246, 255, .18);
     color: var(--canvas);
   }
-  .hero-scroll { transition: transform .2s, background-color .2s, opacity .3s, visibility .3s; }
+  .hero-scroll { transition: transform .2s, background-color .2s, border-color .2s, opacity .3s, visibility .3s; }
   .hero-scroll.is-hidden { opacity: 0; visibility: hidden; }
+
+  .scroll-mouse {
+    position: relative;
+    display: block;
+    width: 26px;
+    height: 42px;
+    border: 2px solid rgba(244, 246, 255, .72);
+    border-radius: 999px;
+    animation: scrollMouseNudge 2.8s ease-out infinite, scrollMouseColor 5.6s linear infinite;
+  }
+  .scroll-wheel {
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 4px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--teal);
+    transform: translateX(-50%);
+    animation: scrollWheel 2.8s ease-out infinite;
+  }
+  .scroll-label {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(244, 246, 255, .82);
+    animation: scrollLabelNudge 2.8s ease-out infinite;
+  }
+
+  @keyframes scrollWheel {
+    0%, 12% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    42% { opacity: 0; transform: translate(-50%, 17px) scale(.55); }
+    43%, 58% { opacity: 0; transform: translate(-50%, 0) scale(.55); }
+    72%, 100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  }
+  @keyframes scrollMouseNudge {
+    0%, 12%, 55%, 100% { transform: translateY(0); }
+    35% { transform: translateY(4px); }
+  }
+  @keyframes scrollLabelNudge {
+    0%, 12%, 55%, 100% { transform: translateY(0); }
+    35% { transform: translateY(2px); }
+  }
+  @keyframes scrollMouseColor {
+    0%, 100% { border-color: rgba(244, 246, 255, .72); }
+    33% { border-color: var(--teal); }
+    66% { border-color: var(--periwinkle); }
+  }
 
   /* The cue needs room of its own; on short screens it goes. */
   @media (max-height: 720px) {
@@ -274,6 +324,12 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     .hero-line-mid { font-size: clamp(46px, calc(16vw - 4px), 74px); }
     .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 8px 16px; }
     .hero-scroll { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-mouse,
+    .scroll-wheel,
+    .scroll-label { animation: none; }
   }
 </style>
 
