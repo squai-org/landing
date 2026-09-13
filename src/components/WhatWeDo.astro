@@ -1,0 +1,27 @@
+---
+import { capabilities, whatWeDo } from '../data/landing';
+---
+
+<section id="que-hacemos" class="section tint">
+  <div class="shell">
+    <h2 class="display d-h1 what-title">{whatWeDo.title}</h2>
+    <p class="lead what-copy">{whatWeDo.body}</p>
+
+    <div class="bento what-grid">
+      {
+        capabilities.map((c) => (
+          <div class={`bento-card ${c.span} ${c.tone}`}>
+            <h3 class="display d-h2">{c.t}</h3>
+            <p class="body">{c.d}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .what-title { color: var(--ink); }
+  .what-copy { max-width: 84ch; margin-top: clamp(20px, 2vw, 32px); color: var(--ink-body); }
+  .what-grid { margin-top: clamp(36px, 4vw, 64px); }
+</style>

@@ -1,0 +1,42 @@
+---
+interface Card {
+  t: string;
+  d: string;
+}
+
+interface Props {
+  headline: string;
+  cards: Card[];
+}
+
+const { headline, cards } = Astro.props;
+---
+
+<!-- Flat and light, same shape as the statement section on the home page. -->
+<section class="section tint">
+  <div class="shell payback-shell">
+    <h2 class="display d-h1 payback-title">Qué obtienes</h2>
+    <h3 class="display d-h2 payback-headline">{headline}</h3>
+    <div class="payback-list">
+      {
+        cards.map((c) => (
+          <p class="lead payback-copy">
+            <strong class="payback-label">
+              {c.t}.
+            </strong>{' '}
+            {c.d}
+          </p>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .payback-shell { display: grid; gap: clamp(28px, 3vw, 52px); }
+  .payback-title, .payback-headline { color: var(--ink); }
+  .payback-headline { max-width: 22ch; }
+  .payback-list { display: flex; max-width: 74ch; flex-direction: column; gap: 20px; }
+  .payback-copy { color: var(--ink-body); }
+  .payback-label { color: var(--ink); font-family: var(--font-display); font-weight: 700; letter-spacing: -.02em; }
+</style>

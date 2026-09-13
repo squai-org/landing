@@ -7,6 +7,11 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+// Clave pública del widget de Turnstile. Si no está definida, el sitio sigue
+// funcionando sin verificación (el backend también la omite).
+// https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <!doctype html>
@@ -16,21 +21,66 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" href="/fonts/urbanist-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      if (location.hash.includes('figmacapture')) document.documentElement.dataset.figmaCapture = 'true';
+    </script>
+    <style is:global>
+      html[data-figma-capture='true'] .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    </style>
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+    <script is:inline>
+      // Turnstile invoca este callback por nombre desde window, así que vive
+      // fuera del módulo. Mantiene el botón de envío deshabilitado hasta que el
+      // widget entrega un token válido.
+      window.squaiTurnstileSync = function () {
+        document.querySelectorAll('form[data-form]').forEach(function (form) {
+          if (!form.querySelector('.cf-turnstile')) return;
+          var token = form.querySelector('input[name="cf-turnstile-response"]');
+          var submit = form.querySelector('button[type="submit"]');
+          if (submit) submit.disabled = !(token && token.value);
+        });
+      };
+      document.addEventListener('DOMContentLoaded', window.squaiTurnstileSync);
+    </script>
+    {
+      turnstileSiteKey && (
+        <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+      )
+    }
     <title>{title}</title>
   </head>
   <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <slot />
   </body>
 </html>
 
 <script>
-  // Smooth scroll to a section, matching the easing and 96px offset of the design.
+  /* ---------------------------------------------------------------------
+     Smooth scroll — 96px offset clears the sticky nav bar.
+  --------------------------------------------------------------------- */
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Clear the fixed nav bar plus a little breathing room. */
+  const navOffset = () => {
+    const bar = document.querySelector<HTMLElement>('.nav-bar');
+    return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
+  };
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const target = el.getBoundingClientRect().top + window.scrollY - 96;
+    const target = el.getBoundingClientRect().top + window.scrollY - navOffset();
+    if (prefersReducedMotion) {
+      window.scrollTo(0, target);
+      return;
+    }
     const start = window.scrollY;
     const dist = target - start;
     const dur = 450;
@@ -49,19 +99,165 @@ const { title, description } = Astro.props;
       const id = el.dataset.scrollTo!;
       // No matching section on this page (e.g. a header/footer link on a
       // legal page) — let the link's href navigate back to "/#id" normally.
-      if (!document.getElementById(id)) return;
+      if (!id || !document.getElementById(id)) return;
       event.preventDefault();
       scrollToSection(id);
     });
   });
 
-  // Mobile/tablet hamburger menu.
+  /* ---------------------------------------------------------------------
+     Nav chrome follows the section under it: light over the hero, ink after.
+  --------------------------------------------------------------------- */
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+
+  if (header) {
+    const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
+
+    const syncHeader = () => {
+      const limit = hero ? hero.offsetTop + hero.offsetHeight - 96 : 0;
+      header.classList.toggle('over-hero', window.scrollY < limit);
+      scrollCue?.classList.toggle('is-hidden', window.scrollY > 24);
+    };
+    syncHeader();
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          syncHeader();
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', syncHeader);
+  }
+
+  /* ---------------------------------------------------------------------
+     Reveal on scroll. Sections rise into place once; grids stagger their
+     own cards instead of moving as one block.
+  --------------------------------------------------------------------- */
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    const targets: HTMLElement[] = [];
+
+    document.querySelectorAll<HTMLElement>('.section').forEach((section) => {
+      const shell = section.querySelector<HTMLElement>(':scope > .shell') ?? section;
+      const children = Array.from(shell.children) as HTMLElement[];
+
+      children.forEach((child) => {
+        const cards = Array.from(child.querySelectorAll<HTMLElement>(':scope > .bento-card')) as HTMLElement[];
+        if (cards.length > 1) {
+          cards.forEach((card, i) => {
+            card.style.setProperty('--reveal-delay', `${i * 70}ms`);
+            targets.push(card);
+          });
+        } else {
+          targets.push(child);
+        }
+      });
+    });
+
+    // The hero is above the fold; give it the same entrance on load.
+    const heroInner = document.querySelector<HTMLElement>('.hero-inner');
+    if (heroInner) {
+      Array.from(heroInner.children).forEach((child, i) => {
+        const el = child as HTMLElement;
+        el.style.setProperty('--reveal-delay', `${i * 80}ms`);
+        targets.push(el);
+      });
+    }
+
+    targets.forEach((el) => el.classList.add('reveal'));
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
+    );
+
+    const riseEls = Array.from(document.querySelectorAll<HTMLElement>('.service-title-rise'));
+
+    if (riseEls.length) {
+      type Rise = { el: HTMLElement; card: HTMLElement; gap: number; current: number; target: number };
+      let rises: Rise[] = [];
+
+      const measureRises = () => {
+        const prev = new Map(rises.map((r) => [r.el, r]));
+        rises = [];
+        riseEls.forEach((el) => {
+          const card = el.closest<HTMLElement>('.bento-card');
+          const body = card?.querySelector<HTMLElement>('.body');
+          if (!card || !body) return;
+          const prevTransform = el.style.transform;
+          el.style.transform = 'none';
+          const gap = el.getBoundingClientRect().top - body.getBoundingClientRect().bottom;
+          el.style.transform = prevTransform;
+          if (gap > 0) {
+            const carried = prev.get(el);
+            rises.push({ el, card, gap, current: carried?.current ?? -gap, target: carried?.target ?? -gap });
+          }
+        });
+      };
+
+      const computeTargets = () => {
+        const vh = window.innerHeight;
+        rises.forEach((r) => {
+          const bottom = r.card.getBoundingClientRect().bottom;
+          const settled = Math.min(Math.max(vh - bottom, 0), r.gap);
+          r.target = settled - r.gap;
+        });
+      };
+
+      const tick = () => {
+        rises.forEach((r) => {
+          const diff = r.target - r.current;
+          r.current = Math.abs(diff) < 0.05 ? r.target : r.current + diff * 0.12;
+          r.el.style.transform = r.current === 0 ? '' : `translateY(${r.current}px)`;
+        });
+        requestAnimationFrame(tick);
+      };
+
+      let resizeTicking = false;
+      const onRiseResize = () => {
+        if (resizeTicking) return;
+        resizeTicking = true;
+        requestAnimationFrame(() => {
+          measureRises();
+          computeTargets();
+          resizeTicking = false;
+        });
+      };
+
+      measureRises();
+      computeTargets();
+      window.addEventListener('scroll', computeTargets, { passive: true });
+      window.addEventListener('resize', onRiseResize);
+      requestAnimationFrame(tick);
+    }
+
+    targets.forEach((el) => io.observe(el));
+  }
+
+  /* ---------------------------------------------------------------------
+     Mobile/tablet hamburger menu.
+  --------------------------------------------------------------------- */
   const navToggle = document.querySelector<HTMLElement>('[data-nav-toggle]');
   const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
 
   const setNavOpen = (open: boolean) => {
     navMenu?.classList.toggle('nav-open', open);
     navToggle?.setAttribute('aria-expanded', String(open));
+    navToggle?.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
   };
 
   navToggle?.addEventListener('click', () => {
@@ -79,8 +275,41 @@ const { title, description } = Astro.props;
     setNavOpen(false);
   });
 
-  // FAQ accordion: one panel open at a time, closed on load. (Homepage only —
-  // the queries below simply match nothing on pages without a FAQ section.)
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !navMenu?.classList.contains('nav-open')) return;
+    setNavOpen(false);
+    navToggle?.focus();
+  });
+
+  const desktopNav = window.matchMedia('(min-width: 1024px)');
+  desktopNav.addEventListener('change', (event) => {
+    if (event.matches) setNavOpen(false);
+  });
+
+  const navSectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-section]'));
+  if (location.pathname === '/' && navSectionLinks.length && 'IntersectionObserver' in window) {
+    const currentSectionObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        navSectionLinks.forEach((link) => {
+          if (link.dataset.navSection === visible.target.id) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      },
+      { rootMargin: '-25% 0px -60% 0px', threshold: [0, .25, .5] }
+    );
+    navSectionLinks.forEach((link) => {
+      const section = document.getElementById(link.dataset.navSection || '');
+      if (section) currentSectionObserver.observe(section);
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     FAQ accordion: one panel open at a time, closed on load.
+  --------------------------------------------------------------------- */
   let openFaq: string | null = null;
 
   document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((toggle) => {
@@ -94,23 +323,227 @@ const { title, description } = Astro.props;
       document.querySelectorAll<HTMLElement>('[data-faq-sign]').forEach((sign) => {
         sign.textContent = sign.dataset.faqSign === openFaq ? '−' : '+';
       });
+      document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((btn) => {
+        btn.setAttribute('aria-expanded', String(btn.dataset.faqToggle === openFaq));
+      });
     });
   });
 
-  // "Agendar llamada" modal. (Homepage only.)
+  /* ---------------------------------------------------------------------
+     Contact request modal — one form, two destinations (Grow / Learn).
+  --------------------------------------------------------------------- */
   const modal = document.querySelector<HTMLElement>('[data-modal]');
   const modalPanel = document.querySelector<HTMLElement>('[data-modal-panel]');
+  const modalForm = document.querySelector<HTMLFormElement>('[data-form="contact"]');
+  let lastFocused: HTMLElement | null = null;
+  let backgroundInertState = new Map<HTMLElement, boolean>();
 
-  const setModal = (open: boolean) => {
-    if (modal) modal.hidden = !open;
+  const setBackgroundInert = (inert: boolean) => {
+    if (!modal) return;
+    const background = Array.from(document.body.children).filter(
+      (element): element is HTMLElement => element instanceof HTMLElement && element !== modal && element.tagName !== 'SCRIPT'
+    );
+    if (inert) {
+      backgroundInertState = new Map(background.map((element) => [element, element.inert]));
+      background.forEach((element) => { element.inert = true; });
+      return;
+    }
+    backgroundInertState.forEach((wasInert, element) => { element.inert = wasInert; });
+    backgroundInertState.clear();
+  };
+
+  const MODAL_COPY: Record<string, { eco: string; copy: string; placeholder: string }> = {
+    grow: {
+      eco: 'Squai Grow',
+      copy: 'Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.',
+      placeholder: '¿En qué procesos crees que la IA puede ayudar?',
+    },
+    learn: {
+      eco: 'Squai Learn',
+      copy: 'Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.',
+      placeholder: '¿Con qué grupo quieres empezar y para qué?',
+    },
+  };
+
+  const setModal = (open: boolean, eco?: string) => {
+    if (!modal) return;
+    if (open && eco && MODAL_COPY[eco]) {
+      const conf = MODAL_COPY[eco];
+      const ecoEl = modal.querySelector<HTMLElement>('[data-modal-eco]');
+      const copyEl = modal.querySelector<HTMLElement>('[data-modal-copy]');
+      const textarea = modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]');
+      if (ecoEl) ecoEl.textContent = conf.eco;
+      if (copyEl) copyEl.textContent = conf.copy;
+      if (textarea) textarea.placeholder = conf.placeholder;
+      modalForm?.setAttribute('data-eco', eco);
+    }
+    modal.hidden = !open;
+    setBackgroundInert(open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      modal.querySelector<HTMLInputElement>('input, select, textarea')?.focus();
+    } else {
+      lastFocused?.focus();
+    }
   };
 
   document.querySelectorAll<HTMLElement>('[data-open-modal]').forEach((el) => {
-    el.addEventListener('click', () => setModal(true));
+    el.addEventListener('click', () => {
+      lastFocused = el;
+      setModal(true, el.dataset.openModal || 'grow');
+    });
   });
   document.querySelectorAll<HTMLElement>('[data-close-modal]').forEach((el) => {
     el.addEventListener('click', () => setModal(false));
   });
   modal?.addEventListener('click', () => setModal(false));
   modalPanel?.addEventListener('click', (event) => event.stopPropagation());
+  document.addEventListener('keydown', (event) => {
+    if (!modal || modal.hidden) return;
+
+    if (event.key === 'Escape') {
+      setModal(false);
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+
+    // Trap focus inside the dialog.
+    const focusables = modal.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  /* ---------------------------------------------------------------------
+     Forms. The site is static; each form posts JSON straight to the API.
+     Field names in the payload are the input `name` attributes.
+  --------------------------------------------------------------------- */
+  interface ApiResponse {
+    ok: boolean;
+    error?: { code: string; message: string; fields?: Record<string, string> };
+  }
+
+  const setStatus = (form: HTMLFormElement, text: string, state: '' | 'ok' | 'error') => {
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    if (!status) return;
+    status.textContent = text;
+    if (state) status.dataset.state = state;
+    else delete status.dataset.state;
+  };
+
+  const clearFieldErrors = (form: HTMLFormElement) => {
+    form.querySelectorAll<HTMLElement>('[data-field-error]').forEach((error) => { error.textContent = ''; });
+    form.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
+  };
+
+  const setFieldError = (form: HTMLFormElement, name: string, message: string) => {
+    const field = form.elements.namedItem(name);
+    const error = form.querySelector<HTMLElement>(`[data-field-error="${CSS.escape(name)}"]`);
+    if (field instanceof HTMLElement) field.setAttribute('aria-invalid', 'true');
+    if (error) error.textContent = message;
+  };
+
+  document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
+    form.addEventListener('input', (event) => {
+      const field = event.target;
+      if (!(field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement)) return;
+      field.removeAttribute('aria-invalid');
+      const error = form.querySelector<HTMLElement>(`[data-field-error="${CSS.escape(field.name)}"]`);
+      if (error) error.textContent = '';
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearFieldErrors(form);
+
+      if (!form.checkValidity()) {
+        const invalidFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(':invalid'));
+        invalidFields.forEach((field) => setFieldError(form, field.name, field.validationMessage));
+        setStatus(form, 'Revisa los campos marcados: faltan datos o el correo no es válido.', 'error');
+        invalidFields[0]?.focus();
+        return;
+      }
+
+      const kind = form.dataset.form!;
+      const eco = form.dataset.eco || 'grow';
+      const endpoint =
+        kind === 'contact' ? form.dataset[eco === 'learn' ? 'endpointLearn' : 'endpointGrow'] : form.dataset.endpoint;
+      if (!endpoint) return;
+
+      const payload: Record<string, string> = {};
+      new FormData(form).forEach((value, key) => {
+        payload[key] = String(value).trim();
+      });
+      if (kind === 'contact') payload.ecosystem = eco;
+
+      const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const labelNode = submit?.querySelector<HTMLElement>('.btn-label');
+      const label = labelNode?.textContent ?? '';
+      if (submit) {
+        submit.disabled = true;
+        submit.setAttribute('aria-busy', 'true');
+      }
+      if (labelNode) labelNode.textContent = 'Enviando…';
+      setStatus(form, 'Enviando…', '');
+
+      const fallbackError = 'No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        /* La API responde { ok: true, ... } o { ok: false, error: { code, message, fields } }. */
+        const data = (await res.json().catch(() => null)) as ApiResponse | null;
+
+        if (!res.ok) {
+          if (data?.error?.fields) {
+            Object.entries(data.error.fields).forEach(([name, message]) => setFieldError(form, name, message));
+          }
+          const fieldMessage = data?.error?.fields ? Object.values(data.error.fields)[0] : undefined;
+          setStatus(form, fieldMessage ?? data?.error?.message ?? fallbackError, 'error');
+          form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+          return;
+        }
+
+        form.reset();
+        clearFieldErrors(form);
+        setStatus(
+          form,
+          kind === 'contact'
+            ? '¡Listo! Te escribimos en menos de 24 horas hábiles.'
+            : '¡Listo! Ya estás en la lista. Te avisamos cuando se abra la inscripción.',
+          'ok'
+        );
+      } catch {
+        setStatus(form, fallbackError, 'error');
+      } finally {
+        if (submit) {
+          submit.disabled = false;
+          submit.removeAttribute('aria-busy');
+        }
+        if (labelNode) labelNode.textContent = label;
+        /* Cada token de Turnstile se puede validar una sola vez. */
+        const widget = form.querySelector<HTMLElement>('.cf-turnstile');
+        if (widget) {
+          window.turnstile?.reset(widget);
+          window.squaiTurnstileSync?.();
+        }
+      }
+    });
+  });
 </script>

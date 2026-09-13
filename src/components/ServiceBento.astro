@@ -1,0 +1,51 @@
+---
+interface Card {
+  t: string;
+  d: string;
+}
+
+interface Props {
+  label?: string;
+  title: string;
+  headline?: string;
+  cards: Card[];
+  tones?: string[];
+  dark?: boolean;
+}
+
+const { label, title, headline, cards, tones = [], dark = false } = Astro.props;
+---
+
+<!-- Payback and challenge share one symmetric bento instead of the reference's
+     off-grid treatment. -->
+<section class={`section ${dark ? 'night' : 'tint'}`}>
+  <div class="shell">
+    {label && <p class="label service-bento-label">{label}</p>}
+    <h2 class={`display d-h1 service-bento-title ${dark ? 'is-dark' : ''}`}>{title}</h2>
+    {
+      headline && (
+        <p class={`display d-h3 service-bento-headline ${dark ? 'is-dark' : ''}`}>
+          {headline}
+        </p>
+      )
+    }
+    <div class="bento service-bento-grid">
+      {
+        cards.map((c, i) => (
+          <div class={`bento-card span-2 ${tones[i] ?? ''}`}>
+            <h3 class="display d-h3">{c.t}</h3>
+            <p class="body">{c.d}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-bento-label { margin-bottom: 14px; font-weight: 400; }
+  .service-bento-title, .service-bento-headline { color: var(--ink); }
+  .service-bento-title.is-dark, .service-bento-headline.is-dark { color: var(--canvas); }
+  .service-bento-headline { max-width: 34ch; margin-top: clamp(20px, 2vw, 32px); }
+  .service-bento-grid { margin-top: clamp(36px, 4vw, 64px); }
+</style>

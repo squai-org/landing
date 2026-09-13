@@ -1,0 +1,45 @@
+---
+import { statement } from '../data/landing';
+---
+
+<section id="statement" class="section statement-section">
+  <img class="brand-shape statement-shape" src="/images/shape-statement-light.svg" alt="" aria-hidden="true" />
+  <div class="shell grid-sidebar statement-content">
+    <h2 class="display d-h2 sidebar-sticky statement-title">
+      {statement.headline}
+    </h2>
+    <div class="statement-copy-list">
+      {statement.body.map((para) => <p class="lead statement-copy">{para}</p>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .statement-section {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--periwinkle);
+  }
+  .statement-shape {
+    position: absolute;
+    z-index: 0;
+    width: 57.855%;
+    height: auto;
+    left: 41.876%;
+    top: -9.608%;
+    transform: rotate(104.9deg);
+    pointer-events: none;
+    user-select: none;
+  }
+  .statement-content { position: relative; z-index: 1; display: grid; grid-template-columns: .8fr 1.2fr; align-items: start; gap: clamp(32px, 5vw, 80px); }
+  .statement-title { position: sticky; top: 120px; max-width: 16ch; color: var(--midnight); }
+  .statement-copy-list { display: flex; flex-direction: column; gap: 20px; }
+  .statement-copy { color: var(--midnight); opacity: .9; }
+
+  @media (max-width: 900px) {
+    .statement-content { grid-template-columns: 1fr; gap: clamp(24px, 4vw, 40px); }
+    .statement-title { position: static; }
+  }
+
+</style>

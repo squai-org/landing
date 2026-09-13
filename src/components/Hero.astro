@@ -1,101 +1,343 @@
 ---
-import { logistics } from '../data/landing';
+import Button from './Button.astro';
+import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
 ---
 
-<div
-  class="hero-shell"
-  style="position: relative; background: #7C8CFF; border-radius: 28px; padding: 170px 64px 0; overflow: hidden; margin: 0 12px; z-index: 0; padding-top: 129px"
->
-  <div style="max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center">
-    <div
-      style="display:flex;align-items:center;gap:10px;padding:8px 18px;background:#fff;border-radius:100px;box-shadow:0 8px 24px -14px rgba(13,27,42,.5)"
-    >
-      <span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background-color: #44D4C8"></span>
-      <span style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#0D1B2A"
-        >Inscripciones por lista de espera · Cupos limitados por cohorte</span
-      >
-    </div>
-    <h1
-      class="hero-title"
-      style="margin: 0; font-family: Urbanist; font-weight: 900; font-size: 82px; line-height: 0.98; letter-spacing: -0.035em; color: #0D1B2A; max-width: 1000px; text-wrap: balance"
-    >
-      Fundamentos de Inteligencia Artificial Generativa
-    </h1>
-    <p class="hero-subtitle" style="margin:0;font-size:22px;font-weight:400;line-height:1.45;color:#F0F2FF;max-width:700px;text-wrap:pretty">
-      Desarrolla el criterio para entender la IA, aprende a razonar con ella y domina las bases para usar cualquier
-      herramienta con confianza.
-    </p>
+<!--
+  Night hero. Always the same inset on every side until the visitor scrolls,
+  so it reads as one full panel on any device. No imagery (Brand Book §14.6).
+-->
+<section class="hero" data-hero>
+  <img class="brand-shape hero-shape hero-shape-gold" src="/images/shape-hero-gold.svg" alt="" aria-hidden="true" />
+  <img class="brand-shape hero-shape hero-shape-periwinkle" src="/images/shape-hero-periwinkle.svg" alt="" aria-hidden="true" />
 
-    <div class="hero-actions" style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px">
+  <div class="hero-inner">
+    <div class="hero-eyebrow-row">
       <button
-        data-scroll-to="lista"
-        class="btn-gold-lift"
-        style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;color:#3B2B05;background:linear-gradient(180deg, #F7D96A 0%, #EFC13C 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 0 0 1px rgba(255,255,255,.55), 0 1px 2px rgba(13,27,42,.08), 0 8px 20px -8px rgba(13,27,42,.22)"
+        type="button"
+        class="hero-animation-toggle"
+        data-hero-animation-toggle
+        aria-label="Pausar palabras animadas"
+        aria-pressed="false"
+        title="Pausar palabras animadas"
       >
-        Reservar mi lugar
+        <svg class="hero-animation-icon hero-animation-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 5h3v14H7V5Zm7 0h3v14h-3V5Z" />
+        </svg>
+        <svg class="hero-animation-icon hero-animation-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7L8 5Z" />
+        </svg>
       </button>
-      <button
-        data-scroll-to="programa"
-        class="btn-ghost"
-        style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;color:#FFFFFF;background:linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.13) 100%);border:0;border-radius:100px;padding:18px 36px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 0 0 1px rgba(255,255,255,.3), 0 8px 20px -10px rgba(13,27,42,.35)"
-      >
-        Ver el programa ↓
-      </button>
+      <a href="/servicios/squai-one" class="hero-eyebrow">
+        <span class="hero-dot" aria-hidden="true"></span>
+        <span class="hero-eyebrow-status">{cohort.status}</span>
+        <span class="hero-eyebrow-text">{cohort.name}</span>
+      </a>
     </div>
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px;max-width:920px">
-      {
-        logistics.map((lg) => (
-          <span style="padding:9px 18px;border:1px solid rgba(255,255,255,.34);border-radius:100px;font-size:13px;font-weight:400;color:#FFFFFF">
-            {lg}
-          </span>
-        ))
-      }
+
+    <h1 class="hero-title">
+      <span class="hero-line">
+        <span class="hero-animated-word">
+          <span class="hero-verb" data-hero-verb aria-live="off" style={`color:${heroVerbs[0].color}`}>{heroVerbs[0].word}</span><span
+            class="hero-caret"
+            data-hero-caret
+            aria-hidden="true"></span>
+        </span>
+        {' '}{heroLines.object}
+      </span>
+      <span class="hero-line hero-line-mid">{heroLines.middle}</span>
+      <span class="hero-line hero-line-last">{heroLines.last}</span>
+    </h1>
+
+    <p class="hero-subtitle">{heroSubtitle}</p>
+
+    <div class="hero-actions">
+      <Button variant="primary" href="/servicios/squai-one#lista">Unirme a la lista de espera</Button>
+      <Button variant="white" href="/#servicios" data-scroll-to="servicios">Ver servicios</Button>
     </div>
+
   </div>
-  <div
-    class="hero-mockup"
-    style="max-width: none; margin: 72px 0 0; background: #FFFFFF; border-radius: 24px 24px 0 0; box-shadow: 0 -1px 0 rgba(13,27,42,.06), 0 -30px 80px -40px rgba(13,27,42,.5); overflow: hidden; width: 847px; max-width: 100%; height: 272px; position: static; margin-right: auto; margin-left: auto; margin-top: 24px"
-  >
-    <div style="display:flex;align-items:center;gap:8px;padding:16px 20px;border-bottom:1px solid rgba(13,27,42,.07)">
-      <span style="width:11px;height:11px;border-radius:50%;background:#F2C94C"></span>
-      <span style="width:11px;height:11px;border-radius:50%;background:#44D4C8"></span>
-      <span style="width:11px;height:11px;border-radius:50%;background:#C4CEFF"></span>
-      <span style="width:200px;height:12px;border-radius:100px;background:#F4F6FF;margin-left:14px"></span>
-    </div>
-    <div class="hero-mockup-grid" style="display:grid;grid-template-columns:200px 1fr;min-height:300px">
-      <div
-        class="hero-mockup-sidebar"
-        style="border-right:1px solid rgba(13,27,42,.07);padding:22px 20px;display:flex;flex-direction:column;gap:14px;background:#FBFCFF"
-      >
-        <span style="width:70%;height:10px;border-radius:100px;background:#E8ECFF"></span>
-        <span style="width:90%;height:10px;border-radius:100px;background:#EFF1F8"></span>
-        <span style="width:55%;height:10px;border-radius:100px;background:#EFF1F8"></span>
-        <span style="width:80%;height:10px;border-radius:100px;background:#EFF1F8"></span>
-        <span style="width:40%;height:10px;border-radius:100px;background:#EFF1F8"></span>
-      </div>
-      <div style="padding:26px 30px;display:flex;flex-direction:column;gap:16px">
-        <div
-          style="align-self:flex-end;width:52%;background:#E8ECFF;border-radius:16px 16px 4px 16px;padding:16px;display:flex;flex-direction:column;gap:8px"
-        >
-          <span style="width:90%;height:9px;border-radius:100px;background:#C4CEFF"></span>
-          <span style="width:60%;height:9px;border-radius:100px;background:#C4CEFF"></span>
-        </div>
-        <div
-          style="align-self:flex-start;width:74%;background:#F4F6FF;border-radius:16px 16px 16px 4px;padding:18px;display:flex;flex-direction:column;gap:9px"
-        >
-          <span style="width:34%;height:9px;border-radius:100px;background:#44D4C8"></span>
-          <span style="width:96%;height:9px;border-radius:100px;background:#DDE2F0"></span>
-          <span style="width:88%;height:9px;border-radius:100px;background:#DDE2F0"></span>
-          <span style="width:92%;height:9px;border-radius:100px;background:#DDE2F0"></span>
-          <span style="width:54%;height:9px;border-radius:100px;background:#DDE2F0"></span>
-        </div>
-        <div
-          style="margin-top:6px;display:flex;align-items:center;gap:10px;border:1px solid rgba(13,27,42,.09);border-radius:100px;padding:12px 16px"
-        >
-          <span style="flex:1;height:10px;border-radius:100px;background:#EFF1F8"></span>
-          <span style="width:34px;height:34px;border-radius:50%;background:#F2C94C;flex:none"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
+  <button type="button" data-scroll-to="statement" class="hero-scroll" data-hero-scroll>
+    <span class="hero-dot" aria-hidden="true"></span>
+    Seguir bajando
+  </button>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--midnight);
+    border-radius: clamp(20px, 2vw, 36px);
+    /* Equal inset on all four sides, whatever the viewport. */
+    margin: var(--hero-inset);
+    min-height: calc(100svh - var(--hero-inset) * 2);
+    padding: calc(var(--nav-space) + clamp(6px, 2svh, 44px)) var(--gutter) clamp(18px, 7svh, 110px);
+    overflow: hidden;
+  }
+
+  .hero-shape {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+  .hero-shape-gold {
+    width: 884px;
+    height: auto;
+    left: -369px;
+    top: -383px;
+    transform: rotate(-60deg);
+  }
+  .hero-shape-periwinkle {
+    width: 1312px;
+    height: auto;
+    left: 1212px;
+    top: -214px;
+    transform: rotate(-22.64deg);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: var(--shell);
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: clamp(6px, 1.7svh, 24px);
+  }
+
+  /* One dot shape for the eyebrow and the scroll cue, no stock glyphs. */
+  .hero-dot {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+    max-width: 100%;
+    padding: 10px 22px;
+    background: rgba(244, 246, 255, .92);
+    border: 1px solid rgba(244, 246, 255, .5);
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    transition: background .2s, transform .2s;
+  }
+  .hero-eyebrow-row {
+    display: flex;
+    max-width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .hero-eyebrow:hover { background: #FFFFFF; transform: translateY(-1px); }
+  .hero-eyebrow-status {
+    flex: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--periwinkle-ink);
+  }
+  .hero-eyebrow-text { font-size: 14px; color: var(--ink-body); min-width: 0; }
+
+  .hero-title { margin: 0; display: flex; flex-direction: column; align-items: center; color: var(--canvas); }
+  .hero-line {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 0.94;
+    font-size: clamp(40px, 9.6vw, 150px);
+  }
+  /* The middle line keeps the reading face at the same size. */
+  /* Four pixels shy of the display lines so it reads as a step down. */
+  .hero-line-mid {
+    font-family: var(--font-body);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    font-size: clamp(36px, calc(9.6vw - 4px), 146px);
+  }
+  .hero-line-last { color: #F4F6FF; }
+
+  .hero-animated-word { white-space: nowrap; }
+
+  /* The verb is typed in and out rather than cross-faded. */
+  .hero-caret {
+    display: inline-block;
+    width: .06em;
+    height: .72em;
+    margin-left: .04em;
+    vertical-align: baseline;
+    background: currentColor;
+    color: var(--teal);
+    animation: caret 1s steps(1, end) infinite;
+  }
+  @keyframes caret { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+  .hero-subtitle {
+    margin: 0;
+    max-width: 52ch;
+    font-size: var(--t-lead);
+    line-height: 1.5;
+    color: #B7BCD0;
+    text-wrap: pretty;
+  }
+
+  .hero-animation-toggle {
+    display: inline-flex;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(244, 246, 255, .28);
+    border-radius: 50%;
+    background: rgba(244, 246, 255, .08);
+    color: var(--canvas);
+    cursor: pointer;
+  }
+  .hero-animation-toggle:hover { background: rgba(244, 246, 255, .1); }
+  .hero-animation-toggle:focus-visible { outline: 3px solid var(--periwinkle); outline-offset: 3px; }
+  .hero-animation-icon { display: block; }
+  .hero-animation-icon-play { display: none; }
+  .hero-animation-toggle[aria-pressed="true"] .hero-animation-icon-pause { display: none; }
+  .hero-animation-toggle[aria-pressed="true"] .hero-animation-icon-play { display: block; }
+  .hero.animation-paused .hero-caret { animation-play-state: paused; }
+
+  .hero-actions { display: flex; gap: 14px; align-items: stretch; justify-content: center; flex-wrap: wrap; }
+
+  .hero-scroll {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: calc(var(--gutter) * 0.6);
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border: 1px solid rgba(244, 246, 255, .16);
+    border-radius: var(--radius-md);
+    background: rgba(18, 22, 42, .5);
+    color: var(--canvas);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 1px 2px rgba(13, 27, 42, .04), 0 14px 34px -22px rgba(13, 27, 42, .28);
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .2s, background-color .2s;
+  }
+  .hero-scroll:hover {
+    transform: translateX(-50%) translateY(2px);
+    background-color: rgba(18, 22, 42, .72);
+    border-color: rgba(244, 246, 255, .3);
+    color: var(--canvas);
+  }
+  .hero-scroll { transition: transform .2s, background-color .2s, opacity .3s, visibility .3s; }
+  .hero-scroll.is-hidden { opacity: 0; visibility: hidden; }
+
+  /* The cue needs room of its own; on short screens it goes. */
+  @media (max-height: 720px) {
+    .hero-scroll { display: none; }
+    .hero-subtitle { max-width: 42ch; }
+  }
+
+  /* Responsive (tablet and phone): a smaller eyebrow, a bigger headline, and
+     the duration/format pills are dropped — the subtitle already says it. */
+  @media (max-width: 1023px) {
+    .hero-eyebrow { padding: 8px 18px; gap: 10px; }
+    .hero-eyebrow-status, .hero-eyebrow-text { font-size: 13px; }
+    .hero-line { font-size: clamp(46px, 11.5vw, 96px); }
+    .hero-line-mid { font-size: clamp(42px, calc(11.5vw - 4px), 92px); }
+  }
+
+  @media (max-width: 640px) {
+    .hero { --nav-space: 84px; }
+    /* Lift the headline further so it outweighs the actions under it. */
+    .hero-line { font-size: clamp(50px, 16vw, 78px); }
+    .hero-line-mid { font-size: clamp(46px, calc(16vw - 4px), 74px); }
+    .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 8px 16px; }
+    .hero-scroll { display: none; }
+  }
+</style>
+
+<script>
+  import { heroVerbs } from '../data/landing';
+
+  const verb = document.querySelector<HTMLElement>('[data-hero-verb]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-hero-animation-toggle]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (verb && heroVerbs.length > 1) {
+    if (reduced) {
+      document.querySelector('[data-hero-caret]')?.remove();
+      if (toggle) toggle.hidden = true;
+    } else {
+      const TYPE = 70;
+      const ERASE = 45;
+      const HOLD = 2200;
+      let index = 0;
+      let paused = false;
+
+      toggle?.addEventListener('click', () => {
+        paused = !paused;
+        toggle.setAttribute('aria-pressed', String(paused));
+        const label = paused ? 'Reanudar palabras animadas' : 'Pausar palabras animadas';
+        toggle.setAttribute('aria-label', label);
+        toggle.title = label;
+        hero?.classList.toggle('animation-paused', paused);
+      });
+
+      const wait = (ms: number) =>
+        new Promise<void>((done) => {
+          let remaining = ms;
+          let previous = performance.now();
+          const step = (now: number) => {
+            if (!paused) remaining -= now - previous;
+            previous = now;
+            if (remaining <= 0) done();
+            else requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        });
+
+      const run = async () => {
+        // Keep the longest word reserved so the line never reflows mid-type.
+        for (;;) {
+          await wait(HOLD);
+          const current = heroVerbs[index].word;
+          for (let i = current.length; i >= 0; i--) {
+            verb.textContent = current.slice(0, i);
+            await wait(ERASE);
+          }
+          index = (index + 1) % heroVerbs.length;
+          const next = heroVerbs[index];
+          verb.style.color = next.color;
+          for (let i = 1; i <= next.word.length; i++) {
+            verb.textContent = next.word.slice(0, i);
+            await wait(TYPE);
+          }
+        }
+      };
+
+      run();
+    }
+  }
+</script>

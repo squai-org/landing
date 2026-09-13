@@ -1,0 +1,55 @@
+---
+import { impact } from '../data/landing';
+---
+
+<section id="impacto" class="section night impact-section">
+  <img class="brand-shape impact-shape" src="/images/shape-impact-gold.svg" alt="" aria-hidden="true" />
+  <div class="shell impact-row">
+    <h2 class="display d-h1 impact-title">{impact.title}</h2>
+    <div class="impact-copy-column">
+      <p class="lead impact-copy">{impact.copy}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .impact-section { position: relative; overflow: hidden; }
+  .impact-shape {
+    position: absolute;
+    z-index: 0;
+    width: 71%;
+    height: 190%;
+    left: -28%;
+    top: -15%;
+    transform: rotate(37.8deg);
+    pointer-events: none;
+    user-select: none;
+  }
+  .impact-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(28px, 4vw, 72px);
+    align-items: center;
+  }
+  .impact-title { min-width: 0; flex: 1 1 320px; color: var(--midnight); }
+  .impact-copy { max-width: 52ch; color: var(--canvas); }
+  .impact-copy-column {
+    display: flex;
+    flex: 1 1 420px;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(24px, 2.6vw, 40px);
+  }
+
+  @media (max-width: 1023px) {
+    .impact-title { color: var(--canvas); }
+  }
+
+  @media (max-width: 900px) {
+    .impact-row > * { flex-basis: 100%; }
+  }
+
+</style>

@@ -1,0 +1,104 @@
+import { isPersonalEmail } from '../lib/email';
+import { badRequest, forbidden } from '../lib/http';
+import { normalizePhone } from '../lib/phone';
+import { verifyTurnstileToken } from '../lib/turnstile';
+import { insertContactRequest } from '../repositories/contact.repository';
+import { upsertWaitlistSignup, type WaitlistUpsertResult } from '../repositories/waitlist.repository';
+import type { ContactInput } from '../schemas/contact.schema';
+import type { WaitlistInput } from '../schemas/waitlist.schema';
+import type { Env, RequestMeta } from '../types';
+
+/**
+ * Comprueba el token de Turnstile.
+ * Si TURNSTILE_SECRET_KEY no está configurado, la verificación se omite con un
+ * aviso en los logs: así el formulario sigue operativo mientras se crea el
+ * widget en el dashboard. En producción el secret debe existir.
+ */
+const assertHuman = async (env: Env, token: string | undefined, meta: RequestMeta) => {
+  const secret = env.TURNSTILE_SECRET_KEY;
+
+  if (!secret) {
+    console.warn('TURNSTILE_SECRET_KEY no configurado: se omite la verificación de bot.');
+    return;
+  }
+
+  if (!token) {
+    throw badRequest('turnstile_missing', 'Completa la verificación de seguridad.');
+  }
+
+  const verification = await verifyTurnstileToken(secret, token, meta.ip);
+
+  if (!verification.success) {
+    console.warn('Turnstile rechazó el envío', verification['error-codes']);
+    throw forbidden('turnstile_failed', 'No pudimos verificar que eres una persona. Recarga e inténtalo de nuevo.');
+  }
+};
+
+/** Normaliza indicativo + número a E.164 o falla con el campo marcado. */
+const requirePhone = (countryCode: string, phone: string) => {
+  const normalized = normalizePhone(countryCode, phone);
+
+  if (!normalized) {
+    throw badRequest('invalid_phone', 'Revisa los campos del formulario.', {
+      phone: 'El número de teléfono no es válido.',
+    });
+  }
+
+  return normalized;
+};
+
+const allowsPersonalEmail = (env: Env) => env.ALLOW_PERSONAL_EMAIL === 'true';
+
+export const submitWaitlist = async (
+  env: Env,
+  input: WaitlistInput,
+  meta: RequestMeta
+): Promise<WaitlistUpsertResult> => {
+  await assertHuman(env, input['cf-turnstile-response'], meta);
+
+  const phone = requirePhone(input.country_code, input.phone);
+
+  return upsertWaitlistSignup(env.DB, {
+    fullName: input.full_name,
+    email: input.email,
+    countryCode: phone.countryCode,
+    phone: phone.nationalNumber,
+    phoneE164: phone.e164,
+    sourcePage: meta.sourcePage,
+    ipCountry: meta.ipCountry,
+    userAgent: meta.userAgent,
+  });
+};
+
+export const submitContactRequest = async (
+  env: Env,
+  input: ContactInput,
+  meta: RequestMeta
+): Promise<number> => {
+  await assertHuman(env, input['cf-turnstile-response'], meta);
+
+  // El modal pide explícitamente "Correo corporativo".
+  if (!allowsPersonalEmail(env) && isPersonalEmail(input.email)) {
+    throw badRequest('personal_email_rejected', 'Revisa los campos del formulario.', {
+      email: 'Usa tu correo corporativo o institucional.',
+    });
+  }
+
+  const phone = requirePhone(input.country_code, input.phone);
+
+  return insertContactRequest(env.DB, {
+    ecosystem: input.ecosystem,
+    fullName: input.full_name,
+    email: input.email,
+    organization: input.organization,
+    role: input.role,
+    countryCode: phone.countryCode,
+    phone: phone.nationalNumber,
+    phoneE164: phone.e164,
+    teamSize: input.team_size,
+    message: input.message,
+    sourcePage: meta.sourcePage,
+    ipCountry: meta.ipCountry,
+    userAgent: meta.userAgent,
+  });
+};
