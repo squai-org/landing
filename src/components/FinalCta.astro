@@ -1,26 +1,20 @@
 ---
 import Button from './Button.astro';
+import { getSiteContent } from '../lib/content';
+
+const { ui, labels } = await getSiteContent();
 ---
 
 <section class="section final-cta">
   <img class="brand-shape final-shape" src="/images/shape-final-dark.svg" alt="" aria-hidden="true" />
   <div class="shell grid-sidebar final-content">
     <h2 class="display d-h2 sidebar-sticky final-title">
-      La IA ya no es opcional, es una habilidad para la vida
+      {ui.finalCta.title}
     </h2>
     <div class="final-copy-column">
-      <p class="lead final-copy">
-        Aprender a usar inteligencia artificial dejó de ser un lujo o un tema solo para expertos. Hoy la diferencia está
-        entre quienes resuelven cosas en minutos apoyados en IA y quienes siguen perdiendo horas en tareas manuales y
-        repetitivas.
-      </p>
-      <p class="lead final-copy">
-        El mundo avanza rápido y quedarse al margen significa hacerte la vida más difícil de lo necesario, cuando
-        podrías estar usando estas herramientas para simplificar tu día a día, aprender más rápido y tomar mejores
-        decisiones.
-      </p>
+      {ui.finalCta.body.map((paragraph) => <p class="lead final-copy">{paragraph}</p>)}
       <div class="final-action">
-        <Button variant="white" href="/servicios/squai-one#lista">Unirme a la lista de espera</Button>
+        <Button variant="white" href="/servicios/squai-one#lista">{labels.reserve}</Button>
       </div>
     </div>
   </div>

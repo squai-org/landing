@@ -13,12 +13,13 @@ import FinalCta from '../components/FinalCta.astro';
 import Follow from '../components/Follow.astro';
 import Footer from '../components/Footer.astro';
 import ContactModal from '../components/ContactModal.astro';
-import { faqs } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { faqs, seo } = await getSiteContent();
 ---
 
 <Layout
-  title="Squai — Aprende IA, potencia tus habilidades"
-  description="Squai enseña inteligencia artificial a personas, equipos y comunidades educativas que no vienen de la tecnología. Sin jerga, sin humo y con práctica desde el primer día."
+  title={seo.title}
+  description={seo.description}
 >
   <div class="page-frame">
     <Header />

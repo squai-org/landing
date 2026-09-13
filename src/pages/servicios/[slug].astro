@@ -11,16 +11,18 @@ import Follow from '../../components/Follow.astro';
 import Footer from '../../components/Footer.astro';
 import ContactModal from '../../components/ContactModal.astro';
 import Button from '../../components/Button.astro';
-import { services } from '../../data/landing';
+import { getSiteContent } from '../../lib/content';
+const { ui, seo } = await getSiteContent();
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const { services } = await getSiteContent();
   return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
 }
 
 const { service } = Astro.props;
 ---
 
-<Layout title={`${service.name} — Squai`} description={service.slogan}>
+<Layout title={seo.serviceTitle.replace('{service}', service.name)} description={service.slogan}>
   <div class="page-frame">
   <Header />
 
@@ -40,7 +42,7 @@ const { service } = Astro.props;
       <section class="section tint">
         <div class="shell service-contact-shell">
           <h2 class="display d-h2 service-contact-title">
-            Cuéntanos dónde están hoy y armamos la propuesta sobre eso.
+            {ui.services.contact}
           </h2>
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.cta.label}</Button>
         </div>

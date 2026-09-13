@@ -1,11 +1,14 @@
 ---
-import { capabilities, whatWeDo } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { capabilities, whatWeDo } = await getSiteContent();
 ---
 
 <section id="que-hacemos" class="section tint">
   <div class="shell">
     <h2 class="display d-h1 what-title">{whatWeDo.title}</h2>
-    <p class="lead what-copy">{whatWeDo.body}</p>
+    <div class="what-copy">
+      {whatWeDo.body.map((paragraph) => <p class="lead">{paragraph}</p>)}
+    </div>
 
     <div class="bento what-grid">
       {
@@ -23,5 +26,6 @@ import { capabilities, whatWeDo } from '../data/landing';
 <style>
   .what-title { color: var(--ink); }
   .what-copy { max-width: 84ch; margin-top: clamp(20px, 2vw, 32px); color: var(--ink-body); }
+  .what-copy p + p { margin-top: 16px; }
   .what-grid { margin-top: clamp(36px, 4vw, 64px); }
 </style>

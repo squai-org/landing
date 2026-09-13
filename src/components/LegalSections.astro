@@ -1,0 +1,16 @@
+---
+import type { LegalSections } from '../lib/content';
+interface Props { sections: LegalSections }
+const { sections } = Astro.props;
+---
+
+{sections.map((section) => (
+  <section>
+    <h2>{section.title}</h2>
+    {section.blocks.map((block) => block.type === 'paragraph' ? (
+      <p>{block.content.map((part) => part.href ? <a href={part.href}>{part.text}</a> : part.text)}</p>
+    ) : (
+      <ul>{block.items.map((item) => <li>{item.map((part) => part.href ? <a href={part.href}>{part.text}</a> : part.text)}</li>)}</ul>
+    ))}
+  </section>
+))}

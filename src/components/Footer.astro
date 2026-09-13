@@ -1,13 +1,14 @@
 ---
 import Logo from './Logo.astro';
-import { footerCols, heroSubtitle, tagline } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { footerCols, heroSubtitle, tagline, ui, labels } = await getSiteContent();
 ---
 
 <footer class="footer-pad">
   <div class="footer-shell">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="/" class="logo-link footer-logo" aria-label="Squai — inicio">
+        <a href="/" class="logo-link footer-logo" aria-label={ui.navigation.home}>
           <Logo size={34} />
         </a>
         <p class="footer-description">
@@ -42,10 +43,10 @@ import { footerCols, heroSubtitle, tagline } from '../data/landing';
       }
     </div>
     <div class="footer-bottom">
-      <span class="footer-copyright">© 2026 Squai · Todos los derechos reservados</span>
+      <span class="footer-copyright">{ui.footer.copyright}</span>
       <div class="footer-legal-links">
-        <a href="/terminos-de-servicio" class="footer-link footer-legal-link">Términos de Servicio</a>
-        <a href="/politica-de-privacidad" class="footer-link footer-legal-link">Política de Privacidad</a>
+        <a href="/terminos-de-servicio" class="footer-link footer-legal-link">{labels.terms}</a>
+        <a href="/politica-de-privacidad" class="footer-link footer-legal-link">{labels.privacy}</a>
       </div>
     </div>
   </div>
