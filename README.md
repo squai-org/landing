@@ -27,7 +27,7 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm db:create`          | Crea la base de datos D1 `squai`                         |
 | `pnpm db:migrate:local`   | Aplica `migrations/` en el D1 local                            |
 | `pnpm db:migrate:remote`  | Aplica `migrations/` en el D1 de producción                    |
-| `pnpm deploy`             | Build + `wrangler deploy`                                      |
+| `pnpm deploy`             | Build + migraciones remotas + `wrangler deploy`                |
 
 ## Estructura
 
