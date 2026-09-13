@@ -22,7 +22,19 @@ export const onError: ErrorHandler<AppBindings> = (err, c) => {
     return c.json(jsonError('http_error', err.message), err.status);
   }
 
-  console.error('Error no controlado en la API', err);
+  // El stack por sí solo no dice nada: D1 pone el detalle en `message` y, en
+  // algunos casos, en `cause.message` (por ejemplo "no such table: ...").
+  // https://developers.cloudflare.com/d1/observability/debug-d1/
+  const error = err as Error & { cause?: unknown };
+  const cause = error.cause instanceof Error ? error.cause.message : undefined;
+
+  console.error('Error no controlado en la API', {
+    path: c.req.path,
+    name: error.name,
+    message: error.message,
+    cause,
+    stack: error.stack,
+  });
 
   return c.json(jsonError('internal_error', 'No pudimos procesar tu solicitud. Inténtalo de nuevo.'), 500);
 };
