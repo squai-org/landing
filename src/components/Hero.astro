@@ -235,21 +235,21 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     min-width: 118px;
     min-height: 76px;
     padding: 8px 16px 7px;
-    border: 1px solid transparent;
-    border-radius: var(--radius-md);
+    border: 0;
     background: transparent;
     color: var(--canvas);
     font-family: var(--font-body);
     cursor: pointer;
-    transition: transform .2s, background-color .2s, border-color .2s;
+    transition: transform .2s;
   }
   .hero-scroll:hover {
     transform: translateX(-50%) translateY(3px);
-    background-color: rgba(244, 246, 255, .08);
-    border-color: rgba(244, 246, 255, .18);
+    background: transparent;
     color: var(--canvas);
   }
-  .hero-scroll { transition: transform .2s, background-color .2s, border-color .2s, opacity .3s, visibility .3s; }
+  .hero-scroll:hover .scroll-wheel { background: var(--gold); }
+  .hero-scroll:hover .scroll-label { color: var(--canvas); }
+  .hero-scroll { transition: transform .2s, opacity .3s, visibility .3s; }
   .hero-scroll.is-hidden { opacity: 0; visibility: hidden; }
 
   .scroll-mouse {
