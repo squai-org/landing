@@ -1,4 +1,6 @@
 ---
+import Button from './Button.astro';
+
 interface Card {
   t: string;
   d: string;
@@ -7,9 +9,14 @@ interface Card {
 interface Props {
   headline: string;
   cards: Card[];
+  cta: {
+    label: string;
+    target: string;
+    modal: '' | 'grow' | 'learn';
+  };
 }
 
-const { headline, cards } = Astro.props;
+const { headline, cards, cta } = Astro.props;
 ---
 
 <!-- Flat and light, same shape as the statement section on the home page. -->
@@ -29,6 +36,15 @@ const { headline, cards } = Astro.props;
         ))
       }
     </div>
+    <div class="payback-cta">
+      {
+        cta.modal ? (
+          <Button variant="primary" data-open-modal={cta.modal}>{cta.label}</Button>
+        ) : (
+          <Button variant="primary" href={`#${cta.target}`}>{cta.label}</Button>
+        )
+      }
+    </div>
   </div>
 </section>
 
@@ -39,4 +55,5 @@ const { headline, cards } = Astro.props;
   .payback-list { display: flex; max-width: 74ch; flex-direction: column; gap: 20px; }
   .payback-copy { color: var(--ink-body); }
   .payback-label { color: var(--ink); font-family: var(--font-display); font-weight: 700; letter-spacing: -.02em; }
+  .payback-cta { display: flex; align-items: center; }
 </style>

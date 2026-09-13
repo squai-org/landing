@@ -286,7 +286,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (event.matches) setNavOpen(false);
   });
 
-  const navSectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-section]'));
+  const navSectionLinks = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-section]'));
   if (location.pathname === '/' && navSectionLinks.length && 'IntersectionObserver' in window) {
     const currentSectionObserver = new IntersectionObserver(
       (entries) => {
@@ -352,14 +352,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     backgroundInertState.clear();
   };
 
-  const MODAL_COPY: Record<string, { eco: string; copy: string; placeholder: string }> = {
+  const MODAL_COPY: Record<string, { copy: string; placeholder: string }> = {
     grow: {
-      eco: 'Squai Grow',
       copy: 'Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.',
       placeholder: '¿En qué procesos crees que la IA puede ayudar?',
     },
     learn: {
-      eco: 'Squai Learn',
       copy: 'Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.',
       placeholder: '¿Con qué grupo quieres empezar y para qué?',
     },
@@ -369,10 +367,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (!modal) return;
     if (open && eco && MODAL_COPY[eco]) {
       const conf = MODAL_COPY[eco];
-      const ecoEl = modal.querySelector<HTMLElement>('[data-modal-eco]');
       const copyEl = modal.querySelector<HTMLElement>('[data-modal-copy]');
       const textarea = modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]');
-      if (ecoEl) ecoEl.textContent = conf.eco;
       if (copyEl) copyEl.textContent = conf.copy;
       if (textarea) textarea.placeholder = conf.placeholder;
       modalForm?.setAttribute('data-eco', eco);
