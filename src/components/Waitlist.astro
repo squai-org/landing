@@ -14,7 +14,7 @@ const { cohort, ui, labels } = await getSiteContent();
          take up on the right (here, the cohort's own duration/schedule/
          modality), instead of a separate section for each. -->
     <div class="bento waitlist-grid">
-      <div class="waitlist-column span-3 row-3">
+      <div class="waitlist-column span-4 row-3">
         <h2 class="display d-h2 waitlist-title">{ui.waitlist.title}</h2>
         <div class="waitlist-copy">
           {
@@ -64,15 +64,15 @@ const { cohort, ui, labels } = await getSiteContent();
         </form>
       </div>
 
-      <div class="bento-card span-3 peri">
+      <div class="bento-card span-2 peri">
         <h3 class="display d-h3">{ui.program.duration}</h3>
         <p class="body">{cohort.duration}</p>
       </div>
-      <div class="bento-card span-3 teal">
+      <div class="bento-card span-2 teal">
         <h3 class="display d-h3">{ui.program.schedule}</h3>
         <p class="body">{cohort.schedule}</p>
       </div>
-      <div class="bento-card span-3 gold">
+      <div class="bento-card span-2 gold">
         <h3 class="display d-h3">{ui.program.modality}</h3>
         <p class="body">{cohort.modality}</p>
       </div>
