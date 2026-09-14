@@ -88,18 +88,22 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     pointer-events: none;
     user-select: none;
   }
+  /* Sized/positioned as % of .hero, like every other section's brand-shape
+     (Impact, Statement, FinalCta) — not fixed px. Fixed px stayed put in
+     viewport pixels while .hero itself scaled with the window/zoom, so the
+     shapes drifted out of place (and over the headline) at other widths. */
   .hero-shape-gold {
-    width: 884px;
+    width: 62.64%;
     height: auto;
-    left: -369px;
-    top: -383px;
+    left: -26.15%;
+    top: -43.96%;
     transform: rotate(-60deg);
   }
   .hero-shape-periwinkle {
-    width: 1312px;
+    width: 92.97%;
     height: auto;
-    left: 1212px;
-    top: -214px;
+    left: 85.88%;
+    top: -24.57%;
     transform: rotate(-22.64deg);
   }
 

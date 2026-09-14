@@ -21,7 +21,7 @@
       },
       {
         "t": "Estrategia",
-        "d": "Te damos claridad para identificar dónde la IA aporta valor, por dónde conviene empezar y dónde estorba (porque no a todo se le puede aplicar IA)",
+        "d": "Te damos claridad para identificar dónde la IA aporta valor, por dónde conviene empezar y dónde estorba. Porque no, meterle IA a todo sin sentido no es una estrategia.",
         "span": "span-2",
         "tone": "teal"
       },
@@ -211,8 +211,8 @@
         "slug": "squai-one",
         "name": "Squai One",
         "audience": "Personas",
-        "slogan": "Entiende la IA sin necesidad de un diccionario técnico al lado.",
-        "cardCopy": "Un programa en vivo para personas que quieren entender IA, en lugar de guardar tutoriales que nunca vas a ver. Anótate en la lista de espera para asegurar tu lugar en el próximo programa. ",
+        "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
+        "cardCopy": "Un programa en vivo para personas que quieren entender IA. Anótate en la lista de espera para asegurar tu lugar en el próximo programa en lugar de guardar tutoriales que nunca vas a ver.",
         "discoverLabel": "Conocer el programa",
         "cta": {
           "modal": "",
