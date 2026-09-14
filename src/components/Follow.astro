@@ -1,5 +1,6 @@
 ---
-import { socials } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { socials, ui } = await getSiteContent();
 
 const visibleSocials = socials.filter((social) => social.name === 'LinkedIn');
 
@@ -20,11 +21,9 @@ const ICONS: Record<string, string> = {
 
 <section class="section night follow-section">
   <div class="shell follow-card">
-      <h2 class="display d-h1 follow-title">Síguenos</h2>
+      <h2 class="display d-h1 follow-title">{ui.follow.title}</h2>
       <div class="follow-content">
-        <p class="lead follow-copy">
-          Síguenos en LinkedIn. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte.
-        </p>
+        {ui.follow.copy.map((paragraph) => <p class="lead follow-copy">{paragraph}</p>)}
         <div class="social-row">
           {
             visibleSocials.map((s) =>

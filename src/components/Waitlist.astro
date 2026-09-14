@@ -1,49 +1,51 @@
 ---
 import Button from './Button.astro';
-import { cohort, endpoints } from '../data/landing';
+import { endpoints } from '../config/endpoints';
+import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
+
+const { cohort, ui, labels } = await getSiteContent();
 ---
 
 <section id="lista" class="section tint">
   <div class="shell waitlist-shell">
-    <h2 class="display d-h2 waitlist-title">Únete a la lista de espera</h2>
-    <p class="lead waitlist-copy">
-      {cohort.seats}. Déjanos tus datos y te avisamos apenas se abra la inscripción, con las fechas confirmadas y la
-      información de pago.
-    </p>
+    <h2 class="display d-h2 waitlist-title">{ui.waitlist.title}</h2>
+    <div class="waitlist-copy">
+      {ui.waitlist.copy.map((paragraph, index) => <p class="lead">{index === 0 ? `${cohort.seats}. ${paragraph}` : paragraph}</p>)}
+    </div>
     <form
       data-form="waitlist"
       data-endpoint={endpoints.waitlist}
       novalidate
       class="card-pad-lg waitlist-form"
     >
-      <p class="form-instructions"><span aria-hidden="true">*</span> Campos obligatorios.</p>
+      <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
       <div class="field-grid-2">
         <label class="field-group" for="waitlist-full-name">
-          <span class="field-label">Nombre completo <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
           <input id="waitlist-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="waitlist-full-name-error" />
           <span id="waitlist-full-name-error" class="field-error" data-field-error="full_name"></span>
         </label>
         <label class="field-group" for="waitlist-email">
-          <span class="field-label">Correo electrónico <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
           <input id="waitlist-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="waitlist-email-error" />
           <span id="waitlist-email-error" class="field-error" data-field-error="email"></span>
         </label>
       </div>
       <div class="field-grid-phone">
         <label class="field-group" for="waitlist-country-code">
-          <span class="field-label">Indicativo <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.countryCode} <span aria-hidden="true">*</span></span>
           <input id="waitlist-country-code" type="text" name="country_code" required value="+57" autocomplete="tel-country-code" inputmode="tel" class="field" aria-describedby="waitlist-country-code-error" />
           <span id="waitlist-country-code-error" class="field-error" data-field-error="country_code"></span>
         </label>
         <label class="field-group" for="waitlist-phone">
-          <span class="field-label">Número de teléfono <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
           <input id="waitlist-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="waitlist-phone-error" />
           <span id="waitlist-phone-error" class="field-error" data-field-error="phone"></span>
         </label>
       </div>
       <div class="form-submit">
-        <Button variant="primary" type="submit" block>Unirme a la lista de espera</Button>
+        <Button variant="primary" type="submit" block>{labels.reserve}</Button>
       </div>
       <div class="form-status" data-form-status role="status" aria-live="polite"></div>
       <Turnstile action="waitlist" />
@@ -59,6 +61,7 @@ import Turnstile from './Turnstile.astro';
     margin: clamp(16px, 1.6vw, 24px) auto clamp(28px, 3vw, 44px);
     color: var(--ink-body);
   }
+  .waitlist-copy p + p { margin-top: 12px; }
   .waitlist-form {
     padding: 32px;
     border: 1px solid var(--line);

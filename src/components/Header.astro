@@ -1,26 +1,23 @@
 ---
 import Logo from './Logo.astro';
 import Button from './Button.astro';
-import { navLinks } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { navLinks, services, ui } = await getSiteContent();
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
-const serviceLinks = [
-  { name: 'Squai One', subtitle: 'Personas', href: '/servicios/squai-one' },
-  { name: 'Squai Grow', subtitle: 'Empresas', href: '/servicios/squai-grow' },
-  { name: 'Squai Learn', subtitle: 'Instituciones educativas', href: '/servicios/squai-learn' },
-];
+const serviceLinks = services.map((service) => ({ name: service.name, subtitle: service.menuAudience, href: `/servicios/${service.slug}` }));
 ---
 
 <header class="header-wrap over-hero" data-header>
   <div class="nav-bar">
-    <a href="/" class="logo-link" aria-label="Squai — inicio">
+    <a href="/" class="logo-link" aria-label={ui.navigation.home}>
       <Logo size={34} />
     </a>
     <button
       type="button"
       class="nav-toggle"
       data-nav-toggle
-      aria-label="Abrir menú"
+      aria-label={ui.navigation.open}
       aria-expanded="false"
       aria-controls="site-nav"
     >
@@ -30,7 +27,7 @@ const serviceLinks = [
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
     </button>
-    <nav id="site-nav" class="nav-links-row" data-nav-menu aria-label="Principal">
+    <nav id="site-nav" class="nav-links-row" data-nav-menu aria-label={ui.navigation.main}>
       <ul class="nav-list">
         {
           navLinks.map((link) =>
@@ -74,7 +71,7 @@ const serviceLinks = [
           )
         }
         <li class="nav-cta-wrap">
-          <Button variant="primary" href="/servicios/squai-one#lista" compact class="nav-cta" aria-current={currentPath === '/servicios/squai-one' ? 'page' : undefined}>Lista de espera</Button>
+          <Button variant="primary" href="/servicios/squai-one#lista" compact class="nav-cta" aria-current={currentPath === '/servicios/squai-one' ? 'page' : undefined}>{ui.navigation.waitlist}</Button>
         </li>
       </ul>
     </nav>

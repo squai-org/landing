@@ -1,0 +1,1093 @@
+{
+  "site": {
+    "capabilities": [
+      {
+        "t": "Entrenamiento",
+        "d": "Aprende cómo funciona la IA por dentro. Dejas de copiar y pegar instrucciones de internet y entiendes por qué a veces la IA hace lo que le da la gana. ",
+        "span": "span-3",
+        "tone": "peri"
+      },
+      {
+        "t": "Adopción",
+        "d": "Te acompañamos a integrar la IA en tus tareas, hasta que dejes de pelear con ella y se vuelva una ayuda confiable.",
+        "span": "span-3",
+        "tone": ""
+      },
+      {
+        "t": "Cultura",
+        "d": "Construimos un lenguaje claro y la confianza necesaria para que preguntes y explores sin pena. Con nosotros no tienes que fingir que ya dominas el tema.",
+        "span": "span-2",
+        "tone": "dark"
+      },
+      {
+        "t": "Estrategia",
+        "d": "Te damos claridad para identificar dónde la IA aporta valor, por dónde conviene empezar y dónde estorba (porque no a todo se le puede aplicar IA)",
+        "span": "span-2",
+        "tone": "teal"
+      },
+      {
+        "t": "Uso seguro y ético",
+        "d": "Te explicamos qué información puedes compartir, qué no, y cómo cuidar tus datos para sacarle el máximo provecho a la IA sin subir accidentalmente la documentación confidencial de tu empresa.",
+        "span": "span-2",
+        "tone": "gold"
+      }
+    ],
+    "cohort": {
+      "status": "Lista de espera abierta",
+      "name": "Fundamentos de Inteligencia Artificial Generativa",
+      "ecosystem": "Squai One",
+      "duration": "5 semanas · 20 horas",
+      "schedule": "Martes y jueves, 6:30 p. m. a 8:30 p. m. (hora Colombia)",
+      "modality": "100% virtual, en vivo y con grabaciones",
+      "seats": "La inscripción todavía no está abierta"
+    },
+    "faqs": [
+      {
+        "q": "¿Necesito saber de tecnología para trabajar con ustedes?",
+        "a": [
+          "No. Todo lo que hacemos está pensado para personas y equipos que no vienen del mundo técnico. Explicamos los conceptos con claridad y enfocados en aplicarlos."
+        ]
+      },
+      {
+        "q": "¿Qué diferencia a Squai de un curso de IA cualquiera?",
+        "a": [
+          "Que no empezamos por la herramienta de moda, sino por que entiendas cómo funciona. Y que tampoco te vendemos que la IA lo puede todo: también te decimos qué no conviene delegarle."
+        ]
+      },
+      {
+        "q": "¿Cuál de los tres servicios me sirve?",
+        "a": [
+          "Squai One si aprendes por tu cuenta, Squai Grow si el que tiene que moverse es tu equipo, y Squai Learn si trabajas en una institución educativa. Cada uno tiene su página con el detalle."
+        ]
+      },
+      {
+        "q": "¿Las formaciones son virtuales o presenciales?",
+        "a": [
+          "Las cohortes abiertas son 100% virtuales y en vivo, con grabaciones. Para equipos e instituciones trabajamos virtual o presencial, según convenga."
+        ]
+      },
+      {
+        "q": "¿Trabajan solo en Colombia?",
+        "a": [
+          "Trabajamos en español con toda Latinoamérica. Las sesiones en vivo se coordinan en hora Colombia."
+        ]
+      },
+      {
+        "q": "¿Cómo empiezo?",
+        "a": [
+          "Si es para ti, entra a Squai One y únete a la lista de espera. Si es para una organización o una institución, solicita una llamada desde la página del servicio y te escribimos en menos de 24 horas hábiles."
+        ]
+      }
+    ],
+    "footerCols": [
+      {
+        "links": [
+          {
+            "target": "que-hacemos",
+            "labelKey": "whatWeDo"
+          },
+          {
+            "target": "impacto",
+            "labelKey": "impact"
+          },
+          {
+            "target": "origen",
+            "labelKey": "origin"
+          },
+          {
+            "t": "El equipo",
+            "target": "equipo"
+          }
+        ],
+        "headingKey": "brand"
+      },
+      {
+        "links": [
+          {
+            "t": "Squai One — Personas",
+            "target": null,
+            "href": "/servicios/squai-one"
+          },
+          {
+            "t": "Squai Grow — Equipos",
+            "target": null,
+            "href": "/servicios/squai-grow"
+          },
+          {
+            "t": "Squai Learn — Educación",
+            "target": null,
+            "href": "/servicios/squai-learn"
+          }
+        ],
+        "headingKey": "services"
+      },
+      {
+        "h": "Contacto",
+        "links": [
+          {
+            "t": "team@squai.io",
+            "target": null,
+            "href": "mailto:team@squai.io"
+          },
+          {
+            "target": "faq",
+            "labelKey": "faq"
+          }
+        ]
+      }
+    ],
+    "heroLines": {
+      "object": "IA.",
+      "middle": "potencia tus",
+      "last": "Habilidades."
+    },
+    "heroSubtitle": "Entrenamiento en inteligencia artificial para personas, equipos y comunidades educativas.",
+    "heroVerbs": [
+      {
+        "word": "Aprende",
+        "color": "#8A8EF9"
+      },
+      {
+        "word": "Practica",
+        "color": "#44D4C8"
+      },
+      {
+        "word": "Integra",
+        "color": "#F9C24D"
+      },
+      {
+        "word": "Adopta",
+        "color": "#F4F6FF"
+      }
+    ],
+    "impact": {
+      "body": [
+        "Queremos que la IA no te abrume, sino que multiplique tus habilidades. No venimos a hacer el trabajo por ti, te enseñamos a potenciar lo que ya sabes hacer usando la IA a tu favor."
+      ]
+    },
+    "instructors": [
+      {
+        "img": "/images/team1.webp",
+        "name": "Laura Villada",
+        "role": "Estratega de Adopción de IA",
+        "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
+        "aria": "LinkedIn de Laura Villada",
+        "d": "Co-fundadora de Squai"
+      },
+      {
+        "img": "/images/team2.webp",
+        "name": "Sebastián Rico",
+        "role": "Ingeniero de IA",
+        "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
+        "aria": "LinkedIn de Sebastián Rico",
+        "d": "Co-fundador de Squai"
+      }
+    ],
+    "navLinks": [
+      {
+        "target": "que-hacemos",
+        "labelKey": "whatWeDo"
+      },
+      {
+        "target": "servicios",
+        "labelKey": "services"
+      },
+      {
+        "target": "equipo",
+        "labelKey": "team"
+      },
+      {
+        "target": "faq",
+        "labelKey": "faq"
+      }
+    ],
+    "originStory": [
+      "Squai no nació de una teoría sobre el futuro del trabajo. Nació de acompañar, uno por uno, a quienes intentaban usar IA en su día a día y se estrellaban con lo mismo.",
+      "En ese trabajo apareció un patrón difícil de ignorar: los que más sufrían no eran los que menos capacidad tenían, sino los que no venían del mundo técnico. Se topaban con explicaciones llenas de jerga que hacen parecer que la IA es cosa de expertos, cuando no tiene por qué serlo.",
+      "Así que hicimos lo contrario. Quitamos la complejidad que no aportaba, conservamos lo que de verdad sirve en la práctica y armamos una forma de enseñar que empieza por entender, sigue por probar y termina en que cada persona descubra qué más puede hacer.",
+      "Hoy esa misma metodología llega a personas, a equipos y a comunidades educativas. Cambia el contexto y la intensidad; no cambia la manera de enseñar."
+    ],
+    "services": [
+      {
+        "slug": "squai-one",
+        "name": "Squai One",
+        "audience": "Personas",
+        "slogan": "Aprende IA sin que nadie te la tenga que traducir.",
+        "cardCopy": "Cohortes en vivo para personas que quieren entender la IA de una vez, no coleccionar tutoriales. Aquí puedes unirte a la lista de espera de la próxima cohorte.",
+        "accent": "#8A8EF9",
+        "span": "span-3 row-2",
+        "tone": "peri",
+        "payback": {
+          "headline": "Criterio propio para usar cualquier herramienta de IA: la de hoy y la que salga mañana.",
+          "cards": [
+            {
+              "t": "Entiendes qué pasa por dentro",
+              "d": "Sabes por qué la IA responde lo que responde. Dejas de adivinar y empiezas a pedir bien a la primera."
+            },
+            {
+              "t": "Trabajas sobre tus propios casos",
+              "d": "Traes algo de tu día real y sales con eso resuelto o encaminado, no con apuntes para aplicar algún día."
+            },
+            {
+              "t": "No dependes de la app de moda",
+              "d": "Aprendes la lógica que todas comparten. Cambia el nombre de la herramienta y tú sigues igual de suelto."
+            }
+          ]
+        },
+        "challenge": {
+          "cards": [
+            {
+              "t": "Empezar sin punto de partida",
+              "d": "Ves a otras personas resolviendo su día con IA, pero cuando buscas cómo hacerlo te encuentras tecnicismos o promesas que no aterrizan en tu realidad."
+            },
+            {
+              "t": "Pedir y que no entienda",
+              "d": "Le encargas una tarea y vuelve algo inservible. Terminas corrigiendo más de lo que habrías tardado haciéndolo tú."
+            },
+            {
+              "t": "Una herramienta nueva cada semana",
+              "d": "La sensación de ir tarde no se arregla aprendiendo diez apps. Se arregla entendiendo qué tienen en común."
+            }
+          ]
+        },
+        "capabilities": {
+          "groups": [
+            {
+              "t": "Entender",
+              "tone": "",
+              "items": [
+                "Cómo procesa un modelo lo que le escribes",
+                "Tokens, memoria y contexto, en español",
+                "Por qué se equivoca y cómo darte cuenta"
+              ]
+            },
+            {
+              "t": "Practicar",
+              "tone": "teal",
+              "items": [
+                "Estructura de prompts que sí funcionan",
+                "Documentos, análisis y apoyos visuales",
+                "Flujos de trabajo y agentes"
+              ]
+            },
+            {
+              "t": "Ampliar",
+              "tone": "dark",
+              "items": [
+                "Criterio para elegir herramienta según el problema",
+                "Qué delegar y qué revisar siempre",
+                "Tu propio caso, aterrizado con acompañamiento"
+              ]
+            }
+          ]
+        },
+        "cta": {
+          "modal": "",
+          "target": "lista",
+          "labelKey": "reserve"
+        },
+        "faqs": [
+          {
+            "q": "¿Necesito conocimientos previos de tecnología?",
+            "a": [
+              "No. Todo está diseñado desde cero para personas no técnicas. Explicamos los conceptos con claridad y enfocados en aplicarlos en tu día a día."
+            ]
+          },
+          {
+            "q": "¿Cuándo son las clases y cuánto duran?",
+            "a": [
+              "Las sesiones en vivo son martes y jueves de 6:30 p.m. a 8:30 p.m. (hora Colombia), 4 horas semanales durante 5 semanas."
+            ]
+          },
+          {
+            "q": "¿Qué pasa si no puedo asistir a una clase en vivo?",
+            "a": [
+              "Todas las sesiones se graban y quedan disponibles durante el programa para que te pongas al día o repases."
+            ]
+          },
+          {
+            "q": "¿Qué herramientas vamos a usar?",
+            "a": [
+              "ChatGPT, Claude y Gemini, entre otras. Lo importante es la lógica detrás: con eso te adaptas a la que necesites."
+            ]
+          },
+          {
+            "q": "¿Qué necesito para participar?",
+            "a": [
+              "Un computador con internet y una cuenta gratuita en las herramientas que usemos. Con las versiones gratis alcanza."
+            ]
+          },
+          {
+            "q": "¿Cómo entro a la próxima cohorte?",
+            "a": [
+              "Los cupos se asignan desde la lista de espera. Déjanos tus datos y te escribimos apenas se abra la inscripción, con fechas confirmadas e información de pago."
+            ]
+          }
+        ],
+        "menuAudience": "Personas"
+      },
+      {
+        "slug": "squai-grow",
+        "name": "Squai Grow",
+        "audience": "Equipos y organizaciones",
+        "slogan": "Que la IA entre a tus procesos sin desordenar lo que ya funciona.",
+        "cardCopy": "Entrenamiento a la medida sobre los procesos que tu equipo ya tiene, no sobre ejemplos genéricos.",
+        "accent": "#44D4C8",
+        "span": "span-3",
+        "tone": "teal",
+        "payback": {
+          "headline": "Un equipo que usa IA en su trabajo real, con reglas claras y sin frenar la operación.",
+          "cards": [
+            {
+              "t": "Casos de uso propios, no demos",
+              "d": "Partimos de las tareas que ya ocupan las horas de tu equipo y sobre esas trabajamos."
+            },
+            {
+              "t": "Adopción que sobrevive al entusiasmo",
+              "d": "Acompañamos a quienes tienen que usarla, no solo a quien firmó la decisión."
+            },
+            {
+              "t": "Reglas de uso que la gente entiende",
+              "d": "Qué se comparte, qué se revisa y quién responde por qué, escrito en un lenguaje que cualquiera aplica."
+            }
+          ]
+        },
+        "challenge": {
+          "cards": [
+            {
+              "t": "Pilotos que nunca escalan",
+              "d": "Una prueba entusiasta, un par de personas convencidas y seis meses después nada cambió en la operación."
+            },
+            {
+              "t": "Licencias compradas y sin usar",
+              "d": "La herramienta ya está pagada. Lo que falta es que alguien explique para qué sirve en el trabajo concreto de cada área."
+            },
+            {
+              "t": "Un equipo partido en dos",
+              "d": "Unos ya la usan a escondidas y sin criterio; otros no la tocan por miedo a equivocarse. Ninguno de los dos extremos es sostenible."
+            }
+          ]
+        },
+        "capabilities": {
+          "groups": [
+            {
+              "t": "Diagnosticar",
+              "tone": "",
+              "items": [
+                "Mapeo de procesos y tareas candidatas",
+                "Dónde rinde la IA y dónde no vale la pena",
+                "Nivel real del equipo, sin encuestas de mentira"
+              ]
+            },
+            {
+              "t": "Formar",
+              "tone": "teal",
+              "items": [
+                "Sesiones por área con sus propios casos",
+                "Prompts y flujos armados con sus datos",
+                "Materiales que quedan en la organización"
+              ]
+            },
+            {
+              "t": "Sostener",
+              "tone": "dark",
+              "items": [
+                "Reglas de uso seguro y responsable",
+                "Referentes internos que mantienen la práctica",
+                "Seguimiento después de la formación"
+              ]
+            }
+          ]
+        },
+        "cta": {
+          "modal": "grow",
+          "target": "",
+          "labelKey": "call"
+        },
+        "faqs": [
+          {
+            "q": "¿Desde cuántas personas trabajan con un equipo?",
+            "a": [
+              "Desde 5. También armamos rutas separadas cuando son varias áreas con necesidades distintas."
+            ]
+          },
+          {
+            "q": "¿El contenido es el mismo del programa abierto?",
+            "a": [
+              "No. La metodología es la misma, el contenido no: partimos de un diagnóstico de sus procesos y armamos las sesiones sobre esos casos."
+            ]
+          },
+          {
+            "q": "¿Las sesiones son virtuales o presenciales?",
+            "a": [
+              "Las dos. Virtual en vivo por defecto; presencial cuando el equipo está reunido y tiene sentido."
+            ]
+          },
+          {
+            "q": "¿Necesitamos comprar licencias antes de empezar?",
+            "a": [
+              "No para empezar. Con las versiones gratuitas se cubre la formación, y parte del trabajo es ayudarles a decidir qué vale la pena pagar y qué no."
+            ]
+          },
+          {
+            "q": "¿Cómo saben si funcionó?",
+            "a": [
+              "Definimos al inicio qué tareas queremos mover y con qué se compara. Sin eso, cualquier resultado suena bonito y no dice nada."
+            ]
+          }
+        ],
+        "menuAudience": "Empresas"
+      },
+      {
+        "slug": "squai-learn",
+        "name": "Squai Learn",
+        "audience": "Comunidades educativas",
+        "slogan": "Preparar a docentes y estudiantes para un aula que ya cambió.",
+        "cardCopy": "Formación en IA para colegios, universidades y programas educativos, con criterio y uso responsable.",
+        "accent": "#F9C24D",
+        "span": "span-3",
+        "tone": "gold",
+        "payback": {
+          "headline": "Docentes que enseñan con IA y estudiantes que la usan sin dejar de aprender.",
+          "cards": [
+            {
+              "t": "Docentes con criterio, no con miedo",
+              "d": "Saben qué pueden delegar en la preparación de clase y qué tienen que seguir haciendo ellos."
+            },
+            {
+              "t": "Estudiantes que aprenden igual",
+              "d": "Usan la herramienta para entender más rápido, no para entregar sin haber entendido nada."
+            },
+            {
+              "t": "Una postura institucional clara",
+              "d": "Reglas que se pueden explicar en una reunión de padres y sostener en un consejo académico."
+            }
+          ]
+        },
+        "challenge": {
+          "cards": [
+            {
+              "t": "Prohibirla no funcionó",
+              "d": "Los estudiantes ya la usan. La pregunta dejó de ser si entra al aula y pasó a ser cómo entra."
+            },
+            {
+              "t": "La integridad académica en juego",
+              "d": "Evaluar lo mismo de siempre con una IA disponible cambia lo que la nota está midiendo."
+            },
+            {
+              "t": "Docentes sin tiempo para otra cosa",
+              "d": "Cualquier propuesta que sume trabajo en vez de quitarlo se abandona en dos semanas."
+            }
+          ]
+        },
+        "capabilities": {
+          "groups": [
+            {
+              "t": "Preparar",
+              "tone": "",
+              "items": [
+                "Diagnóstico del uso que ya existe en la institución",
+                "Ruta para docentes y ruta para estudiantes",
+                "Lenguaje común para toda la comunidad"
+              ]
+            },
+            {
+              "t": "Enseñar",
+              "tone": "gold",
+              "items": [
+                "Fundamentos de IA sin tecnicismos",
+                "IA aplicada a preparación de clase y evaluación",
+                "Uso responsable y honestidad académica"
+              ]
+            },
+            {
+              "t": "Acompañar",
+              "tone": "dark",
+              "items": [
+                "Lineamientos de uso para la institución",
+                "Materiales para seguir usando después",
+                "Acompañamiento a los equipos que lideran el cambio"
+              ]
+            }
+          ]
+        },
+        "cta": {
+          "modal": "learn",
+          "target": "",
+          "labelKey": "call"
+        },
+        "faqs": [
+          {
+            "q": "¿Trabajan con colegios o solo con universidades?",
+            "a": [
+              "Con ambos, y también con programas de formación. Cambia el lenguaje y los ejemplos, no la metodología."
+            ]
+          },
+          {
+            "q": "¿La formación es para docentes o para estudiantes?",
+            "a": [
+              "Las dos rutas existen y se pueden tomar por separado. Nuestra recomendación es empezar por docentes."
+            ]
+          },
+          {
+            "q": "¿Nos ayudan a definir la política de uso de IA?",
+            "a": [
+              "Sí. Salimos con lineamientos escritos que la institución puede adoptar, no con recomendaciones generales."
+            ]
+          },
+          {
+            "q": "¿Enseñan a detectar textos hechos con IA?",
+            "a": [
+              "Trabajamos el tema con honestidad: los detectores fallan en ambos sentidos. Es más sólido rediseñar la evaluación que apostarle a una herramienta que se equivoca."
+            ]
+          },
+          {
+            "q": "¿Cuánto dura una formación?",
+            "a": [
+              "Depende del alcance. Armamos la propuesta después de un diagnóstico corto con el equipo que lidera el proceso."
+            ]
+          }
+        ],
+        "menuAudience": "Instituciones educativas"
+      }
+    ],
+    "socials": [
+      {
+        "name": "LinkedIn",
+        "href": ""
+      },
+      {
+        "name": "Instagram",
+        "href": ""
+      },
+      {
+        "name": "X",
+        "href": ""
+      }
+    ],
+    "squadGrid": [
+      {
+        "img": "/images/team3.webp",
+        "name": "Daniel Guzmán",
+        "role": "Analista de Procesos de Negocio",
+        "d": "Piensa en cómo integrar la IA sin desordenar lo que ya funciona en tus procesos."
+      },
+      {
+        "img": "/images/team4.webp",
+        "name": "Ana Lasso",
+        "role": "Especialista en Gestión de Talento Humano",
+        "d": "Se enfoca en cómo los equipos adoptan la IA en el día a día, más allá de la teoría."
+      },
+      {
+        "img": "/images/team5.webp",
+        "name": "Luis López",
+        "role": "Analista de Datos",
+        "d": "Se asegura de que uses la IA con información confiable y bien estructurada."
+      },
+      {
+        "img": "/images/team6.webp",
+        "name": "Carlos Gómez",
+        "role": "Analista de Seguridad de la Información",
+        "d": "Vela porque uses la IA sin exponer información sensible."
+      }
+    ],
+    "statement": {
+      "headline": "Corregir lo que hace la IA da más trabajo que hacerlo tú mismo.",
+      "body": [
+        "Ahora todo el mundo habla de agentes, automatizaciones complejas y herramientas \"revolucionarias\" que prometen cambiarte la vida (o que te cambiarán por una IA). El problema es que cuando intentas usarlas en tu trabajo o en tu día a día, no obtienes algo útil, lo sabemos, es frustrante.",
+        "Creemos firmemente que la inteligencia artificial no es magia ni un privilegio reservado para expertos en tecnología. Debe ser una capacidad que cualquiera puede aprender a usar si se explica con claridad, desde la práctica y sin vender humo (y no, no te vas a volver millonario creando una aplicación con IA en una semana).",
+        "Estamos aquí para que por fin entiendas cómo funciona la IA sin tanto cuento."
+      ]
+    },
+    "tagline": "Aprende IA, potencia tus habilidades.",
+    "whatWeDo": {
+      "body": [
+        "Trabajamos con personas, equipos y comunidades educativas para que la IA pase a ser una herramienta útil en cualquier contexto. Te enseñamos a usarla y a descubrir su potencial, basándonos en nuestros 5 pilares"
+      ]
+    },
+    "labels": {
+      "whatWeDo": "Qué hacemos",
+      "services": "Servicios",
+      "team": "Equipo",
+      "faq": "Preguntas frecuentes",
+      "impact": "Nuestro impacto",
+      "origin": "Cómo nació Squai",
+      "brand": "Squai",
+      "reserve": "Reservar mi cupo para aprender IA",
+      "call": "Solicitar una llamada",
+      "challenge": "Nuestro desafío",
+      "capabilities": "Capacidades",
+      "terms": "Términos de Servicio",
+      "privacy": "Política de Privacidad"
+    },
+    "ui": {
+      "navigation": {
+        "home": "Squai — inicio",
+        "open": "Abrir menú",
+        "close": "Cerrar menú",
+        "main": "Principal",
+        "waitlist": "Lista de espera"
+      },
+      "hero": {
+        "pause": "Pausar palabras animadas",
+        "resume": "Reanudar palabras animadas",
+        "services": "Explorar nuestros servicios",
+        "scroll": "Seguir bajando"
+      },
+      "services": {
+        "discover": "Descubrir",
+        "payback": "Qué obtienes",
+        "contact": "Cuéntanos dónde están hoy y armamos la propuesta sobre eso."
+      },
+      "team": {
+        "intro": [
+          "Los mismos que dan las clases en vivo y responden en la comunidad, con un equipo detrás que mira el tema desde procesos, talento, datos y seguridad."
+        ]
+      },
+      "finalCta": {
+        "title": "La IA ya no es opcional, es una habilidad para la vida",
+        "body": [
+          "Aprender a usar inteligencia artificial dejó de ser un lujo o un tema solo para expertos. Hoy la diferencia está entre quienes resuelven cosas en minutos apoyados en IA y quienes siguen perdiendo horas en tareas manuales y repetitivas.",
+          "El mundo avanza rápido y quedarse al margen significa hacerte la vida más difícil de lo necesario, cuando podrías estar usando estas herramientas para simplificar tu día a día, aprender más rápido y tomar mejores decisiones."
+        ]
+      },
+      "follow": {
+        "title": "Síguenos",
+        "copy": [
+          "Síguenos en LinkedIn. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte."
+        ]
+      },
+      "footer": {
+        "copyright": "© 2026 Squai · Todos los derechos reservados"
+      },
+      "waitlist": {
+        "title": "Únete a la lista de espera",
+        "copy": [
+          "Déjanos tus datos y te avisamos apenas se abra la inscripción, con las fechas confirmadas y la información de pago."
+        ]
+      },
+      "forms": {
+        "required": "Campos obligatorios.",
+        "fullName": "Nombre completo",
+        "email": "Correo electrónico",
+        "corporateEmail": "Correo corporativo",
+        "organization": "Organización",
+        "role": "Tu rol",
+        "countryCode": "Indicativo",
+        "phone": "Número de teléfono",
+        "whatsapp": "WhatsApp",
+        "teamSize": "Personas que se formarían",
+        "select": "Selecciona una opción",
+        "message": "Mensaje",
+        "optional": "(opcional)",
+        "teamSizes": [
+          {
+            "value": "menos-10",
+            "label": "Menos de 10"
+          },
+          {
+            "value": "10-30",
+            "label": "Entre 10 y 30"
+          },
+          {
+            "value": "30-100",
+            "label": "Entre 30 y 100"
+          },
+          {
+            "value": "mas-100",
+            "label": "Más de 100"
+          }
+        ]
+      },
+      "contact": {
+        "title": "Solicita una llamada",
+        "close": "Cerrar",
+        "responseTime": "Respondemos en menos de 24 horas hábiles."
+      },
+      "modal": {
+        "grow": {
+          "copy": "Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.",
+          "placeholder": "¿En qué procesos crees que la IA puede ayudar?"
+        },
+        "learn": {
+          "copy": "Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.",
+          "placeholder": "¿Con qué grupo quieres empezar y para qué?"
+        }
+      },
+      "feedback": {
+        "invalid": "Revisa los campos marcados: faltan datos o el correo no es válido.",
+        "sending": "Enviando…",
+        "error": "No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.",
+        "contactSuccess": "¡Listo! Te escribimos en menos de 24 horas hábiles.",
+        "waitlistSuccess": "¡Listo! Ya estás en la lista. Te avisamos cuando se abra la inscripción."
+      },
+      "skip": "Saltar al contenido",
+      "updated": "Última actualización:"
+    },
+    "seo": {
+      "title": "Squai — Aprende IA, potencia tus habilidades",
+      "description": "Squai enseña inteligencia artificial a personas, equipos y comunidades educativas que no vienen de la tecnología. Sin jerga, sin humo y con práctica desde el primer día.",
+      "serviceTitle": "{service} — Squai"
+    },
+    "legal": {
+      "terms": {
+        "title": "Términos de Servicio | Squai",
+        "description": "Términos y condiciones de uso del programa Fundamentos de Inteligencia Artificial Generativa de Squai.",
+        "updated": "31 de agosto de 2026",
+        "sections": [
+          {
+            "title": "1. Aceptación de los términos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Al registrarte en la lista de espera, inscribirte en el programa \"Fundamentos de Inteligencia Artificial Generativa\" o utilizar de cualquier otra forma los servicios ofrecidos por Squai, aceptas los presentes Términos de Servicio en su totalidad. Si no estás de acuerdo con alguna parte de estos términos, te pedimos que no utilices nuestros servicios."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "2. Descripción del servicio",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Squai ofrece un programa formativo en vivo sobre inteligencia artificial generativa, organizado por cohortes con cupos limitados. El acceso a cada cohorte se asigna a partir de una lista de espera; al confirmarse una cohorte, Squai se comunicará con las personas registradas para completar la inscripción y el pago correspondiente."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3. Registro y lista de espera",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Al dejar tus datos en el formulario de lista de espera o en el formulario de contacto para empresas e instituciones, declaras que la información proporcionada (nombre, correo electrónico, teléfono y demás datos solicitados) es veraz y te pertenece. Registrarte en la lista de espera no garantiza un cupo: la asignación depende de la disponibilidad de cada cohorte."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "4. Inversión y pagos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "El valor del programa vigente al momento de esta publicación es de $399.000 COP (aprox. $129 USD). Squai se reserva el derecho de actualizar este valor para futuras cohortes; el precio que aplica a cada estudiante es el comunicado formalmente al abrirse su inscripción. Las condiciones específicas de pago y, si aplica, cambios o cancelaciones, se informan por correo electrónico al momento de confirmar el cupo."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "5. Propiedad intelectual",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Todo el material del programa —incluyendo grabaciones de las sesiones en vivo, plantillas, guías y recursos entregados— es propiedad de Squai o de sus licenciantes y se comparte exclusivamente para uso personal de cada estudiante inscrito. Queda prohibido reproducir, redistribuir o comercializar este contenido sin autorización previa y por escrito de Squai."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "6. Conducta dentro del programa",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Esperamos un trato respetuoso entre estudiantes, instructores y el equipo de Squai durante las sesiones en vivo y en los espacios de comunidad asociados al programa. Squai se reserva el derecho de restringir el acceso de cualquier participante cuya conducta afecte negativamente la experiencia del resto del grupo."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "7. Cambios en el programa",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Squai puede modificar el calendario, el temario, los instructores o la modalidad de una cohorte cuando circunstancias razonables lo requieran, procurando siempre mantener el valor formativo del programa y notificando oportunamente a las personas inscritas."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "8. Limitación de responsabilidad",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "El programa tiene un propósito educativo. Squai no garantiza resultados específicos derivados del uso del conocimiento adquirido, ya que estos dependen del contexto y la aplicación de cada estudiante."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "9. Modificaciones a estos términos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Podemos actualizar estos Términos de Servicio ocasionalmente. La fecha de \"última actualización\" en la parte superior de esta página indica cuándo entró en vigor la versión más reciente."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "10. Contacto",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Si tienes preguntas sobre estos términos, escríbenos a "
+                  },
+                  {
+                    "text": "team@squai.io",
+                    "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": "."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "privacy": {
+        "title": "Política de Privacidad | Squai",
+        "description": "Cómo Squai recopila, usa y protege los datos personales de quienes se registran o se ponen en contacto a través de esta página.",
+        "updated": "31 de agosto de 2026",
+        "sections": [
+          {
+            "title": "1. Responsable del tratamiento",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Esta política aplica a los datos personales recopilados por Squai a través de esta página, incluyendo el formulario de lista de espera del programa \"Fundamentos de Inteligencia Artificial Generativa\" y el formulario de contacto para empresas e instituciones."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "2. Datos que recopilamos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Dependiendo del formulario que completes, podemos recopilar:"
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "items": [
+                  [
+                    {
+                      "text": "Nombre completo"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Correo electrónico"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Número de teléfono o WhatsApp"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Organización y rol (formulario de empresas e instituciones)"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Mensajes o comentarios que decidas incluir voluntariamente"
+                    }
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3. Finalidad del tratamiento",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Usamos estos datos para:"
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "items": [
+                  [
+                    {
+                      "text": "Gestionar tu lugar en la lista de espera y notificarte cuándo se abre una cohorte"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Responder solicitudes de información sobre el programa, Squai Grow o Squai Learn"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Coordinar llamadas o reuniones cuando las solicitas a través del formulario de contacto"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "Enviarte comunicaciones relacionadas con el programa al que te registraste"
+                    }
+                  ]
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "No utilizamos tus datos con fines distintos a los aquí descritos, ni los vendemos a terceros."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "4. Base para el tratamiento",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Tratamos tus datos con base en el consentimiento que otorgas al completar voluntariamente alguno de nuestros formularios."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "5. Conservación de los datos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Conservamos tus datos mientras exista una relación activa contigo (por ejemplo, mientras estés en lista de espera o inscrito en una cohorte) y durante el tiempo adicional necesario para cumplir obligaciones legales o resolver cualquier consulta relacionada."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "6. Con quién compartimos tus datos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Podemos compartir tus datos con proveedores que nos ayudan a operar el programa (por ejemplo, plataformas de correo electrónico, videoconferencia o gestión de pagos), únicamente en la medida necesaria para prestar el servicio. Estos proveedores están obligados a proteger tu información y no pueden usarla para fines propios."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "7. Tus derechos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Puedes solicitarnos en cualquier momento acceder, corregir o eliminar tus datos personales, o retirar tu consentimiento para futuras comunicaciones. Para ejercer estos derechos, escríbenos a "
+                  },
+                  {
+                    "text": "team@squai.io",
+                    "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": "."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "8. Seguridad de la información",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Aplicamos medidas técnicas y organizativas razonables para proteger tus datos frente a accesos no autorizados, pérdida o alteración."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "9. Cambios en esta política",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Podemos actualizar esta Política de Privacidad ocasionalmente. La fecha de \"última actualización\" en la parte superior de esta página indica cuándo entró en vigor la versión más reciente."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "10. Contacto",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Si tienes preguntas sobre el tratamiento de tus datos, escríbenos a "
+                  },
+                  {
+                    "text": "team@squai.io",
+                    "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": "."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

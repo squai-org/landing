@@ -1,18 +1,19 @@
 ---
-import type { Service } from '../data/landing';
+import { getSiteContent, type Service } from '../lib/content';
 
 interface Props {
   service: Service;
 }
 
 const { service } = Astro.props;
+const { labels } = await getSiteContent();
 ---
 
 <!-- No background yet: the reference uses video, we do not have one. -->
 <section class="service-hero" data-hero>
   <div class="shell service-hero-inner">
     <p class="service-crumb">
-      <a href="/#servicios" class="service-crumb-link">Servicios</a>
+      <a href="/#servicios" class="service-crumb-link">{labels.services}</a>
       <span aria-hidden="true">→</span>
       <span>{service.name}.</span>
     </p>
