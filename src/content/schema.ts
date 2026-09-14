@@ -76,7 +76,7 @@ export const siteSchema = z.object({
   seo: z.object({ title: text, description: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
-    navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text }),
+    navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, servicesSubmenu: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text }),
     services: z.object({ discover: text, payback: text, contact: text }),
     team: z.object({ intro: paragraphs }),

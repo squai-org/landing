@@ -33,7 +33,7 @@
       }
     ],
     "cohort": {
-      "status": "Lista de espera abierta",
+      "status": "Preinscripción abierta",
       "name": "Fundamentos de Inteligencia Artificial Generativa",
       "ecosystem": "Squai One",
       "duration": "5 semanas · 20 horas",
@@ -212,8 +212,8 @@
         "slug": "squai-one",
         "name": "Squai One",
         "audience": "Personas",
-        "slogan": "Aprende IA sin que nadie te la tenga que traducir.",
-        "cardCopy": "Cohortes en vivo para personas que quieren entender la IA de una vez, no coleccionar tutoriales. Aquí puedes unirte a la lista de espera de la próxima cohorte.",
+        "slogan": "Entiende la IA sin necesidad de un diccionario técnico al lado.",
+        "cardCopy": "Entrenamiento en vivo para quienes quieren dominar la IA con criterio propio, no coleccionar enlaces que nunca van a revisar. Inscríbete en la lista de espera del próximo programa.",
         "accent": "#8A8EF9",
         "span": "span-3 row-2",
         "tone": "peri",
@@ -221,32 +221,32 @@
           "headline": "Criterio propio para usar cualquier herramienta de IA: la de hoy y la que salga mañana.",
           "cards": [
             {
-              "t": "Entiendes qué pasa por dentro",
-              "d": "Sabes por qué la IA responde lo que responde. Dejas de adivinar y empiezas a pedir bien a la primera."
+              "t": "Entiendes el fondo",
+              "d": "Comprendes cómo procesa la información para pedir las cosas bien desde el primer intento."
             },
             {
-              "t": "Trabajas sobre tus propios casos",
-              "d": "Traes algo de tu día real y sales con eso resuelto o encaminado, no con apuntes para aplicar algún día."
+              "t": "Aplicación en lo tuyo",
+              "d": "Traes tus propios temas y sales con soluciones listas, no con teoría guardada en un cuaderno."
             },
             {
               "t": "No dependes de la app de moda",
-              "d": "Aprendes la lógica que todas comparten. Cambia el nombre de la herramienta y tú sigues igual de suelto."
+              "d": "Aprendes la lógica universal. Si mañana cambia la aplicación de moda, a ti te da igual porque ya entiendes el concepto."
             }
           ]
         },
         "challenge": {
           "cards": [
             {
-              "t": "Empezar sin punto de partida",
-              "d": "Ves a otras personas resolviendo su día con IA, pero cuando buscas cómo hacerlo te encuentras tecnicismos o promesas que no aterrizan en tu realidad."
+              "t": "No saber por dónde empezar",
+              "d": "Quieres aprovechar la IA, pero solo encuentras tutoriales confusos o promesas exageradas."
             },
             {
-              "t": "Pedir y que no entienda",
-              "d": "Le encargas una tarea y vuelve algo inservible. Terminas corrigiendo más de lo que habrías tardado haciéndolo tú."
+              "t": "Respuestas inútiles",
+              "d": "Le pides algo y te devuelve un texto tan raro que tardas más arreglándolo que haciéndolo desde cero."
             },
             {
-              "t": "Una herramienta nueva cada semana",
-              "d": "La sensación de ir tarde no se arregla aprendiendo diez apps. Se arregla entendiendo qué tienen en común."
+              "t": "Una herramienta nueva cada día",
+              "d": "La ansiedad de estar atrasado no se quita probando diez herramientas diarias, sino entendiendo la base."
             }
           ]
         },
@@ -594,9 +594,9 @@
     "statement": {
       "headline": "Corregir lo que hace la IA da más trabajo que hacerlo tú mismo.",
       "body": [
-        "Ahora todo el mundo habla de agentes, automatizaciones complejas y herramientas \"revolucionarias\" que prometen cambiarte la vida (o que te cambiarán por una IA). El problema es que cuando intentas usarlas en tu trabajo o en tu día a día, no obtienes algo útil, lo sabemos, es frustrante.",
+        "Vivimos rodeados de gurus prometiendo agentes fantásticos y fórmulas mágicas para no volver a trabajar. Sin embargo, cuando intentas aplicar eso a tus notas, proyectos o tareas diarias, el resultado es tan genérico que terminas rehaciendo todo a mano. Es desesperante.",
         "Creemos firmemente que la inteligencia artificial no es magia ni un privilegio reservado para expertos en tecnología. Debe ser una capacidad que cualquiera puede aprender a usar si se explica con claridad, desde la práctica y sin vender humo (y no, no te vas a volver millonario creando una aplicación con IA en una semana).",
-        "Estamos aquí para que por fin entiendas cómo funciona la IA sin tanto cuento."
+        "Estamos aquí para que entiendas cómo funciona el asunto y dejes de pelear con las herramientas."
       ]
     },
     "tagline": "Aprende IA, potencia tus habilidades.",
@@ -626,7 +626,8 @@
         "open": "Abrir menú",
         "close": "Cerrar menú",
         "main": "Principal",
-        "waitlist": "Lista de espera"
+        "waitlist": "Lista de espera",
+        "servicesSubmenu": "Mostrar submenú de servicios"
       },
       "hero": {
         "pause": "Pausar palabras animadas",
@@ -661,9 +662,9 @@
         "copyright": "© 2026 Squai · Todos los derechos reservados"
       },
       "waitlist": {
-        "title": "Preinscribete a nuestro programa para aprender IA",
+        "title": "Preinscríbete a nuestro programa para aprender IA",
         "copy": [
-          "Déjanos tu correo y te notificaremos cuando abramos los cupos del siguiente programa.",
+          "Déjanos tu correo y te notificaremos cuando abramos los cupos del siguiente programa, junto con las fechas de inicio y los detalles de inscripción.",
           "Prometemos no enviarte correos diarios de spam."
         ]
       },
@@ -716,11 +717,11 @@
         }
       },
       "feedback": {
-        "invalid": "Revisa los campos marcados: faltan datos o el correo no es válido.",
-        "sending": "Enviando…",
-        "error": "No pudimos enviar tus datos. Inténtalo de nuevo o escríbenos a team@squai.io.",
-        "contactSuccess": "¡Listo! Te escribimos en menos de 24 horas hábiles.",
-        "waitlistSuccess": "¡Listo! Ya estás en la lista. Te avisamos cuando se abra la inscripción."
+        "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
+        "sending": "Procesando tu solicitud… (esto deberia ser mas rapido que cuando le pides un consejo a la IA)",
+        "error": "No pudimos enviar la información. Revisa tu conexión o escríbenos directamente a team@squai.io.",
+        "contactSuccess": "Recibido. Te escribiremos en menos de 24 horas hábiles con los pasos a seguir.",
+        "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa."
       },
       "skip": "Saltar al contenido",
       "updated": "Última actualización:"
