@@ -14,7 +14,7 @@ const { cohort, ui, labels } = await getSiteContent();
       {
         ui.waitlist.copy.map((paragraph, index) => (
           <p class={`lead${index === ui.waitlist.copy.length - 1 ? ' waitlist-promise' : ''}`}>
-            {index === 0 ? `${cohort.seats}. ${paragraph}` : paragraph}
+            {index === 0 ? `${paragraph}` : paragraph}
           </p>
         ))
       }
@@ -68,7 +68,7 @@ const { cohort, ui, labels } = await getSiteContent();
     color: var(--ink-body);
   }
   .waitlist-copy p + p { margin-top: 12px; }
-  .waitlist-promise { font-family: var(--font-hand); font-weight: 700; color: var(--periwinkle-ink); }
+  .waitlist-promise { font-family: var(--font-hand); font-weight: 700; color: var(--periwinkle); }
   .waitlist-form {
     padding: 32px;
     border: 1px solid var(--line);
