@@ -661,9 +661,10 @@
         "copyright": "© 2026 Squai · Todos los derechos reservados"
       },
       "waitlist": {
-        "title": "Únete a la lista de espera",
+        "title": "Inscríbete en la lista de espera para nuestro programa Squai One",
         "copy": [
-          "Déjanos tus datos y te avisamos apenas se abra la inscripción, con las fechas confirmadas y la información de pago."
+          "Déjanos tu correo y te notificaremos primero cuando abramos los cupos del siguiente programa, junto con las fechas de inicio y los detalles de inscripción.",
+          "Prometemos no enviarte correos diarios de spam."
         ]
       },
       "forms": {
