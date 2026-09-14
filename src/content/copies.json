@@ -202,10 +202,9 @@
       }
     ],
     "originStory": [
-      "Squai no nació de una teoría sobre el futuro del trabajo. Nació de acompañar, uno por uno, a quienes intentaban usar IA en su día a día y se estrellaban con lo mismo.",
-      "En ese trabajo apareció un patrón difícil de ignorar: los que más sufrían no eran los que menos capacidad tenían, sino los que no venían del mundo técnico. Se topaban con explicaciones llenas de jerga que hacen parecer que la IA es cosa de expertos, cuando no tiene por qué serlo.",
-      "Así que hicimos lo contrario. Quitamos la complejidad que no aportaba, conservamos lo que de verdad sirve en la práctica y armamos una forma de enseñar que empieza por entender, sigue por probar y termina en que cada persona descubra qué más puede hacer.",
-      "Hoy esa misma metodología llega a personas, a equipos y a comunidades educativas. Cambia el contexto y la intensidad; no cambia la manera de enseñar."
+      "En el afán de implementar IA, se nos olvidó que lo más importante son las personas que la usan.",
+      "Vimos a gente con un talento enorme sintiéndose abrumada por una tecnología que se suponía iba a hacerles la vida más fácil. Ahí entendimos el reto: nadie les explica cómo funciona.",
+      "Squai nació para acompañar a esas personas, las que intentaban usar IA en su día a día y se frustraron sin lograr lo que esperaban. Los que más sufrían eran los se topaban con explicaciones llenas de jerga que hacían parecer que la IA es cosa de expertos. ¿Por qué te tienen que hablar en otro idioma para explicarte algo útil? Entonces cortamos por lo sano. Quitamos toda la jerga innecesaria, conservamos lo que te sirve para tu día a día y armamos una metodología clara. Hoy, esa misma forma de enseñar la llevamos a todos lados. Cambia a quién le hablamos, pero no cambia nuestra alergia al humo."
     ],
     "services": [
       {
@@ -333,7 +332,7 @@
         "audience": "Equipos y organizaciones",
         "slogan": "Que la IA entre a tus procesos sin desordenar lo que ya funciona.",
         "cardCopy": "Entrenamos a tu equipo sobre situaciones, tareas y preguntas que ya forman parte de su contexto, guiados por profesionales que saben la teoría y la usan a diario para resolver problemas en distintas industrias.",
-        "discoverLabel": "Conocer el servicio para equipos",
+        "discoverLabel": "Ver cómo funciona para empresas",
         "cta": {
           "modal": "grow",
           "target": "",
@@ -445,8 +444,8 @@
         "name": "Squai Learn",
         "audience": "Comunidades educativas",
         "slogan": "Preparar a docentes y estudiantes para un aula que ya cambió.",
-        "cardCopy": "Formación en IA para colegios, universidades y programas educativos, con criterio y uso responsable.",
-        "discoverLabel": "Conocer el servicio para instituciones",
+        "cardCopy": "Acompañamiento en IA para toda la comunidad educativa. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con criterio, ética y pensamiento crítico.",
+        "discoverLabel": "Explorar el programa educativo",
         "cta": {
           "modal": "learn",
           "target": "",
@@ -644,7 +643,7 @@
       },
       "team": {
         "intro": [
-          "Los mismos que dan las clases en vivo y responden en la comunidad, con un equipo detrás que mira el tema desde procesos, talento, datos y seguridad."
+          "Todo lo que enseñamos nace de lo que ya aplicamos en el día a día. Somos un squad de profesionales en diferentes áreas que nos unimos para crear y acompañar los programas de Squai. Sabemos mucho del tema. También sabemos que decirlo quince veces no te enseña nada, así que diseñamos cada contenido desde nuestra propia experiencia, traduciendo casos reales de trabajo a una pedagogía clara, cercana y fácil de adoptar."
         ]
       },
       "finalCta": {
