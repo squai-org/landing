@@ -254,6 +254,7 @@ a:hover { color: var(--periwinkle-dark); }
 .span-4 { grid-column: span 4; }
 .span-6 { grid-column: span 6; }
 .row-2 { grid-row: span 2; }
+.row-3 { grid-row: span 3; }
 
 .card-link { transition: transform .25s, box-shadow .25s; text-decoration: none; }
 .card-link:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
@@ -556,6 +557,7 @@ textarea.field { min-height: 120px; resize: vertical; }
   .span-4 { grid-column: span 4; }
   .span-6 { grid-column: span 4; }
   .row-2 { grid-row: auto; }
+  .row-3 { grid-row: auto; }
 }
 
 @media (max-width: 900px) {

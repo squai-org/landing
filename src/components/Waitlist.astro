@@ -8,63 +8,85 @@ const { cohort, ui, labels } = await getSiteContent();
 ---
 
 <section id="lista" class="section tint">
-  <div class="shell waitlist-shell">
-    <h2 class="display d-h2 waitlist-title">{ui.waitlist.title}</h2>
-    <div class="waitlist-copy">
-      {
-        ui.waitlist.copy.map((paragraph, index) => (
-          <p class={`lead${index === ui.waitlist.copy.length - 1 ? ' waitlist-promise' : ''}`}>
-            {index === 0 ? `${paragraph}` : paragraph}
-          </p>
-        ))
-      }
+  <div class="shell">
+    <!-- Same bento shape as the home page's Servicios grid: one wide item
+         (here, the form) on the left spanning every row the stacked items
+         take up on the right (here, the cohort's own duration/schedule/
+         modality), instead of a separate section for each. -->
+    <div class="bento waitlist-grid">
+      <div class="waitlist-column span-3 row-3">
+        <h2 class="display d-h2 waitlist-title">{ui.waitlist.title}</h2>
+        <div class="waitlist-copy">
+          {
+            ui.waitlist.copy.map((paragraph, index) => (
+              <p class={`lead${index === ui.waitlist.copy.length - 1 ? ' waitlist-promise' : ''}`}>
+                {index === 0 ? `${paragraph}` : paragraph}
+              </p>
+            ))
+          }
+        </div>
+        <form
+          data-form="waitlist"
+          data-endpoint={endpoints.waitlist}
+          novalidate
+          class="card-pad-lg waitlist-form"
+        >
+          <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
+          <div class="field-grid-2">
+            <label class="field-group" for="waitlist-full-name">
+              <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
+              <input id="waitlist-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="waitlist-full-name-error" />
+              <span id="waitlist-full-name-error" class="field-error" data-field-error="full_name"></span>
+            </label>
+            <label class="field-group" for="waitlist-email">
+              <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
+              <input id="waitlist-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="waitlist-email-error" />
+              <span id="waitlist-email-error" class="field-error" data-field-error="email"></span>
+            </label>
+          </div>
+          <div class="field-grid-phone">
+            <label class="field-group" for="waitlist-country-code">
+              <span class="field-label">{ui.forms.countryCode} <span aria-hidden="true">*</span></span>
+              <input id="waitlist-country-code" type="text" name="country_code" required value="+57" autocomplete="tel-country-code" inputmode="tel" class="field" aria-describedby="waitlist-country-code-error" />
+              <span id="waitlist-country-code-error" class="field-error" data-field-error="country_code"></span>
+            </label>
+            <label class="field-group" for="waitlist-phone">
+              <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
+              <input id="waitlist-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="waitlist-phone-error" />
+              <span id="waitlist-phone-error" class="field-error" data-field-error="phone"></span>
+            </label>
+          </div>
+          <div class="form-submit">
+            <Button variant="primary" type="submit" block>{labels.reserve}</Button>
+          </div>
+          <div class="form-status" data-form-status role="status" aria-live="polite"></div>
+          <Turnstile action="waitlist" />
+        </form>
+      </div>
+
+      <div class="bento-card span-3 peri">
+        <h3 class="display d-h3">{ui.program.duration}</h3>
+        <p class="body">{cohort.duration}</p>
+      </div>
+      <div class="bento-card span-3 teal">
+        <h3 class="display d-h3">{ui.program.schedule}</h3>
+        <p class="body">{cohort.schedule}</p>
+      </div>
+      <div class="bento-card span-3 gold">
+        <h3 class="display d-h3">{ui.program.modality}</h3>
+        <p class="body">{cohort.modality}</p>
+      </div>
     </div>
-    <form
-      data-form="waitlist"
-      data-endpoint={endpoints.waitlist}
-      novalidate
-      class="card-pad-lg waitlist-form"
-    >
-      <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
-      <div class="field-grid-2">
-        <label class="field-group" for="waitlist-full-name">
-          <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
-          <input id="waitlist-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="waitlist-full-name-error" />
-          <span id="waitlist-full-name-error" class="field-error" data-field-error="full_name"></span>
-        </label>
-        <label class="field-group" for="waitlist-email">
-          <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
-          <input id="waitlist-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="waitlist-email-error" />
-          <span id="waitlist-email-error" class="field-error" data-field-error="email"></span>
-        </label>
-      </div>
-      <div class="field-grid-phone">
-        <label class="field-group" for="waitlist-country-code">
-          <span class="field-label">{ui.forms.countryCode} <span aria-hidden="true">*</span></span>
-          <input id="waitlist-country-code" type="text" name="country_code" required value="+57" autocomplete="tel-country-code" inputmode="tel" class="field" aria-describedby="waitlist-country-code-error" />
-          <span id="waitlist-country-code-error" class="field-error" data-field-error="country_code"></span>
-        </label>
-        <label class="field-group" for="waitlist-phone">
-          <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
-          <input id="waitlist-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="waitlist-phone-error" />
-          <span id="waitlist-phone-error" class="field-error" data-field-error="phone"></span>
-        </label>
-      </div>
-      <div class="form-submit">
-        <Button variant="primary" type="submit" block>{labels.reserve}</Button>
-      </div>
-      <div class="form-status" data-form-status role="status" aria-live="polite"></div>
-      <Turnstile action="waitlist" />
-    </form>
   </div>
 </section>
 
 <style>
-  .waitlist-shell { max-width: 920px; text-align: center; }
+  .waitlist-grid { align-items: stretch; }
+  .waitlist-column { display: flex; flex-direction: column; min-width: 0; }
   .waitlist-title { color: var(--ink); }
   .waitlist-copy {
     max-width: 60ch;
-    margin: clamp(16px, 1.6vw, 24px) auto clamp(28px, 3vw, 44px);
+    margin: clamp(16px, 1.6vw, 24px) 0 clamp(28px, 3vw, 44px);
     color: var(--ink-body);
   }
   .waitlist-copy p + p { margin-top: 12px; }
@@ -76,6 +98,9 @@ const { cohort, ui, labels } = await getSiteContent();
     background: var(--surface);
     box-shadow: 0 1px 2px rgba(10, 12, 26, .03), 0 30px 70px -44px rgba(10, 12, 26, .45);
     text-align: left;
+  }
+  @media (max-width: 1100px) {
+    .waitlist-column { order: -1; }
   }
   @media (max-width: 640px) {
     .waitlist-form { padding: 22px; border-radius: 22px; }
