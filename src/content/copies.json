@@ -224,20 +224,9 @@
         "span": "span-3 row-2",
         "tone": "peri",
         "payback": {
-          "headline": "Criterio para usar la herramienta de hoy y la que inventen la próxima semana.",
-          "cards": [
-            {
-              "t": "Entiendes el fondo",
-              "d": "Comprendes cómo procesa la información para pedir las cosas bien desde el primer intento."
-            },
-            {
-              "t": "Aplicación en lo tuyo",
-              "d": "Traes tus propios temas y sales con soluciones listas, no con teoría guardada en un cuaderno."
-            },
-            {
-              "t": "No dependes de la app de moda",
-              "d": "Aprendes la lógica universal. Si mañana cambia la aplicación de moda, a ti te da igual porque ya entiendes el concepto."
-            }
+          "headline": "Vas a desarrollar un instinto para usar cualquier IA, la que está de moda hoy y la que se inventen mañana",
+          "body": [
+            "Entiendes cómo procesa la información un modelo, así que pides las cosas bien desde el primer intento. Traes tus propios temas a las sesiones y sales con soluciones listas, no con teoría guardada en un cuaderno. Y como aprendes la lógica universal detrás de cualquier herramienta, si mañana cambia la app de moda a ti te da igual: ya entiendes el concepto."
           ]
         },
         "challenge": {
@@ -344,19 +333,8 @@
         "tone": "teal",
         "payback": {
           "headline": "Un equipo que usa IA en su trabajo real, con reglas claras y sin frenar la operación.",
-          "cards": [
-            {
-              "t": "Casos de uso propios, no demos",
-              "d": "Partimos de las tareas que ya ocupan las horas de tu equipo y sobre esas trabajamos."
-            },
-            {
-              "t": "Adopción que sobrevive al entusiasmo",
-              "d": "Acompañamos a quienes tienen que usarla, no solo a quien firmó la decisión."
-            },
-            {
-              "t": "Reglas de uso que la gente entiende",
-              "d": "Qué se comparte, qué se revisa y quién responde por qué, escrito en un lenguaje que cualquiera aplica."
-            }
+          "body": [
+            "Partimos de las tareas que ya ocupan las horas de tu equipo, no de demos genéricas. Acompañamos a quienes tienen que usar la IA en el día a día, no solo a quien firmó la decisión, para que la adopción sobreviva al entusiasmo inicial. Y dejamos reglas claras sobre qué se comparte, qué se revisa y quién responde por qué, escritas en un lenguaje que cualquiera en el equipo puede aplicar."
           ]
         },
         "challenge": {
@@ -457,19 +435,8 @@
         "tone": "gold",
         "payback": {
           "headline": "Docentes que enseñan con IA y estudiantes que la usan sin dejar de aprender.",
-          "cards": [
-            {
-              "t": "Docentes con criterio, no con miedo",
-              "d": "Saben qué pueden delegar en la preparación de clase y qué tienen que seguir haciendo ellos."
-            },
-            {
-              "t": "Estudiantes que aprenden igual",
-              "d": "Usan la herramienta para entender más rápido, no para entregar sin haber entendido nada."
-            },
-            {
-              "t": "Una postura institucional clara",
-              "d": "Reglas que se pueden explicar en una reunión de padres y sostener en un consejo académico."
-            }
+          "body": [
+            "Los docentes saben qué pueden delegar en la preparación de clase y qué tienen que seguir haciendo ellos, con criterio y no con miedo. Los estudiantes usan la herramienta para entender más rápido, no para entregar sin haber entendido nada. Y la institución sostiene una postura clara, que se puede explicar en una reunión de padres y sostener en un consejo académico."
           ]
         },
         "challenge": {
@@ -643,11 +610,11 @@
         "scroll": "Seguir bajando"
       },
       "services": {
-        "payback": "Qué obtienes",
+        "payback": "Qué te llevas",
         "contact": "Cuéntanos dónde están hoy y armamos la propuesta sobre eso."
       },
       "program": {
-        "title": "El programa en detalle",
+        "title": "De",
         "duration": "Duración",
         "schedule": "Horario",
         "modality": "Modalidad"

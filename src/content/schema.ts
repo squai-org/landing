@@ -28,7 +28,7 @@ const service = z.object({
   slug: text.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text, discoverLabel: text,
   accent: text.regex(/^#[0-9a-fA-F]{6}$/), span: text, tone: z.string(),
-  payback: z.object({ headline: text, cards: z.array(card).min(1) }),
+  payback: z.object({ headline: text, body: paragraphs }),
   challenge: z.object({ cards: z.array(card).min(1) }),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
