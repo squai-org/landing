@@ -169,16 +169,18 @@
       {
         "img": "/images/team1.webp",
         "name": "Laura Villada",
-        "role": "Estratega de Adopción de IA, Co-fundadora de Squai",
+        "role": "Estratega de Adopción de IA",
         "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
-        "aria": "LinkedIn de Laura Villada"
+        "aria": "LinkedIn de Laura Villada",
+        "d": "Co-fundadora de Squai"
       },
       {
         "img": "/images/team2.webp",
         "name": "Sebastián Rico",
-        "role": "Ingeniero de IA, Co-fundador de Squai",
+        "role": "Ingeniero de IA",
         "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
-        "aria": "LinkedIn de Sebastián Rico"
+        "aria": "LinkedIn de Sebastián Rico",
+        "d": "Co-fundador de Squai"
       }
     ],
     "navLinks": [

@@ -47,8 +47,8 @@ const { cohort, ui, labels } = await getSiteContent();
       <div class="form-submit">
         <Button variant="primary" type="submit" block>{labels.reserve}</Button>
       </div>
-      <Turnstile action="waitlist" />
       <div class="form-status" data-form-status role="status" aria-live="polite"></div>
+      <Turnstile action="waitlist" />
     </form>
   </div>
 </section>

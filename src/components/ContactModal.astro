@@ -45,7 +45,7 @@ const { ui, labels } = await getSiteContent();
           <span id="contact-full-name-error" class="field-error" data-field-error="full_name"></span>
         </label>
         <label class="field-group" for="contact-email">
-          <span class="field-label">{ui.forms.corporateEmail} <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
           <input id="contact-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="contact-email-error" />
           <span id="contact-email-error" class="field-error" data-field-error="email"></span>
         </label>
@@ -95,10 +95,10 @@ const { ui, labels } = await getSiteContent();
       <div class="form-submit">
         <Button variant="primary" type="submit" block>{labels.call}</Button>
       </div>
-      <Turnstile action="contact" />
       <div class="form-status" data-form-status role="status" aria-live="polite">
         {ui.contact.responseTime}
       </div>
+      <Turnstile action="contact" />
     </form>
   </div>
 </div>

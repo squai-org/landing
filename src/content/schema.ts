@@ -62,7 +62,7 @@ export const siteSchema = z.object({
   impact: z.object({ body: paragraphs }),
   services: z.array(service).min(1).refine((items) => new Set(items.map((item) => item.slug)).size === items.length, 'Service slugs must be unique'),
   originStory: paragraphs,
-  instructors: z.array(z.object({ img: link, name: text, role: text, linkedin: link, aria: text })),
+  instructors: z.array(z.object({ img: link, name: text, role: text, d: text, linkedin: link, aria: text })),
   squadGrid: z.array(z.object({ img: link, name: text, role: text, d: text })),
   faqs: z.array(faq).min(1),
   socials: z.array(z.object({ name: text, href: optionalLink })),
