@@ -169,18 +169,18 @@
       {
         "img": "/images/team1.webp",
         "name": "Laura Villada",
-        "role": "Estratega de Adopción de IA",
+        "role": "Estratega de Adopción de IA, Co-fundadora de Squai",
         "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
         "aria": "LinkedIn de Laura Villada",
-        "d": "Co-fundadora de Squai"
+        "d": "Se encarga de traducir lo técnico al lenguaje del día a día, diseñando experiencias de aprendizaje donde las personas realmente entienden y aplican las bases."
       },
       {
         "img": "/images/team2.webp",
         "name": "Sebastián Rico",
-        "role": "Ingeniero de IA",
+        "role": "Ingeniero de IA, Co-fundador de Squai",
         "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
         "aria": "LinkedIn de Sebastián Rico",
-        "d": "Co-fundador de Squai"
+        "d": "Aporta la visión técnica de fondo, filtrando el ruido del mercado para enseñarte a pensar con la tecnología sin enredarte en la complejidad innecesaria."
       }
     ],
     "navLinks": [
@@ -203,8 +203,9 @@
     ],
     "originStory": [
       "En el afán de implementar IA, se nos olvidó que lo más importante son las personas que la usan.",
-      "Vimos a gente con un talento enorme sintiéndose abrumada por una tecnología que se suponía iba a hacerles la vida más fácil. Ahí entendimos el reto: nadie les explica cómo funciona.",
-      "Squai nació para acompañar a esas personas, las que intentaban usar IA en su día a día y se frustraron sin lograr lo que esperaban. Los que más sufrían eran los se topaban con explicaciones llenas de jerga que hacían parecer que la IA es cosa de expertos. ¿Por qué te tienen que hablar en otro idioma para explicarte algo útil? Entonces cortamos por lo sano. Quitamos toda la jerga innecesaria, conservamos lo que te sirve para tu día a día y armamos una metodología clara. Hoy, esa misma forma de enseñar la llevamos a todos lados. Cambia a quién le hablamos, pero no cambia nuestra alergia al humo."
+      "Vimos a personas con un talento enorme sentirse abrumadas por una tecnología que se suponía que iba a hacerles la vida más fácil. Ahí entendimos el reto: nadie les explica cómo funciona.",
+      "Squai nació para acompañar a quienes intentaban usar la IA en su día a día y se frustraban sin lograr lo que esperaban. Los que más sufrían eran los que se topaban con explicaciones llenas de jerga que hacían parecer que la IA es cosa de expertos. ¿Por qué te tienen que hablar en otro idioma para explicarte algo útil?",
+      "Por eso, cortamos por lo sano. Quitamos la jerga innecesaria, conservamos lo que te sirve para tu día a día y armamos una metodología clara. Hoy llevamos esa misma forma de enseñar a todos lados. Cambia a quién le hablamos, pero no cambia nuestra alergia al humo."
     ],
     "services": [
       {
@@ -565,6 +566,10 @@
       {
         "name": "X",
         "href": ""
+      },
+      {
+        "name": "YouTube",
+        "href": ""
       }
     ],
     "squadGrid": [
@@ -641,9 +646,15 @@
         "payback": "Qué obtienes",
         "contact": "Cuéntanos dónde están hoy y armamos la propuesta sobre eso."
       },
+      "program": {
+        "title": "El programa en detalle",
+        "duration": "Duración",
+        "schedule": "Horario",
+        "modality": "Modalidad"
+      },
       "team": {
         "intro": [
-          "Todo lo que enseñamos nace de lo que ya aplicamos en el día a día. Somos un squad de profesionales en diferentes áreas que nos unimos para crear y acompañar los programas de Squai. Sabemos mucho del tema. También sabemos que decirlo quince veces no te enseña nada, así que diseñamos cada contenido desde nuestra propia experiencia, traduciendo casos reales de trabajo a una pedagogía clara, cercana y fácil de adoptar."
+          "Podríamos decirte que somos un equipo \"altamente capacitado\" pero la verdad es que navegamos los mismos dolores de cabeza que tú. Somos un squad de profesionales en diferentes áreas que nos unimos para diseñar el contenido de los programas de Squai desde nuestra experiencia, traduciendo casos reales de trabajo a una pedagogía clara, cercana y fácil de adoptar. "
         ]
       },
       "finalCta": {
@@ -654,10 +665,7 @@
         ]
       },
       "follow": {
-        "title": "Síguenos",
-        "copy": [
-          "Síguenos en LinkedIn. Ahí publicamos lo que vamos aprendiendo y las fechas de cada cohorte."
-        ]
+        "title": "Síguenos"
       },
       "footer": {
         "copyright": "© 2026 Squai · Todos los derechos reservados"

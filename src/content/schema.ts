@@ -79,9 +79,10 @@ export const siteSchema = z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, servicesSubmenu: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text }),
     services: z.object({ payback: text, contact: text }),
+    program: z.object({ title: text, duration: text, schedule: text, modality: text }),
     team: z.object({ intro: paragraphs }),
     finalCta: z.object({ title: text, body: paragraphs }),
-    follow: z.object({ title: text, copy: paragraphs }),
+    follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
     waitlist: z.object({ title: text, copy: paragraphs }),
     forms: z.object({
