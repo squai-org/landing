@@ -80,11 +80,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
   };
 
-  const scrollToSection = (id: string) => {
+  const scrollToSection = (id: string, instant = false) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const target = el.getBoundingClientRect().top + window.scrollY - navOffset();
-    if (prefersReducedMotion) {
+    /* .section carries its own top padding for rhythm between sections
+       (var(--section-gap), up to 168px). Landing on the section's own
+       edge leaves that whole padding as dead space below the nav, so
+       aim past it, at the section's content box instead. */
+    const topPadding = parseFloat(getComputedStyle(el).paddingTop) || 0;
+    const target = el.getBoundingClientRect().top + window.scrollY + topPadding - navOffset();
+    if (prefersReducedMotion || instant) {
       window.scrollTo(0, target);
       return;
     }
@@ -100,6 +105,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     };
     requestAnimationFrame(step);
   };
+
+  /* Arriving with a hash already in the URL (nav click from another page,
+     a bookmark, a shared link) skips the click handler below entirely —
+     the browser does its own native jump first, landing on the same
+     padding-heavy section edge. Snap it to the corrected position right
+     after. */
+  if (location.hash.length > 1) {
+    const targetId = decodeURIComponent(location.hash.slice(1));
+    if (document.getElementById(targetId)) scrollToSection(targetId, true);
+  }
 
   document.querySelectorAll<HTMLElement>('[data-scroll-to]').forEach((el) => {
     el.addEventListener('click', (event) => {
