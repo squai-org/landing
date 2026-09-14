@@ -188,6 +188,12 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
 
   .hero-animated-word { white-space: nowrap; }
 
+  /* Subtle lift off the background, not a design accent: the animated
+     verb sits over .hero-shape-gold, which can slip underneath it at
+     some widths, so it stays legible against whichever color it lands
+     on (word color changes per verb) without looking like a glow. */
+  .hero-verb { text-shadow: 0 1px 3px rgba(10, 12, 26, .35); }
+
   /* The verb is typed in and out rather than cross-faded. */
   .hero-caret {
     display: inline-block;
