@@ -1,6 +1,6 @@
 ---
 import { getSiteContent } from '../lib/content';
-const { services, ui, labels } = await getSiteContent();
+const { services, labels } = await getSiteContent();
 ---
 
 <section id="servicios" class="section tint">
@@ -21,7 +21,7 @@ const { services, ui, labels } = await getSiteContent();
             <div class={`service-card-footer${s.slug === 'squai-one' ? ' service-title-rise' : ''}`}>
               <h3 class="display d-h1">{s.name}</h3>
               <span class="btn btn-dark discover" aria-hidden="true">
-                <span class="btn-label">{ui.services.discover}</span>
+                <span class="btn-label">{s.discoverLabel}</span>
               </span>
             </div>
           </a>

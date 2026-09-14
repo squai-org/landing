@@ -26,7 +26,7 @@ const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone: z.string() });
 const service = z.object({
   slug: text.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text,
+  name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text, discoverLabel: text,
   accent: text.regex(/^#[0-9a-fA-F]{6}$/), span: text, tone: z.string(),
   payback: z.object({ headline: text, cards: z.array(card).min(1) }),
   challenge: z.object({ cards: z.array(card).min(1) }),
@@ -78,7 +78,7 @@ export const siteSchema = z.object({
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, servicesSubmenu: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text }),
-    services: z.object({ discover: text, payback: text, contact: text }),
+    services: z.object({ payback: text, contact: text }),
     team: z.object({ intro: paragraphs }),
     finalCta: z.object({ title: text, body: paragraphs }),
     follow: z.object({ title: text, copy: paragraphs }),
