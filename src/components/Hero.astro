@@ -69,7 +69,7 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
 
 <style>
   .hero {
-    container-type: inline-size;
+    container-type: size;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -89,24 +89,22 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     pointer-events: none;
     user-select: none;
   }
-  /* cqw (% of .hero's own width), not plain % (of .hero's height for top)
-     and not fixed px. Unlike the other sections' brand-shape, .hero's
-     height is set by 100svh — independent of its width — so a plain
-     top:% (relative to height) grew or shrank against the shape's
-     width-based size whenever the window's aspect ratio changed, not
-     only on resize/zoom: short windows swallowed the headline under the
-     gold shape, wide-short ones shrank the periwinkle to nearly nothing.
-     Driving every value off cqw keeps position and size locked to the
-     same axis, so the shape can't warp independently of its own width. */
+  /* Position (left/top) stays tied to .hero's WIDTH (cqw) so the anchor
+     corner never drifts off-screen when the hero is unusually tall (a
+     tall/narrow window has a much bigger cqh than cqw). Size (width) is
+     tied to cqmax — the larger of the hero's own width/height — so the
+     shape still reaches meaningfully into the frame on tall, narrow
+     viewports instead of shrinking to a sliver, without growing wide
+     enough on short/wide viewports to reach the headline. */
   .hero-shape-gold {
-    width: 62.64cqw;
+    width: 62.64cqmax;
     height: auto;
     left: -26.15cqw;
     top: -27.14cqw;
     transform: rotate(-60deg);
   }
   .hero-shape-periwinkle {
-    width: 92.97cqw;
+    width: 92.97cqmax;
     height: auto;
     left: 85.88cqw;
     top: -15.16cqw;
