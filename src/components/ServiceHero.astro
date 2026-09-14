@@ -12,7 +12,12 @@ const { cohort, labels } = await getSiteContent();
 <!-- No background yet: the reference uses video, we do not have one. -->
 <section class="service-hero" data-hero>
   <div class="shell service-hero-inner">
-    <div class="service-hero-top">
+    <p class="service-crumb">
+      <a href="/#servicios" class="service-crumb-link">{labels.services}</a>
+      <span aria-hidden="true">→</span>
+      <span>{service.name}.</span>
+    </p>
+    <div class="service-hero-heading">
       {
         service.slug === 'squai-one' && (
           <p class="service-hero-eyebrow">
@@ -22,13 +27,8 @@ const { cohort, labels } = await getSiteContent();
           </p>
         )
       }
-      <p class="service-crumb">
-        <a href="/#servicios" class="service-crumb-link">{labels.services}</a>
-        <span aria-hidden="true">→</span>
-        <span>{service.name}.</span>
-      </p>
+      <h1 class="display d-display service-name" style={`color:${service.accent}`}>{service.name}.</h1>
     </div>
-    <h1 class="display d-display service-name" style={`color:${service.accent}`}>{service.name}.</h1>
     <p class="display d-h2 service-slogan">{service.slogan}</p>
   </div>
 </section>
@@ -53,7 +53,7 @@ const { cohort, labels } = await getSiteContent();
     flex: 1;
     gap: clamp(40px, 8vw, 120px);
   }
-  .service-hero-top { display: flex; flex-direction: column; gap: 16px; }
+  .service-hero-heading { display: flex; flex-direction: column; gap: clamp(16px, 2vw, 28px); }
   /* Same shape as Hero.astro's own eyebrow — carried over so the cohort
      status reads the same wherever it shows up. */
   .service-hero-eyebrow {
@@ -102,7 +102,7 @@ const { cohort, labels } = await getSiteContent();
       padding-block: calc(var(--nav-space) + clamp(10px, 3svh, 40px)) clamp(28px, 6svh, 72px);
     }
     .service-hero-inner { justify-content: flex-end; gap: clamp(20px, 4svh, 48px); }
-    .service-hero-top { margin-bottom: auto; }
+    .service-crumb { margin-bottom: auto; }
   }
 
   @media (max-width: 640px) {
