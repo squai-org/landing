@@ -736,130 +736,130 @@
         "updated": "31 de agosto de 2026",
         "sections": [
           {
-            "title": "1. Aceptación de los términos",
+            "title": "1. Sin letras chiquitas",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Al registrarte en la lista de espera, inscribirte en el programa \"Fundamentos de Inteligencia Artificial Generativa\" o utilizar de cualquier otra forma los servicios ofrecidos por Squai, aceptas los presentes Términos de Servicio en su totalidad. Si no estás de acuerdo con alguna parte de estos términos, te pedimos que no utilices nuestros servicios."
+                    "text": "Al inscribirte en la lista de espera, participar en el programa \"Fundamentos de Inteligencia Artificial Generativa\" o solicitar nuestros servicios para empresas, aceptas las reglas de juego descritas en este documento. Si alguna parte no te convence, te sugerimos no usar nuestros servicios."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "2. Descripción del servicio",
+            "title": "2. Qué vendemos y qué no",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Squai ofrece un programa formativo en vivo sobre inteligencia artificial generativa, organizado por cohortes con cupos limitados. El acceso a cada cohorte se asigna a partir de una lista de espera; al confirmarse una cohorte, Squai se comunicará con las personas registradas para completar la inscripción y el pago correspondiente."
+                    "text": "Squai ofrece programas educativos en vivo sobre inteligencia artificial. No vendemos fórmulas mágicas para volverse millonario overnight, ni licencias de software milagroso. El acceso a los programas se gestiona mediante lista de espera debido al límite de cupos por grupo."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "3. Registro y lista de espera",
+            "title": "3. Tu información es tu responsabilidad",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Al dejar tus datos en el formulario de lista de espera o en el formulario de contacto para empresas e instituciones, declaras que la información proporcionada (nombre, correo electrónico, teléfono y demás datos solicitados) es veraz y te pertenece. Registrarte en la lista de espera no garantiza un cupo: la asignación depende de la disponibilidad de cada cohorte."
+                    "text": "Al llenar los formularios de contacto o lista de espera, declaras que los datos ingresados son tuyos y correctos. Dejar el correo de tu jefe para gastarle una broma no es una buena idea."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "4. Inversión y pagos",
+            "title": "4. Precios e inversión",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "El valor del programa vigente al momento de esta publicación es de $399.000 COP (aprox. $129 USD). Squai se reserva el derecho de actualizar este valor para futuras cohortes; el precio que aplica a cada estudiante es el comunicado formalmente al abrirse su inscripción. Las condiciones específicas de pago y, si aplica, cambios o cancelaciones, se informan por correo electrónico al momento de confirmar el cupo."
+                    "text": "El valor del programa Squai One comunicado a la fecha es de $399.000 COP (aprox. $129 USD). Nos reservamos el derecho de ajustar la tarifa en programas futuros, pero el precio informado formalmente al abrir tu inscripción es el que se mantendrá respetado para tu programa."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "5. Propiedad intelectual",
+            "title": "5. Propiedad del material",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Todo el material del programa —incluyendo grabaciones de las sesiones en vivo, plantillas, guías y recursos entregados— es propiedad de Squai o de sus licenciantes y se comparte exclusivamente para uso personal de cada estudiante inscrito. Queda prohibido reproducir, redistribuir o comercializar este contenido sin autorización previa y por escrito de Squai."
+                    "text": "Las guías, plantillas y grabaciones de las clases son fruto del trabajo del equipo de Squai. Son para tu uso personal o el de tu equipo contratante. No está permitido revenderlas, subirlas a un Drive público ni atribuyértelas como propias."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "6. Conducta dentro del programa",
+            "title": "6. Convivencia en clase",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Esperamos un trato respetuoso entre estudiantes, instructores y el equipo de Squai durante las sesiones en vivo y en los espacios de comunidad asociados al programa. Squai se reserva el derecho de restringir el acceso de cualquier participante cuya conducta afecte negativamente la experiencia del resto del grupo."
+                    "text": "Mantenemos un ambiente de respeto en las sesiones y chats grupales. Las burlas por preguntas básicas o los comportamientos ofensivos darán lugar al retiro del estudiante del programa sin reembolso."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "7. Cambios en el programa",
+            "title": "7. Flexibilidad y ajustes",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Squai puede modificar el calendario, el temario, los instructores o la modalidad de una cohorte cuando circunstancias razonables lo requieran, procurando siempre mantener el valor formativo del programa y notificando oportunamente a las personas inscritas."
+                    "text": "Si por motivos de fuerza mayor debemos reprogramar una clase o cambiar un instructor, lo notificaremos con anticipación buscando mantener la calidad pedagógica."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "8. Limitación de responsabilidad",
+            "title": "8. Responsabilidad de aplicación",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "El programa tiene un propósito educativo. Squai no garantiza resultados específicos derivados del uso del conocimiento adquirido, ya que estos dependen del contexto y la aplicación de cada estudiante."
+                    "text": "Nosotros enseñamos el criterio y la técnica; cómo apliques las herramientas en tu trabajo depende de ti. No nos hacemos responsables por decisiones comerciales tomadas con base en ejercicios del curso."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "9. Modificaciones a estos términos",
+            "title": "9. Cambios a estos términos",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Podemos actualizar estos Términos de Servicio ocasionalmente. La fecha de \"última actualización\" en la parte superior de esta página indica cuándo entró en vigor la versión más reciente."
+                    "text": "Podemos actualizar este documento de vez en cuando. La fecha arriba indica la última modificación."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "10. Contacto",
+            "title": "10. Canal directo",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Si tienes preguntas sobre estos términos, escríbenos a "
+                    "text": "Para dudas sobre estos términos, escríbenos directamente a "
                   },
                   {
                     "text": "team@squai.io",
@@ -880,26 +880,26 @@
         "updated": "31 de agosto de 2026",
         "sections": [
           {
-            "title": "1. Responsable del tratamiento",
+            "title": "1. Quién cuida tus datos",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Esta política aplica a los datos personales recopilados por Squai a través de esta página, incluyendo el formulario de lista de espera del programa \"Fundamentos de Inteligencia Artificial Generativa\" y el formulario de contacto para empresas e instituciones."
+                    "text": "Esta política aplica a la información personal que compartes con Squai a través de nuestra página web, formularios de lista de espera y solicitudes de contacto."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "2. Datos que recopilamos",
+            "title": "2. Qué información te pedimos",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Dependiendo del formulario que completes, podemos recopilar:"
+                    "text": "Únicamente lo necesario para prestarte el servicio:"
                   }
                 ]
               },
@@ -918,17 +918,17 @@
                   ],
                   [
                     {
-                      "text": "Número de teléfono o WhatsApp"
+                      "text": "Número de contacto (WhatsApp)"
                     }
                   ],
                   [
                     {
-                      "text": "Organización y rol (formulario de empresas e instituciones)"
+                      "text": "Nombre de la empresa o institución (si solicitas formación corporativa)"
                     }
                   ],
                   [
                     {
-                      "text": "Mensajes o comentarios que decidas incluir voluntariamente"
+                      "text": "Mensajes adicionales que decidas redactar libremente"
                     }
                   ]
                 ]
@@ -936,37 +936,29 @@
             ]
           },
           {
-            "title": "3. Finalidad del tratamiento",
+            "title": "3. Para qué usamos tus datos",
             "blocks": [
-              {
-                "type": "paragraph",
-                "content": [
-                  {
-                    "text": "Usamos estos datos para:"
-                  }
-                ]
-              },
               {
                 "type": "list",
                 "items": [
                   [
                     {
-                      "text": "Gestionar tu lugar en la lista de espera y notificarte cuándo se abre una cohorte"
+                      "text": "Notificarte cuándo se abren cupos en los programas."
                     }
                   ],
                   [
                     {
-                      "text": "Responder solicitudes de información sobre el programa, Squai Grow o Squai Learn"
+                      "text": "Responder las dudas que nos envías por el formulario."
                     }
                   ],
                   [
                     {
-                      "text": "Coordinar llamadas o reuniones cuando las solicitas a través del formulario de contacto"
+                      "text": "Coordinar llamadas breves de diagnóstico para servicios corporativos."
                     }
                   ],
                   [
                     {
-                      "text": "Enviarte comunicaciones relacionadas con el programa al que te registraste"
+                      "text": "Enviarte novedades relevantes del programa."
                     }
                   ]
                 ]
@@ -975,59 +967,59 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "No utilizamos tus datos con fines distintos a los aquí descritos, ni los vendemos a terceros."
+                    "text": "No vendemos tu información a bases de datos publicitarias ni te enviaremos spam invasivo."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "4. Base para el tratamiento",
+            "title": "4. Por qué podemos contactarte",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Tratamos tus datos con base en el consentimiento que otorgas al completar voluntariamente alguno de nuestros formularios."
+                    "text": "Procesamos tus datos porque nos diste tu autorización voluntaria al completar alguno de los formularios del sitio."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "5. Conservación de los datos",
+            "title": "5. Tiempo de conservación",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Conservamos tus datos mientras exista una relación activa contigo (por ejemplo, mientras estés en lista de espera o inscrito en una cohorte) y durante el tiempo adicional necesario para cumplir obligaciones legales o resolver cualquier consulta relacionada."
+                    "text": "Mantenemos tu información mientras continúe el interés en nuestros programas o hasta que nos pidas eliminarla de la base de datos."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "6. Con quién compartimos tus datos",
+            "title": "6. Proveedores necesarios",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Podemos compartir tus datos con proveedores que nos ayudan a operar el programa (por ejemplo, plataformas de correo electrónico, videoconferencia o gestión de pagos), únicamente en la medida necesaria para prestar el servicio. Estos proveedores están obligados a proteger tu información y no pueden usarla para fines propios."
+                    "text": "Compartimos tus datos únicamente con plataformas que nos ayudan a prestar el servicio (servicios de correo electrónico, salas de videoconferencia y procesadores de pago). Estas plataformas tienen prohibido usar tu información para sus propios fines."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "7. Tus derechos",
+            "title": "7. Tus derechos como usuario",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Puedes solicitarnos en cualquier momento acceder, corregir o eliminar tus datos personales, o retirar tu consentimiento para futuras comunicaciones. Para ejercer estos derechos, escríbenos a "
+                    "text": "Puedes solicitar en cualquier momento la corrección, actualización o eliminación de tus datos escribiéndonos a "
                   },
                   {
                     "text": "team@squai.io",
@@ -1041,39 +1033,39 @@
             ]
           },
           {
-            "title": "8. Seguridad de la información",
+            "title": "8. Seguridad",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Aplicamos medidas técnicas y organizativas razonables para proteger tus datos frente a accesos no autorizados, pérdida o alteración."
+                    "text": "Implementamos medidas de seguridad para evitar que personas no autorizadas accedan a tu información."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "9. Cambios en esta política",
+            "title": "9. Modificaciones",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Podemos actualizar esta Política de Privacidad ocasionalmente. La fecha de \"última actualización\" en la parte superior de esta página indica cuándo entró en vigor la versión más reciente."
+                    "text": "Actualizaremos este texto si cambiamos la forma de procesar la información."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "10. Contacto",
+            "title": "10. Contacto directo",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Si tienes preguntas sobre el tratamiento de tus datos, escríbenos a "
+                    "text": "Para temas de privacidad, escríbenos a "
                   },
                   {
                     "text": "team@squai.io",
