@@ -27,7 +27,7 @@
       },
       {
         "t": "Uso seguro y ético",
-        "d": "Te explicamos qué información puedes compartir, qué no, y cómo cuidar tus datos para sacarle el máximo provecho a la IA sin subir accidentalmente la documentación confidencial de tu empresa.",
+        "d": "Te explicamos qué información puedes compartir, qué no, y cómo cuidar tus datos para sacarle el máximo provecho a la IA. Tus contraseñas no necesitan participar en la conversación.",
         "span": "span-2",
         "tone": "gold"
       }
@@ -162,7 +162,7 @@
     ],
     "impact": {
       "body": [
-        "Queremos que la IA no te abrume, sino que multiplique tus habilidades. No venimos a hacer el trabajo por ti, te enseñamos a potenciar lo que ya sabes hacer usando la IA a tu favor."
+        "No optimizamos, no automatizamos y definitivamente no hacemos el trabajo por ti. Entrenamos a personas, equipos y comunidades para que entiendan y dominen la IA. Te damos las herramientas para que multipliques tus propias habilidades, dejes de pelear con la tecnología y la uses a tu favor, ya sea para planear un viaje, organizar tu día o estructurar un proyecto gigante."
       ]
     },
     "instructors": [
@@ -213,7 +213,12 @@
         "name": "Squai One",
         "audience": "Personas",
         "slogan": "Entiende la IA sin necesidad de un diccionario técnico al lado.",
-        "cardCopy": "Entrenamiento en vivo para quienes quieren dominar la IA con criterio propio, no coleccionar enlaces que nunca van a revisar. Inscríbete en la lista de espera del próximo programa.",
+        "cardCopy": "Un programa en vivo para personas que quieren entender IA, en lugar de guardar tutoriales que nunca vas a ver. Anótate en la lista de espera para asegurar tu lugar en el próximo programa. ",
+        "cta": {
+          "modal": "",
+          "target": "lista",
+          "label": "Reservar mi cupo para aprender IA"
+        },
         "accent": "#8A8EF9",
         "span": "span-3 row-2",
         "tone": "peri",
@@ -281,11 +286,6 @@
             }
           ]
         },
-        "cta": {
-          "modal": "",
-          "target": "lista",
-          "labelKey": "reserve"
-        },
         "faqs": [
           {
             "q": "¿Necesito conocimientos previos de tecnología?",
@@ -331,7 +331,12 @@
         "name": "Squai Grow",
         "audience": "Equipos y organizaciones",
         "slogan": "Que la IA entre a tus procesos sin desordenar lo que ya funciona.",
-        "cardCopy": "Entrenamiento a la medida sobre los procesos que tu equipo ya tiene, no sobre ejemplos genéricos.",
+        "cardCopy": "Entrenamos a tu equipo sobre situaciones, tareas y preguntas que ya forman parte de su contexto, guiados por profesionales que saben la teoría y la usan a diario para resolver problemas en distintas industrias.",
+        "cta": {
+          "modal": "grow",
+          "target": "",
+          "label": "Solicitar una llamada para mi equipo"
+        },
         "accent": "#44D4C8",
         "span": "span-3",
         "tone": "teal",
@@ -399,11 +404,6 @@
             }
           ]
         },
-        "cta": {
-          "modal": "grow",
-          "target": "",
-          "labelKey": "call"
-        },
         "faqs": [
           {
             "q": "¿Desde cuántas personas trabajan con un equipo?",
@@ -444,6 +444,11 @@
         "audience": "Comunidades educativas",
         "slogan": "Preparar a docentes y estudiantes para un aula que ya cambió.",
         "cardCopy": "Formación en IA para colegios, universidades y programas educativos, con criterio y uso responsable.",
+        "cta": {
+          "modal": "learn",
+          "target": "",
+          "label": "Solicitar una llamada para mi institución"
+        },
         "accent": "#F9C24D",
         "span": "span-3",
         "tone": "gold",
@@ -510,11 +515,6 @@
               ]
             }
           ]
-        },
-        "cta": {
-          "modal": "learn",
-          "target": "",
-          "labelKey": "call"
         },
         "faqs": [
           {
@@ -636,7 +636,7 @@
         "scroll": "Seguir bajando"
       },
       "services": {
-        "discover": "Descubrir",
+        "discover": "Conocer el programa",
         "payback": "Qué obtienes",
         "contact": "Cuéntanos dónde están hoy y armamos la propuesta sobre eso."
       },

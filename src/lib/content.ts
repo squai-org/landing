@@ -22,7 +22,6 @@ export async function getSiteContent() {
     impact: { ...data.impact, title: labels.impact },
     services: data.services.map((service) => ({
       ...service,
-      cta: { ...service.cta, label: labels[service.cta.labelKey] },
       challenge: { ...service.challenge, headline: labels.challenge },
       capabilities: { ...service.capabilities, headline: labels.capabilities },
     })),

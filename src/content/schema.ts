@@ -31,7 +31,7 @@ const service = z.object({
   payback: z.object({ headline: text, cards: z.array(card).min(1) }),
   challenge: z.object({ cards: z.array(card).min(1) }),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
-  cta: z.object({ labelKey: z.enum(['reserve', 'call']), modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
+  cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
   faqs: z.array(faq).min(1),
 });
 const modal = z.object({ copy: text, placeholder: text });
