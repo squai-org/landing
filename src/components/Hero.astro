@@ -69,7 +69,6 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
 
 <style>
   .hero {
-    container-type: size;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -89,25 +88,18 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     pointer-events: none;
     user-select: none;
   }
-  /* Position (left/top) stays tied to .hero's WIDTH (cqw) so the anchor
-     corner never drifts off-screen when the hero is unusually tall (a
-     tall/narrow window has a much bigger cqh than cqw). Size (width) is
-     tied to cqmax — the larger of the hero's own width/height — so the
-     shape still reaches meaningfully into the frame on tall, narrow
-     viewports instead of shrinking to a sliver, without growing wide
-     enough on short/wide viewports to reach the headline. */
   .hero-shape-gold {
-    width: 62.64cqmax;
+    width: 884px;
     height: auto;
-    left: -26.15cqw;
-    top: -27.14cqw;
+    left: -369px;
+    top: -383px;
     transform: rotate(-60deg);
   }
   .hero-shape-periwinkle {
-    width: 92.97cqmax;
+    width: 1312px;
     height: auto;
-    left: 85.88cqw;
-    top: -15.16cqw;
+    left: 1212px;
+    top: -214px;
     transform: rotate(-22.64deg);
   }
 
