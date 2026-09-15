@@ -37,9 +37,5 @@
         "period": 60
       }
     }
-  ],
-  "vars": {
-    // "true" permite correos personales (gmail, hotmail...) en /api/contact.
-    "ALLOW_PERSONAL_EMAIL": "false"
-  }
+  ]
 }

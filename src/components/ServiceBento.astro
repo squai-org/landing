@@ -16,8 +16,6 @@ interface Props {
 const { label, title, headline, cards, tones = [], dark = false } = Astro.props;
 ---
 
-<!-- Payback and challenge share one symmetric bento instead of the reference's
-     off-grid treatment. -->
 <section class={`section ${dark ? 'night' : 'tint'}`}>
   <div class="shell">
     {label && <p class="label service-bento-label">{label}</p>}

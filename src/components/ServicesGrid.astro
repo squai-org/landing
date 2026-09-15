@@ -1,38 +1,50 @@
 ---
-import { services } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { services, labels } = await getSiteContent();
 ---
 
 <section id="servicios" class="section tint">
   <div class="shell">
-    <h2 class="display d-h1 services-title">Servicios</h2>
+    <h2 class="display d-h1 services-title">{labels.services}</h2>
+  </div>
 
-    <div class="bento services-grid">
-      {
-        services.map((s) => (
-          <a href={`/servicios/${s.slug}`} class={`bento-card card-link service-card ${s.span} ${s.tone}`}>
-            <div class="service-card-copy">
-              <span class="service-eyebrow">
-                <span class="service-eyebrow-dot" style={`background:${s.accent}`}></span>
-                <span class="service-eyebrow-text">{s.audience}</span>
-              </span>
-              <p class="body service-summary">{s.cardCopy}</p>
-            </div>
-            <div class={`service-card-footer${s.slug === 'squai-one' ? ' service-title-rise' : ''}`}>
-              <h3 class="display d-h1">{s.name}</h3>
-              <span class="btn btn-dark discover" aria-hidden="true">
-                <span class="btn-label">Descubrir</span>
-              </span>
-            </div>
-          </a>
-        ))
-      }
-    </div>
+  <!-- Direct child of .section, not .shell: the row reaches the section's
+       own edge (same edge the Impact section's background bleeds to)
+       instead of stopping at the shell's 1200px cap like the title above. -->
+  <div class="bento services-grid">
+    {
+      services.map((s) => (
+        <a href={`/servicios/${s.slug}`} class={`bento-card card-link service-card ${s.span} ${s.tone}`}>
+          <div class="service-card-copy">
+            <span class="service-eyebrow">
+              <span class="service-eyebrow-dot" style={`background:${s.accent}`}></span>
+              <span class="service-eyebrow-text">{s.audience}</span>
+            </span>
+            <p class="body service-summary">{s.cardCopy}</p>
+          </div>
+          <div class={`service-card-footer${s.slug === 'squai-one' ? ' service-title-rise' : ''}`}>
+            <h3 class="display d-h1">{s.name}</h3>
+            <span class="btn btn-dark discover" aria-hidden="true">
+              <span class="btn-label">{s.discoverLabel}</span>
+            </span>
+          </div>
+        </a>
+      ))
+    }
   </div>
 </section>
 
 <style>
   .services-title { color: var(--ink); }
-  .services-grid { margin-top: clamp(36px, 4vw, 64px); }
+  /* .services-grid is a direct child of .section now (not .shell), so it's
+     still inset by .section's own side padding. Cancel that padding so
+     Squai One's left edge and Grow/Learn's right edge reach the same edge
+     the Impact section's background bleeds to — .section's padding value
+     copied verbatim from global.css so the two stay in lockstep. */
+  .services-grid {
+    margin-top: clamp(36px, 4vw, 64px);
+    margin-inline: calc(-1 * clamp(20px, 4vw, 64px));
+  }
   .service-card { justify-content: space-between; gap: clamp(24px, 3vw, 48px); }
   .service-card-copy { display: flex; flex-direction: column; gap: 16px; }
   .service-summary { max-width: 44ch; }

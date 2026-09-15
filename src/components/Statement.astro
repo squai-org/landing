@@ -1,5 +1,6 @@
 ---
-import { statement } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { statement } = await getSiteContent();
 ---
 
 <section id="statement" class="section statement-section">

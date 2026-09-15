@@ -1,13 +1,14 @@
 ---
 import Button from './Button.astro';
-import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSiteContent();
 ---
 
 <!--
   Night hero. Always the same inset on every side until the visitor scrolls,
   so it reads as one full panel on any device. No imagery (Brand Book §14.6).
 -->
-<section class="hero" data-hero>
+<section class="hero" data-hero data-hero-copy={JSON.stringify({ verbs: heroVerbs, ...ui.hero })}>
   <img class="brand-shape hero-shape hero-shape-gold" src="/images/shape-hero-gold.svg" alt="" aria-hidden="true" />
   <img class="brand-shape hero-shape hero-shape-periwinkle" src="/images/shape-hero-periwinkle.svg" alt="" aria-hidden="true" />
 
@@ -17,9 +18,9 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
         type="button"
         class="hero-animation-toggle"
         data-hero-animation-toggle
-        aria-label="Pausar palabras animadas"
+        aria-label={ui.hero.pause}
         aria-pressed="false"
-        title="Pausar palabras animadas"
+        title={ui.hero.pause}
       >
         <svg class="hero-animation-icon hero-animation-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M7 5h3v14H7V5Zm7 0h3v14h-3V5Z" />
@@ -52,8 +53,8 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     <p class="hero-subtitle">{heroSubtitle}</p>
 
     <div class="hero-actions">
-      <Button variant="primary" href="/servicios/squai-one#lista">Unirme a la lista de espera</Button>
-      <Button variant="white" href="/#servicios" data-scroll-to="servicios">Ver servicios</Button>
+      <Button variant="primary" href="/servicios/squai-one#lista">{labels.reserve}</Button>
+      <Button variant="white" href="/#servicios" data-scroll-to="servicios">{ui.hero.services}</Button>
     </div>
 
   </div>
@@ -62,7 +63,7 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     <span class="scroll-mouse" aria-hidden="true">
       <span class="scroll-wheel"></span>
     </span>
-    <span class="scroll-label">Seguir bajando</span>
+    <span class="scroll-label">{ui.hero.scroll}</span>
   </button>
 </section>
 
@@ -87,6 +88,9 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     pointer-events: none;
     user-select: none;
   }
+  /* Gold is anchored to the hero's top-left corner (origin 0,0) — a fixed
+     left/top offset from a corner never moves regardless of .hero's own
+     size, so it was never actually the broken one. */
   .hero-shape-gold {
     width: 884px;
     height: auto;
@@ -94,10 +98,18 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     top: -383px;
     transform: rotate(-60deg);
   }
+  /* Periwinkle used to anchor via `left` (measured from the LEFT edge),
+     even though it visually hugs the RIGHT corner. That offset was tuned
+     for one specific .hero width, so on any other width the shape's
+     position drifted relative to the corner it's meant to sit in —
+     shrinking to a sliver on narrow viewports, since less of it landed
+     inside the visible (overflow: hidden) area. Anchoring via `right`
+     instead pins it to that corner at a fixed offset, exactly like gold,
+     with the same size/shape/rotation as before. */
   .hero-shape-periwinkle {
     width: 1312px;
     height: auto;
-    left: 1212px;
+    right: -659px;
     top: -214px;
     transform: rotate(-22.64deg);
   }
@@ -175,6 +187,12 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
   .hero-line-last { color: #F4F6FF; }
 
   .hero-animated-word { white-space: nowrap; }
+
+  /* Subtle lift off the background, not a design accent: the animated
+     verb sits over .hero-shape-gold, which can slip underneath it at
+     some widths, so it stays legible against whichever color it lands
+     on (word color changes per verb) without looking like a glow. */
+  .hero-verb { text-shadow: 0 1px 3px rgba(10, 12, 26, .35); }
 
   /* The verb is typed in and out rather than cross-faded. */
   .hero-caret {
@@ -317,6 +335,15 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
     .hero-line-mid { font-size: clamp(42px, calc(11.5vw - 4px), 92px); }
   }
 
+  /* Both shapes are a fixed size (not meant to scale). Below ~1150px of
+     hero width, .hero-shape-periwinkle no longer clears the headline —
+     hide the hero's own shapes a bit earlier than the shared brand-shape
+     cutoff (1023px, global.css) used by every other section, whose
+     shapes scale with their container and don't have this problem. */
+  @media (max-width: 1200px) {
+    .hero-shape { display: none; }
+  }
+
   @media (max-width: 640px) {
     .hero { --nav-space: 84px; }
     /* Lift the headline further so it outweighs the actions under it. */
@@ -334,7 +361,9 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
 </style>
 
 <script>
-  import { heroVerbs } from '../data/landing';
+  import type { HeroClientCopy } from '../lib/content';
+  const heroCopy: HeroClientCopy = JSON.parse(document.querySelector<HTMLElement>('[data-hero-copy]')!.dataset.heroCopy!);
+  const heroVerbs = heroCopy.verbs;
 
   const verb = document.querySelector<HTMLElement>('[data-hero-verb]');
   const hero = document.querySelector<HTMLElement>('[data-hero]');
@@ -355,7 +384,7 @@ import { cohort, heroLines, heroSubtitle, heroVerbs } from '../data/landing';
       toggle?.addEventListener('click', () => {
         paused = !paused;
         toggle.setAttribute('aria-pressed', String(paused));
-        const label = paused ? 'Reanudar palabras animadas' : 'Pausar palabras animadas';
+        const label = paused ? heroCopy.resume : heroCopy.pause;
         toggle.setAttribute('aria-label', label);
         toggle.title = label;
         hero?.classList.toggle('animation-paused', paused);

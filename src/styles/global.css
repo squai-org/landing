@@ -254,6 +254,7 @@ a:hover { color: var(--periwinkle-dark); }
 .span-4 { grid-column: span 4; }
 .span-6 { grid-column: span 6; }
 .row-2 { grid-row: span 2; }
+.row-3 { grid-row: span 3; }
 
 .card-link { transition: transform .25s, box-shadow .25s; text-decoration: none; }
 .card-link:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
@@ -386,7 +387,7 @@ a.bento-card.dark:hover { color: var(--night-text); }
   gap: 14px;
 }
 .field-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.field-grid-phone { grid-template-columns: 110px minmax(0, 1fr); margin-top: 14px; }
+.field-grid-phone { grid-template-columns: 136px minmax(0, 1fr); margin-top: 14px; }
 .field-group { display: flex; min-width: 0; flex-direction: column; gap: 7px; }
 .field-group-spaced { margin-top: 14px; }
 .field-label {
@@ -556,6 +557,7 @@ textarea.field { min-height: 120px; resize: vertical; }
   .span-4 { grid-column: span 4; }
   .span-6 { grid-column: span 4; }
   .row-2 { grid-row: auto; }
+  .row-3 { grid-row: auto; }
 }
 
 @media (max-width: 900px) {
@@ -577,5 +579,5 @@ textarea.field { min-height: 120px; resize: vertical; }
   .hero-actions .btn { width: auto; }
 
   .field-grid-2 { grid-template-columns: 1fr; }
-  .field-grid-phone { grid-template-columns: 84px minmax(0, 1fr); }
+  .field-grid-phone { grid-template-columns: 108px minmax(0, 1fr); }
 }

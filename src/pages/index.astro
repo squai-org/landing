@@ -10,14 +10,16 @@ import Origin from '../components/Origin.astro';
 import Team from '../components/Team.astro';
 import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
-import Follow from '../components/Follow.astro';
 import Footer from '../components/Footer.astro';
 import ContactModal from '../components/ContactModal.astro';
-import { faqs } from '../data/landing';
-import { homeGraph, homeSeo } from '../data/seo';
+import { getSiteContent } from '../lib/content';
+import { homeGraph } from '../lib/seo';
+
+const content = await getSiteContent();
+const { faqs, seo } = content;
 ---
 
-<Layout title={homeSeo.title} description={homeSeo.description} schemas={homeGraph()}>
+<Layout title={seo.title} description={seo.description} schemas={homeGraph(content)}>
   <div class="page-frame">
     <Header />
 
@@ -33,7 +35,6 @@ import { homeGraph, homeSeo } from '../data/seo';
         <Team />
         <Faq items={faqs} />
         <FinalCta />
-        <Follow />
       </div>
     </main>
 

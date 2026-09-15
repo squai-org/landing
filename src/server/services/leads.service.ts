@@ -1,4 +1,3 @@
-import { isPersonalEmail } from '../lib/email';
 import { badRequest, forbidden } from '../lib/http';
 import { normalizePhone } from '../lib/phone';
 import { verifyTurnstileToken } from '../lib/turnstile';
@@ -47,8 +46,6 @@ const requirePhone = (countryCode: string, phone: string) => {
   return normalized;
 };
 
-const allowsPersonalEmail = (env: Env) => env.ALLOW_PERSONAL_EMAIL === 'true';
-
 export const submitWaitlist = async (
   env: Env,
   input: WaitlistInput,
@@ -76,13 +73,6 @@ export const submitContactRequest = async (
   meta: RequestMeta
 ): Promise<number> => {
   await assertHuman(env, input['cf-turnstile-response'], meta);
-
-  // El modal pide explícitamente "Correo corporativo".
-  if (!allowsPersonalEmail(env) && isPersonalEmail(input.email)) {
-    throw badRequest('personal_email_rejected', 'Revisa los campos del formulario.', {
-      email: 'Usa tu correo corporativo o institucional.',
-    });
-  }
 
   const phone = requirePhone(input.country_code, input.phone);
 

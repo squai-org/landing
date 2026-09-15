@@ -7,26 +7,32 @@
    tienen que decidir qué páginas leer sin gastar contexto en el HTML entero.
    https://llmstxt.org/
 
-   Se genera desde src/data/landing.ts, así que no se desincroniza de la página.
+   Se genera desde src/content/copies.json, así que no se desincroniza de la
+   página: si cambian las copias, cambia este archivo en el siguiente build.
 --------------------------------------------------------------------------- */
 
 import type { APIRoute } from 'astro';
 
-import { cohort, faqs, services } from '../data/landing';
-import { CONTACT_EMAIL, SITE_URL } from '../data/seo';
+import { getSiteContent } from '../lib/content';
+import { CONTACT_EMAIL, SITE_URL } from '../lib/seo';
 
-export const GET: APIRoute = () => {
+export const GET: APIRoute = async () => {
+  const { cohort, faqs, legal, seo, services } = await getSiteContent();
+
   const serviceLines = services
-    .map((service) => `- [${service.name} — ${service.audience}](${SITE_URL}/servicios/${service.slug}): ${service.slogan} ${service.cardCopy}`)
+    .map(
+      (service) =>
+        `- [${service.name} — ${service.audience}](${SITE_URL}/servicios/${service.slug}): ${service.slogan} ${service.cardCopy}`
+    )
     .join('\n');
 
-  const faqLines = faqs.map((faq) => `- **${faq.q}** ${faq.a}`).join('\n');
+  const faqLines = faqs.map((faq) => `- **${faq.q}** ${faq.a.join(' ')}`).join('\n');
 
   const body = `# Squai
 
-> Squai enseña inteligencia artificial a personas, equipos y comunidades educativas que no vienen del mundo técnico. Formación en vivo, en español, que empieza por entender cómo funciona un modelo y sigue con casos reales de quien aprende.
+> ${seo.description}
 
-Squai trabaja en español con Latinoamérica. Las sesiones en vivo se coordinan en hora Colombia. Las cohortes abiertas son 100% virtuales y con grabaciones; con equipos e instituciones el trabajo puede ser virtual o presencial.
+Squai trabaja en español con toda Latinoamérica.
 
 ## Servicios
 
@@ -34,13 +40,17 @@ ${serviceLines}
 
 ## Programa con lista de espera
 
-- **${cohort.name}** (${cohort.ecosystem}): ${cohort.duration}. ${cohort.schedule}. ${cohort.modality}. Estado: ${cohort.status.toLowerCase()} — ${cohort.seats.toLowerCase()}.
+**${cohort.name}** (${cohort.ecosystem}) — ${cohort.status}.
+
+- ${cohort.duration}
+- ${cohort.schedule}
+- ${cohort.modality}
 
 ## Páginas
 
 - [Inicio](${SITE_URL}/): qué hace Squai, servicios, equipo y preguntas frecuentes.
-- [Términos de Servicio](${SITE_URL}/terminos-de-servicio)
-- [Política de Privacidad](${SITE_URL}/politica-de-privacidad)
+- [${legal.terms.title.split('|')[0].trim()}](${SITE_URL}/terminos-de-servicio)
+- [${legal.privacy.title.split('|')[0].trim()}](${SITE_URL}/politica-de-privacidad)
 
 ## Preguntas frecuentes
 

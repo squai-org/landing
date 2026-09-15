@@ -43,19 +43,78 @@ public/
 scripts/            generate-og.mjs + el lockup vectorial del que sale la imagen
 src/
   components/       Cada sección de la página + Logo, Badge, Turnstile y Seo
-  data/landing.ts   Todos los textos, listas y rutas de la API
-  data/seo.ts       Dominio canónico, metadatos por página y JSON-LD
+  config/           Configuración de runtime (endpoints de la API)
+  content/          Contenido editorial: copies.json + schema.ts (contrato Zod)
+  content.config.ts Colección `copies` del Content Layer (loader `file`)
+  lib/content.ts    getSiteContent(): único punto de acceso al contenido
+  lib/seo.ts        Dominio canónico, URL canónica y constructores de JSON-LD
   layouts/          Layout base (head, meta, fuentes) y el script de los forms
   pages/index.astro Composición de la página y scripts de interacción
-  pages/llms.txt.ts /llms.txt generado desde landing.ts
+  pages/llms.txt.ts /llms.txt generado desde el contenido
   styles/global.css @font-face, tokens de diseño y estados hover/focus
   server/           Backend del Worker (ver abajo)
 test/server/        Tests de la API contra un D1 local
 docs/               Runbook de configuración en Cloudflare
 ```
 
-Los textos viven en `src/data/landing.ts`; el resto de las copias están inline
-en el componente de su sección.
+## Contenido
+
+Todos los textos viven en `src/content/copies.json` y se cargan con el Content
+Layer de Astro (`src/content.config.ts`). Los componentes nunca leen el JSON
+directo: usan `getSiteContent()` de `src/lib/content.ts`.
+
+- `src/content/schema.ts` es el contrato editorial. Se valida en build: si falta
+  un campo o un link es inválido, el build falla.
+- Para migrar a un CMS basta cambiar el `loader` de la colección; el schema y los
+  componentes no cambian.
+- Los campos de texto largo (`statement.body`, `whatWeDo.body`, `impact.body`,
+  `originStory`, `faqs[].a`, `ui.team.intro`, `ui.finalCta.body`, `ui.follow.copy`,
+  `ui.waitlist.copy`) aceptan una lista de párrafos o un string donde una línea
+  en blanco separa párrafos. Cada párrafo se renderiza como su propio `<p>`.
+- Rutas de la API y otra configuración de runtime van en `src/config/`, no en el
+  contenido.
+
+## SEO
+
+Las copias de buscador viven con el resto del contenido (`src/content/copies.json`):
+`seo.title` y `seo.description` para la home, `seo.serviceTitle` como plantilla y
+`seoTitle` / `seoDescription` por servicio. La mecánica está en `src/lib/seo.ts`
+(dominio canónico y constructores de JSON-LD) y en `src/components/Seo.astro`
+(las etiquetas del `<head>`).
+
+| Pieza | Dónde | Qué hace |
+| :---- | :---- | :------- |
+| Canónicas | `src/components/Seo.astro` | Una URL por página, sin `.html` ni barra final, idéntica a la del sitemap |
+| Open Graph / Twitter | `src/components/Seo.astro` | Tarjeta con imagen 1200x630 al compartir el enlace |
+| `robots` meta | `src/components/Seo.astro` | `max-snippet:-1` y `max-image-preview:large`: sin límite a lo que se puede citar |
+| JSON-LD | `src/lib/seo.ts` | Un `@graph` por página: Organization, WebSite, WebPage, Course/Service, FAQPage, BreadcrumbList |
+| Sitemap | `@astrojs/sitemap` | `/sitemap-index.xml`, generado en cada build |
+| `robots.txt` | `public/robots.txt` | Permite explícitamente a los buscadores clásicos y a los bots de IA |
+| `/llms.txt` | `src/pages/llms.txt.ts` | Resumen del sitio en Markdown para agentes y asistentes |
+
+Reglas para mantenerlo:
+
+- **Nada de datos sin verificar en JSON-LD.** No hay precios, fechas de cohorte
+  ni direcciones porque el contenido no las declara. `sameAs` aparece solo
+  cuando `socials[].href` deje de estar vacío.
+- El dominio está en dos lugares y tienen que coincidir: `site` en
+  `astro.config.mjs` y `SITE_URL` en `src/lib/seo.ts`.
+- Al añadir una página nueva, pásale `title`, `description` y `schemas` al
+  layout; el sitemap la recoge sola.
+- Después de tocar el logo, `pnpm og` regenera `public/og/*` y el
+  `apple-touch-icon.png`.
+
+Los sitelinks (el bloque de subenlaces bajo el resultado de una marca) no se
+marcan: Google los genera solo a partir de la estructura del sitio y de los
+enlaces internos. Lo que sí está bajo nuestro control ya está hecho: títulos
+únicos por página, `BreadcrumbList`, navegación y footer con enlaces de texto
+estables, y sitemap.
+
+Comprobaciones tras cada despliegue: [Rich Results
+Test](https://search.google.com/test/rich-results),
+[Schema Markup Validator](https://validator.schema.org/),
+[PageSpeed Insights](https://pagespeed.web.dev/) y el informe de cobertura de
+Search Console.
 
 ## Backend
 
@@ -65,10 +124,10 @@ src/server/
   types.ts          Env (bindings) y tipos del contexto
   routes/           Un archivo por endpoint, handlers inline
   schemas/          Validación con Zod de cada formulario
-  services/         Reglas de negocio: Turnstile, correo corporativo, teléfono
+  services/         Reglas de negocio: Turnstile y teléfono
   repositories/     Única capa que habla con D1, siempre con prepared statements
   middleware/       Errores JSON, guard de mismo origen, Content-Type, cabeceras
-  lib/              Utilidades puras: E.164, dominios de correo, siteverify
+  lib/              Utilidades puras: normalización, E.164 y siteverify
 ```
 
 Dependencia en un solo sentido: `routes → services → repositories → D1`. No hay
@@ -95,8 +154,8 @@ donde `fields` mapea campo → mensaje para pintarlo en el formulario.
   Worker. Sin `TURNSTILE_SECRET_KEY` la verificación se omite con un warning.
 - **Inyección SQL**: todas las consultas son prepared statements con `.bind()`.
 - **Validación**: Zod en el edge; normaliza nombre, correo (minúsculas) y
-  teléfono a E.164, y rechaza correos personales en `/api/contact` salvo que
-  `ALLOW_PERSONAL_EMAIL` sea `"true"`.
+  teléfono a E.164. Los formularios aceptan cualquier proveedor de correo
+  siempre que la dirección tenga un formato válido.
 - **Origen**: la API no emite cabeceras CORS y rechaza cualquier `Origin`
   distinto al host de la petición.
 - **Rate limiting**: 5 peticiones por minuto y por IP con el binding nativo de
@@ -109,37 +168,3 @@ donde `fields` mapea campo → mensaje para pintarlo en el formulario.
 Paso a paso en [`docs/cloudflare-setup.md`](docs/cloudflare-setup.md): crear D1,
 aplicar migraciones, widget de Turnstile, secrets, deploy, dominio y regla de
 rate limiting.
-
-## SEO
-
-Todo lo que afecta a indexación vive en tres sitios: `src/data/seo.ts` (dominio
-canónico, títulos, descripciones y constructores de JSON-LD),
-`src/components/Seo.astro` (las etiquetas del `<head>`) y `public/robots.txt`.
-
-| Pieza | Dónde | Qué hace |
-| :---- | :---- | :------- |
-| Canónicas | `src/components/Seo.astro` | Una URL por página, sin `.html` ni barra final, idéntica a la del sitemap |
-| Open Graph / Twitter | `src/components/Seo.astro` | Tarjeta con imagen 1200x630 al compartir el enlace |
-| `robots` meta | `src/components/Seo.astro` | `max-snippet:-1` y `max-image-preview:large`: sin límite a lo que se puede citar |
-| JSON-LD | `src/data/seo.ts` | Un `@graph` por página: Organization, WebSite, WebPage, Course/Service, FAQPage, BreadcrumbList |
-| Sitemap | `@astrojs/sitemap` | `/sitemap-index.xml`, generado en cada build |
-| `robots.txt` | `public/robots.txt` | Permite explícitamente a los buscadores clásicos y a los bots de IA |
-| `/llms.txt` | `src/pages/llms.txt.ts` | Resumen del sitio en Markdown para agentes y asistentes |
-
-Reglas para mantenerlo:
-
-- **Nada de datos sin verificar en JSON-LD.** No hay precios, fechas de cohorte,
-  direcciones ni perfiles sociales porque el sitio todavía no los declara.
-  Cuando existan, se añaden a `landing.ts` y desde ahí al schema.
-- El dominio está en dos lugares y tienen que coincidir: `site` en
-  `astro.config.mjs` y `SITE_URL` en `src/data/seo.ts`.
-- Al añadir una página nueva, pásale `title`, `description` y `schemas` al
-  layout; el sitemap la recoge sola.
-- Después de tocar el logo, `pnpm og` regenera `public/og/*` y el
-  `apple-touch-icon.png`.
-
-Comprobaciones tras cada despliegue: [Rich Results
-Test](https://search.google.com/test/rich-results),
-[Schema Markup Validator](https://validator.schema.org/),
-[PageSpeed Insights](https://pagespeed.web.dev/) y el informe de cobertura de
-Search Console.

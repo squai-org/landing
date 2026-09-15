@@ -1,7 +1,11 @@
 ---
 import Button from './Button.astro';
-import { endpoints } from '../data/landing';
+import CountryCodeSelect from './CountryCodeSelect.astro';
+import { endpoints } from '../config/endpoints';
+import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
+
+const { ui, labels } = await getSiteContent();
 ---
 
 <div
@@ -16,7 +20,7 @@ import Turnstile from './Turnstile.astro';
     <button
       type="button"
       data-close-modal
-      aria-label="Cerrar"
+      aria-label={ui.contact.close}
       class="modal-close"
       >×</button
     >
@@ -27,78 +31,71 @@ import Turnstile from './Turnstile.astro';
       novalidate
       class="card-pad-lg modal-panel-form"
     >
-      <h2 id="modal-title" class="modal-title">
-        Solicita una llamada
+      <h2 id="modal-title" data-modal-title class="modal-title">
+        {ui.contact.title}
       </h2>
       <p data-modal-copy class="modal-copy">
-        Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.
+        {ui.modal.grow.copy}
       </p>
-      <p id="contact-required" class="form-instructions"><span aria-hidden="true">*</span> Campos obligatorios.</p>
+      <p id="contact-required" class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
 
       <div class="field-grid-2">
         <label class="field-group" for="contact-full-name">
-          <span class="field-label">Nombre completo <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
           <input id="contact-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="contact-full-name-error" />
           <span id="contact-full-name-error" class="field-error" data-field-error="full_name"></span>
         </label>
         <label class="field-group" for="contact-email">
-          <span class="field-label">Correo corporativo <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
           <input id="contact-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="contact-email-error" />
           <span id="contact-email-error" class="field-error" data-field-error="email"></span>
         </label>
         <label class="field-group" for="contact-organization">
-          <span class="field-label">Organización <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.organization} <span aria-hidden="true">*</span></span>
           <input id="contact-organization" type="text" name="organization" required autocomplete="organization" class="field" aria-describedby="contact-organization-error" />
           <span id="contact-organization-error" class="field-error" data-field-error="organization"></span>
         </label>
         <label class="field-group" for="contact-role">
-          <span class="field-label">Tu rol</span>
+          <span class="field-label">{ui.forms.role}</span>
           <input id="contact-role" type="text" name="role" autocomplete="organization-title" class="field" aria-describedby="contact-role-error" />
           <span id="contact-role-error" class="field-error" data-field-error="role"></span>
         </label>
       </div>
       <div class="field-grid-phone">
-        <label class="field-group" for="contact-country-code">
-          <span class="field-label">Indicativo <span aria-hidden="true">*</span></span>
-          <input id="contact-country-code" type="text" name="country_code" required value="+57" autocomplete="tel-country-code" inputmode="tel" class="field" aria-describedby="contact-country-code-error" />
-          <span id="contact-country-code-error" class="field-error" data-field-error="country_code"></span>
-        </label>
+        <CountryCodeSelect idPrefix="contact" label={ui.forms.countryCode} />
         <label class="field-group" for="contact-phone">
-          <span class="field-label">WhatsApp <span aria-hidden="true">*</span></span>
+          <span class="field-label">{ui.forms.whatsapp} <span aria-hidden="true">*</span></span>
           <input id="contact-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="contact-phone-error" />
           <span id="contact-phone-error" class="field-error" data-field-error="phone"></span>
         </label>
       </div>
       <label class="field-group field-group-spaced" for="contact-team-size">
-        <span class="field-label">Personas que se formarían <span aria-hidden="true">*</span></span>
+        <span class="field-label">{ui.forms.teamSize} <span aria-hidden="true">*</span></span>
         <select id="contact-team-size" name="team_size" class="field select-field" required aria-describedby="contact-team-size-error">
-          <option value="" disabled selected>Selecciona una opción</option>
-          <option value="menos-10">Menos de 10</option>
-          <option value="10-30">Entre 10 y 30</option>
-          <option value="30-100">Entre 30 y 100</option>
-          <option value="mas-100">Más de 100</option>
+          <option value="" disabled selected>{ui.forms.select}</option>
+          {ui.forms.teamSizes.map((option) => <option value={option.value}>{option.label}</option>)}
         </select>
         <span id="contact-team-size-error" class="field-error" data-field-error="team_size"></span>
       </label>
       <label class="field-group field-group-spaced" for="contact-message">
-        <span class="field-label">Mensaje <span class="field-optional">(opcional)</span></span>
+        <span class="field-label">{ui.forms.message} <span class="field-optional">{ui.forms.optional}</span></span>
         <textarea
           id="contact-message"
           rows="4"
           name="message"
           data-modal-textarea
-          placeholder="¿En qué procesos crees que la IA puede ayudar?"
+          placeholder={ui.modal.grow.placeholder}
           class="field"
           aria-describedby="contact-message-error"></textarea>
         <span id="contact-message-error" class="field-error" data-field-error="message"></span>
       </label>
       <div class="form-submit">
-        <Button variant="primary" type="submit" block>Solicitar una llamada</Button>
+        <Button variant="primary" type="submit" block>{labels.call}</Button>
+      </div>
+      <div class="form-status" data-form-status role="status" aria-live="polite">
+        {ui.contact.responseTime}
       </div>
       <Turnstile action="contact" />
-      <div class="form-status" data-form-status role="status" aria-live="polite">
-        Respondemos en menos de 24 horas hábiles.
-      </div>
     </form>
   </div>
 </div>

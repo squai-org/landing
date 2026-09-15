@@ -7,11 +7,10 @@ import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
 import Waitlist from '../../components/Waitlist.astro';
 import Faq from '../../components/Faq.astro';
-import Follow from '../../components/Follow.astro';
 import Footer from '../../components/Footer.astro';
 import ContactModal from '../../components/ContactModal.astro';
 import Button from '../../components/Button.astro';
-import { services } from '../../data/landing';
+import { getSiteContent } from '../../lib/content';
 import {
   absoluteUrl,
   breadcrumbSchema,
@@ -22,22 +21,26 @@ import {
   serviceSeo,
   webPageSchema,
   websiteSchema,
-} from '../../data/seo';
+} from '../../lib/seo';
 
-export function getStaticPaths() {
+const content = await getSiteContent();
+
+export async function getStaticPaths() {
+  const { services } = await getSiteContent();
   return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
 }
 
 const { service } = Astro.props;
 
 const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
-const seo = serviceSeo[service.slug] ?? { title: `${service.name} — Squai`, description: service.slogan };
+const seo = serviceSeo(service, content.seo.serviceTitle);
 
 /* Squai One es un curso con cohorte; Grow y Learn son servicios a organizaciones. */
-const offering = service.slug === 'squai-one' ? courseSchema(pageUrl) : serviceSchema(service, pageUrl);
+const offering =
+  service.slug === 'squai-one' ? courseSchema(content, service, pageUrl) : serviceSchema(service, pageUrl);
 
 const schemas = [
-  organizationSchema(),
+  organizationSchema(content),
   websiteSchema(),
   webPageSchema({ url: pageUrl, title: seo.title, description: seo.description }),
   breadcrumbSchema([
@@ -59,7 +62,7 @@ const schemas = [
 
   <div class="content-shell content-shell-spaced">
 
-  <ServicePayback headline={service.payback.headline} cards={service.payback.cards} cta={service.cta} />
+  <ServicePayback headline={service.payback.headline} body={service.payback.body} cta={service.cta} />
 
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 
@@ -70,7 +73,7 @@ const schemas = [
       <section class="section tint">
         <div class="shell service-contact-shell">
           <h2 class="display d-h2 service-contact-title">
-            Cuéntanos dónde están hoy y armamos la propuesta sobre eso.
+            {service.contactCopy}
           </h2>
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.cta.label}</Button>
         </div>
@@ -81,7 +84,6 @@ const schemas = [
   }
 
   <Faq items={service.faqs} />
-  <Follow />
   </div>
   </main>
 

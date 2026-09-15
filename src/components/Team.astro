@@ -1,12 +1,14 @@
 ---
-import { instructors, squadGrid } from '../data/landing';
 import { getImage } from 'astro:assets';
+import { getSiteContent } from '../lib/content';
 import team1 from '../assets/team1.webp';
 import team2 from '../assets/team2.webp';
 import team3 from '../assets/team3.webp';
 import team4 from '../assets/team4.webp';
 import team5 from '../assets/team5.webp';
 import team6 from '../assets/team6.webp';
+
+const { instructors, squadGrid, ui, labels } = await getSiteContent();
 
 const teamImages = {
   '/images/team1.webp': team1,
@@ -48,12 +50,15 @@ const responsiveTeamImages: Record<string, TeamPhoto> = Object.fromEntries(
   )
 );
 
+/* Paths outside the local asset map (e.g. a CMS URL) render as-is, without responsive variants. */
+const photoFor = (img: string): Partial<TeamPhoto> => responsiveTeamImages[img] ?? { src: img };
+
 const members = [
   ...instructors.map((member) => ({
     img: member.img,
     name: member.name,
     role: member.role,
-    description: '',
+    description: member.d,
   })),
   ...squadGrid.map((member) => ({
     img: member.img,
@@ -69,11 +74,10 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
 <section id="equipo" class="section tint team-section">
   <div class="team-shell">
     <div class="team-heading">
-      <h2 class="display d-h1 team-title">Equipo</h2>
-      <p class="lead team-intro">
-        Los mismos que dan las clases en vivo y responden en la comunidad, con un equipo detrás que mira el tema desde
-        procesos, talento, datos y seguridad.
-      </p>
+      <h2 class="display d-h1 team-title">{labels.team}</h2>
+      <div class="team-intro">
+        {ui.team.intro.map((paragraph) => <p class="lead">{paragraph}</p>)}
+      </div>
     </div>
 
     <div class="team-list">
@@ -84,12 +88,12 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
               <article class="team-member">
                 <div class="team-photo-frame">
                   <img
-                    src={responsiveTeamImages[member.img].src}
-                    srcset={responsiveTeamImages[member.img].srcset}
+                    src={photoFor(member.img).src}
+                    srcset={photoFor(member.img).srcset}
                     alt={`${member.name}, ${member.role} en Squai`}
                     sizes="(max-width: 640px) min(42vw, 184px), clamp(264px, 24vw, 336px)"
-                    width={responsiveTeamImages[member.img].width}
-                    height={responsiveTeamImages[member.img].height}
+                    width={photoFor(member.img).width}
+                    height={photoFor(member.img).height}
                     loading="lazy"
                     decoding="async"
                     class="team-photo"
@@ -133,6 +137,7 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
     margin: clamp(20px, 2vw, 32px) 0 0;
     color: var(--ink);
   }
+  .team-intro p + p { margin-top: 12px; }
 
   .team-list {
     display: grid;
@@ -241,12 +246,19 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
       grid-template-columns: minmax(0, 1fr);
       column-gap: 0;
       row-gap: 18px;
-      align-items: start;
+      align-items: center;
+      justify-items: center;
       padding: 0;
+      text-align: center;
     }
 
     .team-photo-frame {
       width: var(--photo-col);
+      margin-inline: auto;
+    }
+
+    .team-member-copy {
+      align-items: center;
     }
 
     .team-member-name {

@@ -1,8 +1,9 @@
 ---
 import Layout from './Layout.astro';
+import { getSiteContent } from '../lib/content';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { absoluteUrl, breadcrumbSchema, canonicalPath, organizationSchema, webPageSchema, websiteSchema } from '../data/seo';
+import { absoluteUrl, breadcrumbSchema, canonicalPath, organizationSchema, webPageSchema, websiteSchema } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -12,6 +13,8 @@ interface Props {
 }
 
 const { title, description, pageTitle, updated } = Astro.props;
+const content = await getSiteContent();
+const { ui } = content;
 
 /* Las páginas legales se indexan: son señal de confianza (E-E-A-T) y las citan
    los buscadores con IA cuando alguien pregunta cómo se tratan sus datos.
@@ -19,7 +22,7 @@ const { title, description, pageTitle, updated } = Astro.props;
 const path = canonicalPath(Astro.url.pathname);
 const pageUrl = absoluteUrl(path);
 const schemas = [
-  organizationSchema(),
+  organizationSchema(content),
   websiteSchema(),
   webPageSchema({ url: pageUrl, title, description }),
   breadcrumbSchema([
@@ -37,7 +40,7 @@ const schemas = [
       <h1 class="h2-title legal-title">
         {pageTitle}
       </h1>
-      <p class="legal-updated">Última actualización: {updated}</p>
+      <p class="legal-updated">{ui.updated} {updated}</p>
 
       <div class="legal-card">
         <slot />

@@ -1,5 +1,6 @@
 ---
-import { impact } from '../data/landing';
+import { getSiteContent } from '../lib/content';
+const { impact } = await getSiteContent();
 ---
 
 <section id="impacto" class="section night impact-section">
@@ -7,7 +8,7 @@ import { impact } from '../data/landing';
   <div class="shell impact-row">
     <h2 class="display d-h1 impact-title">{impact.title}</h2>
     <div class="impact-copy-column">
-      <p class="lead impact-copy">{impact.copy}</p>
+      {impact.body.map((paragraph) => <p class="lead impact-copy">{paragraph}</p>)}
     </div>
   </div>
 </section>

@@ -9,8 +9,7 @@
  * configuración y puede faltar en desarrollo.
  * https://developers.cloudflare.com/workers/configuration/secrets/
  */
-export type Env = Omit<Cloudflare.Env, 'ALLOW_PERSONAL_EMAIL' | 'API_RATE_LIMITER'> & {
-  ALLOW_PERSONAL_EMAIL?: string;
+export type Env = Omit<Cloudflare.Env, 'API_RATE_LIMITER'> & {
   /** Ausente en entornos donde el binding no está disponible (tests). */
   API_RATE_LIMITER?: RateLimit;
   TURNSTILE_SECRET_KEY?: string;

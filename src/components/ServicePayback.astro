@@ -1,14 +1,10 @@
 ---
 import Button from './Button.astro';
-
-interface Card {
-  t: string;
-  d: string;
-}
+import { getSiteContent } from '../lib/content';
 
 interface Props {
   headline: string;
-  cards: Card[];
+  body: string[];
   cta: {
     label: string;
     target: string;
@@ -16,25 +12,17 @@ interface Props {
   };
 }
 
-const { headline, cards, cta } = Astro.props;
+const { headline, body, cta } = Astro.props;
+const { ui } = await getSiteContent();
 ---
 
 <!-- Flat and light, same shape as the statement section on the home page. -->
 <section class="section tint">
   <div class="shell payback-shell">
-    <h2 class="display d-h1 payback-title">Qué obtienes</h2>
+    <h2 class="display d-h1 payback-title">{ui.services.payback}</h2>
     <h3 class="display d-h2 payback-headline">{headline}</h3>
     <div class="payback-list">
-      {
-        cards.map((c) => (
-          <p class="lead payback-copy">
-            <strong class="payback-label">
-              {c.t}.
-            </strong>{' '}
-            {c.d}
-          </p>
-        ))
-      }
+      {body.map((paragraph) => <p class="lead payback-copy">{paragraph}</p>)}
     </div>
     <div class="payback-cta">
       {
@@ -54,6 +42,5 @@ const { headline, cards, cta } = Astro.props;
   .payback-headline { max-width: 22ch; }
   .payback-list { display: flex; max-width: 74ch; flex-direction: column; gap: 20px; }
   .payback-copy { color: var(--ink-body); }
-  .payback-label { color: var(--ink); font-family: var(--font-display); font-weight: 700; letter-spacing: -.02em; }
   .payback-cta { display: flex; align-items: center; }
 </style>
