@@ -290,6 +290,12 @@
         },
         "faqs": [
           {
+            "q": "¿Hay cupos limitados?",
+            "a": [
+              "Sí. Cada cohorte tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que llega la lista de espera, así que anotate rápido."
+            ]
+          },
+          {
             "q": "¿Cuándo son las clases y cuánto duran?",
             "a": [
               "Horarios a definir. Son 4 horas semanales durante 5 semanas: suficiente para avanzar; no para que olvides cómo se ve el resto de tu vida."
@@ -311,12 +317,6 @@
             "q": "¿Cómo entro al próximo programa?",
             "a": [
               "Te unes a la lista de espera. Cuando abramos inscripciones, te escribimos con las fechas confirmadas y la información de pago. Fácil. La parte complicada la reservamos para aprender IA, no para anotarte."
-            ]
-          },
-          {
-            "q": "¿Hay cupos limitados?",
-            "a": [
-              "Sí. Cada cohorte tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que llega la lista de espera, así que entre antes te anotes, mejor."
             ]
           }
         ],

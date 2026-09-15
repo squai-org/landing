@@ -214,31 +214,26 @@ const serviceLinks = services.map((service) => ({ name: service.name, subtitle: 
     .nav-links-row.nav-open { display: block; }
     .nav-list { flex-direction: column; align-items: stretch; }
     .nav-link { width: 100%; padding: 14px; text-align: center; }
-    .nav-services { width: 100%; }
+    .nav-services { flex-wrap: wrap; width: 100%; }
     .nav-services-link { flex: 1; padding-right: 14px; text-align: left; }
-    .nav-services-toggle { width: 44px; height: 44px; margin-left: 0; }
-    /* Floats over the rest of the mobile menu instead of pushing it down —
-       Equipo, FAQ and the waitlist button stay put whether this is open
-       or not. */
+    /* No toggle in responsive: services are always expanded, as their own
+       node in the menu — not a button-triggered popover. */
+    .nav-services-toggle { display: none; }
     .services-submenu {
-      position: absolute;
-      z-index: 3;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      display: none;
-      width: auto;
-      margin: 0;
-      padding: 6px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--canvas);
-      box-shadow: 0 1px 2px rgba(10, 12, 26, .04), 0 20px 40px -16px rgba(10, 12, 26, .3);
+      position: static;
+      display: grid;
+      z-index: auto;
+      width: 100%;
+      margin: 2px 0 0;
+      padding: 4px 0 4px 14px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
       opacity: 1;
       visibility: visible;
       transform: none;
     }
-    .nav-services.is-open .services-submenu { display: grid; transform: none; }
     .service-menu-link {
       min-height: 52px;
       padding: 10px 12px;
