@@ -6,8 +6,10 @@ interface Props {
   title?: string;
 }
 
-const { labels } = await getSiteContent();
+const { labels, services } = await getSiteContent();
 const { items, title = labels.faq } = Astro.props;
+const serviceNames = new Set(services.map((service) => service.name));
+const serviceNamePattern = new RegExp(`(${[...serviceNames].map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`);
 ---
 
 <section id="faq" class="section tint">
@@ -30,7 +32,17 @@ const { items, title = labels.faq } = Astro.props;
               </span>
             </button>
             <div id={`faq-panel-${i}`} data-faq-panel={String(i)} hidden class="faq-panel">
-              {f.a.map((paragraph) => <p class="lead faq-answer">{paragraph}</p>)}
+              {
+                f.a.map((paragraph) => (
+                  <p class="lead faq-answer">
+                    {
+                      paragraph
+                        .split(serviceNamePattern)
+                        .map((part) => serviceNames.has(part) ? <strong>{part}</strong> : part)
+                    }
+                  </p>
+                ))
+              }
             </div>
           </div>
         ))

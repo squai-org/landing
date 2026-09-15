@@ -8,7 +8,7 @@ import team4 from '../assets/team4.webp';
 import team5 from '../assets/team5.webp';
 import team6 from '../assets/team6.webp';
 
-const { instructors, squadGrid, ui, labels } = await getSiteContent();
+const { squadGrid, ui, labels } = await getSiteContent();
 
 const teamImages = {
   '/images/team1.webp': team1,
@@ -52,20 +52,12 @@ const responsiveTeamImages: Record<string, TeamPhoto> = Object.fromEntries(
 
 const photoFor = (img: string): Partial<TeamPhoto> => responsiveTeamImages[img] ?? { src: img };
 
-const members = [
-  ...instructors.map((member) => ({
-    img: member.img,
-    name: member.name,
-    role: member.role,
-    description: member.d,
-  })),
-  ...squadGrid.map((member) => ({
-    img: member.img,
-    name: member.name,
-    role: member.role,
-    description: member.d,
-  })),
-];
+const members = squadGrid.map((member) => ({
+  img: member.img,
+  name: member.name,
+  role: member.role,
+  description: member.d,
+}));
 
 const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6)];
 ---
@@ -75,7 +67,7 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
     <div class="team-heading">
       <h2 class="display d-h1 team-title">{labels.team}</h2>
       <div class="team-intro">
-        {ui.team.intro.map((paragraph) => <p class="lead">{paragraph}</p>)}
+        {ui.team.intro.map((paragraph) => <h4 class="lead">{paragraph}</h4>)}
       </div>
     </div>
 
@@ -89,7 +81,7 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
                   <img
                     src={photoFor(member.img).src}
                     srcset={photoFor(member.img).srcset}
-                    alt={`${member.name}, ${member.role} en Squai`}
+                    alt={ui.team.memberAlt.replace('{name}', member.name).replace('{role}', member.role)}
                     sizes="(max-width: 640px) min(42vw, 184px), clamp(264px, 24vw, 336px)"
                     width={photoFor(member.img).width}
                     height={photoFor(member.img).height}
@@ -100,7 +92,13 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
                 </div>
                 <div class="team-member-copy">
                   <h3 class="team-member-name">{member.name}</h3>
-                  <p class="team-member-role">{member.role}</p>
+                  <p class="team-member-role">
+                    {
+                      member.role.split(' & ').map((role, index) => (
+                        <>{index > 0 && <br />}{index > 0 ? `& ${role}` : role}</>
+                      ))
+                    }
+                  </p>
                   {member.description && <p class="team-member-description">{member.description}</p>}
                 </div>
               </article>
@@ -136,7 +134,12 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
     margin: clamp(20px, 2vw, 32px) 0 0;
     color: var(--ink);
   }
-  .team-intro p + p { margin-top: 12px; }
+  .team-intro h4 {
+    margin: 0;
+    font: inherit;
+  }
+
+  .team-intro h4 + h4 { margin-top: 12px; }
 
   .team-list {
     display: grid;

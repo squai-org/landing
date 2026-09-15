@@ -32,11 +32,6 @@ const MIME = {
   '.json': 'application/json',
 };
 
-/**
- * Lector mínimo del formato `_headers` de Cloudflare: una línea sin sangrar es
- * un patrón de ruta, y las líneas sangradas que la siguen son sus cabeceras.
- * https://developers.cloudflare.com/workers/static-assets/headers/
- */
 function parseHeaders(text) {
   const rules = [];
   let current = null;
@@ -75,7 +70,6 @@ http
     if (pathname === '/') file = path.join(ROOT, 'index.html');
     else if (!path.extname(file)) file += '.html';
 
-    // Nadie debe poder salirse de dist/ con ../
     if (!file.startsWith(ROOT)) {
       res.writeHead(403);
       return res.end('403');

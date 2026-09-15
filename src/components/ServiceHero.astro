@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { service } = Astro.props;
-const { program, labels } = await getSiteContent();
+const { program, labels, ui } = await getSiteContent();
 ---
 
 <section class="service-hero" data-hero>
@@ -32,8 +32,10 @@ const { program, labels } = await getSiteContent();
     <div class="service-hero-action">
       <p class="display d-h2 service-slogan">{service.slogan}</p>
       {
-        service.slug === 'squai-one' && (
-          <Button variant="primary" href="#lista" data-scroll-to="lista" class="service-hero-cta">Reservar mi cupo para aprender IA</Button>
+        service.slug === 'squai-one' ? (
+          <Button variant="primary" href="#lista" data-scroll-to="lista" class="service-hero-cta">{ui.services.oneCta}</Button>
+        ) : (
+          <Button variant="primary" data-open-modal={service.cta.modal} class="service-hero-cta">{service.cta.label}</Button>
         )
       }
     </div>
@@ -49,7 +51,8 @@ const { program, labels } = await getSiteContent();
     border-radius: clamp(20px, 2vw, 36px);
     margin: var(--hero-inset);
     min-height: calc(100svh - var(--hero-inset) * 2);
-    padding-block: calc(var(--nav-space) + var(--gutter) * 0.7) calc(var(--gutter) * 1.3);
+    padding-block: calc(var(--nav-space) + clamp(6px, 2svh, 44px)) clamp(18px, 7svh, 110px);
+    overflow: hidden;
   }
   .service-hero-inner {
     width: 100%;
@@ -58,7 +61,7 @@ const { program, labels } = await getSiteContent();
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
-    gap: clamp(40px, 8vw, 120px);
+    gap: clamp(12px, 3svh, 40px);
   }
   .service-hero-heading { display: flex; flex-direction: column; gap: clamp(16px, 2vw, 28px); }
   .service-hero-eyebrow {
@@ -102,12 +105,18 @@ const { program, labels } = await getSiteContent();
   .service-hero-action { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(24px, 3vw, 40px); }
 
   @media (max-width: 900px) {
+    .service-name { font-size: max(40px, min(10.8vw, 12svh)); }
+    .service-hero-action { gap: clamp(16px, 2.5svh, 24px); }
+  }
+
+  @media (max-height: 720px) {
     .service-hero {
-      min-height: min(72svh, calc(100svh - var(--hero-inset) * 2));
-      padding-block: calc(var(--nav-space) + clamp(10px, 3svh, 40px)) clamp(28px, 6svh, 72px);
+      padding-block: calc(var(--nav-space) + 6px) 18px;
     }
-    .service-hero-inner { justify-content: flex-end; gap: clamp(20px, 4svh, 48px); }
-    .service-crumb { margin-bottom: auto; }
+    .service-hero-inner { gap: 12px; }
+    .service-name { font-size: max(40px, min(10.8vw, 12svh)); }
+    .service-slogan { font-size: clamp(22px, 4svh, 34px); }
+    .service-hero-action { gap: 12px; }
   }
 
   @media (max-width: 1023px) {
@@ -116,7 +125,7 @@ const { program, labels } = await getSiteContent();
   }
 
   @media (max-width: 640px) {
-    .service-hero { --nav-space: 84px; min-height: min(66svh, calc(100svh - var(--hero-inset) * 2)); }
+    .service-hero { --nav-space: 84px; }
     .service-slogan { max-width: 24ch; }
     .service-hero-cta { width: 100%; }
     .service-hero-eyebrow {

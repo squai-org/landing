@@ -96,15 +96,13 @@ const { ui, labels } = await getSiteContent();
       <div class="form-submit">
         <Button variant="primary" type="submit" block>{labels.call}</Button>
       </div>
-      {/* El enlace vive dentro de la misma region live que el estado, para que
-          aparecer se anuncie junto con el mensaje de exito. Por eso el texto va
-          en su propio nodo: si el estado escribiera sobre el contenedor, se
-          llevaria por delante el enlace. */}
+      {}
       <div class="form-status" data-form-status role="status" aria-live="polite">
-        <span data-form-status-text>{ui.contact.responseTime}</span>
-        <span class="form-status-booking" data-booking-blocked hidden>
-          {ui.contact.bookingBlocked}{' '}
-          <a href={booking.url} target="_blank" rel="noopener noreferrer">{ui.contact.bookingBlockedLink}</a>
+        <span data-form-status-text></span>
+        {}
+        <span class="form-status-booking" data-booking-fallback hidden>
+          <span>{ui.contact.bookingFallback}</span>
+          <a href={booking.url} target="_blank" rel="noopener noreferrer">{ui.contact.bookingFallbackLink}</a>
         </span>
       </div>
       <Turnstile action="contact" />
@@ -159,7 +157,7 @@ const { ui, labels } = await getSiteContent();
   }
   .modal-copy { margin: 0 0 12px; color: var(--ink-body); font-size: 17px; line-height: 1.6; }
   .form-status-booking { display: block; margin-top: 6px; color: var(--ink-body); font-size: 15px; font-weight: 400; }
-  .form-status-booking a { color: var(--periwinkle-ink); }
+  .form-status-booking a { display: block; color: var(--periwinkle-ink); }
   .modal-close { transition: background-color .18s ease, transform .18s ease; }
   .modal-close:hover { background: var(--periwinkle); transform: translateY(-2px); }
   .modal-close:active { transform: none; }

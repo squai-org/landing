@@ -17,7 +17,6 @@
 --------------------------------------------------------------------------- */
 
 import {
-   DEFAULT_OG_ALT,
    DEFAULT_OG_IMAGE,
    SITE_LANG,
    SITE_LOCALE,
@@ -25,6 +24,7 @@ import {
    SITE_URL,
    canonicalPath,
 } from '../lib/seo';
+import { getSiteContent } from '../lib/content';
 
 interface Props {
    title: string;
@@ -36,11 +36,12 @@ interface Props {
    schemas?: Record<string, unknown>[];
 }
 
+const { seo } = await getSiteContent();
 const {
    title,
    description,
    image = DEFAULT_OG_IMAGE,
-   imageAlt = DEFAULT_OG_ALT,
+   imageAlt = seo.imageAlt,
    type = 'website',
    noindex = false,
    schemas = [],

@@ -582,30 +582,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       });
       if (kind === 'contact') payload.ecosystem = eco;
 
-      const blocked = form.querySelector<HTMLElement>('[data-booking-blocked]');
-      if (blocked) blocked.hidden = true;
-
-      /* La agenda se abre aqui, con el envio recien empezado y todavia dentro
-         del gesto que lo disparo: si esperara a la respuesta de la API, el
-         navegador ya no lo contaria como accion del visitante y lo bloquearia
-         como ventana emergente. Por eso tampoco depende de como termine la
-         peticion; lo que si la condiciona es la validacion de arriba, que ya
-         devolvio antes de llegar hasta aqui si faltaba algo.
-
-         Sin `noopener` en las opciones a proposito: con esa opcion la llamada
-         devuelve null tanto si abrio la ventana como si la bloquearon, y no
-         quedaria forma de distinguirlo. La referencia se corta despues, a mano.
-         https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
+      const bookingFallback = form.querySelector<HTMLElement>('[data-booking-fallback]');
       const bookingUrl = kind === 'contact' ? form.dataset.bookingUrl : undefined;
-      if (bookingUrl) {
-        const tab = window.open(bookingUrl, '_blank');
-        /* Cortar la referencia deja a la pestana nueva sin acceso a esta. Va
-           protegido: un fallo aqui no puede llevarse por delante el envio. */
-        if (tab) try { tab.opener = null; } catch { /* el navegador no lo permite */ }
-        /* Ventana bloqueada: el enlace de al lado del estado deja de estar
-           oculto para que la agenda siga a un clic de distancia. */
-        else if (blocked) blocked.hidden = false;
-      }
+      /* El enlace acompana a todo envio que llegue a salir, termine como
+         termine: si la API falla, la agenda sigue siendo el camino para
+         reservar la llamada, y es la unica forma de llegar a ella. */
+      if (bookingUrl && bookingFallback) bookingFallback.hidden = false;
 
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
       const labelNode = submit?.querySelector<HTMLElement>('.btn-label');
@@ -640,6 +622,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
         form.reset();
         clearFieldErrors(form);
+
+        /* La pestana se abre sola solo con el registro ya guardado. Abrir desde
+           aqui ya no ocurre dentro del gesto que disparo el envio, asi que
+           depende de la activacion transitoria del navegador y puede acabar
+           bloqueada; el enlace de arriba cubre ese caso y el del error.
+           https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
+        if (bookingUrl) window.open(bookingUrl, '_blank', 'noopener,noreferrer');
+
         setStatus(
           form,
           kind === 'contact'

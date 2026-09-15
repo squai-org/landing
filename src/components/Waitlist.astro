@@ -8,8 +8,8 @@ import Turnstile from './Turnstile.astro';
 const { program, ui, labels } = await getSiteContent();
 ---
 
-<section id="lista" class="section tint">
-  <div class="shell">
+<section class="section tint">
+  <div id="lista" class="shell">
     <div class="bento waitlist-grid">
       <div class="waitlist-column span-4 row-5">
         <div class="waitlist-sticky">
@@ -30,8 +30,8 @@ const { program, ui, labels } = await getSiteContent();
             class="card-pad-lg waitlist-form"
           >
           <div class="waitlist-form-heading">
-            <h3 class="display waitlist-form-title">Fundamentos de Inteligencia Artificial Generativa.</h3>
-            <p class="body waitlist-form-subtitle">Lista de espera abierta. Porque lo bueno se hace esperar.</p>
+            <h3 class="display waitlist-form-title">{ui.waitlist.formTitle}</h3>
+            <p class="body waitlist-form-subtitle">{ui.waitlist.formSubtitle}</p>
           </div>
           <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
           <div class="field-grid-2">
@@ -66,12 +66,12 @@ const { program, ui, labels } = await getSiteContent();
       <div class="bento-card span-2 row-2 investment-card">
         <span class="service-eyebrow investment-eyebrow">
           <span class="service-eyebrow-dot" aria-hidden="true"></span>
-          <span class="service-eyebrow-text">Inversión</span>
+          <span class="service-eyebrow-text">{ui.waitlist.investment.eyebrow}</span>
         </span>
-        <p class="body investment-copy">Una inversión bastante ridícula para el tiempo y las canas que te vas a ahorrar el resto del año.</p>
+        <p class="body investment-copy">{ui.waitlist.investment.copy}</p>
         <div class="investment-price">
-          <h3 class="display"><span>$399.000</span> <span>COP</span></h3>
-          <p class="body">/ $129 USD</p>
+          <h3 class="display"><span>{ui.waitlist.investment.price}</span> <span>{ui.waitlist.investment.currency}</span></h3>
+          <p class="body">{ui.waitlist.investment.referencePrice}</p>
         </div>
       </div>
       <div class="bento-card span-2 peri program-detail-card">

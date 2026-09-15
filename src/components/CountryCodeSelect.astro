@@ -1,4 +1,6 @@
 ---
+import { getSiteContent } from '../lib/content';
+
 export interface Props {
   idPrefix: string;
   label: string;
@@ -17,6 +19,7 @@ const {
 
 const fieldId = `${idPrefix}-country-code`;
 const errorId = `${fieldId}-error`;
+const { ui } = await getSiteContent();
 ---
 
 <div class="field-group country-field" data-country-select data-default-dial={defaultDial} data-default-iso2={defaultIso2}>
@@ -45,8 +48,9 @@ const errorId = `${fieldId}-error`;
       class="country-search"
       data-country-search
       autocomplete="off"
-      placeholder="Buscar país o indicativo"
-      aria-label="Buscar país o indicativo"
+      placeholder={ui.forms.countrySearch}
+      aria-label={ui.forms.countrySearch}
+      data-empty-copy={ui.forms.countryEmpty}
     />
     <ul class="country-list" role="listbox" aria-labelledby={`${fieldId}-label`} data-country-list></ul>
   </div>
@@ -165,7 +169,7 @@ const errorId = `${fieldId}-error`;
       if (!visible.length) {
         const empty = document.createElement('li');
         empty.className = 'country-empty';
-        empty.textContent = 'Ningún país coincide.';
+        empty.textContent = search.dataset.emptyCopy ?? '';
         list.appendChild(empty);
         return;
       }
