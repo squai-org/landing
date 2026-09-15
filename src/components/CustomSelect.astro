@@ -1,0 +1,153 @@
+---
+export interface Props {
+  /** Prefixes every id so two instances on the same page never collide. */
+  idPrefix: string;
+  name: string;
+  label: string;
+  placeholder: string;
+  options: { value: string; label: string }[];
+  required?: boolean;
+}
+
+const { idPrefix, name, label, placeholder, options, required = true } = Astro.props;
+
+const fieldId = `${idPrefix}-${name}`;
+const errorId = `${fieldId}-error`;
+---
+
+<div class="field-group" data-custom-select data-select-name={name}>
+  <span class="field-label" id={`${fieldId}-label`}>
+    {label} {required && <span aria-hidden="true">*</span>}
+  </span>
+  <button
+    type="button"
+    id={fieldId}
+    class="field select-field dropdown-trigger"
+    data-select-trigger
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls={`${fieldId}-panel`}
+    aria-labelledby={`${fieldId}-label ${fieldId}`}
+    aria-describedby={errorId}
+  >
+    <span data-select-trigger-label class="dropdown-trigger-placeholder">{placeholder}</span>
+  </button>
+  {/* type=hidden inputs are barred from constraint validation, so a
+      required field needs a rendered (if invisible) control instead. */}
+  <input type="text" name={name} data-select-value class="sr-only" tabindex="-1" aria-hidden="true" required={required} />
+  <span id={errorId} class="field-error" data-field-error={name}></span>
+
+  <div id={`${fieldId}-panel`} class="dropdown-panel" data-select-panel hidden>
+    <ul class="dropdown-list" role="listbox" aria-labelledby={`${fieldId}-label`}>
+      {options.map((option) => (
+        <li role="presentation">
+          <button type="button" class="dropdown-option" role="option" data-select-option data-value={option.value}>
+            {option.label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style is:global>
+  /* Native <select> option popups can't be reliably styled cross-browser —
+     this replaces the field with a listbox button/panel pair like
+     CountryCodeSelect, so it always matches the site's design language. */
+  [data-custom-select] { position: relative; }
+  .dropdown-trigger { text-align: left; cursor: pointer; }
+  .dropdown-trigger-placeholder { color: var(--ink-muted); }
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    max-height: 320px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(10, 12, 26, .04), 0 20px 40px -16px rgba(10, 12, 26, .3);
+    overflow: hidden;
+  }
+  .dropdown-list { margin: 0; padding: 6px; list-style: none; overflow-y: auto; }
+  .dropdown-option {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .dropdown-option:hover,
+  .dropdown-option:focus-visible,
+  .dropdown-option.is-active { background: var(--canvas); }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-custom-select]').forEach((root) => {
+    const trigger = root.querySelector<HTMLButtonElement>('[data-select-trigger]');
+    const triggerLabel = root.querySelector<HTMLElement>('[data-select-trigger-label]');
+    const valueInput = root.querySelector<HTMLInputElement>('[data-select-value]');
+    const panel = root.querySelector<HTMLElement>('[data-select-panel]');
+    const options = root.querySelectorAll<HTMLButtonElement>('[data-select-option]');
+    if (!trigger || !triggerLabel || !valueInput || !panel) return;
+
+    const placeholder = triggerLabel.textContent ?? '';
+
+    const close = () => {
+      panel.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+    };
+
+    const open = () => {
+      panel.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+    };
+
+    const select = (option: HTMLButtonElement) => {
+      valueInput.value = option.dataset.value ?? '';
+      valueInput.dispatchEvent(new Event('input', { bubbles: true }));
+      triggerLabel.textContent = option.textContent?.trim() ?? '';
+      triggerLabel.classList.remove('dropdown-trigger-placeholder');
+      options.forEach((o) => o.classList.toggle('is-active', o === option));
+      close();
+      trigger.focus();
+    };
+
+    options.forEach((option) => option.addEventListener('click', () => select(option)));
+
+    // The value input is invisible (kept only so `required` can be checked
+    // natively) — if invalid-field focus ever lands there, redirect to the
+    // visible trigger instead.
+    valueInput.addEventListener('focus', () => trigger.focus());
+
+    trigger.addEventListener('click', () => (panel.hidden ? open() : close()));
+
+    trigger.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') close();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!panel.hidden && !root.contains(event.target as Node)) close();
+    });
+
+    document.addEventListener('focusin', (event) => {
+      if (!panel.hidden && !root.contains(event.target as Node)) close();
+    });
+
+    root.closest('form')?.addEventListener('reset', () => {
+      valueInput.value = '';
+      triggerLabel.textContent = placeholder;
+      triggerLabel.classList.add('dropdown-trigger-placeholder');
+      options.forEach((o) => o.classList.remove('is-active'));
+    });
+  });
+</script>

@@ -1,6 +1,7 @@
 ---
 import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
+import CustomSelect from './CustomSelect.astro';
 import { endpoints } from '../config/endpoints';
 import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
@@ -56,7 +57,7 @@ const { ui, labels } = await getSiteContent();
           <span id="contact-organization-error" class="field-error" data-field-error="organization"></span>
         </label>
         <label class="field-group" for="contact-role">
-          <span class="field-label">{ui.forms.role}</span>
+          <span class="field-label">{ui.forms.role} <span class="field-optional">{ui.forms.optional}</span></span>
           <input id="contact-role" type="text" name="role" autocomplete="organization-title" class="field" aria-describedby="contact-role-error" />
           <span id="contact-role-error" class="field-error" data-field-error="role"></span>
         </label>
@@ -69,14 +70,15 @@ const { ui, labels } = await getSiteContent();
           <span id="contact-phone-error" class="field-error" data-field-error="phone"></span>
         </label>
       </div>
-      <label class="field-group field-group-spaced" for="contact-team-size">
-        <span class="field-label">{ui.forms.teamSize} <span aria-hidden="true">*</span></span>
-        <select id="contact-team-size" name="team_size" class="field select-field" required aria-describedby="contact-team-size-error">
-          <option value="" disabled selected>{ui.forms.select}</option>
-          {ui.forms.teamSizes.map((option) => <option value={option.value}>{option.label}</option>)}
-        </select>
-        <span id="contact-team-size-error" class="field-error" data-field-error="team_size"></span>
-      </label>
+      <div class="field-group-spaced">
+        <CustomSelect
+          idPrefix="contact"
+          name="team_size"
+          label={ui.forms.teamSize}
+          placeholder={ui.forms.select}
+          options={ui.forms.teamSizes}
+        />
+      </div>
       <label class="field-group field-group-spaced" for="contact-message">
         <span class="field-label">{ui.forms.message} <span class="field-optional">{ui.forms.optional}</span></span>
         <textarea
