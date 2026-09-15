@@ -152,31 +152,65 @@ Docs: [Custom domains](https://developers.cloudflare.com/workers/configuration/r
 ### 7.1 Redirigir `www` al dominio canónico
 
 El sitio declara `https://squai.io` como canónico (`site` en `astro.config.mjs`
-y `SITE_URL` en `src/data/seo.ts`). Para que `www.squai.io` no sirva una segunda
+y `SITE_URL` en `src/lib/seo.ts`). Para que `www.squai.io` no sirva una segunda
 copia del sitio, hay que redirigirlo con un **301** desde Cloudflare, no desde
 el código: los assets estáticos los sirve la plataforma sin pasar por el Worker.
 
-Zona `squai.io` → **Rules** → **Redirect Rules** → **Create rule**:
+Zona `squai.io` → **Rules** → **Redirect Rules** → **Create rule**, plantilla
+**Redirect from WWW to root**:
 
-- **When incoming requests match**: `Hostname` `equals` `www.squai.io`
-- **Then**: `Dynamic` → `concat("https://squai.io", http.request.uri.path)`
-- **Status code**: `301` · **Preserve query string**: activado
+| Campo | Valor |
+| :---- | :---- |
+| If incoming requests match | `Wildcard pattern` |
+| Request URL | `https://www.*` |
+| Target URL | `https://${1}` |
+| Status code | `301 - Permanent Redirect` |
+| Preserve query string | **activado** |
+| Place at | `Last` |
+
+`Preserve query string` viene desactivado por defecto y sin él se pierden los
+`?utm_*` de cualquier campaña que apunte a `www`.
+
+Dos cosas que la regla no cubre por sí sola:
+
+- El patrón empieza en `https://`, así que `http://www.squai.io` no entra.
+  Actívalo en **SSL/TLS** → **Edge Certificates** → **Always Use HTTPS**: el
+  request sube a HTTPS y ahí sí lo toma la regla.
+- `www` tiene que existir en **DNS** y estar **proxied** (nube naranja). Un
+  registro `DNS only` no pasa por Cloudflare y la regla nunca corre.
 
 Sin esta regla, Google ve dos hosts con el mismo contenido; el `rel=canonical`
 ayuda pero un 301 es la señal fuerte.
 
-Docs: [Redirect Rules](https://developers.cloudflare.com/rules/url-forwarding/single-redirects/) ·
+Docs: [Redirect from WWW to root](https://developers.cloudflare.com/rules/url-forwarding/examples/redirect-www-to-root/) ·
+[Single Redirects settings](https://developers.cloudflare.com/rules/url-forwarding/single-redirects/settings/) ·
 [Consolidar URLs duplicadas](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
 
-### 7.2 Verificar el dominio en Search Console y Bing
+### 7.2 Verificar el dominio y enviar el sitemap
 
-Una vez el dominio responda:
+El build genera `https://squai.io/sitemap-index.xml` y `public/robots.txt` ya lo
+declara, así que Google acabaría encontrándolo solo. Enviarlo a mano acelera el
+primer rastreo y habilita el informe de cobertura, que es donde se ven los
+errores de indexación.
 
-1. [Google Search Console](https://search.google.com/search-console) → añadir
-   propiedad de tipo **Dominio** (verificación por registro TXT en el DNS de
-   Cloudflare) → **Sitemaps** → enviar `https://squai.io/sitemap-index.xml`.
-2. [Bing Webmaster Tools](https://www.bing.com/webmasters) → importar desde
-   Search Console (también alimenta el índice que usan otros buscadores).
+Con el dominio ya respondiendo en producción:
+
+1. Comprueba que `https://squai.io/sitemap-index.xml` y
+   `https://squai.io/robots.txt` cargan en el navegador.
+2. [Google Search Console](https://search.google.com/search-console) →
+   **Añadir propiedad** → tipo **Dominio** → escribe `squai.io`.
+3. Copia el registro **TXT** que muestra y créalo en Cloudflare:
+   zona `squai.io` → **DNS** → **Add record** → Type `TXT`, Name `@`,
+   Content = el valor copiado. Guarda y pulsa **Verificar** en Search Console.
+4. Dentro de la propiedad → menú **Sitemaps** → en "Añadir un sitemap" escribe
+   `sitemap-index.xml` → **Enviar**. El estado pasa a "Correcto" en unas horas.
+5. **Inspección de URLs** con `https://squai.io/` → **Solicitar indexación**,
+   para no esperar al rastreo natural de la home.
+6. [Bing Webmaster Tools](https://www.bing.com/webmasters) → **Importar desde
+   Google Search Console**: reutiliza la verificación y el sitemap.
+
+Docs: [Enviar un sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap) ·
+[Verificación de propiedad](https://support.google.com/webmasters/answer/9008080)
 
 ## 8. Rate limiting
 
