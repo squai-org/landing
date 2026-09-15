@@ -263,15 +263,5 @@ const errorId = `${fieldId}-error`;
     document.addEventListener('focusin', (event) => {
       if (!panel.hidden && !root.contains(event.target as Node)) close();
     });
-
-    /* `form.reset()` devuelve el input oculto a su value inicial, pero no toca
-       el texto del disparador: sin esto quedaria mostrando el ultimo indicativo
-       elegido sobre un valor que ya volvio al de por defecto. */
-    root.closest('form')?.addEventListener('reset', () => {
-      const dial = root.dataset.defaultDial ?? '';
-      triggerLabel.textContent = `+${dial}`;
-      trigger.removeAttribute('aria-invalid');
-      close();
-    });
   });
 </script>

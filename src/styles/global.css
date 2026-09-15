@@ -275,11 +275,6 @@ a.bento-card.dark:hover { color: var(--night-text); }
 .btn-ghost { background: transparent; color: var(--canvas); border-color: rgba(244, 246, 255, .55); }
 .btn-ghost:hover { background: rgba(244, 246, 255, .1); border-color: var(--canvas); color: var(--canvas); }
 
-/* Secundario para fondos claros. El ghost esta pensado para fondos oscuros: su
-   texto es casi blanco y sobre la tarjeta del modal se queda sin contraste. */
-.btn-quiet { background: var(--canvas); color: var(--ink); border-color: var(--line); }
-.btn-quiet:hover { background: var(--periwinkle-tint); border-color: var(--periwinkle-soft); color: var(--ink); }
-
 .btn-block { width: 100%; }
 
 .btn:focus-visible {

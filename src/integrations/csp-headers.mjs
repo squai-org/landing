@@ -18,11 +18,6 @@ import path from 'node:path';
 
 const MARKER = '# @csp@';
 const TURNSTILE = 'https://challenges.cloudflare.com';
-// Pagina de reservas de Google Calendar, incrustada en el ultimo paso del
-// formulario de contacto. Entra solo en frame-src: es un iframe de su propio
-// origen, no un script nuestro, asi que nada de Google se ejecuta en el
-// contexto de squai.io. https://support.google.com/calendar/answer/10733297
-const CALENDAR = 'https://calendar.google.com';
 
 /** Bloques <script> y <style> sin `src`/`href`, que son los que necesitan hash. */
 const INLINE_SCRIPT = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
@@ -106,7 +101,7 @@ export default function cspHeaders(options = {}) {
           `connect-src 'self' ${TURNSTILE}`,
           // Turnstile se renderiza dentro de un iframe de su propio origen.
           // https://developers.cloudflare.com/turnstile/
-          `frame-src ${TURNSTILE} ${CALENDAR}`,
+          `frame-src ${TURNSTILE}`,
           'upgrade-insecure-requests',
         ];
 

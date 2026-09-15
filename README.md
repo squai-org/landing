@@ -43,7 +43,7 @@ public/
 scripts/            generate-og.mjs + el lockup vectorial del que sale la imagen
 src/
   components/       Cada sección de la página + Logo, Badge, Turnstile y Seo
-  config/           Configuración de runtime (endpoints de la API, página de reservas)
+  config/           Configuración de runtime (endpoints de la API)
   content/          Contenido editorial: copies.json + schema.ts (contrato Zod)
   content.config.ts Colección `copies` del Content Layer (loader `file`)
   lib/content.ts    getSiteContent(): único punto de acceso al contenido
@@ -138,7 +138,7 @@ SQL fuera de `repositories/`.
 | Método | Ruta            | Origen                                    |
 | :----- | :-------------- | :---------------------------------------- |
 | `POST` | `/api/waitlist` | `Waitlist.astro` — lista del programa     |
-| `POST` | `/api/contact`  | `ContactModal.astro` — Grow y Learn, paso 2 |
+| `POST` | `/api/contact`  | `ContactModal.astro` — Grow y Learn        |
 | `GET`  | `/api/health`   | Sonda de salud                             |
 
 Respuesta de éxito: `{ "ok": true, "id": 1, "created": true }`.
@@ -147,29 +147,6 @@ donde `fields` mapea campo → mensaje para pintarlo en el formulario.
 
 `/api/waitlist` hace upsert por correo (un correo = un lugar en la lista);
 `/api/contact` guarda cada solicitud como una fila nueva.
-
-### Agenda de la llamada
-
-`ContactModal.astro` reparte el formulario de Grow y Learn en tres pasos: datos
-de contacto, contexto y agenda. El envío ocurre al terminar el paso 2, así que
-la fila de `contact_requests` queda escrita **antes** de mostrar el calendario:
-quien abandone en el último paso sigue registrado como lead.
-
-El tercer paso incrusta la página de reservas (appointment schedule) de
-`team@squai.io`, la misma para los dos ecosistemas. Las URL viven en
-`src/config/booking.ts` y salen tal cual del propio Calendar (Booking pages →
-Options → Sharing options → Website embed); no se construyen a mano.
-
-- El `src` del iframe se asigna solo al llegar al paso 3: quien nunca abre el
-  modal no pide nada a `calendar.google.com`.
-- La CSP permite ese origen únicamente en `frame-src`
-  (`src/integrations/csp-headers.mjs`). No se carga ningún script de Google, así
-  que nada suyo corre en el contexto de squai.io.
-- Bajo el calendario queda el enlace corto a la misma página, por si el iframe
-  no carga.
-- Google no avisa a la aplicación cuando alguien reserva: la cita queda en el
-  calendario del equipo, no en D1. Saberlo en la base de datos exigiría la
-  Calendar API con `events.watch`, que no está montada.
 
 ### Seguridad
 
