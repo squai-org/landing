@@ -15,7 +15,13 @@ const fieldId = `${idPrefix}-${name}`;
 const errorId = `${fieldId}-error`;
 ---
 
-<div class="field-group" data-custom-select data-select-name={name}>
+<div
+  class="field-group"
+  data-custom-select
+  data-select-name={name}
+  data-select-required={required ? 'true' : undefined}
+  data-select-message={placeholder}
+>
   <span class="field-label" id={`${fieldId}-label`}>
     {label} {required && <span aria-hidden="true">*</span>}
   </span>
@@ -32,9 +38,15 @@ const errorId = `${fieldId}-error`;
   >
     <span data-select-trigger-label class="dropdown-trigger-placeholder">{placeholder}</span>
   </button>
-  {/* type=hidden inputs are barred from constraint validation, so a
-      required field needs a rendered (if invisible) control instead. */}
-  <input type="text" name={name} data-select-value class="sr-only" tabindex="-1" aria-hidden="true" required={required} />
+  {/* Solo transporta el valor al envio. Antes era un input de texto renderizado
+      con `required`, porque los type=hidden estan excluidos de la validacion de
+      restricciones nativa; pero eso dejaba un campo obligatorio sin nombre
+      accesible, marcado con aria-hidden y fuera del orden de foco, capaz de
+      invalidar el formulario sin que un lector de pantalla pudiera percibirlo
+      ni corregirlo. Lo obligatorio se valida ahora contra el boton disparador,
+      que si es un control real y anunciable.
+      https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html */}
+  <input type="hidden" name={name} data-select-value />
   <span id={errorId} class="field-error" data-field-error={name}></span>
 
   <div id={`${fieldId}-panel`} class="dropdown-panel" data-select-panel hidden>
@@ -117,17 +129,13 @@ const errorId = `${fieldId}-error`;
       valueInput.dispatchEvent(new Event('input', { bubbles: true }));
       triggerLabel.textContent = option.textContent?.trim() ?? '';
       triggerLabel.classList.remove('dropdown-trigger-placeholder');
+      trigger.removeAttribute('aria-invalid');
       options.forEach((o) => o.classList.toggle('is-active', o === option));
       close();
       trigger.focus();
     };
 
     options.forEach((option) => option.addEventListener('click', () => select(option)));
-
-    // The value input is invisible (kept only so `required` can be checked
-    // natively) — if invalid-field focus ever lands there, redirect to the
-    // visible trigger instead.
-    valueInput.addEventListener('focus', () => trigger.focus());
 
     trigger.addEventListener('click', () => (panel.hidden ? open() : close()));
 

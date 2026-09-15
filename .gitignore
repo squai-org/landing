@@ -29,3 +29,6 @@ pnpm-debug.log*
 .dev.vars
 .dev.vars.*
 .gstack/
+
+# Dependencias aisladas de la auditoría (docs/scripts/audit.mjs)
+.audit/

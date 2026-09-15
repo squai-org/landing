@@ -87,7 +87,10 @@ const { cohort, ui, labels } = await getSiteContent();
     color: var(--ink-body);
   }
   .waitlist-copy p + p { margin-top: 12px; }
-  .waitlist-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle); }
+  /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1, por debajo del 4.5:1 que
+     exige WCAG 2.2 AA para texto normal. --periwinkle-ink da 5.65:1.
+     https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html */
+  .waitlist-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle-ink); }
   .waitlist-form {
     padding: 32px;
     border: 1px solid var(--line);

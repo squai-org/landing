@@ -1,0 +1,35 @@
+# Cabeceras de las respuestas de assets estaticos.
+#
+# Cloudflare Workers interpreta este archivo y aplica sus reglas a lo que sirve
+# la capa de static assets. NO se sirve como asset ni afecta a las respuestas
+# que genera el Worker: /api/* sigue tomando sus cabeceras de
+# src/server/middleware/security-headers.ts.
+# https://developers.cloudflare.com/workers/static-assets/headers/
+#
+# La linea de Content-Security-Policy la escribe en el build la integracion
+# src/integrations/csp-headers.mjs, que sustituye el marcador de abajo por la
+# politica con los hashes de los scripts en linea que emite Astro. Si esa
+# integracion no corriera, aqui no queda una politica rota: queda un comentario.
+
+/*
+# @csp@
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), autoplay=(), browsing-topics=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), usb=(), xr-spatial-tracking=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Los nombres de /_astro/ llevan el hash del contenido, asi que el archivo de
+# una URL dada no cambia nunca. `immutable` evita incluso la revalidacion al
+# recargar. Las fuentes son estables y ya van con nombre fijo.
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# No se declara Cross-Origin-Resource-Policy. Observatory lo puntua con 0 (su
+# ausencia no penaliza) y `same-origin` impediria que otro sitio incruste las
+# imagenes de /og/, que existen precisamente para que las muestren terceros.
