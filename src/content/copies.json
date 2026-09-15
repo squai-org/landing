@@ -232,6 +232,8 @@
         "audience": "Personas",
         "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
         "cardCopy": "Un programa en vivo para personas que quieren entender IA. Anótate en la lista de espera para asegurar tu lugar en el próximo programa en lugar de guardar tutoriales que nunca vas a ver.",
+        "seoTitle": "Squai One — Curso de IA en vivo para personas | Squai",
+        "seoDescription": "Programa en vivo de inteligencia artificial para personas sin perfil técnico: 5 semanas, 20 horas, 100% virtual y con certificado. Preinscripción abierta.",
         "discoverLabel": "Conocer el programa",
         "cta": {
           "modal": "",
@@ -328,6 +330,8 @@
         "audience": "Para empresas y equipos de trabajo",
         "slogan": "Que tu equipo aprenda IA sin convertir cada reunión en \"¿y esto cómo se usa?\".",
         "cardCopy": "Entrenamos a tu equipo sobre situaciones, tareas y preguntas que ya forman parte de su contexto, guiados por profesionales que saben la teoría y la usan a diario para resolver problemas en distintas industrias.",
+        "seoTitle": "Squai Grow — Formación en IA para empresas y equipos | Squai",
+        "seoDescription": "Entrenamos a tu equipo en inteligencia artificial sobre las tareas y procesos que ya maneja, con profesionales que usan estas herramientas a diario.",
         "discoverLabel": "Ver cómo funciona para empresas",
         "cta": {
           "modal": "grow",
@@ -426,6 +430,8 @@
         "audience": "Para colegios, universidades y comunidades educativas",
         "slogan": "Enseñar y aprender con IA sin que termine siendo solo copiar y pegar con suscripción Premium.",
         "cardCopy": "Acompañamiento en IA para toda la comunidad educativa. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con criterio, ética y pensamiento crítico.",
+        "seoTitle": "Squai Learn — IA para colegios y universidades | Squai",
+        "seoDescription": "Acompañamiento en IA para toda la comunidad educativa: preparamos a docentes para adaptar sus metodologías y guiamos a estudiantes a usarla con criterio.",
         "discoverLabel": "Explorar el programa educativo",
         "cta": {
           "modal": "learn",

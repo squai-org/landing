@@ -105,9 +105,25 @@ const { cohort, labels } = await getSiteContent();
     .service-crumb { margin-bottom: auto; }
   }
 
+  /* La píldora se estrecha igual que en el hero de la home; si no, el mismo
+     dato se lee con dos tamaños distintos según la página. */
+  @media (max-width: 1023px) {
+    .service-hero-eyebrow { padding: 8px 18px; gap: 10px; }
+    .service-hero-eyebrow-status, .service-hero-eyebrow-name { font-size: 13px; }
+  }
+
   @media (max-width: 640px) {
     .service-hero { --nav-space: 84px; min-height: min(66svh, calc(100svh - var(--hero-inset) * 2)); }
     .service-slogan { max-width: 24ch; }
-    .service-hero-eyebrow { flex-wrap: wrap; gap: 6px 10px; padding: 8px 16px; }
+    /* Al envolverse, las líneas se centran dentro de la píldora como en la
+       home. La píldora sigue alineada a la izquierda, que es la retícula de
+       esta portada; lo que se centra es su contenido. */
+    .service-hero-eyebrow {
+      flex-wrap: wrap;
+      justify-content: center;
+      text-align: center;
+      gap: 6px 10px;
+      padding: 8px 16px;
+    }
   }
 </style>

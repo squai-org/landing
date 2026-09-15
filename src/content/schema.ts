@@ -33,6 +33,11 @@ const service = z.object({
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
   contactCopy: text.optional(),
+  /* Metadatos de buscador. Si faltan, la página cae a `seo.serviceTitle` y al
+     slogan. Se separan del slogan porque el SERP corta: ~60 caracteres el
+     título y ~160 la descripción. */
+  seoTitle: text.optional(),
+  seoDescription: text.optional(),
   faqs: z.array(faq).min(1),
 });
 const modal = z.object({ title: text, copy: text, placeholder: text });

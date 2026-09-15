@@ -1,0 +1,101 @@
+---
+/* ---------------------------------------------------------------------------
+   Todas las etiquetas de indexación de una página, en un solo sitio.
+
+   Cubre las tres capas que hoy leen buscadores clásicos y buscadores con IA:
+   1. Metadatos base: title, description, canonical y robots.
+   2. Tarjeta social: Open Graph + Twitter Cards (también es lo que muestran
+      Slack, WhatsApp y LinkedIn al pegar el enlace).
+   3. Datos estructurados: un único bloque JSON-LD con @graph, para que las
+      entidades de la página se referencien entre sí en vez de repetirse.
+
+   Referencias:
+   - https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls
+   - https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag
+   - https://ogp.me/
+   - https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+--------------------------------------------------------------------------- */
+
+import {
+  DEFAULT_OG_ALT,
+  DEFAULT_OG_IMAGE,
+  SITE_LANG,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+  canonicalPath,
+} from '../lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Imagen social; ruta relativa al sitio. */
+  image?: string;
+  imageAlt?: string;
+  /** og:type. `website` para la home, `article` para las páginas legales. */
+  type?: 'website' | 'article';
+  /** Excluye la página del índice (no se usa hoy; queda para futuras gracias/404). */
+  noindex?: boolean;
+  /** Entidades schema.org de la página. Se emiten como un único @graph. */
+  schemas?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  image = DEFAULT_OG_IMAGE,
+  imageAlt = DEFAULT_OG_ALT,
+  type = 'website',
+  noindex = false,
+  schemas = [],
+} = Astro.props;
+
+/* Una URL canónica por página, sin barra final y sin query string: es la forma
+   exacta que emite el sitemap y la que usan los enlaces internos. */
+const canonical = `${SITE_URL}${canonicalPath(Astro.url.pathname)}`;
+
+const ogImage = new URL(image, SITE_URL).href;
+
+/* max-snippet:-1 y max-image-preview:large levantan el límite de texto e imagen
+   que Google puede mostrar. Los resúmenes de las funciones con IA se construyen
+   con el mismo contenido rastreado, así que recortar el snippet también recorta
+   lo que se puede citar de la página.
+   https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag */
+const robots = noindex
+  ? 'noindex, nofollow'
+  : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+
+/* `<` escapado: un `</script>` dentro de una cadena del JSON cerraría la
+   etiqueta antes de tiempo. */
+const graph = schemas.length
+  ? JSON.stringify({ '@context': 'https://schema.org', '@graph': schemas }).replace(/</g, '\\u003c')
+  : null;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robots} />
+<meta name="googlebot" content={robots} />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:locale" content={SITE_LOCALE} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+<meta name="language" content={SITE_LANG} />
+<meta name="theme-color" content="#0A0C1A" />
+
+{graph && <script type="application/ld+json" is:inline set:html={graph} />}

@@ -149,6 +149,79 @@ CORS.
 
 Docs: [Custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 
+### 7.1 Redirigir `www` al dominio canónico
+
+El sitio declara `https://squai.io` como canónico (`site` en `astro.config.mjs`
+y `SITE_URL` en `src/lib/seo.ts`). Para que `www.squai.io` no sirva una segunda
+copia del sitio, hay que redirigirlo con un **301** desde Cloudflare, no desde
+el código: los assets estáticos los sirve la plataforma sin pasar por el Worker.
+
+Zona `squai.io` → **Rules** → **Redirect Rules** → **Create rule**, plantilla
+**Redirect from WWW to root**:
+
+| Campo | Valor |
+| :---- | :---- |
+| If incoming requests match | `Wildcard pattern` |
+| Request URL | `https://www.*` |
+| Target URL | `https://${1}` |
+| Status code | `301 - Permanent Redirect` |
+| Preserve query string | **activado** |
+| Place at | `Last` |
+
+`Preserve query string` viene desactivado por defecto y sin él se pierden los
+`?utm_*` de cualquier campaña que apunte a `www`.
+
+Dos cosas que la regla no cubre por sí sola:
+
+- El patrón empieza en `https://`, así que `http://www.squai.io` no entra.
+  Actívalo en **SSL/TLS** → **Edge Certificates** → **Always Use HTTPS**: el
+  request sube a HTTPS y ahí sí lo toma la regla.
+- `www` tiene que existir en **DNS** y estar **proxied** (nube naranja). Un
+  registro `DNS only` no pasa por Cloudflare y la regla nunca corre. Si al
+  guardar la regla el dashboard avisa de que `www` no está proxied, elige
+  **Create a new proxied DNS record**; cuando pida una IP, usa el placeholder
+  `192.0.2.1` (franja reservada para documentación, RFC 5737: no enruta a
+  ninguna parte). El mismo efecto se consigue creando a mano un `CNAME`
+  `www` → `squai.io` proxied. En los dos casos la redirección se resuelve en
+  el edge y la petición nunca llega al origen.
+
+Sin esta regla, Google ve dos hosts con el mismo contenido; el `rel=canonical`
+ayuda pero un 301 es la señal fuerte.
+
+Comprobación: `curl -I https://www.squai.io/servicios/squai-one` debe devolver
+`301` y `location: https://squai.io/servicios/squai-one`.
+
+Docs: [Redirect from WWW to root](https://developers.cloudflare.com/rules/url-forwarding/examples/redirect-www-to-root/) ·
+[Redirigir un dominio sin origen](https://developers.cloudflare.com/fundamentals/manage-domains/redirect-domain/) ·
+[Single Redirects settings](https://developers.cloudflare.com/rules/url-forwarding/single-redirects/settings/) ·
+[Consolidar URLs duplicadas](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
+
+### 7.2 Verificar el dominio y enviar el sitemap
+
+El build genera `https://squai.io/sitemap-index.xml` y `public/robots.txt` ya lo
+declara, así que Google acabaría encontrándolo solo. Enviarlo a mano acelera el
+primer rastreo y habilita el informe de cobertura, que es donde se ven los
+errores de indexación.
+
+Con el dominio ya respondiendo en producción:
+
+1. Comprueba que `https://squai.io/sitemap-index.xml` y
+   `https://squai.io/robots.txt` cargan en el navegador.
+2. [Google Search Console](https://search.google.com/search-console) →
+   **Añadir propiedad** → tipo **Dominio** → escribe `squai.io`.
+3. Copia el registro **TXT** que muestra y créalo en Cloudflare:
+   zona `squai.io` → **DNS** → **Add record** → Type `TXT`, Name `@`,
+   Content = el valor copiado. Guarda y pulsa **Verificar** en Search Console.
+4. Dentro de la propiedad → menú **Sitemaps** → en "Añadir un sitemap" escribe
+   `sitemap-index.xml` → **Enviar**. El estado pasa a "Correcto" en unas horas.
+5. **Inspección de URLs** con `https://squai.io/` → **Solicitar indexación**,
+   para no esperar al rastreo natural de la home.
+6. [Bing Webmaster Tools](https://www.bing.com/webmasters) → **Importar desde
+   Google Search Console**: reutiliza la verificación y el sitemap.
+
+Docs: [Enviar un sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap) ·
+[Verificación de propiedad](https://support.google.com/webmasters/answer/9008080)
+
 ## 8. Rate limiting
 
 Hay dos capas posibles. La primera ya viene implementada en el código; la

@@ -3,6 +3,7 @@ import Layout from './Layout.astro';
 import { getSiteContent } from '../lib/content';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { absoluteUrl, breadcrumbSchema, canonicalPath, organizationSchema, webPageSchema, websiteSchema } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -12,10 +13,26 @@ interface Props {
 }
 
 const { title, description, pageTitle, updated } = Astro.props;
-const { ui } = await getSiteContent();
+const content = await getSiteContent();
+const { ui } = content;
+
+/* Las páginas legales se indexan: son señal de confianza (E-E-A-T) y las citan
+   los buscadores con IA cuando alguien pregunta cómo se tratan sus datos.
+   https://developers.google.com/search/docs/fundamentals/creating-helpful-content */
+const path = canonicalPath(Astro.url.pathname);
+const pageUrl = absoluteUrl(path);
+const schemas = [
+  organizationSchema(content),
+  websiteSchema(),
+  webPageSchema({ url: pageUrl, title, description }),
+  breadcrumbSchema([
+    { name: 'Inicio', path: '/' },
+    { name: pageTitle, path },
+  ]),
+];
 ---
 
-<Layout title={title} description={description}>
+<Layout title={title} description={description} type="article" schemas={schemas}>
   <div class="legal-page-frame">
     <Header />
 

@@ -13,13 +13,13 @@ import FinalCta from '../components/FinalCta.astro';
 import Footer from '../components/Footer.astro';
 import ContactModal from '../components/ContactModal.astro';
 import { getSiteContent } from '../lib/content';
-const { faqs, seo } = await getSiteContent();
+import { homeGraph } from '../lib/seo';
+
+const content = await getSiteContent();
+const { faqs, seo } = content;
 ---
 
-<Layout
-  title={seo.title}
-  description={seo.description}
->
+<Layout title={seo.title} description={seo.description} schemas={homeGraph(content)}>
   <div class="page-frame">
     <Header />
 

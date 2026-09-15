@@ -11,7 +11,19 @@ import Footer from '../../components/Footer.astro';
 import ContactModal from '../../components/ContactModal.astro';
 import Button from '../../components/Button.astro';
 import { getSiteContent } from '../../lib/content';
-const { seo } = await getSiteContent();
+import {
+  absoluteUrl,
+  breadcrumbSchema,
+  courseSchema,
+  faqSchema,
+  organizationSchema,
+  serviceSchema,
+  serviceSeo,
+  webPageSchema,
+  websiteSchema,
+} from '../../lib/seo';
+
+const content = await getSiteContent();
 
 export async function getStaticPaths() {
   const { services } = await getSiteContent();
@@ -19,9 +31,29 @@ export async function getStaticPaths() {
 }
 
 const { service } = Astro.props;
+
+const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
+const seo = serviceSeo(service, content.seo.serviceTitle);
+
+/* Squai One es un curso con cohorte; Grow y Learn son servicios a organizaciones. */
+const offering =
+  service.slug === 'squai-one' ? courseSchema(content, service, pageUrl) : serviceSchema(service, pageUrl);
+
+const schemas = [
+  organizationSchema(content),
+  websiteSchema(),
+  webPageSchema({ url: pageUrl, title: seo.title, description: seo.description }),
+  breadcrumbSchema([
+    { name: 'Inicio', path: '/' },
+    { name: 'Servicios', path: '/#servicios' },
+    { name: service.name, path: `/servicios/${service.slug}` },
+  ]),
+  offering,
+  faqSchema(service.faqs, pageUrl),
+];
 ---
 
-<Layout title={seo.serviceTitle.replace('{service}', service.name)} description={service.slogan}>
+<Layout title={seo.title} description={seo.description} schemas={schemas}>
   <div class="page-frame">
   <Header />
 
