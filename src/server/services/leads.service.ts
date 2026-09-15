@@ -7,12 +7,6 @@ import type { ContactInput } from '../schemas/contact.schema';
 import type { WaitlistInput } from '../schemas/waitlist.schema';
 import type { Env, RequestMeta } from '../types';
 
-/**
- * Comprueba el token de Turnstile.
- * Si TURNSTILE_SECRET_KEY no está configurado, la verificación se omite con un
- * aviso en los logs: así el formulario sigue operativo mientras se crea el
- * widget en el dashboard. En producción el secret debe existir.
- */
 const assertHuman = async (env: Env, token: string | undefined, meta: RequestMeta) => {
   const secret = env.TURNSTILE_SECRET_KEY;
 
@@ -33,7 +27,6 @@ const assertHuman = async (env: Env, token: string | undefined, meta: RequestMet
   }
 };
 
-/** Normaliza indicativo + número a E.164 o falla con el campo marcado. */
 const requirePhone = (countryCode: string, phone: string) => {
   const normalized = normalizePhone(countryCode, phone);
 

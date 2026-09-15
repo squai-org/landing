@@ -8,9 +8,6 @@ const { services, labels } = await getSiteContent();
     <h2 class="display d-h1 services-title">{labels.services}</h2>
   </div>
 
-  <!-- Direct child of .section, not .shell: the row reaches the section's
-       own edge (same edge the Impact section's background bleeds to)
-       instead of stopping at the shell's 1200px cap like the title above. -->
   <div class="bento services-grid">
     {
       services.map((s) => (
@@ -36,11 +33,6 @@ const { services, labels } = await getSiteContent();
 
 <style>
   .services-title { color: var(--ink); }
-  /* .services-grid is a direct child of .section now (not .shell), so it's
-     still inset by .section's own side padding. Cancel that padding so
-     Squai One's left edge and Grow/Learn's right edge reach the same edge
-     the Impact section's background bleeds to — .section's padding value
-     copied verbatim from global.css so the two stay in lockstep. */
   .services-grid {
     margin-top: clamp(36px, 4vw, 64px);
     margin-inline: calc(-1 * clamp(20px, 4vw, 64px));
@@ -93,12 +85,13 @@ const { services, labels } = await getSiteContent();
   }
   .card-link:hover .discover { background: #26262B; transform: translateY(-1px); }
 
-  @media (max-width: 640px) {
+  @media (max-width: 1170px) {
     .service-card-footer {
-      flex-wrap: wrap;
+      flex-direction: column;
+      flex-wrap: nowrap;
       align-items: flex-start;
       gap: 20px;
     }
-    .service-card-footer h3 { flex: 1 1 100%; }
+    .service-card-footer h3 { flex: none; }
   }
 </style>

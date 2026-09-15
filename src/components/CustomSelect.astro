@@ -1,6 +1,5 @@
 ---
 export interface Props {
-  /** Prefixes every id so two instances on the same page never collide. */
   idPrefix: string;
   name: string;
   label: string;
@@ -38,13 +37,10 @@ const errorId = `${fieldId}-error`;
   >
     <span data-select-trigger-label class="dropdown-trigger-placeholder">{placeholder}</span>
   </button>
-  {/* Solo transporta el valor al envio. Antes era un input de texto renderizado
-      con `required`, porque los type=hidden estan excluidos de la validacion de
-      restricciones nativa; pero eso dejaba un campo obligatorio sin nombre
-      accesible, marcado con aria-hidden y fuera del orden de foco, capaz de
-      invalidar el formulario sin que un lector de pantalla pudiera percibirlo
-      ni corregirlo. Lo obligatorio se valida ahora contra el boton disparador,
-      que si es un control real y anunciable.
+  {/* Solo transporta el valor. No lleva `required` ni `aria-hidden`: eso dejaba
+      un campo obligatorio sin nombre accesible y fuera del orden de foco, capaz
+      de invalidar el envio sin que un lector de pantalla pudiera corregirlo. Lo
+      obligatorio se valida contra el boton disparador, en Layout.astro.
       https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html */}
   <input type="hidden" name={name} data-select-value />
   <span id={errorId} class="field-error" data-field-error={name}></span>
@@ -63,9 +59,6 @@ const errorId = `${fieldId}-error`;
 </div>
 
 <style is:global>
-  /* Native <select> option popups can't be reliably styled cross-browser —
-     this replaces the field with a listbox button/panel pair like
-     CountryCodeSelect, so it always matches the site's design language. */
   [data-custom-select] { position: relative; }
   .dropdown-trigger { text-align: left; cursor: pointer; }
   .dropdown-trigger-placeholder { color: var(--ink-muted); }

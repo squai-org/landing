@@ -20,7 +20,7 @@
    Uso: pnpm og
 --------------------------------------------------------------------------- */
 
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -33,18 +33,15 @@ const LIGHT_INK = '#F0F2FF';
 
 const lockup = await readFile(join(here, 'logo-lockup.svg'), 'utf8');
 
-/** El lockup trae el wordmark en tinta oscura; sobre fondo oscuro va en claro. */
 const lockupOn = (background) =>
   background === 'dark' ? lockup.replaceAll('fill:#0a0c1a', `fill:${LIGHT_INK}`) : lockup;
 
-/** Renderiza un SVG a PNG al tamaño pedido. */
 const render = async (svg, out) => {
   await mkdir(dirname(out), { recursive: true });
   await sharp(Buffer.from(svg)).png().toFile(out);
   console.log('✓', out.replace(`${root}/`, ''));
 };
 
-/* --- Tarjeta social 1200x630 ---------------------------------------------- */
 
 const LOCKUP_W = 620;
 const LOCKUP_H = (LOCKUP_W * 75) / 225;
@@ -58,7 +55,6 @@ const ogCard = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630
 
 await render(ogCard, join(root, 'public/og/squai-og.png'));
 
-/* --- Logo para schema.org (fondo claro, proporción cercana a 1200x400) ----- */
 
 const LOGO_W = 780;
 const LOGO_H = (LOGO_W * 75) / 225;
@@ -72,7 +68,6 @@ const logoCard = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="4
 
 await render(logoCard, join(root, 'public/og/squai-logo.png'));
 
-/* --- Apple touch icon: solo el isotipo, sobre el fondo de marca ------------ */
 
 const favicon = await readFile(join(root, 'public/favicon.svg'), 'utf8');
 const mark = favicon.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');

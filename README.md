@@ -94,7 +94,7 @@ Las copias de buscador viven con el resto del contenido (`src/content/copies.jso
 
 Reglas para mantenerlo:
 
-- **Nada de datos sin verificar en JSON-LD.** No hay precios, fechas de cohorte
+- **Nada de datos sin verificar en JSON-LD.** No hay precios, fechas de programa
   ni direcciones porque el contenido no las declara. `sameAs` aparece solo
   cuando `socials[].href` deje de estar vacío.
 - El dominio está en dos lugares y tienen que coincidir: `site` en
@@ -137,7 +137,7 @@ SQL fuera de `repositories/`.
 
 | Método | Ruta            | Origen                                    |
 | :----- | :-------------- | :---------------------------------------- |
-| `POST` | `/api/waitlist` | `Waitlist.astro` — lista de la cohorte     |
+| `POST` | `/api/waitlist` | `Waitlist.astro` — lista del programa     |
 | `POST` | `/api/contact`  | `ContactModal.astro` — Grow y Learn        |
 | `GET`  | `/api/health`   | Sonda de salud                             |
 

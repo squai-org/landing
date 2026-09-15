@@ -16,9 +16,6 @@ const { title, description, pageTitle, updated } = Astro.props;
 const content = await getSiteContent();
 const { ui } = content;
 
-/* Las páginas legales se indexan: son señal de confianza (E-E-A-T) y las citan
-   los buscadores con IA cuando alguien pregunta cómo se tratan sus datos.
-   https://developers.google.com/search/docs/fundamentals/creating-helpful-content */
 const path = canonicalPath(Astro.url.pathname);
 const pageUrl = absoluteUrl(path);
 const schemas = [

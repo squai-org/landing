@@ -2,8 +2,6 @@
 # Formato: https://www.rfc-editor.org/rfc/rfc9309.html
 # Cómo lo interpreta Google: https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt
 
-# Regla por defecto: todo abierto. Las reglas por bot que siguen existen para
-# dejar la decisión explícita y documentada, no porque cambien el resultado.
 User-agent: *
 Allow: /
 Disallow: /api/
@@ -77,5 +75,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-# El sitemap tiene que ir con URL absoluta.
 Sitemap: https://squai.io/sitemap-index.xml

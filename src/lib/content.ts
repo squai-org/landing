@@ -8,7 +8,6 @@ export type HeroClientCopy = SiteContent['ui']['hero'] & { verbs: SiteContent['h
 export type LegalSections = SiteContent['legal']['terms']['sections'];
 export type Service = Awaited<ReturnType<typeof getSiteContent>>['services'][number];
 
-/** Query at render time: Astro owns caching and invalidation during development. */
 export async function getSiteContent() {
   const entry = await getEntry('copies', 'site');
   if (!entry) throw new Error('Missing required content entry: copies/site');

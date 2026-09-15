@@ -1,15 +1,15 @@
 ---
 import { getSiteContent, type Service } from '../lib/content';
+import Button from './Button.astro';
 
 interface Props {
   service: Service;
 }
 
 const { service } = Astro.props;
-const { cohort, labels } = await getSiteContent();
+const { program, labels } = await getSiteContent();
 ---
 
-<!-- No background yet: the reference uses video, we do not have one. -->
 <section class="service-hero" data-hero>
   <div class="shell service-hero-inner">
     <p class="service-crumb">
@@ -22,14 +22,21 @@ const { cohort, labels } = await getSiteContent();
         service.slug === 'squai-one' && (
           <p class="service-hero-eyebrow">
             <span class="service-hero-eyebrow-dot" aria-hidden="true" />
-            <span class="service-hero-eyebrow-status">{cohort.status}</span>
-            <span class="service-hero-eyebrow-name">{cohort.name}</span>
+            <span class="service-hero-eyebrow-status">{program.status}</span>
+            <span class="service-hero-eyebrow-name">{program.name}</span>
           </p>
         )
       }
       <h1 class="display d-display service-name" style={`color:${service.accent}`}>{service.name}.</h1>
     </div>
-    <p class="display d-h2 service-slogan">{service.slogan}</p>
+    <div class="service-hero-action">
+      <p class="display d-h2 service-slogan">{service.slogan}</p>
+      {
+        service.slug === 'squai-one' && (
+          <Button variant="primary" href="#lista" data-scroll-to="lista" class="service-hero-cta">Reservar mi cupo para aprender IA</Button>
+        )
+      }
+    </div>
   </div>
 </section>
 
@@ -54,8 +61,6 @@ const { cohort, labels } = await getSiteContent();
     gap: clamp(40px, 8vw, 120px);
   }
   .service-hero-heading { display: flex; flex-direction: column; gap: clamp(16px, 2vw, 28px); }
-  /* Same shape as Hero.astro's own eyebrow — carried over so the cohort
-     status reads the same wherever it shows up. */
   .service-hero-eyebrow {
     display: inline-flex;
     align-self: flex-start;
@@ -94,8 +99,8 @@ const { cohort, labels } = await getSiteContent();
   .service-crumb-link:hover { color: var(--periwinkle); }
   .service-name { color: var(--canvas); font-size: max(40px, min(10.8vw, 19svh)); }
   .service-slogan { margin: 0; color: var(--canvas); max-width: 20ch; }
-  /* Below desktop the full-height split leaves a dead middle, so the block
-     settles at the bottom of a shorter panel instead. */
+  .service-hero-action { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(24px, 3vw, 40px); }
+
   @media (max-width: 900px) {
     .service-hero {
       min-height: min(72svh, calc(100svh - var(--hero-inset) * 2));
@@ -105,8 +110,6 @@ const { cohort, labels } = await getSiteContent();
     .service-crumb { margin-bottom: auto; }
   }
 
-  /* La píldora se estrecha igual que en el hero de la home; si no, el mismo
-     dato se lee con dos tamaños distintos según la página. */
   @media (max-width: 1023px) {
     .service-hero-eyebrow { padding: 8px 18px; gap: 10px; }
     .service-hero-eyebrow-status, .service-hero-eyebrow-name { font-size: 13px; }
@@ -115,9 +118,7 @@ const { cohort, labels } = await getSiteContent();
   @media (max-width: 640px) {
     .service-hero { --nav-space: 84px; min-height: min(66svh, calc(100svh - var(--hero-inset) * 2)); }
     .service-slogan { max-width: 24ch; }
-    /* Al envolverse, las líneas se centran dentro de la píldora como en la
-       home. La píldora sigue alineada a la izquierda, que es la retícula de
-       esta portada; lo que se centra es su contenido. */
+    .service-hero-cta { width: 100%; }
     .service-hero-eyebrow {
       flex-wrap: wrap;
       justify-content: center;

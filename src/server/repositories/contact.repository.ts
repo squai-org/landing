@@ -1,7 +1,3 @@
-/**
- * Única capa que habla con D1 para las solicitudes de llamada.
- * https://developers.cloudflare.com/d1/worker-api/prepared-statements/
- */
 export interface ContactRecord {
   ecosystem: 'grow' | 'learn';
   fullName: string;
@@ -21,7 +17,7 @@ export interface ContactRecord {
 const INSERT_SQL = `
   INSERT INTO contact_requests
     (ecosystem, full_name, email, organization, role, country_code, phone, phone_e164,
-     team_size, message, source_page, ip_country, user_agent)
+      team_size, message, source_page, ip_country, user_agent)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   RETURNING id
 `;

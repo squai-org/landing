@@ -17,7 +17,7 @@ import { getSiteContent } from '../lib/content';
 import { CONTACT_EMAIL, SITE_URL } from '../lib/seo';
 
 export const GET: APIRoute = async () => {
-  const { cohort, faqs, legal, seo, services } = await getSiteContent();
+  const { program, faqs, legal, seo, services } = await getSiteContent();
 
   const serviceLines = services
     .map(
@@ -40,11 +40,11 @@ ${serviceLines}
 
 ## Programa con lista de espera
 
-**${cohort.name}** (${cohort.ecosystem}) — ${cohort.status}.
+**${program.name}** (${program.ecosystem}) — ${program.status}.
 
-- ${cohort.duration}
-- ${cohort.schedule}
-- ${cohort.modality}
+- ${program.duration}
+- ${program.schedule}
+- ${program.modality}
 
 ## Páginas
 

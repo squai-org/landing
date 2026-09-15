@@ -5,33 +5,34 @@ import { endpoints } from '../config/endpoints';
 import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
 
-const { cohort, ui, labels } = await getSiteContent();
+const { program, ui, labels } = await getSiteContent();
 ---
 
 <section id="lista" class="section tint">
   <div class="shell">
-    <!-- Same bento shape as the home page's Servicios grid: one wide item
-         (here, the form) on the left spanning every row the stacked items
-         take up on the right (here, the cohort's own duration/schedule/
-         modality), instead of a separate section for each. -->
     <div class="bento waitlist-grid">
-      <div class="waitlist-column span-4 row-3">
-        <h2 class="display d-h2 waitlist-title">{ui.waitlist.title}</h2>
-        <div class="waitlist-copy">
-          {
-            ui.waitlist.copy.map((paragraph, index) => (
-              <p class={`lead${index === ui.waitlist.copy.length - 1 ? ' waitlist-promise' : ''}`}>
-                {index === 0 ? `${paragraph}` : paragraph}
-              </p>
-            ))
-          }
-        </div>
-        <form
-          data-form="waitlist"
-          data-endpoint={endpoints.waitlist}
-          novalidate
-          class="card-pad-lg waitlist-form"
-        >
+      <div class="waitlist-column span-4 row-5">
+        <div class="waitlist-sticky">
+          <h2 class="display d-h2 waitlist-title">{ui.waitlist.title}</h2>
+          <div class="waitlist-copy">
+            {
+              ui.waitlist.copy.map((paragraph, index) => (
+                <p class={`lead${index === ui.waitlist.copy.length - 1 ? ' waitlist-promise' : ''}`}>
+                  {index === 0 ? `${paragraph}` : paragraph}
+                </p>
+              ))
+            }
+          </div>
+          <form
+            data-form="waitlist"
+            data-endpoint={endpoints.waitlist}
+            novalidate
+            class="card-pad-lg waitlist-form"
+          >
+          <div class="waitlist-form-heading">
+            <h3 class="display waitlist-form-title">Fundamentos de Inteligencia Artificial Generativa.</h3>
+            <p class="body waitlist-form-subtitle">Lista de espera abierta. Porque lo bueno se hace esperar.</p>
+          </div>
           <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
           <div class="field-grid-2">
             <label class="field-group" for="waitlist-full-name">
@@ -57,21 +58,33 @@ const { cohort, ui, labels } = await getSiteContent();
             <Button variant="primary" type="submit" block>{labels.reserve}</Button>
           </div>
           <div class="form-status" data-form-status role="status" aria-live="polite"></div>
-          <Turnstile action="waitlist" />
-        </form>
+            <Turnstile action="waitlist" />
+          </form>
+        </div>
       </div>
 
-      <div class="bento-card span-2 peri">
+      <div class="bento-card span-2 row-2 investment-card">
+        <span class="service-eyebrow investment-eyebrow">
+          <span class="service-eyebrow-dot" aria-hidden="true"></span>
+          <span class="service-eyebrow-text">Inversión</span>
+        </span>
+        <p class="body investment-copy">Una inversión bastante ridícula para el tiempo y las canas que te vas a ahorrar el resto del año.</p>
+        <div class="investment-price">
+          <h3 class="display"><span>$399.000</span> <span>COP</span></h3>
+          <p class="body">/ $129 USD</p>
+        </div>
+      </div>
+      <div class="bento-card span-2 peri program-detail-card">
         <h3 class="display d-h3">{ui.program.duration}</h3>
-        <p class="body">{cohort.duration}</p>
+        <p class="body">{program.duration}</p>
       </div>
-      <div class="bento-card span-2 teal">
+      <div class="bento-card span-2 teal program-detail-card">
         <h3 class="display d-h3">{ui.program.schedule}</h3>
-        <p class="body">{cohort.schedule}</p>
+        <p class="body">{program.schedule}</p>
       </div>
-      <div class="bento-card span-2 gold">
+      <div class="bento-card span-2 gold program-detail-card">
         <h3 class="display d-h3">{ui.program.modality}</h3>
-        <p class="body">{cohort.modality}</p>
+        <p class="body">{program.modality}</p>
       </div>
     </div>
   </div>
@@ -79,7 +92,9 @@ const { cohort, ui, labels } = await getSiteContent();
 
 <style>
   .waitlist-grid { align-items: stretch; }
+  .row-5 { grid-row: span 5; }
   .waitlist-column { display: flex; flex-direction: column; min-width: 0; }
+  .waitlist-sticky { position: sticky; top: calc(var(--nav-space) + 24px); }
   .waitlist-title { color: var(--ink); }
   .waitlist-copy {
     max-width: 60ch;
@@ -87,10 +102,67 @@ const { cohort, ui, labels } = await getSiteContent();
     color: var(--ink-body);
   }
   .waitlist-copy p + p { margin-top: 12px; }
-  /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1, por debajo del 4.5:1 que
-     exige WCAG 2.2 AA para texto normal. --periwinkle-ink da 5.65:1.
-     https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html */
+  /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1; WCAG 2.2 AA exige 4.5:1
+     para texto normal. --periwinkle-ink da 5.65:1. */
   .waitlist-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle-ink); }
+  .program-detail-card {
+    gap: 8px;
+    padding: clamp(20px, 1.8vw, 30px);
+  }
+  .program-detail-card h3 { font-size: clamp(19px, 1.55vw, 27px); }
+  .program-detail-card p { font-size: clamp(16px, .95vw, 18px); }
+  .investment-card {
+    justify-content: space-between;
+    min-height: clamp(320px, 30vw, 460px);
+    background: var(--midnight);
+    border-color: transparent;
+  }
+  .investment-eyebrow {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 22px;
+    background: var(--canvas);
+    border: 1px solid var(--canvas);
+    border-radius: var(--radius-pill);
+  }
+  .service-eyebrow-dot {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--periwinkle);
+  }
+  .service-eyebrow-text {
+    color: var(--midnight);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .investment-price {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .investment-price h3 {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .18em;
+    width: 100%;
+    font-size: clamp(30px, 2.65vw, 50px);
+    white-space: nowrap;
+  }
+  .investment-card .investment-price h3,
+  .investment-card .investment-price p,
+  .investment-copy { color: var(--canvas); }
+  .investment-copy {
+    max-width: 32ch;
+  }
   .waitlist-form {
     padding: 32px;
     border: 1px solid var(--line);
@@ -99,8 +171,13 @@ const { cohort, ui, labels } = await getSiteContent();
     box-shadow: 0 1px 2px rgba(10, 12, 26, .03), 0 30px 70px -44px rgba(10, 12, 26, .45);
     text-align: left;
   }
+  .waitlist-form-heading { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .waitlist-form-title { color: var(--midnight); font-size: clamp(19px, 1.55vw, 27px); }
+  .waitlist-form-subtitle { color: var(--midnight); }
   @media (max-width: 1100px) {
     .waitlist-column { order: -1; }
+    .row-5, .investment-card { grid-row: auto; }
+    .waitlist-sticky { position: static; }
   }
   @media (max-width: 640px) {
     .waitlist-form { padding: 22px; border-radius: 22px; }

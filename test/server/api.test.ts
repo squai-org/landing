@@ -2,10 +2,6 @@ import { env } from 'cloudflare:test';
 import { beforeEach, describe, expect, it } from 'vitest';
 import app from '../../src/server/index';
 
-/**
- * El rate limiter agrupa por IP, así que cada petición usa una IP distinta
- * salvo que el test quiera justamente compartirla.
- */
 let ipCounter = 0;
 const nextIp = () => `198.51.100.${++ipCounter % 250}`;
 

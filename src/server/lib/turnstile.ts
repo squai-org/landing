@@ -1,9 +1,3 @@
-/**
- * Validación server-side de Turnstile.
- * El secret nunca sale del Worker; el token de cliente se valida una sola vez
- * y caduca a los 5 minutos.
- * https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
- */
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 export interface SiteverifyResponse {

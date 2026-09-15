@@ -6,21 +6,16 @@ import { getSiteContent } from '../lib/content';
 interface Props {
   title: string;
   description: string;
-  /** Imagen social de la página (ruta relativa al sitio). */
   image?: string;
   imageAlt?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
-  /** Entidades schema.org que se emiten en el JSON-LD de la página. */
   schemas?: Record<string, unknown>[];
 }
 
 const { title, description, image, imageAlt, type, noindex, schemas } = Astro.props;
 const { ui } = await getSiteContent();
 
-// Clave pública del widget de Turnstile. Si no está definida, el sitio sigue
-// funcionando sin verificación (el backend también la omite).
-// https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
@@ -55,9 +50,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       }
     </script>
     <script is:inline>
-      // Turnstile invoca este callback por nombre desde window, así que vive
-      // fuera del módulo. Mantiene el botón de envío deshabilitado hasta que el
-      // widget entrega un token válido.
       window.squaiTurnstileSync = function () {
         document.querySelectorAll('form[data-form]').forEach(function (form) {
           if (!form.querySelector('.cf-turnstile')) return;
@@ -86,15 +78,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 <script>
   import type { ClientCopy } from '../lib/content';
 
-  /* Copy for client-side states, serialized on <body> from the content layer. */
   const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
 
-  /* ---------------------------------------------------------------------
-     Smooth scroll — 96px offset clears the sticky nav bar.
-  --------------------------------------------------------------------- */
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Clear the fixed nav bar plus a little breathing room. */
   const navOffset = () => {
     const bar = document.querySelector<HTMLElement>('.nav-bar');
     return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
@@ -103,10 +90,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const scrollToSection = (id: string, instant = false) => {
     const el = document.getElementById(id);
     if (!el) return;
-    /* .section carries its own top padding for rhythm between sections
-       (var(--section-gap), up to 168px). Landing on the section's own
-       edge leaves that whole padding as dead space below the nav, so
-       aim past it, at the section's content box instead. */
     const topPadding = parseFloat(getComputedStyle(el).paddingTop) || 0;
     const target = el.getBoundingClientRect().top + window.scrollY + topPadding - navOffset();
     if (prefersReducedMotion || instant) {
@@ -126,11 +109,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     requestAnimationFrame(step);
   };
 
-  /* Arriving with a hash already in the URL (nav click from another page,
-     a bookmark, a shared link) skips the click handler below entirely —
-     the browser does its own native jump first, landing on the same
-     padding-heavy section edge. Snap it to the corrected position right
-     after. */
   if (location.hash.length > 1) {
     const targetId = decodeURIComponent(location.hash.slice(1));
     if (document.getElementById(targetId)) scrollToSection(targetId, true);
@@ -139,17 +117,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   document.querySelectorAll<HTMLElement>('[data-scroll-to]').forEach((el) => {
     el.addEventListener('click', (event) => {
       const id = el.dataset.scrollTo!;
-      // No matching section on this page (e.g. a header/footer link on a
-      // legal page) — let the link's href navigate back to "/#id" normally.
       if (!id || !document.getElementById(id)) return;
       event.preventDefault();
       scrollToSection(id);
     });
   });
 
-  /* ---------------------------------------------------------------------
-     Nav chrome follows the section under it: light over the hero, ink after.
-  --------------------------------------------------------------------- */
   const header = document.querySelector<HTMLElement>('[data-header]');
   const hero = document.querySelector<HTMLElement>('[data-hero]');
 
@@ -178,43 +151,63 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     window.addEventListener('resize', syncHeader);
   }
 
-  /* ---------------------------------------------------------------------
-     Reveal on scroll. Sections rise into place once; grids stagger their
-     own cards instead of moving as one block.
-  --------------------------------------------------------------------- */
   /* La clase la pone el script sincrono del <head>, que es tambien lo que el
-     CSS mira para ocultar. Leerla aqui en vez de repetir la condicion evita
-     que las dos comprobaciones se separen y el contenido quede oculto sin
-     nadie que lo revele. */
+     CSS mira para ocultar. Leerla aqui en vez de repetir la condicion evita que
+     las dos comprobaciones se separen y quede contenido oculto sin nadie que lo
+     revele. */
   if (document.documentElement.classList.contains('js-reveal')) {
-    const targets: HTMLElement[] = [];
+    const targets = new Set<HTMLElement>();
+
+    const addReveal = (el: HTMLElement, kind: string, delay = 0) => {
+      el.dataset.revealKind = kind;
+      el.style.setProperty('--reveal-delay', `${delay}ms`);
+      targets.add(el);
+    };
 
     document.querySelectorAll<HTMLElement>('.section').forEach((section) => {
-      const shell = section.querySelector<HTMLElement>(':scope > .shell') ?? section;
-      const children = Array.from(shell.children) as HTMLElement[];
+      const cards = Array.from(section.querySelectorAll<HTMLElement>('.bento-card'));
+      cards.forEach((card, index) => addReveal(card, card.classList.contains('faq-item') ? 'faq' : 'card', index * 60));
 
-      children.forEach((child) => {
-        const cards = Array.from(child.querySelectorAll<HTMLElement>(':scope > .bento-card')) as HTMLElement[];
-        if (cards.length > 1) {
-          cards.forEach((card, i) => {
-            card.style.setProperty('--reveal-delay', `${i * 70}ms`);
-            targets.push(card);
-          });
-        } else {
-          targets.push(child);
-        }
+      const teamMembers = Array.from(section.querySelectorAll<HTMLElement>('.team-member'));
+      teamMembers.forEach((member, index) => addReveal(member, 'card', (index % 2) * 70));
+
+      const waitlistColumn = section.querySelector<HTMLElement>('.waitlist-column');
+      if (waitlistColumn) addReveal(waitlistColumn, 'copy');
+
+      const teamHeading = section.querySelector<HTMLElement>('.team-heading');
+      if (teamHeading) {
+        Array.from(teamHeading.children).forEach((child, index) =>
+          addReveal(child as HTMLElement, index === 0 ? 'heading' : 'copy', index * 70)
+        );
+      }
+
+      const root = section.querySelector<HTMLElement>(':scope > .shell');
+      if (!root) return;
+
+      Array.from(root.children).forEach((child, index) => {
+        const el = child as HTMLElement;
+        if (targets.has(el) || el.querySelector('.bento-card, .team-member, .waitlist-column')) return;
+
+        const isSidebar = root.classList.contains('grid-sidebar');
+        const kind = isSidebar
+          ? index === 0 ? 'sidebar-title' : 'sidebar-copy'
+          : el.matches('h1, h2, h3, .display') ? 'heading' : 'copy';
+        addReveal(el, kind, index * 70);
       });
     });
 
-    // The hero is above the fold; give it the same entrance on load.
-    const heroInner = document.querySelector<HTMLElement>('.hero-inner');
-    if (heroInner) {
+    document.querySelectorAll<HTMLElement>('.hero-inner, .service-hero-inner').forEach((heroInner) => {
       Array.from(heroInner.children).forEach((child, i) => {
         const el = child as HTMLElement;
-        el.style.setProperty('--reveal-delay', `${i * 80}ms`);
-        targets.push(el);
+        addReveal(el, i === 0 ? 'copy' : i === 1 ? 'heading' : 'copy', i * 70);
       });
-    }
+    });
+
+    document.querySelectorAll<HTMLElement>('.footer-grid > *').forEach((column, index) =>
+      addReveal(column, 'copy', index * 60)
+    );
+    const footerBottom = document.querySelector<HTMLElement>('.footer-bottom');
+    if (footerBottom) addReveal(footerBottom, 'copy', 120);
 
     targets.forEach((el) => el.classList.add('reveal'));
 
@@ -260,14 +253,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           const bottom = r.card.getBoundingClientRect().bottom;
           const settled = Math.min(Math.max(vh - bottom, 0), r.gap);
           const raw = settled - r.gap;
-          // Never let the lag carry the element up under the fixed nav bar:
-          // work out its untransformed top (live top minus the transform
-          // already applied) and floor the target so el.top can't end up
-          // above the nav's own bottom edge. Capped at 0 so this floor can
-          // only pull the target UP toward its natural resting spot, never
-          // push it past it — otherwise, once the card has scrolled far
-          // enough that its natural top is already above the nav, the
-          // "floor" turns positive and shoves the footer below the card.
           const naturalTop = r.el.getBoundingClientRect().top - r.current;
           const minTarget = Math.min(navBottom - naturalTop, 0);
           r.target = Math.max(raw, minTarget);
@@ -304,9 +289,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     targets.forEach((el) => io.observe(el));
   }
 
-  /* ---------------------------------------------------------------------
-     Mobile/tablet hamburger menu.
-  --------------------------------------------------------------------- */
   const navToggle = document.querySelector<HTMLElement>('[data-nav-toggle]');
   const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
 
@@ -320,9 +302,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     setNavOpen(!navMenu?.classList.contains('nav-open'));
   });
 
-  // Los enlaces cierran la navegación después de elegir un destino. Los
-  // botones internos, como el disclosure de Servicios, deben conservarla
-  // abierta para poder mostrar y recorrer su subnivel.
   navMenu?.querySelectorAll('a').forEach((el) => {
     el.addEventListener('click', () => setNavOpen(false));
   });
@@ -366,9 +345,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     });
   }
 
-  /* ---------------------------------------------------------------------
-     FAQ accordion: one panel open at a time, closed on load.
-  --------------------------------------------------------------------- */
   let openFaq: string | null = null;
 
   document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((toggle) => {
@@ -388,9 +364,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     });
   });
 
-  /* ---------------------------------------------------------------------
-     Contact request modal — one form, two destinations (Grow / Learn).
-  --------------------------------------------------------------------- */
   const modal = document.querySelector<HTMLElement>('[data-modal]');
   const modalPanel = document.querySelector<HTMLElement>('[data-modal-panel]');
   const modalForm = document.querySelector<HTMLFormElement>('[data-form="contact"]');
@@ -456,7 +429,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
     if (event.key !== 'Tab') return;
 
-    // Trap focus inside the dialog.
     const focusables = modal.querySelectorAll<HTMLElement>(
       'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
@@ -474,10 +446,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     }
   });
 
-  /* ---------------------------------------------------------------------
-     Forms. The site is static; each form posts JSON straight to the API.
-     Field names in the payload are the input `name` attributes.
-  --------------------------------------------------------------------- */
   interface ApiResponse {
     ok: boolean;
     error?: { code: string; message: string; fields?: Record<string, string> };
@@ -581,7 +549,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           body: JSON.stringify(payload),
         });
 
-        /* La API responde { ok: true, ... } o { ok: false, error: { code, message, fields } }. */
         const data = (await res.json().catch(() => null)) as ApiResponse | null;
 
         if (!res.ok) {
@@ -611,7 +578,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           submit.removeAttribute('aria-busy');
         }
         if (labelNode) labelNode.textContent = label;
-        /* Cada token de Turnstile se puede validar una sola vez. */
         const widget = form.querySelector<HTMLElement>('.cf-turnstile');
         if (widget) {
           window.turnstile?.reset(widget);

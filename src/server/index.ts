@@ -9,11 +9,6 @@ import { contactRoute } from './routes/contact';
 import { waitlistRoute } from './routes/waitlist';
 import type { AppBindings } from './types';
 
-/**
- * Worker único: Cloudflare sirve el sitio estático de Astro desde ./dist y
- * enruta /api/* a este código (assets.run_worker_first en wrangler.jsonc).
- * https://developers.cloudflare.com/workers/static-assets/routing/worker-script/
- */
 const app = new Hono<AppBindings>();
 
 app.onError(onError);
@@ -25,7 +20,6 @@ api.use('*', securityHeaders());
 api.use('*', sameOrigin());
 api.use('*', requestMeta());
 
-// Sonda de salud: no recibe cuerpo, por eso va antes del guard de JSON.
 api.get('/health', (c) => c.json({ ok: true }));
 
 api.use('/waitlist', rateLimit(), jsonRequest());

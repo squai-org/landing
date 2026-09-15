@@ -6,7 +6,9 @@ const { ui, labels } = await getSiteContent();
 ---
 
 <section class="section final-cta">
-  <img class="brand-shape final-shape" src="/images/shape-final-dark.svg" alt="" aria-hidden="true" />
+  <svg class="brand-shape final-shape" viewBox="0 0 829.354 840.548" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M31.9073 699.861C22.617 681.573 2.64842 641.191 2.05424 621.04C-1.79941 490.905 0.95924 359.744 0.916799 229.439C0.912555 218.057 4.35032 203.986 7.81776 193.232C31.0882 120.889 82.3655 60.8656 150.203 26.5628C206.005 -1.20686 239.78 0.854838 299.66 1.04998L410.711 1.43604C476.249 1.58452 579.037 -5.75449 638.514 11.3926C732.224 38.4114 813.89 132.118 825.544 228.71C829.308 254.592 828.014 286.145 828.086 312.668L828.171 438.874C828.137 479.617 831.112 552.999 827.751 590.708C825.726 611.97 821.037 632.893 813.8 652.989C787.555 725.849 737.347 783.225 666.631 816.306C606.569 844.407 567.795 840.44 503.246 840.258C429.81 840.05 355.058 840.423 281.495 840.063C241.601 840.258 220.435 835.939 182.688 825.054C107.784 795.146 74.2211 767.313 31.9073 699.861Z" fill="var(--midnight)" />
+  </svg>
   <div class="shell grid-sidebar final-content">
     <h2 class="display d-h2 sidebar-sticky final-title">
       {ui.finalCta.title}
@@ -14,7 +16,7 @@ const { ui, labels } = await getSiteContent();
     <div class="final-copy-column">
       {ui.finalCta.body.map((paragraph) => <p class="lead final-copy">{paragraph}</p>)}
       <div class="final-action">
-        <Button variant="white" href="/servicios/squai-one#lista">{labels.reserve}</Button>
+        <Button variant="white" href="/servicios/squai-one#lista">{ui.finalCta.cta || 'Asegurar mi cupo para aprender IA'}</Button>
       </div>
     </div>
   </div>
@@ -39,19 +41,10 @@ const { ui, labels } = await getSiteContent();
   .final-action { display: flex; align-self: stretch; justify-content: flex-end; margin-top: 12px; }
   .final-copy { color: var(--canvas); opacity: .9; }
 
-  /* Por debajo de 1024px la forma oscura se sale del encuadre y el cuerpo
-     quedaría en claro sobre el turquesa (contraste ~1.5:1, ilegible). La
-     columna de texto lleva entonces su propio panel oscuro: el mismo fondo
-     que en desktop, donde ese texto también se lee sobre la forma. */
   @media (max-width: 1023px) {
     .final-action { justify-content: flex-start; }
     .final-shape { display: none; }
-    .final-copy-column {
-      align-self: stretch;
-      padding: clamp(24px, 6vw, 40px);
-      border-radius: clamp(28px, 10vw, 72px) var(--radius-xl) var(--radius-xl) var(--radius-xl);
-      background: var(--midnight);
-    }
+    .final-copy { color: var(--midnight); opacity: 1; }
   }
   @media (max-width: 900px) {
     .final-content { grid-template-columns: 1fr; gap: clamp(24px, 4vw, 40px); }

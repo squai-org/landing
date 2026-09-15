@@ -6,16 +6,10 @@
   "observability": {
     "enabled": true
   },
-  // El Worker sirve el sitio estático de Astro y, además, atiende /api/*.
-  // https://developers.cloudflare.com/workers/static-assets/
   "assets": {
     "directory": "./dist",
-    // Sin esta lista, Cloudflare intenta primero servir un asset y solo invoca
-    // al Worker cuando no existe. Con ella, /api/* entra siempre al Worker.
-    // https://developers.cloudflare.com/workers/static-assets/routing/worker-script/
     "run_worker_first": ["/api/*"]
   },
-  // https://developers.cloudflare.com/d1/worker-api/
   "d1_databases": [
     {
       "binding": "DB",
@@ -24,10 +18,6 @@
       "migrations_dir": "migrations"
     }
   ],
-  // 5 peticiones por minuto y por IP en /api/*, contadas en el edge.
-  // El binding es gratuito y no consume la única regla de rate limiting que
-  // el plan Free permite por zona.
-  // https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
   "ratelimits": [
     {
       "name": "API_RATE_LIMITER",
