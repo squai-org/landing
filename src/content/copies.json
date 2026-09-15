@@ -33,48 +33,61 @@
       }
     ],
     "cohort": {
-      "status": "Preinscripción abierta",
+      "status": "Lista de espera abierta",
       "name": "Fundamentos de Inteligencia Artificial Generativa",
       "ecosystem": "Squai One",
-      "duration": "5 semanas · 20 horas",
+      "duration": "5 semanas · 20 horas. Menos de lo que pasas en redes sociales.",
       "schedule": "Martes y jueves, 6:30 p. m. a 8:30 p. m. (hora Colombia)",
-      "modality": "100% virtual, en vivo y con grabaciones"
+      "modality": "100% virtual, en vivo y con grabaciones por si la vida se interpone."
     },
     "faqs": [
       {
-        "q": "¿Necesito saber de tecnología para trabajar con ustedes?",
+        "q": "¿Necesito ser un genio de la computación o saber programar?",
         "a": [
-          "No. Todo lo que hacemos está pensado para personas y equipos que no vienen del mundo técnico. Explicamos los conceptos con claridad y enfocados en aplicarlos."
+          "Cero. No nos importa si todavía peleas con el control del televisor. Te explicamos todo clarito y al punto, para que lo uses en tu vida diaria."
         ]
       },
       {
-        "q": "¿Qué diferencia a Squai de un curso de IA cualquiera?",
+        "q": "¿En qué se diferencia Squai de los otros 500 cursos de IA que me salen en Instagram?",
         "a": [
-          "Que no empezamos por la herramienta de moda, sino por que entiendas cómo funciona. Y que tampoco te vendemos que la IA lo puede todo: también te decimos qué no conviene delegarle."
+          "Que no te vendemos la herramienta de moda ni promesas vacías. Te enseñamos a entender qué pasa por detrás. Y si la IA no sirve para tu problema, te lo decimos de frente para que no pierdas tiempo."
         ]
       },
       {
         "q": "¿Cuál de los tres servicios me sirve?",
         "a": [
-          "Squai One si aprendes por tu cuenta, Squai Grow si el que tiene que moverse es tu equipo, y Squai Learn si trabajas en una institución educativa. Cada uno tiene su página con el detalle."
+          "Squai One es para personas reales que quieren aprender en vivo, a su ritmo y sin rodeos. Squai Grow es para empresas que quieren que su equipo de verdad adopte la IA y deje de usarla solo para corregir la ortografía de los correos. Squai Learn es para instituciones educativas que buscan capacitar docentes o estudiantes sin aburrir a nadie.",
+          "Si aún no sabes cuál elegir, escríbenos y te ayudamos a descifrarlo sin intentar venderte algo que no necesitas."
         ]
       },
       {
-        "q": "¿Las formaciones son virtuales o presenciales?",
+        "q": "¿Tengo que vestirme para la clase o todo es desde mi cama?",
         "a": [
-          "Las cohortes abiertas son 100% virtuales y en vivo, con grabaciones. Para equipos e instituciones trabajamos virtual o presencial, según convenga."
+          "Los programas de Squai One son 100% virtuales. Para Squai Grow y Squai Learn, nos adaptamos: pueden ser virtuales o presenciales si estás en algunas ciudades de Colombia y quieres verle la cara al squad en persona (y sí, puedes ir en pijama, no juzgamos)."
         ]
       },
       {
-        "q": "¿Trabajan solo en Colombia?",
+        "q": "¿Al terminar me dan un certificado para mostrar en LinkedIn?",
         "a": [
-          "Trabajamos en español con toda Latinoamérica. Las sesiones en vivo se coordinan en hora Colombia."
+          "Claro que sí. Al finalizar cualquier programa te entregamos un certificado digital bien diseñado que respalda tus horas de formación y las habilidades prácticas que aprendiste. Sirve para actualizar tu perfil, mostrar en tu trabajo o presumirle a tus colegas que ya no haces reportes a mano."
         ]
       },
       {
-        "q": "¿Cómo empiezo?",
+        "q": "¿Están solo en Colombia?",
         "a": [
-          "Si es para ti, entra a Squai One y únete a la lista de espera. Si es para una organización o una institución, solicita una llamada desde la página del servicio y te escribimos en menos de 24 horas hábiles."
+          "¡Estamos en toda Latinoamérica! Mientras tengas conexión a internet y hables español, podemos acompañarte a ti, a tu empresa o a tu institución en cualquier rincón de la región."
+        ]
+      },
+      {
+        "q": "Ya me convencieron, ¿cómo empiezo esto?",
+        "a": [
+          "Si es para ti, entra a Squai One y únete a la lista de espera antes de que nos quedemos sin cupos. Si es para tu empresa o colegio, pide una llamada desde la página del servicio. Te prometemos responder en menos de 24 horas hábiles (y sí, responde un humano de carne y hueso, no un bot atascado)."
+        ]
+      },
+      {
+        "q": "¿Qué herramienta me van a obligar a usar?",
+        "a": [
+          "La que quieras. La app no es el problema, es cómo le hablas. Te enseñamos la lógica, así que si mañana sale una nueva, no entras en crisis."
         ]
       }
     ],
@@ -168,18 +181,18 @@
       {
         "img": "/images/team1.webp",
         "name": "Laura Villada",
-        "role": "Estratega de Adopción de IA, Co-fundadora de Squai",
+        "role": "Estratega de Adopción de IA & Co-fundadora",
         "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
         "aria": "LinkedIn de Laura Villada",
-        "d": "Se encarga de traducir lo técnico al lenguaje del día a día, diseñando experiencias de aprendizaje donde las personas realmente entienden y aplican las bases."
+        "d": "Tu traductora de jerga técnica a español. Laura diseña la estructura de nuestros programas para que el aprendizaje no sea un somnífero. Se encarga de que los programas están pensados estratégicamente para que entiendas la IA de raíz."
       },
       {
         "img": "/images/team2.webp",
         "name": "Sebastián Rico",
-        "role": "Ingeniero de IA, Co-fundador de Squai",
+        "role": "Ingeniero de IA & Co-fundador",
         "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
         "aria": "LinkedIn de Sebastián Rico",
-        "d": "Aporta la visión técnica de fondo, filtrando el ruido del mercado para enseñarte a pensar con la tecnología sin enredarte en la complejidad innecesaria."
+        "d": "Nuestro filtro anti-humo. Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet. Su misión en el equipo es tomar la ingeniería pura y dura, simplificarla y meterla en el contenido para que entiendas cómo funciona la máquina por debajo."
       }
     ],
     "navLinks": [
@@ -217,13 +230,13 @@
         "cta": {
           "modal": "",
           "target": "lista",
-          "label": " Conocer el programa"
+          "label": "Conocer el programa"
         },
         "accent": "#8A8EF9",
         "span": "span-3 row-2",
         "tone": "peri",
         "payback": {
-          "headline": "Vas a desarrollar un instinto para usar cualquier IA, la que está de moda hoy y la que se inventen mañana",
+          "headline": "Vas a desarrollar un instinto para usar cualquier IA, la que está de moda hoy y la que se inventen mañana.",
           "body": [
             "Entiendes mejor por qué la IA responde como responde, practicas con situaciones tuyas y aprendes una base que puedes llevar contigo aunque mañana aparezca otra herramienta con nombre nuevo y una campaña diciendo que ahora sí llegó a resolverte la existencia."
           ]
@@ -271,39 +284,27 @@
         },
         "faqs": [
           {
-            "q": "¿Necesito conocimientos previos de tecnología?",
-            "a": [
-              "No. Todo está diseñado desde cero para personas no técnicas. Explicamos los conceptos con claridad y enfocados en aplicarlos en tu día a día."
-            ]
-          },
-          {
             "q": "¿Cuándo son las clases y cuánto duran?",
             "a": [
-              "Las sesiones en vivo son martes y jueves de 6:30 p.m. a 8:30 p.m. (hora Colombia), 4 horas semanales durante 5 semanas."
+              "Martes y jueves, de 6:30 p. m. a 8:30 p. m. hora Colombia. Son 4 horas semanales durante 5 semanas: suficiente para avanzar; no para que olvides cómo se ve el resto de tu vida."
             ]
           },
           {
             "q": "¿Qué pasa si no puedo asistir a una clase en vivo?",
             "a": [
-              "Todas las sesiones se graban y quedan disponibles durante el programa para que te pongas al día o repases."
-            ]
-          },
-          {
-            "q": "¿Qué herramientas vamos a usar?",
-            "a": [
-              "ChatGPT, Claude y Gemini, entre otras. Lo importante es la lógica detrás: con eso te adaptas a la que necesites."
+              "No tienes que inventar una emergencia diplomática. Las sesiones quedan grabadas durante el programa para que puedas ponerte al día o volver sobre algo que quieras repasar."
             ]
           },
           {
             "q": "¿Qué necesito para participar?",
             "a": [
-              "Un computador con internet y una cuenta gratuita en las herramientas que usemos. Con las versiones gratis alcanza."
+              "Un computador con internet. Con eso puedes empezar. La decisión de pagar una aplicación la tomas tú."
             ]
           },
           {
-            "q": "¿Cómo entro a la próxima cohorte?",
+            "q": "¿Cómo entro al próximo programa?",
             "a": [
-              "Los cupos se asignan desde la lista de espera. Déjanos tus datos y te escribimos apenas se abra la inscripción, con fechas confirmadas e información de pago."
+              "Te unes a la lista de espera. Cuando abramos inscripciones, te escribimos con las fechas confirmadas y la información de pago. Fácil. La parte complicada la reservamos para aprender IA, no para anotarte."
             ]
           }
         ],
@@ -312,37 +313,38 @@
       {
         "slug": "squai-grow",
         "name": "Squai Grow",
-        "audience": "Equipos y organizaciones",
-        "slogan": "Que la IA entre a tus procesos sin desordenar lo que ya funciona.",
+        "audience": "Para empresas y equipos de trabajo",
+        "slogan": "Que tu equipo aprenda IA sin convertir cada reunión en \"¿y esto cómo se usa?\".",
         "cardCopy": "Entrenamos a tu equipo sobre situaciones, tareas y preguntas que ya forman parte de su contexto, guiados por profesionales que saben la teoría y la usan a diario para resolver problemas en distintas industrias.",
         "discoverLabel": "Ver cómo funciona para empresas",
         "cta": {
           "modal": "grow",
           "target": "",
-          "label": "Solicitar una llamada para mi equipo"
+          "label": "Quiero hablar de mi equipo"
         },
+        "contactCopy": "Cuéntanos qué necesitan aprender. Nosotros hacemos preguntas antes de aparecer con 84 diapositivas.",
         "accent": "#44D4C8",
         "span": "span-3",
         "tone": "teal",
         "payback": {
-          "headline": "Un equipo que usa IA en su trabajo real, con reglas claras y sin frenar la operación.",
+          "headline": "Un equipo que entiende cómo usar IA sin depender del entusiasmo de dos personas.",
           "body": [
-            "Partimos de las tareas que ya ocupan las horas de tu equipo, no de demos genéricas. Acompañamos a quienes tienen que usar la IA en el día a día, no solo a quien firmó la decisión, para que la adopción sobreviva al entusiasmo inicial. Y dejamos reglas claras sobre qué se comparte, qué se revisa y quién responde por qué, escritas en un lenguaje que cualquiera en el equipo puede aplicar."
+            "Trabajamos con situaciones propias del equipo, construimos una base compartida para aprender y dejamos acuerdos claros sobre qué conviene hacer, qué debe revisarse y cómo cuidar la información. Así el uso de IA no queda en manos de quien vio más videos el fin de semana."
           ]
         },
         "challenge": {
           "cards": [
             {
-              "t": "Pilotos que nunca escalan",
-              "d": "Una prueba entusiasta, un par de personas convencidas y seis meses después nada cambió en la operación."
+              "t": "Pruebas piloto",
+              "d": "Esas famosas pruebas de IA en las empresas terminan siendo un chiste: dos personas muy emocionadas la usan una semana y seis meses después todos siguen haciendo lo mismo de siempre."
             },
             {
               "t": "Licencias compradas y sin usar",
-              "d": "La herramienta ya está pagada. Lo que falta es que alguien explique para qué sirve en el trabajo concreto de cada área."
+              "d": "Tienen licencias carísimas sin un minuto de uso porque falta alguien que aterrice la herramienta a las tareas diarias del área."
             },
             {
               "t": "Un equipo partido en dos",
-              "d": "Unos ya la usan a escondidas y sin criterio; otros no la tocan por miedo a equivocarse. Ninguno de los dos extremos es sostenible."
+              "d": "La mitad del equipo usa IA a escondidas haciendo desastres y la otra mitad le tiene terror."
             }
           ]
         },
@@ -352,27 +354,21 @@
               "t": "Diagnosticar",
               "tone": "",
               "items": [
-                "Mapeo de procesos y tareas candidatas",
-                "Dónde rinde la IA y dónde no vale la pena",
-                "Nivel real del equipo, sin encuestas de mentira"
+                "Diagnosticamos sin encuestas aburridas para ver dónde vale la pena meter IA y dónde es botar la plata."
               ]
             },
             {
               "t": "Formar",
               "tone": "teal",
               "items": [
-                "Sesiones por área con sus propios casos",
-                "Prompts y flujos armados con sus datos",
-                "Materiales que quedan en la organización"
+                "Formamos a cada grupo trabajando con sus propios datos y armamos flujos que les queden para siempre."
               ]
             },
             {
               "t": "Sostener",
               "tone": "dark",
               "items": [
-                "Reglas de uso seguro y responsable",
-                "Referentes internos que mantienen la práctica",
-                "Seguimiento después de la formación"
+                "Establecemos lineamientos de uso seguro para que no haya accidentes, dejando referentes internos listos para mantener la práctica viva y no permitir que el esfuerzo se vuelva archivo muerto."
               ]
             }
           ]
@@ -381,31 +377,32 @@
           {
             "q": "¿Desde cuántas personas trabajan con un equipo?",
             "a": [
-              "Desde 5. También armamos rutas separadas cuando son varias áreas con necesidades distintas."
+              "Desde 5. Si participan varias áreas, podemos plantear rutas distintas según lo que cada grupo necesite aprender. No hace falta meter a todo el mundo en la misma clase solo para llenar cuadritos en el calendario."
             ]
           },
           {
-            "q": "¿El contenido es el mismo del programa abierto?",
+            "q": "¿El contenido es el mismo del programa abierto para personas?",
             "a": [
-              "No. La metodología es la misma, el contenido no: partimos de un diagnóstico de sus procesos y armamos las sesiones sobre esos casos."
+              "No. Compartimos una metodología, pero en Grow construimos el entrenamiento a partir del contexto, las tareas y las necesidades del equipo."
             ]
           },
           {
             "q": "¿Las sesiones son virtuales o presenciales?",
             "a": [
-              "Las dos. Virtual en vivo por defecto; presencial cuando el equipo está reunido y tiene sentido."
+              "Podemos trabajar de las dos formas. Normalmente hacemos las sesiones en vivo de manera virtual y también podemos ir presencialmente cuando el grupo está reunido y tiene sentido hacerlo.",
+              "No llevamos una bandera de \"presencial\" o \"virtual\". Llevamos la clase."
             ]
           },
           {
             "q": "¿Necesitamos comprar licencias antes de empezar?",
             "a": [
-              "No para empezar. Con las versiones gratuitas se cubre la formación, y parte del trabajo es ayudarles a decidir qué vale la pena pagar y qué no."
+              "No. Podemos comenzar con opciones gratuitas y, durante el proceso, entender qué necesita el equipo antes de pagar por cosas \"por si acaso\"."
             ]
           },
           {
             "q": "¿Cómo saben si funcionó?",
             "a": [
-              "Definimos al inicio qué tareas queremos mover y con qué se compara. Sin eso, cualquier resultado suena bonito y no dice nada."
+              "Antes de empezar acordamos qué queremos observar y con qué vamos a compararlo. Después revisamos qué cambió."
             ]
           }
         ],
@@ -414,37 +411,38 @@
       {
         "slug": "squai-learn",
         "name": "Squai Learn",
-        "audience": "Comunidades educativas",
-        "slogan": "Preparar a docentes y estudiantes para un aula que ya cambió.",
+        "audience": "Para colegios, universidades y comunidades educativas",
+        "slogan": "Enseñar y aprender con IA sin que termine siendo solo copiar y pegar con suscripción Premium.",
         "cardCopy": "Acompañamiento en IA para toda la comunidad educativa. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con criterio, ética y pensamiento crítico.",
         "discoverLabel": "Explorar el programa educativo",
         "cta": {
           "modal": "learn",
           "target": "",
-          "label": "Solicitar una llamada para mi institución"
+          "label": "Quiero hablar de mi comunidad"
         },
+        "contactCopy": "Cuéntanos qué preguntas necesitan resolver. \"Todo lo relacionado con IA\" también es una respuesta; solo necesitaremos conversar un poquito más.",
         "accent": "#F9C24D",
         "span": "span-3",
         "tone": "gold",
         "payback": {
-          "headline": "Docentes que enseñan con IA y estudiantes que la usan sin dejar de aprender.",
+          "headline": "Una comunidad que puede hablar de IA sin que cada conversación parezca empezar desde cero.",
           "body": [
-            "Los docentes saben qué pueden delegar en la preparación de clase y qué tienen que seguir haciendo ellos, con criterio y no con miedo. Los estudiantes usan la herramienta para entender más rápido, no para entregar sin haber entendido nada. Y la institución sostiene una postura clara, que se puede explicar en una reunión de padres y sostener en un consejo académico."
+            "Preparamos a tus docentes para que enseñen apoyándose en la IA sin sentir que los van a reemplazar, y a tus estudiantes para que la usen como herramienta de comprensión, no como máquina de hacer trampa. Construimos una postura institucional firme y sensata que le da tranquilidad a todo el mundo: desde el profesor que prepara su clase, hasta el padre de familia y el consejo directivo, logrando que la educación avance en lugar de pelear contra la corriente."
           ]
         },
         "challenge": {
           "cards": [
             {
-              "t": "Prohibirla no funcionó",
-              "d": "Los estudiantes ya la usan. La pregunta dejó de ser si entra al aula y pasó a ser cómo entra."
+              "t": "Prohibición",
+              "d": "Prohibir la IA en el aula sirvió para exactamente nada; los estudiantes la tienen en el bolsillo y la usan todos los días."
             },
             {
-              "t": "La integridad académica en juego",
-              "d": "Evaluar lo mismo de siempre con una IA disponible cambia lo que la nota está midiendo."
+              "t": "La integridad académica",
+              "d": "El desafío es ayudar a docentes y estudiantes a entender qué papel puede tener, cómo cambia algunas formas de enseñar y evaluar y dónde necesitamos poner límites claros."
             },
             {
-              "t": "Docentes sin tiempo para otra cosa",
-              "d": "Cualquier propuesta que sume trabajo en vez de quitarlo se abandona en dos semanas."
+              "t": "Docentes sin tiempo",
+              "d": "Si a eso le sumas que cualquier propuesta nueva solo significa más trasnocho y trabajo extra para los docentes, tienes un cóctel perfecto para que todos ignoren la tecnología y sigan fingiendo que nada ha pasado."
             }
           ]
         },
@@ -454,27 +452,21 @@
               "t": "Preparar",
               "tone": "",
               "items": [
-                "Diagnóstico del uso que ya existe en la institución",
-                "Ruta para docentes y ruta para estudiantes",
-                "Lenguaje común para toda la comunidad"
+                "Empezamos entendiendo cómo se está usando IA dentro de la comunidad y qué preguntas necesitan resolver docentes y estudiantes."
               ]
             },
             {
               "t": "Enseñar",
               "tone": "gold",
               "items": [
-                "Fundamentos de IA sin tecnicismos",
-                "IA aplicada a preparación de clase y evaluación",
-                "Uso responsable y honestidad académica"
+                "Enseñamos fundamentos con lenguaje claro, practicamos usos para preparación, aprendizaje y evaluación, trabajamos honestidad académica y construimos lineamientos que la comunidad pueda seguir utilizando después."
               ]
             },
             {
               "t": "Acompañar",
               "tone": "dark",
               "items": [
-                "Lineamientos de uso para la institución",
-                "Materiales para seguir usando después",
-                "Acompañamiento a los equipos que lideran el cambio"
+                "Te dejamos con lineamientos escritos y acompañamiento para que la institución no se quede a la deriva."
               ]
             }
           ]
@@ -483,31 +475,32 @@
           {
             "q": "¿Trabajan con colegios o solo con universidades?",
             "a": [
-              "Con ambos, y también con programas de formación. Cambia el lenguaje y los ejemplos, no la metodología."
+              "Con ambos, y también con otros espacios de formación. Adaptamos el lenguaje, los ejemplos y el recorrido según las personas con las que vamos a trabajar."
             ]
           },
           {
             "q": "¿La formación es para docentes o para estudiantes?",
             "a": [
-              "Las dos rutas existen y se pueden tomar por separado. Nuestra recomendación es empezar por docentes."
+              "Tenemos rutas para ambos y pueden desarrollarse por separado. En muchos casos recomendamos empezar con docentes para construir primero una base desde quienes acompañan el aprendizaje."
             ]
           },
           {
-            "q": "¿Nos ayudan a definir la política de uso de IA?",
+            "q": "¿Nos ayudan a definir lineamientos de uso de IA?",
             "a": [
-              "Sí. Salimos con lineamientos escritos que la institución puede adoptar, no con recomendaciones generales."
+              "Sí. Podemos trabajar con ustedes para construir lineamientos escritos, comprensibles y aplicables dentro de la comunidad.",
+              "La idea es que no terminen siendo otro PDF que alguien recuerda que existe justo cuando ya empezó la reunión."
             ]
           },
           {
             "q": "¿Enseñan a detectar textos hechos con IA?",
             "a": [
-              "Trabajamos el tema con honestidad: los detectores fallan en ambos sentidos. Es más sólido rediseñar la evaluación que apostarle a una herramienta que se equivoca."
+              "No tratamos los detectores como bolas de cristal. Pueden equivocarse, así que preferimos trabajar sobre cómo se diseña la evaluación, cómo se conversa sobre honestidad académica y cómo puede demostrarse el aprendizaje."
             ]
           },
           {
             "q": "¿Cuánto dura una formación?",
             "a": [
-              "Depende del alcance. Armamos la propuesta después de un diagnóstico corto con el equipo que lidera el proceso."
+              "Depende de a quién vamos a entrenar, qué necesitan aprender y qué alcance tiene el acompañamiento. Primero hacemos un diagnóstico breve y después proponemos la ruta."
             ]
           }
         ],
@@ -537,31 +530,31 @@
         "img": "/images/team3.webp",
         "name": "Daniel Guzmán",
         "role": "Analista de Procesos de Negocio",
-        "d": "Piensa en cómo integrar la IA sin desordenar lo que ya funciona en tus procesos."
+        "d": "El polo a tierra. Dani inyecta la realidad corporativa en la creación de los contenidos. Él estructura los módulos para asegurar que la IA se presente como una pieza que encaja en el caos diario de tus procesos sin desordenar lo que ya funciona."
       },
       {
         "img": "/images/team4.webp",
         "name": "Ana Lasso",
         "role": "Especialista en Gestión de Talento Humano",
-        "d": "Se enfoca en cómo los equipos adoptan la IA en el día a día, más allá de la teoría."
+        "d": "Nuestra brújula humana. Ana diseña el enfoque de adopción en nuestros programas. Se asegura de que no hablemos solo de botones y herramientas, sino de la psicología necesaria para que los equipos adopten la tecnología como un hábito y no la abandonen al tercer día."
       },
       {
         "img": "/images/team5.webp",
         "name": "Luis López",
         "role": "Analista de Datos",
-        "d": "Se asegura de que uses la IA con información confiable y bien estructurada."
+        "d": "Nuestro filtro de entrada. Él garantiza que los programas te preparen para organizar y estructurar tu información, porque sabe perfectamente que una IA alimentada con basura solo te va a devolver basura."
       },
       {
         "img": "/images/team6.webp",
         "name": "Carlos Gómez",
-        "role": "Analista de Seguridad de la Información",
-        "d": "Vela porque uses la IA sin exponer información sensible."
+        "role": "Especialista en Seguridad de la Información",
+        "d": "Nuestro paranoico de confianza (por tu bien). Carlos audita y construye los pilares de seguridad del contenido. Gracias a él, el diseño de los programas incluye exactamente lo que necesitas saber para pisar el acelerador con la IA, sin terminar exponiendo los secretos de la empresa al resto del mundo."
       }
     ],
     "statement": {
       "headline": "Corregir lo que hace la IA da más trabajo que hacerlo tú mismo.",
       "body": [
-        "Vivimos rodeados de gurus prometiendo agentes fantásticos y fórmulas mágicas para no volver a trabajar. Sin embargo, cuando intentas aplicar eso a tus notas, proyectos o tareas diarias, el resultado es tan genérico que terminas rehaciendo todo a mano. Es desesperante.",
+        "Vivimos rodeados de gurús prometiendo agentes fantásticos y fórmulas mágicas para no volver a trabajar. Sin embargo, cuando intentas aplicar eso a tus notas, proyectos o tareas diarias, el resultado es tan genérico que terminas rehaciendo todo a mano. Es desesperante.",
         "Creemos firmemente que la inteligencia artificial no es magia ni un privilegio reservado para expertos en tecnología. Debe ser una capacidad que cualquiera puede aprender a usar si se explica con claridad, desde la práctica y sin vender humo (y no, no te vas a volver millonario creando una aplicación con IA en una semana).",
         "Estamos aquí para que entiendas cómo funciona el asunto y dejes de pelear con las herramientas."
       ]
@@ -582,8 +575,8 @@
       "brand": "Squai",
       "reserve": "Reservar mi cupo para aprender IA",
       "call": "Solicitar una llamada",
-      "challenge": "Nuestro desafío",
-      "capabilities": "Capacidades",
+      "challenge": "El reto",
+      "capabilities": "Lo que vas a aprender",
       "terms": "Términos de Servicio",
       "privacy": "Política de Privacidad"
     },
@@ -603,8 +596,7 @@
         "scroll": "Seguir bajando"
       },
       "services": {
-        "payback": "Qué te llevas",
-        "contact": "Cuéntanos dónde están hoy y armamos la propuesta sobre eso."
+        "payback": "Qué te llevas"
       },
       "program": {
         "duration": "Duración",
@@ -670,25 +662,27 @@
         ]
       },
       "contact": {
-        "title": "Solicita una llamada",
+        "title": "Hablemos.",
         "close": "Cerrar",
         "responseTime": "Respondemos en menos de 24 horas hábiles."
       },
       "modal": {
         "grow": {
-          "copy": "Cuéntanos dónde están hoy y armamos una propuesta sobre sus procesos reales, no sobre un temario genérico.",
-          "placeholder": "¿En qué procesos crees que la IA puede ayudar?"
+          "title": "Cuéntanos qué tienes en mente",
+          "copy": "Danos un poco de contexto sobre lo que quieres lograr con IA y qué te gustaría mejorar. No necesitas llegar con todo resuelto ni escribir una tesis; con entender el punto de partida podemos comenzar.",
+          "placeholder": "Cuéntanos qué quieres lograr o qué te gustaría resolver."
         },
         "learn": {
-          "copy": "Cuéntanos con qué grupo trabajarías —docentes, estudiantes o ambos— y armamos la ruta para tu institución.",
-          "placeholder": "¿Con qué grupo quieres empezar y para qué?"
+          "title": "Empecemos por lo que necesitas",
+          "copy": "Cuéntanos qué quieres conseguir con IA, qué dudas tienes o qué te gustaría explorar. Si todavía está medio borroso, también sirve. Para eso existe la conversación.",
+          "placeholder": "Cuéntanos qué tienes en mente."
         }
       },
       "feedback": {
         "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
-        "sending": "Procesando tu solicitud… (esto deberia ser mas rapido que cuando le pides un consejo a la IA)",
-        "error": "No pudimos enviar la información. Revisa tu conexión o escríbenos directamente a team@squai.io.",
-        "contactSuccess": "Recibido. Te escribiremos en menos de 24 horas hábiles con los pasos a seguir.",
+        "sending": "Mandando esto al lugar correcto…",
+        "error": "Eso no salió como debía. Inténtalo otra vez o escríbenos a team@squai.io.",
+        "contactSuccess": "Listo. Ya nos llegó. Te escribimos en menos de 24 horas hábiles.",
         "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa."
       },
       "skip": "Saltar al contenido",

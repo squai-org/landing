@@ -32,9 +32,10 @@ const service = z.object({
   challenge: z.object({ cards: z.array(card).min(1) }),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
+  contactCopy: text.optional(),
   faqs: z.array(faq).min(1),
 });
-const modal = z.object({ copy: text, placeholder: text });
+const modal = z.object({ title: text, copy: text, placeholder: text });
 const inline = z.array(z.object({ text, href: link.optional() })).min(1);
 const legalPage = z.object({
   title: text, description: text, updated: text,
@@ -78,7 +79,7 @@ export const siteSchema = z.object({
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, servicesSubmenu: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text }),
-    services: z.object({ payback: text, contact: text }),
+    services: z.object({ payback: text }),
     program: z.object({ duration: text, schedule: text, modality: text }),
     team: z.object({ intro: paragraphs }),
     finalCta: z.object({ title: text, body: paragraphs }),

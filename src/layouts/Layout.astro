@@ -377,14 +377,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     backgroundInertState.clear();
   };
 
-  const MODAL_COPY: Record<string, { copy: string; placeholder: string }> = clientCopy.modal;
+  const MODAL_COPY: Record<string, { title: string; copy: string; placeholder: string }> = clientCopy.modal;
 
   const setModal = (open: boolean, eco?: string) => {
     if (!modal) return;
     if (open && eco && MODAL_COPY[eco]) {
       const conf = MODAL_COPY[eco];
+      const titleEl = modal.querySelector<HTMLElement>('[data-modal-title]');
       const copyEl = modal.querySelector<HTMLElement>('[data-modal-copy]');
       const textarea = modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]');
+      if (titleEl) titleEl.textContent = conf.title;
       if (copyEl) copyEl.textContent = conf.copy;
       if (textarea) textarea.placeholder = conf.placeholder;
       modalForm?.setAttribute('data-eco', eco);

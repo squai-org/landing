@@ -11,7 +11,7 @@ import Footer from '../../components/Footer.astro';
 import ContactModal from '../../components/ContactModal.astro';
 import Button from '../../components/Button.astro';
 import { getSiteContent } from '../../lib/content';
-const { ui, seo } = await getSiteContent();
+const { seo } = await getSiteContent();
 
 export async function getStaticPaths() {
   const { services } = await getSiteContent();
@@ -41,7 +41,7 @@ const { service } = Astro.props;
       <section class="section tint">
         <div class="shell service-contact-shell">
           <h2 class="display d-h2 service-contact-title">
-            {ui.services.contact}
+            {service.contactCopy}
           </h2>
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.cta.label}</Button>
         </div>
