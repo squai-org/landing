@@ -84,18 +84,10 @@ const { program, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSit
     user-select: none;
   }
   .hero-shape-gold {
-    width: 884px;
     height: auto;
-    left: -369px;
-    top: -383px;
-    transform: rotate(-60deg);
   }
   .hero-shape-periwinkle {
-    width: 1312px;
     height: auto;
-    right: -659px;
-    top: -214px;
-    transform: rotate(-22.64deg);
   }
 
   .hero-inner {
@@ -306,12 +298,132 @@ const { program, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSit
     .hero-line-mid { font-size: clamp(42px, calc(11.5vw - 4px), 92px); }
   }
 
-  @media (max-width: 1200px) {
-    .hero-shape { display: none; }
+  /* Escritorio extra grande: 1921 px en adelante */
+  @media (min-width: 1921px) {
+    .hero-shape-gold {
+      width: 884px;
+      left: -369px;
+      top: -383px;
+      transform: rotate(-60deg);
+    }
+    .hero-shape-periwinkle {
+      width: 1312px;
+      right: -659px;
+      top: -214px;
+      transform: rotate(-22.64deg);
+    }
+  }
+
+  /* Escritorio grande: 1601 px a 1920 px */
+  @media (min-width: 1601px) and (max-width: 1920px) {
+    .hero-shape-gold {
+      width: 884px;
+      left: -369px;
+      top: -483px;
+      transform: rotate(-60deg);
+    }
+    .hero-shape-periwinkle {
+      width: 1312px;
+      right: -669px;
+      top: -214px;
+      transform: rotate(-22.64deg);
+    }
+  }
+
+  /* Portátil grande: 1441 px a 1600 px */
+  @media (min-width: 1441px) and (max-width: 1600px) {
+    .hero-shape-gold {
+      width: 884px;
+      left: -479px;
+      top: -390px;
+      transform: rotate(-70deg);
+    }
+    .hero-shape-periwinkle {
+      width: 1312px;
+      right: -659px;
+      top: -214px;
+      transform: rotate(-32.64deg);
+    }
+  }
+
+  /* Portátil: 1201 px a 1440 px */
+  @media (min-width: 1201px) and (max-width: 1440px) {
+    .hero-shape-gold {
+      width: 884px;
+      left: -439px;
+      top: -640px;
+      transform: rotate(-60deg);
+    }
+    .hero-shape-periwinkle {
+      width: 1312px;
+      right: -659px;
+      top: -214px;
+      transform: rotate(-32.64deg);
+    }
+  }
+
+  /* Portátil pequeño: 1024 px a 1200 px */
+  @media (min-width: 1024px) and (max-width: 1200px) {
+    .hero-shape-gold {
+      width: 760px;
+      left: -500px;
+      top: -360px;
+      transform: rotate(-100deg);
+    }
+    .hero-shape-periwinkle {
+      width: 1100px;
+      right: -590px;
+      top: -180px;
+      transform: rotate(-42.64deg);
+    }
+  }
+
+  /* Tablet: 768 px a 1023 px */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero-shape { display: block; }
+    .hero-shape-gold {
+      width: 660px;
+      left: -350px;
+      top: -310px;
+      transform: rotate(-60deg);
+    }
+    .hero-shape-periwinkle {
+      width: 900px;
+      right: -500px;
+      top: -40px;
+      transform: rotate(-35.64deg);
+    }
+  }
+
+  /* Tablet pequeña: 641 px a 767 px */
+  @media (min-width: 641px) and (max-width: 767px) {
+    .hero-shape { display: block; }
+    .hero-shape-gold {
+      width: 560px;
+      left: -265px;
+      top: -260px;
+      transform: rotate(-60deg);
+    }
+    .hero-shape-periwinkle {
+      width: 960px;
+      right: -530px;
+      top: 40px;
+      transform: rotate(-28.64deg);
+    }
   }
 
   @media (max-width: 640px) {
     .hero { --nav-space: 84px; }
+    .hero-shape { display: block; }
+    .hero-shape-gold {
+      display: none;
+    }
+    .hero-shape-periwinkle {
+      width: 1140px;
+      right: -600px;
+      top: -80px;
+      transform: rotate(-28.64deg);
+    }
     .hero-line { font-size: clamp(50px, 16vw, 78px); }
     .hero-line-mid { font-size: clamp(46px, calc(16vw - 4px), 74px); }
     .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 8px 16px; }
