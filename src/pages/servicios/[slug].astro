@@ -7,12 +7,11 @@ import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
 import Waitlist from '../../components/Waitlist.astro';
 import Faq from '../../components/Faq.astro';
-import Follow from '../../components/Follow.astro';
 import Footer from '../../components/Footer.astro';
 import ContactModal from '../../components/ContactModal.astro';
 import Button from '../../components/Button.astro';
 import { getSiteContent } from '../../lib/content';
-const { ui, seo } = await getSiteContent();
+const { seo } = await getSiteContent();
 
 export async function getStaticPaths() {
   const { services } = await getSiteContent();
@@ -31,7 +30,7 @@ const { service } = Astro.props;
 
   <div class="content-shell content-shell-spaced">
 
-  <ServicePayback headline={service.payback.headline} cards={service.payback.cards} cta={service.cta} />
+  <ServicePayback headline={service.payback.headline} body={service.payback.body} cta={service.cta} />
 
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 
@@ -42,7 +41,7 @@ const { service } = Astro.props;
       <section class="section tint">
         <div class="shell service-contact-shell">
           <h2 class="display d-h2 service-contact-title">
-            {ui.services.contact}
+            {service.contactCopy}
           </h2>
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.cta.label}</Button>
         </div>
@@ -53,7 +52,6 @@ const { service } = Astro.props;
   }
 
   <Faq items={service.faqs} />
-  <Follow />
   </div>
   </main>
 

@@ -26,15 +26,16 @@ const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone: z.string() });
 const service = z.object({
   slug: text.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text,
+  name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text, discoverLabel: text,
   accent: text.regex(/^#[0-9a-fA-F]{6}$/), span: text, tone: z.string(),
-  payback: z.object({ headline: text, cards: z.array(card).min(1) }),
+  payback: z.object({ headline: text, body: paragraphs }),
   challenge: z.object({ cards: z.array(card).min(1) }),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
-  cta: z.object({ labelKey: z.enum(['reserve', 'call']), modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
+  cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
+  contactCopy: text.optional(),
   faqs: z.array(faq).min(1),
 });
-const modal = z.object({ copy: text, placeholder: text });
+const modal = z.object({ title: text, copy: text, placeholder: text });
 const inline = z.array(z.object({ text, href: link.optional() })).min(1);
 const legalPage = z.object({
   title: text, description: text, updated: text,
@@ -55,7 +56,7 @@ export const siteSchema = z.object({
   heroVerbs: z.array(z.object({ word: text, color: text.regex(/^#[0-9a-fA-F]{6}$/) })).min(1),
   heroLines: z.object({ object: text, middle: text, last: text }),
   heroSubtitle: text,
-  cohort: z.object({ status: text, name: text, ecosystem: text, duration: text, schedule: text, modality: text, seats: text }),
+  cohort: z.object({ status: text, name: text, ecosystem: text, duration: text, schedule: text, modality: text }),
   statement: z.object({ headline: text, body: paragraphs }),
   whatWeDo: z.object({ body: paragraphs }),
   capabilities: z.array(card.extend({ span: text, tone: z.string() })).min(1),
@@ -76,12 +77,13 @@ export const siteSchema = z.object({
   seo: z.object({ title: text, description: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
-    navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text }),
+    navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, servicesSubmenu: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text }),
-    services: z.object({ discover: text, payback: text, contact: text }),
+    services: z.object({ payback: text }),
+    program: z.object({ duration: text, schedule: text, modality: text }),
     team: z.object({ intro: paragraphs }),
     finalCta: z.object({ title: text, body: paragraphs }),
-    follow: z.object({ title: text, copy: paragraphs }),
+    follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
     waitlist: z.object({ title: text, copy: paragraphs }),
     forms: z.object({

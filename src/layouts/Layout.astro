@@ -80,11 +80,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
   };
 
-  const scrollToSection = (id: string) => {
+  const scrollToSection = (id: string, instant = false) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const target = el.getBoundingClientRect().top + window.scrollY - navOffset();
-    if (prefersReducedMotion) {
+    /* .section carries its own top padding for rhythm between sections
+       (var(--section-gap), up to 168px). Landing on the section's own
+       edge leaves that whole padding as dead space below the nav, so
+       aim past it, at the section's content box instead. */
+    const topPadding = parseFloat(getComputedStyle(el).paddingTop) || 0;
+    const target = el.getBoundingClientRect().top + window.scrollY + topPadding - navOffset();
+    if (prefersReducedMotion || instant) {
       window.scrollTo(0, target);
       return;
     }
@@ -100,6 +105,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     };
     requestAnimationFrame(step);
   };
+
+  /* Arriving with a hash already in the URL (nav click from another page,
+     a bookmark, a shared link) skips the click handler below entirely —
+     the browser does its own native jump first, landing on the same
+     padding-heavy section edge. Snap it to the corrected position right
+     after. */
+  if (location.hash.length > 1) {
+    const targetId = decodeURIComponent(location.hash.slice(1));
+    if (document.getElementById(targetId)) scrollToSection(targetId, true);
+  }
 
   document.querySelectorAll<HTMLElement>('[data-scroll-to]').forEach((el) => {
     el.addEventListener('click', (event) => {
@@ -218,10 +233,22 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
       const computeTargets = () => {
         const vh = window.innerHeight;
+        const navBottom = navOffset();
         rises.forEach((r) => {
           const bottom = r.card.getBoundingClientRect().bottom;
           const settled = Math.min(Math.max(vh - bottom, 0), r.gap);
-          r.target = settled - r.gap;
+          const raw = settled - r.gap;
+          // Never let the lag carry the element up under the fixed nav bar:
+          // work out its untransformed top (live top minus the transform
+          // already applied) and floor the target so el.top can't end up
+          // above the nav's own bottom edge. Capped at 0 so this floor can
+          // only pull the target UP toward its natural resting spot, never
+          // push it past it — otherwise, once the card has scrolled far
+          // enough that its natural top is already above the nav, the
+          // "floor" turns positive and shoves the footer below the card.
+          const naturalTop = r.el.getBoundingClientRect().top - r.current;
+          const minTarget = Math.min(navBottom - naturalTop, 0);
+          r.target = Math.max(raw, minTarget);
         });
       };
 
@@ -362,14 +389,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     backgroundInertState.clear();
   };
 
-  const MODAL_COPY: Record<string, { copy: string; placeholder: string }> = clientCopy.modal;
+  const MODAL_COPY: Record<string, { title: string; copy: string; placeholder: string }> = clientCopy.modal;
 
   const setModal = (open: boolean, eco?: string) => {
     if (!modal) return;
     if (open && eco && MODAL_COPY[eco]) {
       const conf = MODAL_COPY[eco];
+      const titleEl = modal.querySelector<HTMLElement>('[data-modal-title]');
       const copyEl = modal.querySelector<HTMLElement>('[data-modal-copy]');
       const textarea = modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]');
+      if (titleEl) titleEl.textContent = conf.title;
       if (copyEl) copyEl.textContent = conf.copy;
       if (textarea) textarea.placeholder = conf.placeholder;
       modalForm?.setAttribute('data-eco', eco);
