@@ -102,7 +102,9 @@ const { program, ui, labels } = await getSiteContent();
     color: var(--ink-body);
   }
   .waitlist-copy p + p { margin-top: 12px; }
-  .waitlist-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle); }
+  /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1; WCAG 2.2 AA exige 4.5:1
+     para texto normal. --periwinkle-ink da 5.65:1. */
+  .waitlist-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle-ink); }
   .program-detail-card {
     gap: 8px;
     padding: clamp(20px, 1.8vw, 30px);

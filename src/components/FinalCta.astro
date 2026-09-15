@@ -44,12 +44,7 @@ const { ui, labels } = await getSiteContent();
   @media (max-width: 1023px) {
     .final-action { justify-content: flex-start; }
     .final-shape { display: none; }
-    .final-copy-column {
-      align-self: stretch;
-      padding: clamp(24px, 6vw, 40px);
-      border-radius: clamp(28px, 10vw, 72px) var(--radius-xl) var(--radius-xl) var(--radius-xl);
-      background: var(--midnight);
-    }
+    .final-copy { color: var(--midnight); opacity: 1; }
   }
   @media (max-width: 900px) {
     .final-content { grid-template-columns: 1fr; gap: clamp(24px, 4vw, 40px); }

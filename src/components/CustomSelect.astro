@@ -14,7 +14,13 @@ const fieldId = `${idPrefix}-${name}`;
 const errorId = `${fieldId}-error`;
 ---
 
-<div class="field-group" data-custom-select data-select-name={name}>
+<div
+  class="field-group"
+  data-custom-select
+  data-select-name={name}
+  data-select-required={required ? 'true' : undefined}
+  data-select-message={placeholder}
+>
   <span class="field-label" id={`${fieldId}-label`}>
     {label} {required && <span aria-hidden="true">*</span>}
   </span>
@@ -31,9 +37,12 @@ const errorId = `${fieldId}-error`;
   >
     <span data-select-trigger-label class="dropdown-trigger-placeholder">{placeholder}</span>
   </button>
-  {
-  }
-  <input type="text" name={name} data-select-value class="sr-only" tabindex="-1" aria-hidden="true" required={required} />
+  {/* Solo transporta el valor. No lleva `required` ni `aria-hidden`: eso dejaba
+      un campo obligatorio sin nombre accesible y fuera del orden de foco, capaz
+      de invalidar el envio sin que un lector de pantalla pudiera corregirlo. Lo
+      obligatorio se valida contra el boton disparador, en Layout.astro.
+      https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html */}
+  <input type="hidden" name={name} data-select-value />
   <span id={errorId} class="field-error" data-field-error={name}></span>
 
   <div id={`${fieldId}-panel`} class="dropdown-panel" data-select-panel hidden>
@@ -113,14 +122,13 @@ const errorId = `${fieldId}-error`;
       valueInput.dispatchEvent(new Event('input', { bubbles: true }));
       triggerLabel.textContent = option.textContent?.trim() ?? '';
       triggerLabel.classList.remove('dropdown-trigger-placeholder');
+      trigger.removeAttribute('aria-invalid');
       options.forEach((o) => o.classList.toggle('is-active', o === option));
       close();
       trigger.focus();
     };
 
     options.forEach((option) => option.addEventListener('click', () => select(option)));
-
-    valueInput.addEventListener('focus', () => trigger.focus());
 
     trigger.addEventListener('click', () => (panel.hidden ? open() : close()));
 
