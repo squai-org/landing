@@ -36,9 +36,9 @@
       "status": "Preinscripción abierta",
       "name": "Fundamentos de Inteligencia Artificial Generativa",
       "ecosystem": "Squai One",
-      "duration": "5 semanas · 20 horas. Menos de lo que pasas en redes sociales.",
-      "schedule": "Martes y jueves, 6:30 p. m. a 8:30 p. m. (hora Colombia)",
-      "modality": "100% virtual, en vivo y con grabaciones por si la vida se interpone."
+      "duration": "5 semanas · 20 horas Menos de lo que pasas en redes sociales.",
+      "schedule": "100% virtual, en vivo y con grabaciones por si la vida se interpone.",
+      "modality": "Aprendes IA y además recibes tu certificado para chicanear en LinkedIn"
     },
     "faqs": [
       {
@@ -88,6 +88,12 @@
         "q": "¿Qué herramienta me van a obligar a usar?",
         "a": [
           "La que quieras. La app no es el problema, es cómo le hablas. Te enseñamos la lógica, así que si mañana sale una nueva, no entras en crisis."
+        ]
+      },
+      {
+        "q": "¿Los cupos de Squai One son limitados?",
+        "a": [
+          "Sí, y en serio. Cada cohorte tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que llega la lista de espera, así que entre antes te anotes, más seguro tienes tu lugar."
         ]
       }
     ],
@@ -286,7 +292,7 @@
           {
             "q": "¿Cuándo son las clases y cuánto duran?",
             "a": [
-              "Martes y jueves, de 6:30 p. m. a 8:30 p. m. hora Colombia. Son 4 horas semanales durante 5 semanas: suficiente para avanzar; no para que olvides cómo se ve el resto de tu vida."
+              "Horarios a definir. Son 4 horas semanales durante 5 semanas: suficiente para avanzar; no para que olvides cómo se ve el resto de tu vida."
             ]
           },
           {
@@ -305,6 +311,12 @@
             "q": "¿Cómo entro al próximo programa?",
             "a": [
               "Te unes a la lista de espera. Cuando abramos inscripciones, te escribimos con las fechas confirmadas y la información de pago. Fácil. La parte complicada la reservamos para aprender IA, no para anotarte."
+            ]
+          },
+          {
+            "q": "¿Hay cupos limitados?",
+            "a": [
+              "Sí. Cada cohorte tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que llega la lista de espera, así que entre antes te anotes, mejor."
             ]
           }
         ],
@@ -600,8 +612,8 @@
       },
       "program": {
         "duration": "Duración",
-        "schedule": "Horario",
-        "modality": "Modalidad"
+        "schedule": "Modalidad",
+        "modality": "Resultado"
       },
       "team": {
         "intro": [
