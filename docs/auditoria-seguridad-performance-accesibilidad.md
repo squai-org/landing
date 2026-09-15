@@ -5,10 +5,17 @@ Documento de trabajo para resolver los hallazgos de los informes externos de
 **causa en este repositorio** (archivo y línea) y **solución** respaldada por
 documentación oficial enlazada.
 
-> **Estado:** los hallazgos de código están implementados en la rama
-> `bugfixing/security-performance`. Lo medido antes y después está en §7.4.
-> Queda pendiente un único cambio, que no es de código: subir la versión mínima
-> de TLS en el panel de Cloudflare (§4.3).
+> **Estado:** todos los hallazgos que se arreglan con código están
+> implementados. Lo medido antes y después está en §7.5.
+>
+> Queda pendiente **un único cambio, y no es de código**: subir la versión
+> mínima de TLS a 1.2 en el panel de Cloudflare (§4.3). Es lo que mantiene la
+> B de SSL Labs. Este repositorio no tiene credenciales de Cloudflare, así que
+> tiene que hacerlo alguien con acceso al panel.
+>
+> Dos hallazgos no tienen arreglo posible y están documentados como tales: el
+> −5 de SRI mientras se use Turnstile (§3.1) y el aviso de caché de PageSpeed,
+> que apunta a un recurso de terceros (§5.5 E).
 
 ---
 
@@ -407,7 +414,21 @@ dos motivos independientes y ambos documentados:
 **Conclusión honesta: esos −5 puntos se quedan mientras se use Turnstile.** La
 mitigación real es la de §2: restringir `script-src` a `'self'` y
 `https://challenges.cloudflare.com`, de modo que aunque el CDN sirviera algo
-inesperado, ningún otro origen pueda inyectar scripts.
+inesperado, ningún otro origen pueda inyectar scripts. Es también lo que
+recomienda la propia documentación de Turnstile sobre CSP:
+[Content Security Policy — Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/reference/content-security-policy/)
+
+Tampoco puede autoalojarse: el desafío solo funciona servido desde el origen de
+Cloudflare.
+
+**Hay un atajo que haría desaparecer la penalización, y no se va a usar.**
+Observatory analiza el HTML estático: si `api.js` se inyectara desde nuestro
+propio JavaScript en vez de con una etiqueta `<script src>`, el escáner no lo
+vería y el test pasaría. Eso no mejora nada — el mismo script del mismo origen
+se sigue ejecutando — y encima retrasa la carga del widget. Subir la nota
+escondiéndole información al medidor no es arreglar el hallazgo.
+
+Con esto, el techo realista de Observatory es **95/100**.
 
 ### 3.2 Dónde sí aplicar SRI
 
@@ -591,18 +612,92 @@ visitas, la primera pintura pesa más que la segunda navegación. Si el perfil d
 tráfico cambiara a muchas visitas recurrentes multipágina, esta decisión hay
 que volver a medirla.
 
-**C. `<link rel="preconnect">` a Cloudflare Turnstile.** Ya existe en
+**C. Reflujo forzado (forced reflow) — corregido, con medición.** PageSpeed lo
+atribuye a `/_astro/Layout.astro...js`. Un reflujo forzado ocurre cuando el
+JavaScript pide una propiedad geométrica después de haber invalidado el estilo:
+el navegador no puede posponer el cálculo del layout y lo hace de forma
+síncrona, dentro del script.
+[Reflow — MDN](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Reflow)
+
+Se localizaron capturando un trace de Chrome (`Tracing.start` con las
+categorías `devtools.timeline` y `disabled-by-default-devtools.timeline.stack`)
+y quedándose con los eventos `Layout` que llevan `stackTrace`: un `Layout` con
+pila de JavaScript es, por definición, uno que pidió el script.
+
+Tres causas, las tres en `src/layouts/Layout.astro`:
+
+1. **`syncHeader` leía `hero.offsetTop + hero.offsetHeight`** para saber hasta
+   dónde el header va en claro. 24 ms sobre 342 de 377 objetos: el más caro de
+   la página. Sustituido por un `IntersectionObserver` con el borde superior
+   recortado 96px, que da exactamente la misma condición
+   (`scrollY < heroTop + heroHeight - 96`) sin leer geometría y sin necesitar
+   un listener de `resize`.
+2. **`measureRises` escribía y leía alternadamente dentro del bucle**
+   (`transform = 'none'` → `getBoundingClientRect()` → restaurar), un
+   recálculo por elemento. Separado en tres pasadas, y ahora no escribe
+   `'none'` sobre elementos que no tienen transformación que limpiar.
+3. **`computeTargets` colgaba del evento `scroll`**, leyendo geometría después
+   de que `tick` la escribiera en el último frame, y los eventos de scroll son
+   mucho más frecuentes que los frames. Ahora los dos viven en el mismo frame y
+   en el orden correcto: lecturas primero, escrituras después, como máximo una
+   vez por frame. La primera medición espera al primer frame, para no forzar el
+   layout inicial desde dentro del script.
+
+Medido con CPU 4× más lenta, cargando la home y recorriéndola entera, mediana
+de 7 ejecuciones:
+
+| | antes | después |
+|---|---|---|
+| Reflujos forzados | 1–2 (hasta 29.5 ms) | **0** |
+
+Comprobado que el comportamiento no cambia: el header alterna claro/oscuro al
+bajar y al volver arriba, la animación de subida de la tarjeta de servicio
+sigue aplicándose, el indicador de scroll se oculta, y en las páginas legales
+—que no tienen hero— el header arranca en oscuro.
+
+**D. Árbol de dependencias de red — medido, sin margen real.** PageSpeed marca
+una latencia de ruta crítica de 264 ms en móvil y 620 ms en escritorio, con una
+cadena de tres recursos colgando del HTML: dos módulos JavaScript y
+`gloria-hallelujah-latin.woff2` (20.4 KiB).
+
+Se probó `font-display: optional` en esa fuente, que solo se usa en dos líneas
+decorativas bajo el pliegue (`.footer-tagline` y `.waitlist-promise`). **No se
+mantuvo el cambio.** Medido con Slow 4G y CPU 4×, mediana de 7 ejecuciones:
+
+| | `swap` (actual) | `optional` |
+|---|---|---|
+| LCP | 672 ms | 676 ms |
+| FCP | 664 ms | 656 ms |
+| Peticiones | 11 | 11 |
+| Transferido | 205.9 kB | 205.9 kB |
+
+Diferencia dentro del ruido, y Chrome siguió pidiendo la fuente con prioridad
+`VeryHigh` en ambos casos: `font-display` cambia cuándo se pinta el texto, no
+la prioridad de red. A cambio, `optional` hace que en una primera visita lenta
+la fuente manuscrita no llegue a aparecer. Cambiar el aspecto de la marca sin
+ganancia medible no compensa.
+
+Los otros dos eslabones son módulos `type="module"`, que ya se cargan
+diferidos y no bloquean el pintado. Con 11 peticiones y ~206 kB, esa latencia
+de 264 ms la domina el RTT de la red emulada, no la profundidad de la cadena.
+
+**E. "Use efficient cache lifetimes" — no es nuestro.** El único recurso que
+PageSpeed señala es de `challenges.cloudflare.com`, con 1 KiB de ahorro
+estimado. Es el script de Turnstile: sus cabeceras de caché las pone
+Cloudflare, no este sitio, y `_headers` no puede afectarlas.
+
+**F. `<link rel="preconnect">` a Cloudflare Turnstile.** Ya existe en
 `src/layouts/Layout.astro:79`, condicionado a que haya site key. Correcto.
 Verificar en producción que el `preconnect` se emite.
 
-**D. Confirmar el LCP con datos de campo.** El LCP local (172 ms, sin
+**G. Confirmar el LCP con datos de campo.** El LCP local (172 ms, sin
 throttling) no es comparable con el de PageSpeed. Antes de optimizar más, mirar
 la sección de **datos de campo (CrUX)** del informe de PageSpeed: si el p75 de
 campo está en verde, el 5.0 s del laboratorio es una condición sintética y no
 justifica cambios agresivos.
 [Core Web Vitals — web.dev](https://web.dev/articles/vitals)
 
-**E. Atributos `width`/`height` en los SVG decorativos.** Los seis
+**H. Atributos `width`/`height` en los SVG decorativos.** Los seis
 `img.brand-shape` no los declaran (verificado en el DOM del build). El CLS
 actual es bueno (0.014) porque están en `position: absolute`, pero declararlos
 es barato y previene regresiones.
@@ -946,7 +1041,23 @@ que el input sin etiqueta de §6.1 no aparece en una pasada ingenua.
 
 El script sale con código 1 si hay violaciones, así que sirve tal cual en CI.
 
-### 7.3 Estado de cada acción
+### 7.3 `docs/scripts/reflow.mjs`
+
+Cuenta los reflujos forzados de la home capturando un trace de Chrome. Sale con
+código 1 si encuentra alguno, así que sirve tal cual en CI.
+
+```bash
+AUDIT_MODULES=.audit/node_modules node docs/scripts/reflow.mjs
+```
+
+El detalle que lo hace funcionar: en el trace, un evento `Layout` solo lleva
+`args.beginData.stackTrace` cuando lo pidió el script, y esa pila solo se
+registra si se activa la categoría
+`disabled-by-default-devtools.timeline.stack`. Sin ella el contador sale
+siempre en cero y parece que no hay nada que arreglar — pasó en la primera
+pasada de esta medición.
+
+### 7.4 Estado de cada acción
 
 | # | Acción | Dónde | Estado |
 |---|---|---|---|
@@ -960,6 +1071,7 @@ El script sale con código 1 si hay violaciones, así que sirve tal cual en CI.
 | 8 | Quitar el script de captura de Figma | `src/layouts/Layout.astro` | Hecho |
 | 9 | CSP con hashes generados en build | `src/integrations/csp-headers.mjs` | Hecho, **verificar con Turnstile en preview** (§2.4) |
 | 10 | CSS en línea para acortar la cadena crítica | `astro.config.mjs` | Hecho, con medición (§5.5 B) |
+| 11 | Eliminar los reflujos forzados | `src/layouts/Layout.astro` | Hecho, con medición (§5.5 C) |
 
 No se implementó el punto que el borrador anterior llamaba "externalizar los
 scripts `is:inline`": dejó de hacer falta. Como la CSP se genera en el build con
@@ -967,7 +1079,7 @@ los hashes de lo que Astro emite, los scripts en línea ya no obligan a
 `'unsafe-inline'`, y sacarlos a archivos habría añadido peticiones a la cadena
 crítica justo mientras se trabajaba en acortarla.
 
-### 7.4 Resultados medidos
+### 7.5 Resultados medidos
 
 Todo lo de esta tabla se midió con los mismos scripts, sobre el build, antes y
 después de los cambios. No son puntuaciones de los informes externos: son las
@@ -985,7 +1097,8 @@ magnitudes que esos informes miden.
 | Contenido bajo el pliegue sin JavaScript | invisible | **visible** |
 | LCP (Slow 4G, CPU 4×, mediana de 7) | 1276 ms | **680 ms** |
 | FCP (mismas condiciones) | 1276 ms | **656 ms** |
-| Peticiones en la primera carga | 16 | **13** |
+| Peticiones en la primera carga | 16 | **11** |
+| Reflujos forzados (carga + recorrido, CPU 4×) | 1–2, hasta 29.5 ms | **0** |
 
 Efecto esperado en los informes externos, a partir de lo que cada uno puntúa:
 
@@ -1006,7 +1119,7 @@ Efecto esperado en los informes externos, a partir de lo que cada uno puntúa:
   reporta en la home **no se reprodujeron** (§6.2), así que sobre esos no se
   puede prometer nada: hay que volver a pasar WAVE y mirar qué señala.
 
-### 7.5 Cómo verificar cada cambio
+### 7.6 Cómo verificar cada cambio
 
 ```bash
 # cabeceras en produccion
