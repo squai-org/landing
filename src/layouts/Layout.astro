@@ -241,9 +241,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           // Never let the lag carry the element up under the fixed nav bar:
           // work out its untransformed top (live top minus the transform
           // already applied) and floor the target so el.top can't end up
-          // above the nav's own bottom edge.
+          // above the nav's own bottom edge. Capped at 0 so this floor can
+          // only pull the target UP toward its natural resting spot, never
+          // push it past it — otherwise, once the card has scrolled far
+          // enough that its natural top is already above the nav, the
+          // "floor" turns positive and shoves the footer below the card.
           const naturalTop = r.el.getBoundingClientRect().top - r.current;
-          const minTarget = navBottom - naturalTop;
+          const minTarget = Math.min(navBottom - naturalTop, 0);
           r.target = Math.max(raw, minTarget);
         });
       };
