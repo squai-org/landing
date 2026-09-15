@@ -530,6 +530,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       });
       if (kind === 'contact') payload.ecosystem = eco;
 
+      /* La agenda se abre aqui, con el envio recien empezado y todavia dentro
+         del gesto que lo disparo: si esperara a la respuesta de la API, el
+         navegador ya no lo contaria como accion del visitante y lo bloquearia
+         como ventana emergente. Por eso tampoco depende de como termine la
+         peticion; lo que si la condiciona es la validacion de arriba, que ya
+         devolvio antes de llegar hasta aqui si faltaba algo.
+         https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
+      const bookingUrl = kind === 'contact' ? form.dataset.bookingUrl : undefined;
+      if (bookingUrl) window.open(bookingUrl, '_blank', 'noopener,noreferrer');
+
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
       const labelNode = submit?.querySelector<HTMLElement>('.btn-label');
       const label = labelNode?.textContent ?? '';

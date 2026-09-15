@@ -2,6 +2,7 @@
 import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
 import CustomSelect from './CustomSelect.astro';
+import { booking } from '../config/booking';
 import { endpoints } from '../config/endpoints';
 import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
@@ -29,6 +30,7 @@ const { ui, labels } = await getSiteContent();
       data-form="contact"
       data-endpoint-grow={endpoints.grow}
       data-endpoint-learn={endpoints.learn}
+      data-booking-url={booking.url}
       novalidate
       class="card-pad-lg modal-panel-form"
     >
