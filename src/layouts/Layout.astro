@@ -233,10 +233,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
       const computeTargets = () => {
         const vh = window.innerHeight;
+        const navBottom = navOffset();
         rises.forEach((r) => {
           const bottom = r.card.getBoundingClientRect().bottom;
           const settled = Math.min(Math.max(vh - bottom, 0), r.gap);
-          r.target = settled - r.gap;
+          const raw = settled - r.gap;
+          // Never let the lag carry the element up under the fixed nav bar:
+          // work out its untransformed top (live top minus the transform
+          // already applied) and floor the target so el.top can't end up
+          // above the nav's own bottom edge.
+          const naturalTop = r.el.getBoundingClientRect().top - r.current;
+          const minTarget = navBottom - naturalTop;
+          r.target = Math.max(raw, minTarget);
         });
       };
 
