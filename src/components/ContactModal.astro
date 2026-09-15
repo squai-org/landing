@@ -101,10 +101,13 @@ const { ui, labels } = await getSiteContent();
           en su propio nodo: si el estado escribiera sobre el contenedor, se
           llevaria por delante el enlace. */}
       <div class="form-status" data-form-status role="status" aria-live="polite">
-        <span data-form-status-text>{ui.contact.responseTime}</span>
-        <span class="form-status-booking" data-booking-blocked hidden>
-          {ui.contact.bookingBlocked}{' '}
-          <a href={booking.url} target="_blank" rel="noopener noreferrer">{ui.contact.bookingBlockedLink}</a>
+        <span data-form-status-text></span>
+        {/* Se descubre al enviar, haya abierto la ventana o no: que window.open
+            devuelva algo no garantiza que el visitante haya visto la pestana, y
+            si la bloquearon esta es la unica salida hacia la agenda. */}
+        <span class="form-status-booking" data-booking-fallback hidden>
+          {ui.contact.bookingFallback}{' '}
+          <a href={booking.url} target="_blank" rel="noopener noreferrer">{ui.contact.bookingFallbackLink}</a>
         </span>
       </div>
       <Turnstile action="contact" />

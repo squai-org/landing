@@ -693,9 +693,8 @@
       "contact": {
         "title": "Hablemos.",
         "close": "Cerrar",
-        "responseTime": "Respondemos en menos de 24 horas hábiles.",
-        "bookingBlocked": "¿No se abrió la agenda?",
-        "bookingBlockedLink": "Ábrela aquí"
+        "bookingFallback": "¿No se abrió la agenda?",
+        "bookingFallbackLink": "Ábrela aquí"
       },
       "modal": {
         "grow": {

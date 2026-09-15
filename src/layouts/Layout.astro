@@ -547,8 +547,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       });
       if (kind === 'contact') payload.ecosystem = eco;
 
-      const blocked = form.querySelector<HTMLElement>('[data-booking-blocked]');
-      if (blocked) blocked.hidden = true;
+      const bookingFallback = form.querySelector<HTMLElement>('[data-booking-fallback]');
 
       /* La agenda se abre aqui, con el envio recien empezado y todavia dentro
          del gesto que lo disparo: si esperara a la respuesta de la API, el
@@ -556,20 +555,15 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
          como ventana emergente. Por eso tampoco depende de como termine la
          peticion; lo que si la condiciona es la validacion de arriba, que ya
          devolvio antes de llegar hasta aqui si faltaba algo.
-
-         Sin `noopener` en las opciones a proposito: con esa opcion la llamada
-         devuelve null tanto si abrio la ventana como si la bloquearon, y no
-         quedaria forma de distinguirlo. La referencia se corta despues, a mano.
          https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
       const bookingUrl = kind === 'contact' ? form.dataset.bookingUrl : undefined;
       if (bookingUrl) {
-        const tab = window.open(bookingUrl, '_blank');
-        /* Cortar la referencia deja a la pestana nueva sin acceso a esta. Va
-           protegido: un fallo aqui no puede llevarse por delante el envio. */
-        if (tab) try { tab.opener = null; } catch { /* el navegador no lo permite */ }
-        /* Ventana bloqueada: el enlace de al lado del estado deja de estar
-           oculto para que la agenda siga a un clic de distancia. */
-        else if (blocked) blocked.hidden = false;
+        window.open(bookingUrl, '_blank', 'noopener,noreferrer');
+        /* El enlace se descubre siempre, no solo si la ventana no abrio: el
+           valor que devuelve window.open no distingue entre una emergente
+           bloqueada y una abierta con `noopener`, y aunque abriera, una pestana
+           que aparece detras es igual de facil de no ver. */
+        if (bookingFallback) bookingFallback.hidden = false;
       }
 
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');

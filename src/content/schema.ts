@@ -88,7 +88,7 @@ export const siteSchema = z.object({
       select: text, message: text, optional: text,
       teamSizes: z.array(z.object({ value: z.enum(['menos-10', '10-30', '30-100', 'mas-100']), label: text })).length(4),
     }),
-    contact: z.object({ title: text, close: text, responseTime: text, bookingBlocked: text, bookingBlockedLink: text }),
+    contact: z.object({ title: text, close: text, bookingFallback: text, bookingFallbackLink: text }),
     modal: z.object({ grow: modal, learn: modal }),
     feedback: z.object({
       invalid: text, sending: text, error: text, contactSuccess: text, waitlistSuccess: text,
