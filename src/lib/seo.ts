@@ -19,7 +19,6 @@ export const SITE_LOCALE = 'es_CO';
 export const SITE_LANG = 'es';
 export const CONTACT_EMAIL = 'team@squai.io';
 export const DEFAULT_OG_IMAGE = '/og/squai-og.png';
-export const DEFAULT_OG_ALT = 'Squai — Aprende IA, potencia tus habilidades';
 export const ORG_ID = `${SITE_URL}/#organization`;
 export const SITE_ID = `${SITE_URL}/#website`;
 
@@ -56,7 +55,7 @@ type Json = Record<string, unknown>;
 
 export const organizationSchema = (content: SiteContent): Json => {
   const sameAs = content.socials.map((social) => social.href).filter(Boolean);
-  const founders = content.instructors.filter((person) => /fundador/i.test(person.role));
+  const founders = content.squadGrid.filter((person) => /fundador/i.test(person.role));
 
   return {
     '@type': ['Organization', 'EducationalOrganization'],
@@ -80,7 +79,7 @@ export const organizationSchema = (content: SiteContent): Json => {
       '@type': 'Person',
       name: person.name,
       jobTitle: person.role,
-      sameAs: [person.linkedin],
+      ...(person.linkedin ? { sameAs: [person.linkedin] } : {}),
     })),
     contactPoint: {
       '@type': 'ContactPoint',

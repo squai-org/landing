@@ -34,7 +34,7 @@ const { service } = Astro.props;
 
 const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
 const seo = serviceSeo(service, content.seo.serviceTitle);
-const capabilitiesHeadline = service.slug === 'squai-one' ? service.capabilities.headline : 'Nuestro programa';
+const capabilitiesHeadline = service.slug === 'squai-one' ? service.capabilities.headline : content.ui.services.capabilitiesFallback;
 
 const offering =
   service.slug === 'squai-one' ? courseSchema(content, service, pageUrl) : serviceSchema(service, pageUrl);
@@ -75,6 +75,7 @@ const schemas = [
           <h2 class="display d-h2 service-contact-title">
             {service.contactCopy}
           </h2>
+          {service.contactAside && <p class="service-contact-aside">{service.contactAside}</p>}
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.cta.label}</Button>
         </div>
       </section>
@@ -98,4 +99,13 @@ const schemas = [
   .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
   .service-contact-shell { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(20px, 2.4vw, 36px); }
   .service-contact-title { max-width: 22ch; color: var(--ink); }
+  .service-contact-aside {
+    max-width: 38ch;
+    margin: 0;
+    color: var(--periwinkle-ink);
+    font-family: var(--font-hand);
+    font-size: clamp(18px, 1.5vw, 24px);
+    font-weight: 100;
+    line-height: 1.5;
+  }
 </style>

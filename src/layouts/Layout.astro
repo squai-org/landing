@@ -549,9 +549,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
       const bookingFallback = form.querySelector<HTMLElement>('[data-booking-fallback]');
       const bookingUrl = kind === 'contact' ? form.dataset.bookingUrl : undefined;
-      /* Cada envio parte de cero: si el anterior dejo el enlace a la vista y
-         este falla, no puede quedarse ahi contradiciendo al error. */
-      if (bookingFallback) bookingFallback.hidden = true;
+      /* El enlace acompana a todo envio que llegue a salir, termine como
+         termine: si la API falla, la agenda sigue siendo el camino para
+         reservar la llamada, y es la unica forma de llegar a ella. */
+      if (bookingUrl && bookingFallback) bookingFallback.hidden = false;
 
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
       const labelNode = submit?.querySelector<HTMLElement>('.btn-label');
@@ -587,16 +588,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         form.reset();
         clearFieldErrors(form);
 
-        /* La agenda solo sale si el registro quedo guardado: abrirla tras un
-           error mandaria a reservar una llamada de la que no hay rastro.
-           El enlace acompana a la ventana siempre, porque abrir desde aqui ya
-           no ocurre dentro del gesto que disparo el envio y el navegador puede
-           tratarlo como emergente y bloquearlo.
+        /* La pestana se abre sola solo con el registro ya guardado. Abrir desde
+           aqui ya no ocurre dentro del gesto que disparo el envio, asi que
+           depende de la activacion transitoria del navegador y puede acabar
+           bloqueada; el enlace de arriba cubre ese caso y el del error.
            https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
-        if (bookingUrl) {
-          window.open(bookingUrl, '_blank', 'noopener,noreferrer');
-          if (bookingFallback) bookingFallback.hidden = false;
-        }
+        if (bookingUrl) window.open(bookingUrl, '_blank', 'noopener,noreferrer');
 
         setStatus(
           form,

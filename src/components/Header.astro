@@ -80,7 +80,16 @@ const serviceLinks = services.map((service) => ({ name: service.name, subtitle: 
           )
         }
         <li class="nav-cta-wrap">
-          <Button variant="primary" href="/servicios/squai-one#lista" compact class="nav-cta" aria-current={currentPath === '/servicios/squai-one' ? 'page' : undefined}>{ui.navigation.waitlist}</Button>
+          <Button
+            variant="primary"
+            href="/servicios/squai-one#lista"
+            data-scroll-to={currentPath === '/servicios/squai-one' ? 'lista' : undefined}
+            compact
+            class="nav-cta"
+            aria-current={currentPath === '/servicios/squai-one' ? 'page' : undefined}
+          >
+            {ui.navigation.waitlist}
+          </Button>
         </li>
       </ul>
     </nav>

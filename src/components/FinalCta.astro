@@ -16,7 +16,7 @@ const { ui, labels } = await getSiteContent();
     <div class="final-copy-column">
       {ui.finalCta.body.map((paragraph) => <p class="lead final-copy">{paragraph}</p>)}
       <div class="final-action">
-        <Button variant="white" href="/servicios/squai-one#lista">{ui.finalCta.cta || 'Asegurar mi cupo para aprender IA'}</Button>
+        <Button variant="white" href="/servicios/squai-one#lista">{ui.finalCta.cta}</Button>
       </div>
     </div>
   </div>
