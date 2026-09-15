@@ -112,7 +112,6 @@ const errorId = `${fieldId}-error`;
     text-align: left;
     cursor: pointer;
   }
-  .country-option-flag { flex: none; font-size: 18px; }
   .country-option-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .country-option-dial { flex: none; color: var(--ink-muted); }
   .country-option:hover,
@@ -128,16 +127,12 @@ const errorId = `${fieldId}-error`;
     ? new Intl.DisplayNames(['es'], { type: 'region' })
     : null;
 
-  const flagFor = (iso2: string) =>
-    String.fromCodePoint(...[...iso2.toUpperCase()].map((c) => 127397 + c.charCodeAt(0)));
-
   const normalize = (value: string) =>
     value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
   const countries = COUNTRY_CODES.map((c) => ({
     ...c,
     name: regionNames?.of(c.iso2) ?? c.iso2,
-    flag: flagFor(c.iso2),
   })).sort((a, b) => a.name.localeCompare(b.name, 'es'));
 
   document.querySelectorAll<HTMLElement>('[data-country-select]').forEach((root) => {
@@ -154,7 +149,7 @@ const errorId = `${fieldId}-error`;
     let visible = countries;
     let renderedCount = PAGE_SIZE;
 
-    const buildOption = (country: { name: string; dial: string; iso2: string; flag: string }, index: number) => {
+    const buildOption = (country: { name: string; dial: string; iso2: string }, index: number) => {
       const item = document.createElement('li');
       item.setAttribute('role', 'presentation');
       const option = document.createElement('button');
@@ -163,7 +158,7 @@ const errorId = `${fieldId}-error`;
       option.setAttribute('role', 'option');
       option.dataset.dial = country.dial;
       option.dataset.iso2 = country.iso2;
-      option.innerHTML = `<span class="country-option-flag" aria-hidden="true">${country.flag}</span><span class="country-option-name">${country.name}</span><span class="country-option-dial">+${country.dial}</span>`;
+      option.innerHTML = `<span class="country-option-name">${country.name}</span><span class="country-option-dial">+${country.dial}</span>`;
       option.addEventListener('click', () => select(country));
       item.appendChild(option);
       return item;
@@ -202,9 +197,9 @@ const errorId = `${fieldId}-error`;
       if (list.scrollTop + list.clientHeight >= list.scrollHeight - 48) loadMore();
     });
 
-    const select = (country: { dial: string; flag: string }) => {
+    const select = (country: { dial: string }) => {
       valueInput.value = `+${country.dial}`;
-      triggerLabel.textContent = `${country.flag} +${country.dial}`;
+      triggerLabel.textContent = `+${country.dial}`;
       close();
       trigger.focus();
     };
@@ -235,10 +230,9 @@ const errorId = `${fieldId}-error`;
       trigger.setAttribute('aria-expanded', 'false');
     };
 
-    // Preselect the default so the trigger shows a flag, not just "+57".
     const defaultIso2 = root.dataset.defaultIso2;
     const defaultCountry = countries.find((c) => c.iso2 === defaultIso2);
-    if (defaultCountry) triggerLabel.textContent = `${defaultCountry.flag} +${defaultCountry.dial}`;
+    if (defaultCountry) triggerLabel.textContent = `+${defaultCountry.dial}`;
 
     trigger.addEventListener('click', () => {
       if (panel.hidden) open();
@@ -279,6 +273,13 @@ const errorId = `${fieldId}-error`;
     });
 
     document.addEventListener('click', (event) => {
+      if (!panel.hidden && !root.contains(event.target as Node)) close();
+    });
+
+    // Tabbing (or clicking) into another field moves focus without a
+    // "click outside" — close the panel then too, so it doesn't linger
+    // over the rest of the form.
+    document.addEventListener('focusin', (event) => {
       if (!panel.hidden && !root.contains(event.target as Node)) close();
     });
   });
