@@ -177,12 +177,22 @@ Dos cosas que la regla no cubre por sí sola:
   Actívalo en **SSL/TLS** → **Edge Certificates** → **Always Use HTTPS**: el
   request sube a HTTPS y ahí sí lo toma la regla.
 - `www` tiene que existir en **DNS** y estar **proxied** (nube naranja). Un
-  registro `DNS only` no pasa por Cloudflare y la regla nunca corre.
+  registro `DNS only` no pasa por Cloudflare y la regla nunca corre. Si al
+  guardar la regla el dashboard avisa de que `www` no está proxied, elige
+  **Create a new proxied DNS record**; cuando pida una IP, usa el placeholder
+  `192.0.2.1` (franja reservada para documentación, RFC 5737: no enruta a
+  ninguna parte). El mismo efecto se consigue creando a mano un `CNAME`
+  `www` → `squai.io` proxied. En los dos casos la redirección se resuelve en
+  el edge y la petición nunca llega al origen.
 
 Sin esta regla, Google ve dos hosts con el mismo contenido; el `rel=canonical`
 ayuda pero un 301 es la señal fuerte.
 
+Comprobación: `curl -I https://www.squai.io/servicios/squai-one` debe devolver
+`301` y `location: https://squai.io/servicios/squai-one`.
+
 Docs: [Redirect from WWW to root](https://developers.cloudflare.com/rules/url-forwarding/examples/redirect-www-to-root/) ·
+[Redirigir un dominio sin origen](https://developers.cloudflare.com/fundamentals/manage-domains/redirect-domain/) ·
 [Single Redirects settings](https://developers.cloudflare.com/rules/url-forwarding/single-redirects/settings/) ·
 [Consolidar URLs duplicadas](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
 
