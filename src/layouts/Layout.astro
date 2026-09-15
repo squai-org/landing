@@ -38,21 +38,17 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     <link rel="preload" href="/fonts/familjen-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
     <script is:inline>
-      if (location.hash.includes('figmacapture')) {
-        document.documentElement.dataset.figmaCapture = 'true';
-        var figmaCapture = document.createElement('script');
-        figmaCapture.src = 'https://mcp.figma.com/mcp/html-to-design/capture.js';
-        figmaCapture.async = true;
-        document.head.appendChild(figmaCapture);
+      // Las animaciones de entrada (.reveal) se ocultan por CSS solo si esta
+      // clase esta presente, y solo se anade cuando el JS puede garantizar que
+      // va a revelarlas. Va aqui, sincrono y antes de pintar, para que no haya
+      // un parpadeo de contenido visible que se oculta.
+      if (
+        'IntersectionObserver' in window &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        document.documentElement.classList.add('js-reveal');
       }
     </script>
-    <style is:global>
-      html[data-figma-capture='true'] .reveal {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
-      }
-    </style>
     <script is:inline>
       window.squaiTurnstileSync = function () {
         document.querySelectorAll('form[data-form]').forEach(function (form) {
@@ -155,9 +151,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     window.addEventListener('resize', syncHeader);
   }
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (!prefersReduced && 'IntersectionObserver' in window) {
+  /* La clase la pone el script sincrono del <head>, que es tambien lo que el
+     CSS mira para ocultar. Leerla aqui en vez de repetir la condicion evita que
+     las dos comprobaciones se separen y quede contenido oculto sin nadie que lo
+     revele. */
+  if (document.documentElement.classList.contains('js-reveal')) {
     const targets = new Set<HTMLElement>();
 
     const addReveal = (el: HTMLElement, kind: string, delay = 0) => {
@@ -473,6 +471,24 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (error) error.textContent = message;
   };
 
+  /* Los combobox de CustomSelect no son controles nativos: su valor viaja en un
+     input type=hidden, que esta excluido de la validacion de restricciones. Lo
+     obligatorio se comprueba aqui y se marca sobre el boton disparador, que es
+     el elemento que el lector de pantalla anuncia y al que puede llegar el foco.
+     https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ */
+  const invalidCustomSelects = (form: HTMLFormElement) =>
+    Array.from(form.querySelectorAll<HTMLElement>('[data-custom-select][data-select-required="true"]')).filter(
+      (root) => !root.querySelector<HTMLInputElement>('[data-select-value]')?.value
+    );
+
+  const markCustomSelect = (root: HTMLElement) => {
+    const trigger = root.querySelector<HTMLElement>('[data-select-trigger]');
+    const error = root.querySelector<HTMLElement>('[data-field-error]');
+    trigger?.setAttribute('aria-invalid', 'true');
+    if (error) error.textContent = root.dataset.selectMessage ?? '';
+    return trigger;
+  };
+
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
     form.addEventListener('input', (event) => {
       const field = event.target;
@@ -486,11 +502,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       event.preventDefault();
       clearFieldErrors(form);
 
-      if (!form.checkValidity()) {
+      const customSelects = invalidCustomSelects(form);
+
+      if (!form.checkValidity() || customSelects.length) {
         const invalidFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(':invalid'));
         invalidFields.forEach((field) => setFieldError(form, field.name, field.validationMessage));
+        const customTriggers = customSelects.map(markCustomSelect);
         setStatus(form, clientCopy.feedback.invalid, 'error');
-        invalidFields[0]?.focus();
+        /* El primero en el orden del documento, sea nativo o no, para que el
+           foco no salte hacia atras. */
+        const firstInvalid = [...invalidFields, ...customTriggers].filter(Boolean).sort((a, b) =>
+          a!.compareDocumentPosition(b!) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+        )[0];
+        firstInvalid?.focus();
         return;
       }
 
