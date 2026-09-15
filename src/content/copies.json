@@ -681,7 +681,34 @@
       "contact": {
         "title": "Hablemos.",
         "close": "Cerrar",
-        "responseTime": "Respondemos en menos de 24 horas hábiles."
+        "responseTime": "Guardamos tus datos antes de que elijas horario, así no pierdes el registro.",
+        "counter": "Paso {current} de {total}",
+        "steps": [
+          {
+            "label": "Tus datos"
+          },
+          {
+            "label": "Contexto"
+          },
+          {
+            "label": "Agenda"
+          }
+        ],
+        "next": "Continuar",
+        "back": "Atrás",
+        "submit": "Guardar y elegir horario",
+        "context": {
+          "title": "Un poco de contexto",
+          "copy": "Dos datos más para llegar a la llamada sabiendo de qué hablamos. El mensaje es opcional: si lo dejas en blanco, seguimos igual."
+        },
+        "booking": {
+          "title": "Elige el horario de tu llamada",
+          "copy": "Tus datos ya quedaron guardados. Escoge el espacio que mejor te sirva para la llamada de diagnóstico.",
+          "frameTitle": "Calendario de reservas de Squai",
+          "fallback": "¿No te carga el calendario?",
+          "fallbackLink": "Ábrelo en una pestaña nueva",
+          "done": "Listo, ya agendé"
+        }
       },
       "modal": {
         "grow": {
@@ -699,7 +726,7 @@
         "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
         "sending": "Mandando esto al lugar correcto…",
         "error": "Eso no salió como debía. Inténtalo otra vez o escríbenos a team@squai.io.",
-        "contactSuccess": "Listo. Ya nos llegó. Te escribimos en menos de 24 horas hábiles.",
+        "contactSuccess": "Listo, ya tenemos tus datos. Ahora elige el horario de tu llamada.",
         "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa."
       },
       "skip": "Saltar al contenido",
@@ -858,7 +885,7 @@
       "privacy": {
         "title": "Política de Privacidad | Squai",
         "description": "Cómo Squai recopila, usa y protege los datos personales de quienes se registran o se ponen en contacto a través de esta página.",
-        "updated": "14 de septiembre de 2026",
+        "updated": "15 de septiembre de 2026",
         "sections": [
           {
             "title": "1. Quién cuida tus datos",
@@ -988,6 +1015,21 @@
                 "content": [
                   {
                     "text": "Compartimos tus datos únicamente con plataformas que nos ayudan a prestar el servicio (servicios de correo electrónico, salas de videoconferencia y procesadores de pago). Estas plataformas tienen prohibido usar tu información para sus propios fines."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Para que puedas agendar tú mismo la llamada de diagnóstico, el último paso del formulario muestra la página de reservas de Google Calendar dentro de nuestro sitio. Ese paso lo carga Google: la hora que elijas y los datos que confirmes ahí quedan bajo su "
+                  },
+                  {
+                    "text": "política de privacidad",
+                    "href": "https://policies.google.com/privacy"
+                  },
+                  {
+                    "text": ". Si prefieres no usarlo, escríbenos a team@squai.io y coordinamos la llamada por correo."
                   }
                 ]
               }

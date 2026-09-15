@@ -69,7 +69,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       )
     }
   </head>
-  <body data-client-copy={JSON.stringify({ navigation: ui.navigation, modal: ui.modal, feedback: ui.feedback })}>
+  <body data-client-copy={JSON.stringify({ navigation: ui.navigation, modal: ui.modal, feedback: ui.feedback, contact: ui.contact })}>
     <a class="skip-link" href="#contenido">{ui.skip}</a>
     <slot />
   </body>
@@ -399,11 +399,79 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     });
   });
 
+  interface ApiResponse {
+    ok: boolean;
+    error?: { code: string; message: string; fields?: Record<string, string> };
+  }
+
+  /* El modal reparte el formulario en pasos, y en el ultimo el formulario entero
+     se oculta. El mensaje de estado vive fuera de el para seguir visible y
+     anunciado ahi; en los formularios de una sola pieza sigue estando dentro. */
+  const statusNode = (form: HTMLFormElement) =>
+    form.querySelector<HTMLElement>('[data-form-status]') ??
+    form.parentElement?.querySelector<HTMLElement>('[data-form-status]') ??
+    null;
+
+  const setStatus = (form: HTMLFormElement, text: string, state: '' | 'ok' | 'error') => {
+    const status = statusNode(form);
+    if (!status) return;
+    status.textContent = text;
+    if (state) status.dataset.state = state;
+    else delete status.dataset.state;
+  };
+
+  const clearFieldErrors = (scope: HTMLElement) => {
+    scope.querySelectorAll<HTMLElement>('[data-field-error]').forEach((error) => { error.textContent = ''; });
+    scope.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
+  };
+
+  const setFieldError = (form: HTMLFormElement, name: string, message: string) => {
+    const field = form.elements.namedItem(name);
+    const error = form.querySelector<HTMLElement>(`[data-field-error="${CSS.escape(name)}"]`);
+    if (field instanceof HTMLElement) field.setAttribute('aria-invalid', 'true');
+    if (error) error.textContent = message;
+  };
+
+  /* Los combobox de CustomSelect no son controles nativos: su valor viaja en un
+     input type=hidden, que esta excluido de la validacion de restricciones. Lo
+     obligatorio se comprueba aqui y se marca sobre el boton disparador, que es
+     el elemento que el lector de pantalla anuncia y al que puede llegar el foco.
+     https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ */
+  const invalidCustomSelects = (scope: HTMLElement) =>
+    Array.from(scope.querySelectorAll<HTMLElement>('[data-custom-select][data-select-required="true"]')).filter(
+      (root) => !root.querySelector<HTMLInputElement>('[data-select-value]')?.value
+    );
+
+  const markCustomSelect = (root: HTMLElement) => {
+    const trigger = root.querySelector<HTMLElement>('[data-select-trigger]');
+    const error = root.querySelector<HTMLElement>('[data-field-error]');
+    trigger?.setAttribute('aria-invalid', 'true');
+    if (error) error.textContent = root.dataset.selectMessage ?? '';
+    return trigger;
+  };
+
   const modal = document.querySelector<HTMLElement>('[data-modal]');
   const modalPanel = document.querySelector<HTMLElement>('[data-modal-panel]');
   const modalForm = document.querySelector<HTMLFormElement>('[data-form="contact"]');
+  const stepPanels = modal ? Array.from(modal.querySelectorAll<HTMLElement>('[data-step-panel]')) : [];
+  const totalSteps = stepPanels.length;
+  /* El ultimo paso es el calendario: cuando se llega ahi la fila en la base de
+     datos ya esta escrita, asi que no hay nada que reenviar ni a donde volver. */
+  const bookingStep = totalSteps;
+
+  const MODAL_COPY: Record<string, { title: string; copy: string; placeholder: string }> = clientCopy.modal;
+  const CONTACT_COPY = clientCopy.contact;
+
+  let currentStep = 1;
+  let currentEco = 'grow';
+  let submitted = false;
   let lastFocused: HTMLElement | null = null;
   let backgroundInertState = new Map<HTMLElement, boolean>();
+
+  const stepOf = (element: Element | null | undefined) => {
+    const panel = element?.closest<HTMLElement>('[data-step-panel]');
+    return panel ? Number(panel.dataset.stepPanel) : null;
+  };
 
   const setBackgroundInert = (inert: boolean) => {
     if (!modal) return;
@@ -419,25 +487,123 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     backgroundInertState.clear();
   };
 
-  const MODAL_COPY: Record<string, { title: string; copy: string; placeholder: string }> = clientCopy.modal;
+  /* El iframe de Google se pide solo al llegar al paso de la agenda: hasta
+     entonces nadie que no vaya a reservar carga nada de calendar.google.com. */
+  const loadBookingFrame = () => {
+    const frame = modal?.querySelector<HTMLIFrameElement>('[data-booking-frame]');
+    if (!frame || frame.getAttribute('src')) return;
+    const src = frame.dataset.bookingSrc;
+    if (src) frame.setAttribute('src', src);
+  };
+
+  const stepHeading = (step: number) => {
+    if (step === 1) return MODAL_COPY[currentEco] ?? MODAL_COPY.grow;
+    if (step === bookingStep) return CONTACT_COPY.booking;
+    return CONTACT_COPY.context;
+  };
+
+  const setStep = (step: number, { moveFocus = true } = {}) => {
+    if (!modal || !totalSteps) return;
+    currentStep = Math.min(Math.max(step, 1), totalSteps);
+
+    stepPanels.forEach((panel) => { panel.hidden = Number(panel.dataset.stepPanel) !== currentStep; });
+    modal.querySelectorAll<HTMLElement>('[data-step-actions]').forEach((actions) => {
+      actions.hidden = Number(actions.dataset.stepActions) !== currentStep;
+    });
+    modalPanel?.setAttribute('data-step', String(currentStep));
+    if (modalForm) modalForm.hidden = currentStep === bookingStep;
+
+    modal.querySelectorAll<HTMLElement>('[data-stepper-item]').forEach((item) => {
+      const index = Number(item.dataset.stepperItem);
+      item.dataset.state = index === currentStep ? 'current' : index < currentStep ? 'done' : 'todo';
+    });
+
+    const counter = modal.querySelector<HTMLElement>('[data-step-counter]');
+    if (counter) {
+      counter.textContent = CONTACT_COPY.counter
+        .replace('{current}', String(currentStep))
+        .replace('{total}', String(totalSteps));
+    }
+
+    const heading = stepHeading(currentStep);
+    const title = modal.querySelector<HTMLElement>('[data-modal-title]');
+    const copy = modal.querySelector<HTMLElement>('[data-modal-copy]');
+    if (title) title.textContent = heading.title;
+    if (copy) copy.textContent = heading.copy;
+
+    if (currentStep === bookingStep) loadBookingFrame();
+
+    /* Cada paso empieza arriba, con su titulo y el progreso a la vista. El foco
+       va sin arrastrar el scroll: enfocar un panel alto lo subiria al borde de
+       la ventana y dejaria la cabecera del modal fuera de plano. */
+    if (moveFocus) stepPanels.find((panel) => !panel.hidden)?.focus({ preventScroll: true });
+    modal.scrollTop = 0;
+  };
+
+  /* Un campo que falta puede haber quedado en un paso que ya no esta a la vista
+     (lo devuelve el servidor, o se envia desde el ultimo paso). Un elemento
+     oculto no admite foco, asi que primero hay que volver a su paso. */
+  const focusInvalid = (field: HTMLElement | null | undefined) => {
+    if (!field) return;
+    const step = stepOf(field);
+    if (step && step !== currentStep) setStep(step, { moveFocus: false });
+    field.focus();
+  };
+
+  /** Valida solo lo que hay dentro de `scope`. `true` si no falta nada. */
+  const validateScope = (form: HTMLFormElement, scope: HTMLElement) => {
+    clearFieldErrors(scope);
+
+    const invalidFields = Array.from(
+      scope.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea')
+    ).filter((field) => !field.checkValidity());
+    const customSelects = invalidCustomSelects(scope);
+    if (!invalidFields.length && !customSelects.length) return true;
+
+    invalidFields.forEach((field) => setFieldError(form, field.name, field.validationMessage));
+    const customTriggers = customSelects.map(markCustomSelect);
+    setStatus(form, clientCopy.feedback.invalid, 'error');
+    /* El primero en el orden del documento, sea nativo o no, para que el foco
+       no salte hacia atras. */
+    const firstInvalid = [...invalidFields, ...customTriggers].filter(Boolean).sort((a, b) =>
+      a!.compareDocumentPosition(b!) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+    )[0];
+    focusInvalid(firstInvalid);
+    return false;
+  };
 
   const setModal = (open: boolean, eco?: string) => {
     if (!modal) return;
-    if (open && eco && MODAL_COPY[eco]) {
-      const conf = MODAL_COPY[eco];
-      const titleEl = modal.querySelector<HTMLElement>('[data-modal-title]');
-      const copyEl = modal.querySelector<HTMLElement>('[data-modal-copy]');
+
+    if (open) {
+      if (eco && MODAL_COPY[eco]) currentEco = eco;
+      modalForm?.setAttribute('data-eco', currentEco);
       const textarea = modal.querySelector<HTMLTextAreaElement>('[data-modal-textarea]');
-      if (titleEl) titleEl.textContent = conf.title;
-      if (copyEl) copyEl.textContent = conf.copy;
-      if (textarea) textarea.placeholder = conf.placeholder;
-      modalForm?.setAttribute('data-eco', eco);
+      if (textarea) textarea.placeholder = MODAL_COPY[currentEco].placeholder;
+
+      /* Tras un envio completado se vuelve a empezar de cero. Si solo se cerro a
+         medias, los pasos siguen como estaban: reabrir no borra lo escrito, que
+         es la causa mas tonta de abandonar un formulario. */
+      if (submitted) {
+        submitted = false;
+        if (modalForm) setStatus(modalForm, CONTACT_COPY.responseTime, '');
+        setStep(1, { moveFocus: false });
+      } else {
+        setStep(currentStep, { moveFocus: false });
+      }
     }
+
     modal.hidden = !open;
     setBackgroundInert(open);
     document.body.style.overflow = open ? 'hidden' : '';
+
     if (open) {
-      modal.querySelector<HTMLInputElement>('input, select, textarea')?.focus();
+      const panel = stepPanels.find((item) => !item.hidden);
+      const field = panel?.querySelector<HTMLElement>(
+        'input:not([type="hidden"]), textarea, [data-select-trigger], [data-country-trigger]'
+      );
+      (field ?? panel)?.focus({ preventScroll: true });
+      modal.scrollTop = 0;
     } else {
       lastFocused?.focus();
     }
@@ -452,21 +618,47 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   document.querySelectorAll<HTMLElement>('[data-close-modal]').forEach((el) => {
     el.addEventListener('click', () => setModal(false));
   });
+
+  modal?.querySelectorAll<HTMLElement>('[data-step-next]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const panel = stepPanels.find((item) => Number(item.dataset.stepPanel) === currentStep);
+      if (!modalForm || !panel) return;
+      if (!validateScope(modalForm, panel)) return;
+      setStatus(modalForm, CONTACT_COPY.responseTime, '');
+      setStep(currentStep + 1);
+    });
+  });
+
+  modal?.querySelectorAll<HTMLElement>('[data-step-back]').forEach((button) => {
+    button.addEventListener('click', () => setStep(currentStep - 1));
+  });
+
   modal?.addEventListener('click', () => setModal(false));
   modalPanel?.addEventListener('click', (event) => event.stopPropagation());
+
+  /* En fase de captura a proposito: los desplegables cierran su panel con su
+     propio Escape, que corre despues. Si este se leyera en burbujeo, el panel ya
+     estaria cerrado y el mismo Escape se llevaria por delante el modal entero. */
   document.addEventListener('keydown', (event) => {
     if (!modal || modal.hidden) return;
 
     if (event.key === 'Escape') {
+      /* Con un desplegable abierto, Escape es suyo: cerrarlo y el modal a la vez
+         echaria fuera a quien solo queria descartar la lista. */
+      if (modal.querySelector('[data-select-panel]:not([hidden]), [data-country-panel]:not([hidden])')) return;
       setModal(false);
       return;
     }
 
     if (event.key !== 'Tab') return;
 
-    const focusables = modal.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
+    /* Solo lo que esta a la vista: los pasos ocultos siguen en el DOM y, si
+       contaran, el ciclo del tabulador terminaria en un elemento inalcanzable. */
+    const focusables = Array.from(
+      modal.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((element) => element.getClientRects().length > 0);
     if (!focusables.length) return;
     const first = focusables[0];
     const last = focusables[focusables.length - 1];
@@ -479,50 +671,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       event.preventDefault();
       first.focus();
     }
-  });
-
-  interface ApiResponse {
-    ok: boolean;
-    error?: { code: string; message: string; fields?: Record<string, string> };
-  }
-
-  const setStatus = (form: HTMLFormElement, text: string, state: '' | 'ok' | 'error') => {
-    const status = form.querySelector<HTMLElement>('[data-form-status]');
-    if (!status) return;
-    status.textContent = text;
-    if (state) status.dataset.state = state;
-    else delete status.dataset.state;
-  };
-
-  const clearFieldErrors = (form: HTMLFormElement) => {
-    form.querySelectorAll<HTMLElement>('[data-field-error]').forEach((error) => { error.textContent = ''; });
-    form.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
-  };
-
-  const setFieldError = (form: HTMLFormElement, name: string, message: string) => {
-    const field = form.elements.namedItem(name);
-    const error = form.querySelector<HTMLElement>(`[data-field-error="${CSS.escape(name)}"]`);
-    if (field instanceof HTMLElement) field.setAttribute('aria-invalid', 'true');
-    if (error) error.textContent = message;
-  };
-
-  /* Los combobox de CustomSelect no son controles nativos: su valor viaja en un
-     input type=hidden, que esta excluido de la validacion de restricciones. Lo
-     obligatorio se comprueba aqui y se marca sobre el boton disparador, que es
-     el elemento que el lector de pantalla anuncia y al que puede llegar el foco.
-     https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ */
-  const invalidCustomSelects = (form: HTMLFormElement) =>
-    Array.from(form.querySelectorAll<HTMLElement>('[data-custom-select][data-select-required="true"]')).filter(
-      (root) => !root.querySelector<HTMLInputElement>('[data-select-value]')?.value
-    );
-
-  const markCustomSelect = (root: HTMLElement) => {
-    const trigger = root.querySelector<HTMLElement>('[data-select-trigger]');
-    const error = root.querySelector<HTMLElement>('[data-field-error]');
-    trigger?.setAttribute('aria-invalid', 'true');
-    if (error) error.textContent = root.dataset.selectMessage ?? '';
-    return trigger;
-  };
+  }, true);
 
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
     form.addEventListener('input', (event) => {
@@ -535,23 +684,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      clearFieldErrors(form);
 
-      const customSelects = invalidCustomSelects(form);
-
-      if (!form.checkValidity() || customSelects.length) {
-        const invalidFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(':invalid'));
-        invalidFields.forEach((field) => setFieldError(form, field.name, field.validationMessage));
-        const customTriggers = customSelects.map(markCustomSelect);
-        setStatus(form, clientCopy.feedback.invalid, 'error');
-        /* El primero en el orden del documento, sea nativo o no, para que el
-           foco no salte hacia atras. */
-        const firstInvalid = [...invalidFields, ...customTriggers].filter(Boolean).sort((a, b) =>
-          a!.compareDocumentPosition(b!) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
-        )[0];
-        firstInvalid?.focus();
-        return;
-      }
+      if (!validateScope(form, form)) return;
 
       const kind = form.dataset.form!;
       const eco = form.dataset.eco || 'grow';
@@ -592,19 +726,23 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           }
           const fieldMessage = data?.error?.fields ? Object.values(data.error.fields)[0] : undefined;
           setStatus(form, fieldMessage ?? data?.error?.message ?? fallbackError, 'error');
-          form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+          focusInvalid(form.querySelector<HTMLElement>('[aria-invalid="true"]'));
           return;
         }
 
         form.reset();
         clearFieldErrors(form);
-        setStatus(
-          form,
-          kind === 'contact'
-            ? clientCopy.feedback.contactSuccess
-            : clientCopy.feedback.waitlistSuccess,
-          'ok'
-        );
+
+        if (kind === 'contact') {
+          /* La fila ya esta guardada. Aunque cierre el modal sin reservar, el
+             lead no se pierde: el calendario es el paso de despues, no el
+             requisito para quedar registrado. */
+          submitted = true;
+          setStatus(form, clientCopy.feedback.contactSuccess, 'ok');
+          setStep(bookingStep);
+        } else {
+          setStatus(form, clientCopy.feedback.waitlistSuccess, 'ok');
+        }
       } catch {
         setStatus(form, fallbackError, 'error');
       } finally {

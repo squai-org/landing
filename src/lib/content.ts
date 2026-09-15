@@ -3,7 +3,7 @@ import { getEntry, type CollectionEntry } from 'astro:content';
 export type SiteContent = CollectionEntry<'copies'>['data'];
 export type Faq = SiteContent['faqs'][number];
 export type CapabilityGroup = SiteContent['services'][number]['capabilities']['groups'][number];
-export type ClientCopy = Pick<SiteContent['ui'], 'navigation' | 'modal' | 'feedback'>;
+export type ClientCopy = Pick<SiteContent['ui'], 'navigation' | 'modal' | 'feedback' | 'contact'>;
 export type HeroClientCopy = SiteContent['ui']['hero'] & { verbs: SiteContent['heroVerbs'] };
 export type LegalSections = SiteContent['legal']['terms']['sections'];
 export type Service = Awaited<ReturnType<typeof getSiteContent>>['services'][number];
