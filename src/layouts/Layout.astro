@@ -129,12 +129,31 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   if (header) {
     const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
 
-    const syncHeader = () => {
-      const limit = hero ? hero.offsetTop + hero.offsetHeight - 96 : 0;
-      header.classList.toggle('over-hero', window.scrollY < limit);
-      scrollCue?.classList.toggle('is-hidden', window.scrollY > 24);
-    };
-    syncHeader();
+    /* El header va en claro mientras el hero siga ocupando la franja que hay
+       debajo de el. Eso se sabia leyendo `hero.offsetTop + hero.offsetHeight`,
+       una lectura de geometria que obligaba al navegador a calcular el layout
+       de forma sincrona nada mas cargar: 24 ms sobre 342 de 377 objetos en el
+       trace, el reflow forzado mas caro de la pagina.
+
+       Un IntersectionObserver con el borde superior recortado 96px da la misma
+       condicion sin leer geometria: el observador se cruza mientras
+       `scrollY < heroTop + heroHeight - 96`, que es exactamente lo que
+       calculaba la resta. El navegador lo resuelve en su propio ciclo, y se
+       actualiza solo al cambiar el viewport sin necesidad de un listener.
+       https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API */
+    if (hero) {
+      new IntersectionObserver(
+        ([entry]) => header.classList.toggle('over-hero', entry.isIntersecting),
+        { rootMargin: '-96px 0px 0px 0px', threshold: 0 }
+      ).observe(hero);
+    } else {
+      /* Las paginas legales no tienen hero: el header va siempre en oscuro.
+         La clase viene puesta desde el servidor, asi que hay que quitarla. */
+      header.classList.remove('over-hero');
+    }
+
+    /* scrollY no obliga a recalcular el layout, asi que esto puede seguir
+       colgado del scroll. */
     let ticking = false;
     window.addEventListener(
       'scroll',
@@ -142,13 +161,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         if (ticking) return;
         ticking = true;
         requestAnimationFrame(() => {
-          syncHeader();
+          scrollCue?.classList.toggle('is-hidden', window.scrollY > 24);
           ticking = false;
         });
       },
       { passive: true }
     );
-    window.addEventListener('resize', syncHeader);
   }
 
   /* La clase la pone el script sincrono del <head>, que es tambien lo que el
@@ -228,21 +246,35 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       type Rise = { el: HTMLElement; card: HTMLElement; gap: number; current: number; target: number };
       let rises: Rise[] = [];
 
+      /* Escribir y leer geometria alternadamente dentro del mismo bucle obliga al
+         navegador a recalcular el layout en cada vuelta. Se separa en tres
+         pasadas —quitar transformaciones, medir, restaurarlas— para que haga un
+         solo recalculo por pasada en vez de uno por elemento.
+         https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Reflow */
       const measureRises = () => {
         const prev = new Map(rises.map((r) => [r.el, r]));
         rises = [];
+
+        const pending: { el: HTMLElement; card: HTMLElement; body: HTMLElement; transform: string }[] = [];
         riseEls.forEach((el) => {
           const card = el.closest<HTMLElement>('.bento-card');
           const body = card?.querySelector<HTMLElement>('.body');
           if (!card || !body) return;
-          const prevTransform = el.style.transform;
-          el.style.transform = 'none';
-          const gap = el.getBoundingClientRect().top - body.getBoundingClientRect().bottom;
-          el.style.transform = prevTransform;
-          if (gap > 0) {
-            const carried = prev.get(el);
-            rises.push({ el, card, gap, current: carried?.current ?? -gap, target: carried?.target ?? -gap });
-          }
+          pending.push({ el, card, body, transform: el.style.transform });
+        });
+
+        /* En la primera medicion todavia no hay transformacion aplicada: escribir
+           'none' solo invalidaria el estilo para dejarlo igual. */
+        const dirty = pending.filter(({ transform }) => transform !== '');
+        dirty.forEach(({ el }) => { el.style.transform = 'none'; });
+        const gaps = pending.map(({ el, body }) => el.getBoundingClientRect().top - body.getBoundingClientRect().bottom);
+        dirty.forEach(({ el, transform }) => { el.style.transform = transform; });
+
+        pending.forEach(({ el, card }, index) => {
+          const gap = gaps[index];
+          if (gap <= 0) return;
+          const carried = prev.get(el);
+          rises.push({ el, card, gap, current: carried?.current ?? -gap, target: carried?.target ?? -gap });
         });
       };
 
@@ -259,7 +291,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         });
       };
 
+      /* computeTargets lee geometria y tick la escribe. Colgando computeTargets
+         del evento de scroll, cada scroll leia despues de la escritura del
+         ultimo frame y forzaba un layout sincrono, y los eventos de scroll son
+         mucho mas frecuentes que los frames. Ahora los dos viven en el mismo
+         frame y en el orden correcto: primero todas las lecturas, despues todas
+         las escrituras, como maximo una vez por frame. */
+      let needsMeasure = false;
+      let needsCompute = false;
+
       const tick = () => {
+        if (needsMeasure) { measureRises(); needsMeasure = false; needsCompute = true; }
+        if (needsCompute) { computeTargets(); needsCompute = false; }
+
         rises.forEach((r) => {
           const diff = r.target - r.current;
           r.current = Math.abs(diff) < 0.05 ? r.target : r.current + diff * 0.12;
@@ -268,21 +312,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         requestAnimationFrame(tick);
       };
 
-      let resizeTicking = false;
-      const onRiseResize = () => {
-        if (resizeTicking) return;
-        resizeTicking = true;
-        requestAnimationFrame(() => {
-          measureRises();
-          computeTargets();
-          resizeTicking = false;
-        });
-      };
-
-      measureRises();
-      computeTargets();
-      window.addEventListener('scroll', computeTargets, { passive: true });
-      window.addEventListener('resize', onRiseResize);
+      /* La primera medicion espera al primer frame. Corriendo antes de que el
+         navegador haya hecho su layout inicial, la lectura lo fuerza entero
+         (342 de 377 objetos en el trace) y se paga dentro del script. */
+      needsMeasure = true;
+      window.addEventListener('scroll', () => { needsCompute = true; }, { passive: true });
+      window.addEventListener('resize', () => { needsMeasure = true; });
       requestAnimationFrame(tick);
     }
 
