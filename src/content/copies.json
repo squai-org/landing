@@ -693,7 +693,9 @@
       "contact": {
         "title": "Hablemos.",
         "close": "Cerrar",
-        "responseTime": "Respondemos en menos de 24 horas hábiles."
+        "responseTime": "Respondemos en menos de 24 horas hábiles.",
+        "bookingBlocked": "¿No se abrió la agenda?",
+        "bookingBlockedLink": "Ábrela aquí"
       },
       "modal": {
         "grow": {
@@ -711,8 +713,10 @@
         "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
         "sending": "Mandando esto al lugar correcto…",
         "error": "Eso no salió como debía. Inténtalo otra vez o escríbenos a team@squai.io.",
-        "contactSuccess": "Listo. Ya nos llegó. Te escribimos en menos de 24 horas hábiles.",
-        "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa."
+        "contactSuccess": "Listo, ya nos llegó. Te abrimos la agenda en otra pestaña para que elijas el horario de tu llamada.",
+        "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa.",
+        "fieldRequired": "Completa este campo.",
+        "fieldEmail": "Escribe un correo con formato válido, como nombre@empresa.com."
       },
       "skip": "Saltar al contenido",
       "updated": "Última actualización:"

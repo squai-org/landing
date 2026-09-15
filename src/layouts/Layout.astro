@@ -454,7 +454,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const setStatus = (form: HTMLFormElement, text: string, state: '' | 'ok' | 'error') => {
     const status = form.querySelector<HTMLElement>('[data-form-status]');
     if (!status) return;
-    status.textContent = text;
+    /* Donde el estado convive con otro contenido dentro de la misma region live
+       (el enlace a la agenda), el texto tiene su propio nodo. */
+    const target = status.querySelector<HTMLElement>('[data-form-status-text]') ?? status;
+    target.textContent = text;
     if (state) status.dataset.state = state;
     else delete status.dataset.state;
   };
@@ -462,6 +465,20 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const clearFieldErrors = (form: HTMLFormElement) => {
     form.querySelectorAll<HTMLElement>('[data-field-error]').forEach((error) => { error.textContent = ''; });
     form.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
+  };
+
+  /* Los mensajes nativos de validacion salen en el idioma de la interfaz del
+     navegador, no en el de la pagina: en un Chrome en ingles, un campo vacio de
+     este formulario responde "Please fill out this field". Se sustituyen por los
+     del contenido y solo se cae al del navegador ante una restriccion que aqui
+     no se usa.
+     https://developer.mozilla.org/en-US/docs/Web/API/ValidityState */
+  const fieldMessage = (field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
+    if (field.validity.valueMissing) return clientCopy.feedback.fieldRequired;
+    if (field.validity.typeMismatch && field instanceof HTMLInputElement && field.type === 'email') {
+      return clientCopy.feedback.fieldEmail;
+    }
+    return field.validationMessage;
   };
 
   const setFieldError = (form: HTMLFormElement, name: string, message: string) => {
@@ -506,7 +523,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
       if (!form.checkValidity() || customSelects.length) {
         const invalidFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(':invalid'));
-        invalidFields.forEach((field) => setFieldError(form, field.name, field.validationMessage));
+        invalidFields.forEach((field) => setFieldError(form, field.name, fieldMessage(field)));
         const customTriggers = customSelects.map(markCustomSelect);
         setStatus(form, clientCopy.feedback.invalid, 'error');
         /* El primero en el orden del documento, sea nativo o no, para que el
@@ -530,15 +547,30 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       });
       if (kind === 'contact') payload.ecosystem = eco;
 
+      const blocked = form.querySelector<HTMLElement>('[data-booking-blocked]');
+      if (blocked) blocked.hidden = true;
+
       /* La agenda se abre aqui, con el envio recien empezado y todavia dentro
          del gesto que lo disparo: si esperara a la respuesta de la API, el
          navegador ya no lo contaria como accion del visitante y lo bloquearia
          como ventana emergente. Por eso tampoco depende de como termine la
          peticion; lo que si la condiciona es la validacion de arriba, que ya
          devolvio antes de llegar hasta aqui si faltaba algo.
+
+         Sin `noopener` en las opciones a proposito: con esa opcion la llamada
+         devuelve null tanto si abrio la ventana como si la bloquearon, y no
+         quedaria forma de distinguirlo. La referencia se corta despues, a mano.
          https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
       const bookingUrl = kind === 'contact' ? form.dataset.bookingUrl : undefined;
-      if (bookingUrl) window.open(bookingUrl, '_blank', 'noopener,noreferrer');
+      if (bookingUrl) {
+        const tab = window.open(bookingUrl, '_blank');
+        /* Cortar la referencia deja a la pestana nueva sin acceso a esta. Va
+           protegido: un fallo aqui no puede llevarse por delante el envio. */
+        if (tab) try { tab.opener = null; } catch { /* el navegador no lo permite */ }
+        /* Ventana bloqueada: el enlace de al lado del estado deja de estar
+           oculto para que la agenda siga a un clic de distancia. */
+        else if (blocked) blocked.hidden = false;
+      }
 
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
       const labelNode = submit?.querySelector<HTMLElement>('.btn-label');
