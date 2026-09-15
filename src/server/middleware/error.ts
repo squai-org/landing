@@ -8,11 +8,6 @@ const jsonError = (code: string, message: string, fields?: Record<string, string
   error: { code, message, ...(fields ? { fields } : {}) },
 });
 
-/**
- * Traduce cualquier fallo a una respuesta JSON estable. Los detalles internos
- * se quedan en los logs del Worker, no en la respuesta.
- * https://hono.dev/docs/api/hono#error-handling
- */
 export const onError: ErrorHandler<AppBindings> = (err, c) => {
   if (err instanceof ApiError) {
     return c.json(jsonError(err.code, err.message, err.fields), err.status);
@@ -22,9 +17,6 @@ export const onError: ErrorHandler<AppBindings> = (err, c) => {
     return c.json(jsonError('http_error', err.message), err.status);
   }
 
-  // El stack por sí solo no dice nada: D1 pone el detalle en `message` y, en
-  // algunos casos, en `cause.message` (por ejemplo "no such table: ...").
-  // https://developers.cloudflare.com/d1/observability/debug-d1/
   const error = err as Error & { cause?: unknown };
   const cause = error.cause instanceof Error ? error.cause.message : undefined;
 

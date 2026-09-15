@@ -1,13 +1,9 @@
 ---
 import Button from './Button.astro';
 import { getSiteContent } from '../lib/content';
-const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSiteContent();
+const { program, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSiteContent();
 ---
 
-<!--
-  Night hero. Always the same inset on every side until the visitor scrolls,
-  so it reads as one full panel on any device. No imagery (Brand Book §14.6).
--->
 <section class="hero" data-hero data-hero-copy={JSON.stringify({ verbs: heroVerbs, ...ui.hero })}>
   <img class="brand-shape hero-shape hero-shape-gold" src="/images/shape-hero-gold.svg" alt="" aria-hidden="true" />
   <img class="brand-shape hero-shape hero-shape-periwinkle" src="/images/shape-hero-periwinkle.svg" alt="" aria-hidden="true" />
@@ -31,8 +27,8 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
       </button>
       <a href="/servicios/squai-one" class="hero-eyebrow">
         <span class="hero-dot" aria-hidden="true"></span>
-        <span class="hero-eyebrow-status">{cohort.status}</span>
-        <span class="hero-eyebrow-text">{cohort.name}</span>
+        <span class="hero-eyebrow-status">{program.status}</span>
+        <span class="hero-eyebrow-text">{program.name}</span>
       </a>
     </div>
 
@@ -53,7 +49,7 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     <p class="hero-subtitle">{heroSubtitle}</p>
 
     <div class="hero-actions">
-      <Button variant="primary" href="/servicios/squai-one#lista">{labels.reserve}</Button>
+      <Button variant="primary" href="/servicios/squai-one#lista">{ui.hero.cta || labels.reserve}</Button>
       <Button variant="white" href="/#servicios" data-scroll-to="servicios">{ui.hero.services}</Button>
     </div>
 
@@ -75,7 +71,6 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     justify-content: center;
     background: var(--midnight);
     border-radius: clamp(20px, 2vw, 36px);
-    /* Equal inset on all four sides, whatever the viewport. */
     margin: var(--hero-inset);
     min-height: calc(100svh - var(--hero-inset) * 2);
     padding: calc(var(--nav-space) + clamp(6px, 2svh, 44px)) var(--gutter) clamp(18px, 7svh, 110px);
@@ -88,9 +83,6 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     pointer-events: none;
     user-select: none;
   }
-  /* Gold is anchored to the hero's top-left corner (origin 0,0) — a fixed
-     left/top offset from a corner never moves regardless of .hero's own
-     size, so it was never actually the broken one. */
   .hero-shape-gold {
     width: 884px;
     height: auto;
@@ -98,14 +90,6 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     top: -383px;
     transform: rotate(-60deg);
   }
-  /* Periwinkle used to anchor via `left` (measured from the LEFT edge),
-     even though it visually hugs the RIGHT corner. That offset was tuned
-     for one specific .hero width, so on any other width the shape's
-     position drifted relative to the corner it's meant to sit in —
-     shrinking to a sliver on narrow viewports, since less of it landed
-     inside the visible (overflow: hidden) area. Anchoring via `right`
-     instead pins it to that corner at a fixed offset, exactly like gold,
-     with the same size/shape/rotation as before. */
   .hero-shape-periwinkle {
     width: 1312px;
     height: auto;
@@ -126,8 +110,6 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     text-align: center;
     gap: clamp(6px, 1.7svh, 24px);
   }
-
-  /* One dot shape for the eyebrow and the scroll cue, no stock glyphs. */
   .hero-dot {
     flex: none;
     width: 9px;
@@ -176,8 +158,6 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     line-height: 0.94;
     font-size: clamp(40px, 9.6vw, 150px);
   }
-  /* The middle line keeps the reading face at the same size. */
-  /* Four pixels shy of the display lines so it reads as a step down. */
   .hero-line-mid {
     font-family: var(--font-body);
     font-weight: 300;
@@ -188,13 +168,7 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
 
   .hero-animated-word { white-space: nowrap; }
 
-  /* Subtle lift off the background, not a design accent: the animated
-     verb sits over .hero-shape-gold, which can slip underneath it at
-     some widths, so it stays legible against whichever color it lands
-     on (word color changes per verb) without looking like a glow. */
   .hero-verb { text-shadow: 0 1px 3px rgba(10, 12, 26, .35); }
-
-  /* The verb is typed in and out rather than cross-faded. */
   .hero-caret {
     display: inline-block;
     width: .06em;
@@ -320,14 +294,11 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     66% { border-color: var(--periwinkle); }
   }
 
-  /* The cue needs room of its own; on short screens it goes. */
   @media (max-height: 720px) {
     .hero-scroll { display: none; }
     .hero-subtitle { max-width: 42ch; }
   }
 
-  /* Responsive (tablet and phone): a smaller eyebrow, a bigger headline, and
-     the duration/format pills are dropped — the subtitle already says it. */
   @media (max-width: 1023px) {
     .hero-eyebrow { padding: 8px 18px; gap: 10px; }
     .hero-eyebrow-status, .hero-eyebrow-text { font-size: 13px; }
@@ -335,18 +306,12 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
     .hero-line-mid { font-size: clamp(42px, calc(11.5vw - 4px), 92px); }
   }
 
-  /* Both shapes are a fixed size (not meant to scale). Below ~1150px of
-     hero width, .hero-shape-periwinkle no longer clears the headline —
-     hide the hero's own shapes a bit earlier than the shared brand-shape
-     cutoff (1023px, global.css) used by every other section, whose
-     shapes scale with their container and don't have this problem. */
   @media (max-width: 1200px) {
     .hero-shape { display: none; }
   }
 
   @media (max-width: 640px) {
     .hero { --nav-space: 84px; }
-    /* Lift the headline further so it outweighs the actions under it. */
     .hero-line { font-size: clamp(50px, 16vw, 78px); }
     .hero-line-mid { font-size: clamp(46px, calc(16vw - 4px), 74px); }
     .hero-eyebrow { flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 8px 16px; }
@@ -404,7 +369,6 @@ const { cohort, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSite
         });
 
       const run = async () => {
-        // Keep the longest word reserved so the line never reflows mid-type.
         for (;;) {
           await wait(HOLD);
           const current = heroVerbs[index].word;

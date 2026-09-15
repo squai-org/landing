@@ -118,9 +118,6 @@ const serviceLinks = services.map((service) => ({ name: service.name, subtitle: 
     font-size: 17px;
     font-weight: 600;
   }
-  /* Split trigger: the label is a real link straight to #servicios (same
-     direct access as the other nav items), the chevron is a separate
-     button that only opens the submenu. Neither steals the other's job. */
   .nav-services { position: relative; display: inline-flex; align-items: center; }
   .nav-services-link { padding-right: 8px; }
   .nav-services-toggle {
@@ -148,9 +145,6 @@ const serviceLinks = services.map((service) => ({ name: service.name, subtitle: 
   }
   .nav-services-chevron { flex: none; transition: transform .18s ease; }
   .nav-services.is-open .nav-services-chevron { transform: rotate(180deg); }
-  /* Solid light panel at any scroll position — same rule as the mobile
-     menu below, so copy stays legible over whatever scrolls behind it
-     instead of picking up a frosted, low-contrast tint from the hero. */
   .services-submenu {
     position: absolute;
     top: calc(100% + 10px);
@@ -216,8 +210,6 @@ const serviceLinks = services.map((service) => ({ name: service.name, subtitle: 
     .nav-link { width: 100%; padding: 14px; text-align: center; }
     .nav-services { flex-wrap: wrap; width: 100%; }
     .nav-services-link { flex: 1; padding-right: 14px; text-align: left; }
-    /* No toggle in responsive: services are always expanded, as their own
-       node in the menu — not a button-triggered popover. */
     .nav-services-toggle { display: none; }
     .services-submenu {
       position: static;

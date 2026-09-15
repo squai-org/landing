@@ -1,11 +1,8 @@
 ---
 export interface Props {
-  /** Prefixes every id so two instances (e.g. waitlist + contact modal,
-      both on the same service page) never collide. */
   idPrefix: string;
   label: string;
   required?: boolean;
-  /** Default E.164 dial code, no "+". */
   defaultDial?: string;
   defaultIso2?: string;
 }
@@ -56,11 +53,6 @@ const errorId = `${fieldId}-error`;
 </div>
 
 <style is:global>
-  /* Global, not scoped: every option <li> below is built with
-     document.createElement in the client script, so it never gets the
-     data-astro-cid-* attribute Astro uses to scope a plain <style> block —
-     scoped rules would silently never match them, leaving default button
-     chrome. Class names are prefixed "country-" precisely so this is safe. */
   .country-field { position: relative; }
   .country-trigger { text-align: left; cursor: pointer; }
   .country-panel {
@@ -163,9 +155,7 @@ const errorId = `${fieldId}-error`;
       item.appendChild(option);
       return item;
     };
-
-    // Renders only the first `renderedCount` matches; `loadMore` appends the
-    // next page on scroll instead of building all ~195 rows up front.
+    
     const renderList = (reset = true) => {
       if (reset) {
         renderedCount = Math.min(PAGE_SIZE, visible.length);
@@ -206,9 +196,6 @@ const errorId = `${fieldId}-error`;
 
     const filter = () => {
       const q = normalize(search.value.trim());
-      // Only try the dial-code match when the query actually has digits —
-      // "".includes('') is always true, so an empty digits string (e.g.
-      // while searching by name) would otherwise match every country.
       const digits = q.replace(/\D/g, '');
       visible = !q
         ? countries
@@ -238,10 +225,7 @@ const errorId = `${fieldId}-error`;
       if (panel.hidden) open();
       else close();
     });
-
-    // Toggles the highlighted row in place, loading another page first when
-    // the arrow key would move past what's currently rendered, so keyboard
-    // users can reach the whole filtered list, not just the first page.
+    
     const updateActive = () => {
       while (activeIndex >= renderedCount && renderedCount < visible.length) loadMore();
       [...list.children].forEach((child, index) => {
@@ -275,10 +259,7 @@ const errorId = `${fieldId}-error`;
     document.addEventListener('click', (event) => {
       if (!panel.hidden && !root.contains(event.target as Node)) close();
     });
-
-    // Tabbing (or clicking) into another field moves focus without a
-    // "click outside" — close the panel then too, so it doesn't linger
-    // over the rest of the form.
+    
     document.addEventListener('focusin', (event) => {
       if (!panel.hidden && !root.contains(event.target as Node)) close();
     });

@@ -17,59 +17,46 @@
 --------------------------------------------------------------------------- */
 
 import {
-  DEFAULT_OG_ALT,
-  DEFAULT_OG_IMAGE,
-  SITE_LANG,
-  SITE_LOCALE,
-  SITE_NAME,
-  SITE_URL,
-  canonicalPath,
+   DEFAULT_OG_ALT,
+   DEFAULT_OG_IMAGE,
+   SITE_LANG,
+   SITE_LOCALE,
+   SITE_NAME,
+   SITE_URL,
+   canonicalPath,
 } from '../lib/seo';
 
 interface Props {
-  title: string;
-  description: string;
-  /** Imagen social; ruta relativa al sitio. */
-  image?: string;
-  imageAlt?: string;
-  /** og:type. `website` para la home, `article` para las páginas legales. */
-  type?: 'website' | 'article';
-  /** Excluye la página del índice (no se usa hoy; queda para futuras gracias/404). */
-  noindex?: boolean;
-  /** Entidades schema.org de la página. Se emiten como un único @graph. */
-  schemas?: Record<string, unknown>[];
+   title: string;
+   description: string;
+   image?: string;
+   imageAlt?: string;
+   type?: 'website' | 'article';
+   noindex?: boolean;
+   schemas?: Record<string, unknown>[];
 }
 
 const {
-  title,
-  description,
-  image = DEFAULT_OG_IMAGE,
-  imageAlt = DEFAULT_OG_ALT,
-  type = 'website',
-  noindex = false,
-  schemas = [],
+   title,
+   description,
+   image = DEFAULT_OG_IMAGE,
+   imageAlt = DEFAULT_OG_ALT,
+   type = 'website',
+   noindex = false,
+   schemas = [],
 } = Astro.props;
 
-/* Una URL canónica por página, sin barra final y sin query string: es la forma
-   exacta que emite el sitemap y la que usan los enlaces internos. */
 const canonical = `${SITE_URL}${canonicalPath(Astro.url.pathname)}`;
 
 const ogImage = new URL(image, SITE_URL).href;
 
-/* max-snippet:-1 y max-image-preview:large levantan el límite de texto e imagen
-   que Google puede mostrar. Los resúmenes de las funciones con IA se construyen
-   con el mismo contenido rastreado, así que recortar el snippet también recorta
-   lo que se puede citar de la página.
-   https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag */
 const robots = noindex
-  ? 'noindex, nofollow'
-  : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+   ? 'noindex, nofollow'
+   : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
-/* `<` escapado: un `</script>` dentro de una cadena del JSON cerraría la
-   etiqueta antes de tiempo. */
 const graph = schemas.length
-  ? JSON.stringify({ '@context': 'https://schema.org', '@graph': schemas }).replace(/</g, '\\u003c')
-  : null;
+   ? JSON.stringify({ '@context': 'https://schema.org', '@graph': schemas }).replace(/</g, '\\u003c')
+   : null;
 ---
 
 <title>{title}</title>
@@ -95,9 +82,7 @@ const graph = schemas.length
 <meta name="twitter:image" content={ogImage} />
 <meta name="twitter:image:alt" content={imageAlt} />
 
-{/* LinkedIn lee el autor de `author` o de `article:author`; sin ninguno de los
-    dos, su Post Inspector marca "No author found". El autor de todo el sitio es
-    la marca, no una persona. */}
+{}
 <meta name="author" content={SITE_NAME} />
 {type === 'article' && <meta property="article:author" content={SITE_NAME} />}
 

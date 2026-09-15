@@ -1,6 +1,5 @@
 ---
 export interface Props {
-  /** Prefixes every id so two instances on the same page never collide. */
   idPrefix: string;
   name: string;
   label: string;
@@ -32,8 +31,8 @@ const errorId = `${fieldId}-error`;
   >
     <span data-select-trigger-label class="dropdown-trigger-placeholder">{placeholder}</span>
   </button>
-  {/* type=hidden inputs are barred from constraint validation, so a
-      required field needs a rendered (if invisible) control instead. */}
+  {
+  }
   <input type="text" name={name} data-select-value class="sr-only" tabindex="-1" aria-hidden="true" required={required} />
   <span id={errorId} class="field-error" data-field-error={name}></span>
 
@@ -51,9 +50,6 @@ const errorId = `${fieldId}-error`;
 </div>
 
 <style is:global>
-  /* Native <select> option popups can't be reliably styled cross-browser —
-     this replaces the field with a listbox button/panel pair like
-     CountryCodeSelect, so it always matches the site's design language. */
   [data-custom-select] { position: relative; }
   .dropdown-trigger { text-align: left; cursor: pointer; }
   .dropdown-trigger-placeholder { color: var(--ink-muted); }
@@ -124,9 +120,6 @@ const errorId = `${fieldId}-error`;
 
     options.forEach((option) => option.addEventListener('click', () => select(option)));
 
-    // The value input is invisible (kept only so `required` can be checked
-    // natively) — if invalid-field focus ever lands there, redirect to the
-    // visible trigger instead.
     valueInput.addEventListener('focus', () => trigger.focus());
 
     trigger.addEventListener('click', () => (panel.hidden ? open() : close()));

@@ -1,9 +1,3 @@
-/**
- * Única capa que habla con D1 para la lista de espera.
- * Todas las consultas usan prepared statements parametrizados: el SQL es
- * constante y los valores viajan por .bind(), nunca interpolados.
- * https://developers.cloudflare.com/d1/worker-api/prepared-statements/
- */
 export interface WaitlistRecord {
   fullName: string;
   email: string;
@@ -17,7 +11,6 @@ export interface WaitlistRecord {
 
 export interface WaitlistUpsertResult {
   id: number;
-  /** false cuando el correo ya estaba en la lista y solo se actualizaron datos. */
   isNew: boolean;
 }
 

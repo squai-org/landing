@@ -2,27 +2,17 @@
 import { getSiteContent } from '../lib/content';
 const { labels } = await getSiteContent();
 interface Props {
-  /** Wordmark font size in px. The isotype is derived from it: Brand Book
-      §14.3 puts the mark at the cap height of the "S", with a 0.15 gap. */
   size?: number;
   wordmark?: boolean;
 }
 
 const { size = 34, wordmark = true } = Astro.props;
 
-// The mark's paths only occupy roughly x:[294,715] y:[298,727] of the source
-// 1008x1024 canvas — crop tight to that (plus a small margin) so the icon
-// fills its box instead of sitting in a sea of transparent padding.
 const VB_X = 278;
 const VB_Y = 283;
 const VB_WIDTH = 452;
 const VB_HEIGHT = 459;
 
-// Proportions taken from the reference lockup SVG: the mark is exactly as
-// tall as the ink of the "S" (0.675em) and sits on the same optical band,
-// which starts 0.238em below the top of a line-height:1 box. The gap between
-// them is 0.181em — wider than the 0.15 of the mark height the brand book
-// states, and the reference is what we match.
 const CAP = 0.675;
 const CAP_TOP = 0.221;
 const GAP = 0.181;

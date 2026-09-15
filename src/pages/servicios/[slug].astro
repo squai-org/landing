@@ -34,8 +34,8 @@ const { service } = Astro.props;
 
 const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
 const seo = serviceSeo(service, content.seo.serviceTitle);
+const capabilitiesHeadline = service.slug === 'squai-one' ? service.capabilities.headline : 'Nuestro programa';
 
-/* Squai One es un curso con cohorte; Grow y Learn son servicios a organizaciones. */
 const offering =
   service.slug === 'squai-one' ? courseSchema(content, service, pageUrl) : serviceSchema(service, pageUrl);
 
@@ -66,7 +66,7 @@ const schemas = [
 
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 
-  <ServiceCapabilities headline={service.capabilities.headline} groups={service.capabilities.groups} />
+  <ServiceCapabilities headline={capabilitiesHeadline} groups={service.capabilities.groups} />
 
   {
     service.cta.modal ? (

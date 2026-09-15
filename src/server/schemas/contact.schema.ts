@@ -8,13 +8,9 @@ import {
   turnstileTokenField,
 } from './common';
 
-/** Valores del <select name="team_size"> del modal de contacto. */
 export const TEAM_SIZES = ['menos-10', '10-30', '30-100', 'mas-100'] as const;
-
-/** Ecosistema al que se dirige la solicitud; lo inyecta el script del layout. */
 export const ECOSYSTEMS = ['grow', 'learn'] as const;
 
-/** Campos del formulario de `src/components/ContactModal.astro`. */
 export const contactSchema = z.object({
   full_name: nameField,
   email: emailField,

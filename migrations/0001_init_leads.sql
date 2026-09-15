@@ -2,7 +2,7 @@
 -- D1 es SQLite. Aplicar con `wrangler d1 migrations apply squai-leads`.
 -- https://developers.cloudflare.com/d1/reference/migrations/
 
--- Formulario "Reserva tu lugar en la próxima cohorte" (Waitlist.astro).
+-- Formulario "Reserva tu lugar en el próximo programa" (Waitlist.astro).
 -- Un correo = un lugar en la lista, por eso email es UNIQUE y el endpoint
 -- hace upsert en vez de duplicar filas.
 CREATE TABLE IF NOT EXISTS waitlist_signups (

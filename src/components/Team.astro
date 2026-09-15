@@ -50,7 +50,6 @@ const responsiveTeamImages: Record<string, TeamPhoto> = Object.fromEntries(
   )
 );
 
-/* Paths outside the local asset map (e.g. a CMS URL) render as-is, without responsive variants. */
 const photoFor = (img: string): Partial<TeamPhoto> => responsiveTeamImages[img] ?? { src: img };
 
 const members = [

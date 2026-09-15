@@ -1,11 +1,6 @@
 import { z } from 'astro/zod';
 
 const text = z.string().min(1);
-/**
- * Multi-paragraph copy. Accepts a list of paragraphs or a single string where a
- * blank line separates paragraphs (the shape most CMS textareas produce).
- * Always resolves to string[], so components render one <p> per item.
- */
 const paragraphs = z
   .union([z.string(), z.array(z.string())])
   .transform((value) => (Array.isArray(value) ? value : [value])
@@ -33,9 +28,6 @@ const service = z.object({
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']), target: z.string() }),
   contactCopy: text.optional(),
-  /* Metadatos de buscador. Si faltan, la página cae a `seo.serviceTitle` y al
-     slogan. Se separan del slogan porque el SERP corta: ~60 caracteres el
-     título y ~160 la descripción. */
   seoTitle: text.optional(),
   seoDescription: text.optional(),
   faqs: z.array(faq).min(1),
@@ -53,7 +45,6 @@ const legalPage = z.object({
   })).min(1),
 });
 
-/** Stable editorial contract, independent of the JSON file or a future CMS. */
 export const siteSchema = z.object({
   labels,
   navLinks: z.array(z.object({ labelKey, target: text, href: link.optional() })).min(1),
@@ -61,7 +52,7 @@ export const siteSchema = z.object({
   heroVerbs: z.array(z.object({ word: text, color: text.regex(/^#[0-9a-fA-F]{6}$/) })).min(1),
   heroLines: z.object({ object: text, middle: text, last: text }),
   heroSubtitle: text,
-  cohort: z.object({ status: text, name: text, ecosystem: text, duration: text, schedule: text, modality: text }),
+  program: z.object({ status: text, name: text, ecosystem: text, duration: text, schedule: text, modality: text }),
   statement: z.object({ headline: text, body: paragraphs }),
   whatWeDo: z.object({ body: paragraphs }),
   capabilities: z.array(card.extend({ span: text, tone: z.string() })).min(1),
@@ -83,11 +74,11 @@ export const siteSchema = z.object({
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, servicesSubmenu: text }),
-    hero: z.object({ pause: text, resume: text, services: text, scroll: text }),
+    hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
     services: z.object({ payback: text }),
     program: z.object({ duration: text, schedule: text, modality: text }),
     team: z.object({ intro: paragraphs }),
-    finalCta: z.object({ title: text, body: paragraphs }),
+    finalCta: z.object({ title: text, body: paragraphs, cta: text }),
     follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
     waitlist: z.object({ title: text, copy: paragraphs }),

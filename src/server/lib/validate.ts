@@ -1,10 +1,6 @@
 import type { ZodType } from 'zod';
 import { badRequest } from './http';
 
-/**
- * Valida el cuerpo con Zod en el edge y traduce los errores a un mapa
- * campo -> mensaje, para que el front pueda señalar el input exacto.
- */
 export const parseBody = <T>(schema: ZodType<T>, raw: unknown): T => {
   const result = schema.safeParse(raw);
 
