@@ -55,7 +55,12 @@ const errorId = `${fieldId}-error`;
   </div>
 </div>
 
-<style>
+<style is:global>
+  /* Global, not scoped: every option <li> below is built with
+     document.createElement in the client script, so it never gets the
+     data-astro-cid-* attribute Astro uses to scope a plain <style> block —
+     scoped rules would silently never match them, leaving default button
+     chrome. Class names are prefixed "country-" precisely so this is safe. */
   .country-field { position: relative; }
   .country-trigger { text-align: left; cursor: pointer; }
   .country-panel {
@@ -144,11 +149,34 @@ const errorId = `${fieldId}-error`;
     const list = root.querySelector<HTMLUListElement>('[data-country-list]');
     if (!trigger || !triggerLabel || !valueInput || !panel || !search || !list) return;
 
+    const PAGE_SIZE = 20;
     let activeIndex = -1;
     let visible = countries;
+    let renderedCount = PAGE_SIZE;
 
-    const renderList = () => {
-      list.innerHTML = '';
+    const buildOption = (country: { name: string; dial: string; iso2: string; flag: string }, index: number) => {
+      const item = document.createElement('li');
+      item.setAttribute('role', 'presentation');
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'country-option' + (index === activeIndex ? ' is-active' : '');
+      option.setAttribute('role', 'option');
+      option.dataset.dial = country.dial;
+      option.dataset.iso2 = country.iso2;
+      option.innerHTML = `<span class="country-option-flag" aria-hidden="true">${country.flag}</span><span class="country-option-name">${country.name}</span><span class="country-option-dial">+${country.dial}</span>`;
+      option.addEventListener('click', () => select(country));
+      item.appendChild(option);
+      return item;
+    };
+
+    // Renders only the first `renderedCount` matches; `loadMore` appends the
+    // next page on scroll instead of building all ~195 rows up front.
+    const renderList = (reset = true) => {
+      if (reset) {
+        renderedCount = Math.min(PAGE_SIZE, visible.length);
+        list.innerHTML = '';
+        list.scrollTop = 0;
+      }
       if (!visible.length) {
         const empty = document.createElement('li');
         empty.className = 'country-empty';
@@ -156,21 +184,23 @@ const errorId = `${fieldId}-error`;
         list.appendChild(empty);
         return;
       }
-      visible.forEach((country, index) => {
-        const item = document.createElement('li');
-        item.setAttribute('role', 'presentation');
-        const option = document.createElement('button');
-        option.type = 'button';
-        option.className = 'country-option' + (index === activeIndex ? ' is-active' : '');
-        option.setAttribute('role', 'option');
-        option.dataset.dial = country.dial;
-        option.dataset.iso2 = country.iso2;
-        option.innerHTML = `<span class="country-option-flag" aria-hidden="true">${country.flag}</span><span class="country-option-name">${country.name}</span><span class="country-option-dial">+${country.dial}</span>`;
-        option.addEventListener('click', () => select(country));
-        item.appendChild(option);
-        list.appendChild(item);
-      });
+      const fragment = document.createDocumentFragment();
+      const start = reset ? 0 : list.children.length;
+      for (let index = start; index < renderedCount; index += 1) {
+        fragment.appendChild(buildOption(visible[index], index));
+      }
+      list.appendChild(fragment);
     };
+
+    const loadMore = () => {
+      if (renderedCount >= visible.length) return;
+      renderedCount = Math.min(renderedCount + PAGE_SIZE, visible.length);
+      renderList(false);
+    };
+
+    list.addEventListener('scroll', () => {
+      if (list.scrollTop + list.clientHeight >= list.scrollHeight - 48) loadMore();
+    });
 
     const select = (country: { dial: string; flag: string }) => {
       valueInput.value = `+${country.dial}`;
@@ -215,17 +245,29 @@ const errorId = `${fieldId}-error`;
       else close();
     });
 
+    // Toggles the highlighted row in place, loading another page first when
+    // the arrow key would move past what's currently rendered, so keyboard
+    // users can reach the whole filtered list, not just the first page.
+    const updateActive = () => {
+      while (activeIndex >= renderedCount && renderedCount < visible.length) loadMore();
+      [...list.children].forEach((child, index) => {
+        child.firstElementChild?.classList.toggle('is-active', index === activeIndex);
+      });
+      const activeEl = list.children[activeIndex] as HTMLElement | undefined;
+      activeEl?.scrollIntoView({ block: 'nearest' });
+    };
+
     search.addEventListener('input', filter);
 
     search.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowDown') {
         event.preventDefault();
         if (visible.length) activeIndex = (activeIndex + 1) % visible.length;
-        renderList();
+        updateActive();
       } else if (event.key === 'ArrowUp') {
         event.preventDefault();
         if (visible.length) activeIndex = (activeIndex - 1 + visible.length) % visible.length;
-        renderList();
+        updateActive();
       } else if (event.key === 'Enter') {
         event.preventDefault();
         const pick = visible[activeIndex] ?? visible[0];

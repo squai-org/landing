@@ -72,7 +72,7 @@ const ICONS: Record<string, string> = {
                   href={lnk.href}
                   target={lnk.href?.startsWith('http') ? '_blank' : undefined}
                   rel={lnk.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  class="footer-link footer-secondary-link"
+                  class="footer-link footer-primary-link"
                 >
                   {lnk.t}
                 </a>
@@ -108,7 +108,6 @@ const ICONS: Record<string, string> = {
   .footer-social-button.social-button-static:hover { background: var(--social-accent); transform: none; filter: none; }
   .footer-heading { color: var(--periwinkle); font-family: var(--font-display); font-size: var(--t-label); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
   .footer-primary-link { color: #F0F2FF; font-size: var(--t-body); }
-  .footer-secondary-link { color: #F0F2FF; font-size: 14px; }
   .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .08); }
   .footer-copyright, .footer-legal-link { color: #A9B2CC; font-size: 13px; }
   .footer-legal-link { font-weight: 700; }
