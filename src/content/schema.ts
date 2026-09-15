@@ -88,7 +88,19 @@ export const siteSchema = z.object({
       select: text, message: text, optional: text,
       teamSizes: z.array(z.object({ value: z.enum(['menos-10', '10-30', '30-100', 'mas-100']), label: text })).length(4),
     }),
-    contact: z.object({ title: text, close: text, responseTime: text }),
+    contact: z.object({
+      title: text, close: text, responseTime: text,
+      counter: text
+        .refine((value) => value.includes('{current}'), 'Include {current}')
+        .refine((value) => value.includes('{total}'), 'Include {total}'),
+      steps: z.array(z.object({ label: text })).length(3),
+      next: text, back: text, submit: text,
+      context: z.object({ title: text, copy: text }),
+      booking: z.object({
+        title: text, copy: text, frameTitle: text,
+        fallback: text, fallbackLink: text, done: text,
+      }),
+    }),
     modal: z.object({ grow: modal, learn: modal }),
     feedback: z.object({ invalid: text, sending: text, error: text, contactSuccess: text, waitlistSuccess: text }),
     skip: text, updated: text,
