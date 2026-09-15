@@ -95,6 +95,12 @@ const graph = schemas.length
 <meta name="twitter:image" content={ogImage} />
 <meta name="twitter:image:alt" content={imageAlt} />
 
+{/* LinkedIn lee el autor de `author` o de `article:author`; sin ninguno de los
+    dos, su Post Inspector marca "No author found". El autor de todo el sitio es
+    la marca, no una persona. */}
+<meta name="author" content={SITE_NAME} />
+{type === 'article' && <meta property="article:author" content={SITE_NAME} />}
+
 <meta name="language" content={SITE_LANG} />
 <meta name="theme-color" content="#0A0C1A" />
 
