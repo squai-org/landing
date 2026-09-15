@@ -1,5 +1,6 @@
 ---
 import Button from './Button.astro';
+import CountryCodeSelect from './CountryCodeSelect.astro';
 import { endpoints } from '../config/endpoints';
 import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
@@ -45,11 +46,7 @@ const { cohort, ui, labels } = await getSiteContent();
             </label>
           </div>
           <div class="field-grid-phone">
-            <label class="field-group" for="waitlist-country-code">
-              <span class="field-label">{ui.forms.countryCode} <span aria-hidden="true">*</span></span>
-              <input id="waitlist-country-code" type="text" name="country_code" required value="+57" autocomplete="tel-country-code" inputmode="tel" class="field" aria-describedby="waitlist-country-code-error" />
-              <span id="waitlist-country-code-error" class="field-error" data-field-error="country_code"></span>
-            </label>
+            <CountryCodeSelect idPrefix="waitlist" label={ui.forms.countryCode} />
             <label class="field-group" for="waitlist-phone">
               <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
               <input id="waitlist-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="waitlist-phone-error" />

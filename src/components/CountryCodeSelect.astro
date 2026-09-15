@@ -1,0 +1,243 @@
+---
+export interface Props {
+  /** Prefixes every id so two instances (e.g. waitlist + contact modal,
+      both on the same service page) never collide. */
+  idPrefix: string;
+  label: string;
+  required?: boolean;
+  /** Default E.164 dial code, no "+". */
+  defaultDial?: string;
+  defaultIso2?: string;
+}
+
+const {
+  idPrefix,
+  label,
+  required = true,
+  defaultDial = '57',
+  defaultIso2 = 'CO',
+} = Astro.props;
+
+const fieldId = `${idPrefix}-country-code`;
+const errorId = `${fieldId}-error`;
+---
+
+<div class="field-group country-field" data-country-select data-default-dial={defaultDial} data-default-iso2={defaultIso2}>
+  <span class="field-label" id={`${fieldId}-label`}>
+    {label} {required && <span aria-hidden="true">*</span>}
+  </span>
+  <button
+    type="button"
+    id={fieldId}
+    class="field select-field country-trigger"
+    data-country-trigger
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls={`${fieldId}-panel`}
+    aria-labelledby={`${fieldId}-label ${fieldId}`}
+    aria-describedby={errorId}
+  >
+    <span data-country-trigger-label>+{defaultDial}</span>
+  </button>
+  <input type="hidden" name="country_code" data-country-value value={`+${defaultDial}`} />
+  <span id={errorId} class="field-error" data-field-error="country_code"></span>
+
+  <div id={`${fieldId}-panel`} class="country-panel" data-country-panel hidden>
+    <input
+      type="text"
+      class="country-search"
+      data-country-search
+      autocomplete="off"
+      placeholder="Buscar país o indicativo"
+      aria-label="Buscar país o indicativo"
+    />
+    <ul class="country-list" role="listbox" aria-labelledby={`${fieldId}-label`} data-country-list></ul>
+  </div>
+</div>
+
+<style>
+  .country-field { position: relative; }
+  .country-trigger { text-align: left; cursor: pointer; }
+  .country-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    width: max(260px, 100%);
+    max-height: 320px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(10, 12, 26, .04), 0 20px 40px -16px rgba(10, 12, 26, .3);
+    overflow: hidden;
+  }
+  .country-search {
+    flex: none;
+    margin: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    outline: none;
+  }
+  .country-search:focus { border-color: rgba(138, 142, 249, .65); }
+  .country-list {
+    margin: 0;
+    padding: 0 6px 6px;
+    list-style: none;
+    overflow-y: auto;
+  }
+  .country-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .country-option-flag { flex: none; font-size: 18px; }
+  .country-option-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .country-option-dial { flex: none; color: var(--ink-muted); }
+  .country-option:hover,
+  .country-option:focus-visible,
+  .country-option.is-active { background: var(--canvas); }
+  .country-empty { padding: 14px 10px; color: var(--ink-muted); font-size: 14px; }
+</style>
+
+<script>
+  import { COUNTRY_CODES } from '../lib/countryCodes';
+
+  const regionNames = typeof Intl !== 'undefined' && 'DisplayNames' in Intl
+    ? new Intl.DisplayNames(['es'], { type: 'region' })
+    : null;
+
+  const flagFor = (iso2: string) =>
+    String.fromCodePoint(...[...iso2.toUpperCase()].map((c) => 127397 + c.charCodeAt(0)));
+
+  const normalize = (value: string) =>
+    value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+  const countries = COUNTRY_CODES.map((c) => ({
+    ...c,
+    name: regionNames?.of(c.iso2) ?? c.iso2,
+    flag: flagFor(c.iso2),
+  })).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+  document.querySelectorAll<HTMLElement>('[data-country-select]').forEach((root) => {
+    const trigger = root.querySelector<HTMLButtonElement>('[data-country-trigger]');
+    const triggerLabel = root.querySelector<HTMLElement>('[data-country-trigger-label]');
+    const valueInput = root.querySelector<HTMLInputElement>('[data-country-value]');
+    const panel = root.querySelector<HTMLElement>('[data-country-panel]');
+    const search = root.querySelector<HTMLInputElement>('[data-country-search]');
+    const list = root.querySelector<HTMLUListElement>('[data-country-list]');
+    if (!trigger || !triggerLabel || !valueInput || !panel || !search || !list) return;
+
+    let activeIndex = -1;
+    let visible = countries;
+
+    const renderList = () => {
+      list.innerHTML = '';
+      if (!visible.length) {
+        const empty = document.createElement('li');
+        empty.className = 'country-empty';
+        empty.textContent = 'Ningún país coincide.';
+        list.appendChild(empty);
+        return;
+      }
+      visible.forEach((country, index) => {
+        const item = document.createElement('li');
+        item.setAttribute('role', 'presentation');
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'country-option' + (index === activeIndex ? ' is-active' : '');
+        option.setAttribute('role', 'option');
+        option.dataset.dial = country.dial;
+        option.dataset.iso2 = country.iso2;
+        option.innerHTML = `<span class="country-option-flag" aria-hidden="true">${country.flag}</span><span class="country-option-name">${country.name}</span><span class="country-option-dial">+${country.dial}</span>`;
+        option.addEventListener('click', () => select(country));
+        item.appendChild(option);
+        list.appendChild(item);
+      });
+    };
+
+    const select = (country: { dial: string; flag: string }) => {
+      valueInput.value = `+${country.dial}`;
+      triggerLabel.textContent = `${country.flag} +${country.dial}`;
+      close();
+      trigger.focus();
+    };
+
+    const filter = () => {
+      const q = normalize(search.value.trim());
+      // Only try the dial-code match when the query actually has digits —
+      // "".includes('') is always true, so an empty digits string (e.g.
+      // while searching by name) would otherwise match every country.
+      const digits = q.replace(/\D/g, '');
+      visible = !q
+        ? countries
+        : countries.filter((c) => normalize(c.name).includes(q) || (digits !== '' && c.dial.includes(digits)));
+      activeIndex = visible.length ? 0 : -1;
+      renderList();
+    };
+
+    const open = () => {
+      panel.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      search.value = '';
+      filter();
+      search.focus();
+    };
+
+    const close = () => {
+      panel.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+    };
+
+    // Preselect the default so the trigger shows a flag, not just "+57".
+    const defaultIso2 = root.dataset.defaultIso2;
+    const defaultCountry = countries.find((c) => c.iso2 === defaultIso2);
+    if (defaultCountry) triggerLabel.textContent = `${defaultCountry.flag} +${defaultCountry.dial}`;
+
+    trigger.addEventListener('click', () => {
+      if (panel.hidden) open();
+      else close();
+    });
+
+    search.addEventListener('input', filter);
+
+    search.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (visible.length) activeIndex = (activeIndex + 1) % visible.length;
+        renderList();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (visible.length) activeIndex = (activeIndex - 1 + visible.length) % visible.length;
+        renderList();
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const pick = visible[activeIndex] ?? visible[0];
+        if (pick) select(pick);
+      } else if (event.key === 'Escape') {
+        close();
+        trigger.focus();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!panel.hidden && !root.contains(event.target as Node)) close();
+    });
+  });
+</script>
