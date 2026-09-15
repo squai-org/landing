@@ -548,23 +548,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       if (kind === 'contact') payload.ecosystem = eco;
 
       const bookingFallback = form.querySelector<HTMLElement>('[data-booking-fallback]');
-
-      /* La agenda se abre aqui, con el envio recien empezado y todavia dentro
-         del gesto que lo disparo: si esperara a la respuesta de la API, el
-         navegador ya no lo contaria como accion del visitante y lo bloquearia
-         como ventana emergente. Por eso tampoco depende de como termine la
-         peticion; lo que si la condiciona es la validacion de arriba, que ya
-         devolvio antes de llegar hasta aqui si faltaba algo.
-         https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
       const bookingUrl = kind === 'contact' ? form.dataset.bookingUrl : undefined;
-      if (bookingUrl) {
-        window.open(bookingUrl, '_blank', 'noopener,noreferrer');
-        /* El enlace se descubre siempre, no solo si la ventana no abrio: el
-           valor que devuelve window.open no distingue entre una emergente
-           bloqueada y una abierta con `noopener`, y aunque abriera, una pestana
-           que aparece detras es igual de facil de no ver. */
-        if (bookingFallback) bookingFallback.hidden = false;
-      }
+      /* Cada envio parte de cero: si el anterior dejo el enlace a la vista y
+         este falla, no puede quedarse ahi contradiciendo al error. */
+      if (bookingFallback) bookingFallback.hidden = true;
 
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
       const labelNode = submit?.querySelector<HTMLElement>('.btn-label');
@@ -599,6 +586,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
         form.reset();
         clearFieldErrors(form);
+
+        /* La agenda solo sale si el registro quedo guardado: abrirla tras un
+           error mandaria a reservar una llamada de la que no hay rastro.
+           El enlace acompana a la ventana siempre, porque abrir desde aqui ya
+           no ocurre dentro del gesto que disparo el envio y el navegador puede
+           tratarlo como emergente y bloquearlo.
+           https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
+        if (bookingUrl) {
+          window.open(bookingUrl, '_blank', 'noopener,noreferrer');
+          if (bookingFallback) bookingFallback.hidden = false;
+        }
+
         setStatus(
           form,
           kind === 'contact'
