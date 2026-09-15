@@ -2,7 +2,6 @@
 import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
 import CustomSelect from './CustomSelect.astro';
-import { booking } from '../config/booking';
 import { endpoints } from '../config/endpoints';
 import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
@@ -18,7 +17,7 @@ const { ui, labels } = await getSiteContent();
   aria-modal="true"
   aria-labelledby="modal-title"
 >
-  <div data-modal-panel data-step="1" class="modal-panel">
+  <div data-modal-panel class="modal-panel">
     <button
       type="button"
       data-close-modal
@@ -26,135 +25,80 @@ const { ui, labels } = await getSiteContent();
       class="modal-close"
       >×</button
     >
-    <div class="card-pad-lg modal-panel-form">
-      {/* El indicador de progreso es decorativo para el lector de pantalla: lo
-          que anuncia el cambio de paso es el contador de abajo, que es una
-          region live. Duplicarlo aqui solo repetiria lo mismo dos veces.
-          https://www.w3.org/WAI/ARIA/apg/patterns/ */}
-      <ol class="stepper" data-stepper aria-hidden="true">
-        {ui.contact.steps.map((step, index) => (
-          <li class="stepper-item" data-stepper-item={index + 1} data-state={index === 0 ? 'current' : 'todo'}>
-            <span class="stepper-dot">{index + 1}</span>
-            <span class="stepper-label">{step.label}</span>
-          </li>
-        ))}
-      </ol>
-      <p class="step-counter" data-step-counter role="status" aria-live="polite">
-        {ui.contact.counter.replace('{current}', '1').replace('{total}', String(ui.contact.steps.length))}
-      </p>
-
+    <form
+      data-form="contact"
+      data-endpoint-grow={endpoints.grow}
+      data-endpoint-learn={endpoints.learn}
+      novalidate
+      class="card-pad-lg modal-panel-form"
+    >
       <h2 id="modal-title" data-modal-title class="modal-title">
         {ui.contact.title}
       </h2>
       <p data-modal-copy class="modal-copy">
         {ui.modal.grow.copy}
       </p>
+      <p id="contact-required" class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
 
-      <form
-        data-form="contact"
-        data-endpoint-grow={endpoints.grow}
-        data-endpoint-learn={endpoints.learn}
-        novalidate
-      >
-        <p id="contact-required" class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
-
-        <section data-step-panel="1" role="group" aria-labelledby="modal-title" tabindex="-1">
-          <div class="field-grid-2">
-            <label class="field-group" for="contact-full-name">
-              <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
-              <input id="contact-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="contact-full-name-error" />
-              <span id="contact-full-name-error" class="field-error" data-field-error="full_name"></span>
-            </label>
-            <label class="field-group" for="contact-email">
-              <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
-              <input id="contact-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="contact-email-error" />
-              <span id="contact-email-error" class="field-error" data-field-error="email"></span>
-            </label>
-          </div>
-          <label class="field-group field-group-spaced" for="contact-organization">
-            <span class="field-label">{ui.forms.organization} <span aria-hidden="true">*</span></span>
-            <input id="contact-organization" type="text" name="organization" required autocomplete="organization" class="field" aria-describedby="contact-organization-error" />
-            <span id="contact-organization-error" class="field-error" data-field-error="organization"></span>
-          </label>
-          <div class="field-grid-phone">
-            <CountryCodeSelect idPrefix="contact" label={ui.forms.countryCode} />
-            <label class="field-group" for="contact-phone">
-              <span class="field-label">{ui.forms.whatsapp} <span aria-hidden="true">*</span></span>
-              <input id="contact-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="contact-phone-error" />
-              <span id="contact-phone-error" class="field-error" data-field-error="phone"></span>
-            </label>
-          </div>
-        </section>
-
-        <section data-step-panel="2" role="group" aria-labelledby="modal-title" tabindex="-1" hidden>
-          <label class="field-group" for="contact-role">
-            <span class="field-label">{ui.forms.role} <span class="field-optional">{ui.forms.optional}</span></span>
-            <input id="contact-role" type="text" name="role" autocomplete="organization-title" class="field" aria-describedby="contact-role-error" />
-            <span id="contact-role-error" class="field-error" data-field-error="role"></span>
-          </label>
-          <div class="field-group-spaced">
-            <CustomSelect
-              idPrefix="contact"
-              name="team_size"
-              label={ui.forms.teamSize}
-              placeholder={ui.forms.select}
-              options={ui.forms.teamSizes}
-            />
-          </div>
-          <label class="field-group field-group-spaced" for="contact-message">
-            <span class="field-label">{ui.forms.message} <span class="field-optional">{ui.forms.optional}</span></span>
-            <textarea
-              id="contact-message"
-              rows="4"
-              name="message"
-              data-modal-textarea
-              placeholder={ui.modal.grow.placeholder}
-              class="field"
-              aria-describedby="contact-message-error"></textarea>
-            <span id="contact-message-error" class="field-error" data-field-error="message"></span>
-          </label>
-        </section>
-
-        {/* El widget de Turnstile queda fuera de los pasos, visible desde que se
-            abre el modal: dentro del paso 2 pasaria oculto todo el rato que dura
-            el paso 1, y un reto que no llega a resolverse deja el boton de
-            enviar desactivado sin nada que lo explique. */}
-        <Turnstile action="contact" />
-
-        <div class="step-actions" data-step-actions="1">
-          <Button variant="primary" type="button" block data-step-next>{ui.contact.next}</Button>
-        </div>
-        <div class="step-actions step-actions-split" data-step-actions="2" hidden>
-          <Button variant="quiet" type="button" data-step-back>{ui.contact.back}</Button>
-          <Button variant="primary" type="submit">{ui.contact.submit}</Button>
-        </div>
-      </form>
-
-      {/* Fuera del formulario: en el paso de agenda el formulario entero se
-          oculta, y el mensaje de exito tiene que seguir visible y anunciado. */}
+      <div class="field-grid-2">
+        <label class="field-group" for="contact-full-name">
+          <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
+          <input id="contact-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="contact-full-name-error" />
+          <span id="contact-full-name-error" class="field-error" data-field-error="full_name"></span>
+        </label>
+        <label class="field-group" for="contact-email">
+          <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
+          <input id="contact-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="contact-email-error" />
+          <span id="contact-email-error" class="field-error" data-field-error="email"></span>
+        </label>
+        <label class="field-group" for="contact-organization">
+          <span class="field-label">{ui.forms.organization} <span aria-hidden="true">*</span></span>
+          <input id="contact-organization" type="text" name="organization" required autocomplete="organization" class="field" aria-describedby="contact-organization-error" />
+          <span id="contact-organization-error" class="field-error" data-field-error="organization"></span>
+        </label>
+        <label class="field-group" for="contact-role">
+          <span class="field-label">{ui.forms.role} <span class="field-optional">{ui.forms.optional}</span></span>
+          <input id="contact-role" type="text" name="role" autocomplete="organization-title" class="field" aria-describedby="contact-role-error" />
+          <span id="contact-role-error" class="field-error" data-field-error="role"></span>
+        </label>
+      </div>
+      <div class="field-grid-phone">
+        <CountryCodeSelect idPrefix="contact" label={ui.forms.countryCode} />
+        <label class="field-group" for="contact-phone">
+          <span class="field-label">{ui.forms.whatsapp} <span aria-hidden="true">*</span></span>
+          <input id="contact-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="contact-phone-error" />
+          <span id="contact-phone-error" class="field-error" data-field-error="phone"></span>
+        </label>
+      </div>
+      <div class="field-group-spaced">
+        <CustomSelect
+          idPrefix="contact"
+          name="team_size"
+          label={ui.forms.teamSize}
+          placeholder={ui.forms.select}
+          options={ui.forms.teamSizes}
+        />
+      </div>
+      <label class="field-group field-group-spaced" for="contact-message">
+        <span class="field-label">{ui.forms.message} <span class="field-optional">{ui.forms.optional}</span></span>
+        <textarea
+          id="contact-message"
+          rows="4"
+          name="message"
+          data-modal-textarea
+          placeholder={ui.modal.grow.placeholder}
+          class="field"
+          aria-describedby="contact-message-error"></textarea>
+        <span id="contact-message-error" class="field-error" data-field-error="message"></span>
+      </label>
+      <div class="form-submit">
+        <Button variant="primary" type="submit" block>{labels.call}</Button>
+      </div>
       <div class="form-status" data-form-status role="status" aria-live="polite">
         {ui.contact.responseTime}
       </div>
-
-      <section data-step-panel="3" role="group" aria-labelledby="modal-title" tabindex="-1" hidden>
-        {/* El src solo se asigna al llegar a este paso: hasta entonces la pagina
-            no pide nada a Google ni para quien nunca abre el modal. */}
-        <div class="booking-frame">
-          <iframe
-            data-booking-frame
-            data-booking-src={booking.embedUrl}
-            title={ui.contact.booking.frameTitle}
-            class="booking-iframe"></iframe>
-        </div>
-        <p class="booking-fallback">
-          {ui.contact.booking.fallback}{' '}
-          <a href={booking.shortUrl} target="_blank" rel="noopener noreferrer">{ui.contact.booking.fallbackLink}</a>
-        </p>
-        <div class="step-actions">
-          <Button variant="quiet" type="button" block data-close-modal>{ui.contact.booking.done}</Button>
-        </div>
-      </section>
-    </div>
+      <Turnstile action="contact" />
+    </form>
   </div>
 </div>
 
@@ -171,17 +115,7 @@ const { ui, labels } = await getSiteContent();
     background: rgba(10, 12, 26, .6);
     backdrop-filter: blur(6px);
   }
-  .modal-panel {
-    position: relative;
-    width: 100%;
-    max-width: 620px;
-    margin: auto;
-    transition: max-width .28s ease;
-  }
-  /* El calendario de Google necesita ancho para mostrar la franja de horas sin
-     scroll horizontal, pero solo en su paso: los otros dos se leen mejor
-     estrechos. */
-  .modal-panel[data-step='3'] { max-width: 880px; }
+  .modal-panel { position: relative; width: 100%; max-width: 620px; margin: auto; }
   .modal-close {
     position: absolute;
     top: -14px;
@@ -218,71 +152,6 @@ const { ui, labels } = await getSiteContent();
   .modal-close:hover { background: var(--periwinkle); transform: translateY(-2px); }
   .modal-close:active { transform: none; }
 
-  .stepper {
-    display: flex;
-    gap: 8px;
-    margin: 0 0 10px;
-    padding: 0;
-    list-style: none;
-  }
-  .stepper-item {
-    display: flex;
-    min-width: 0;
-    flex: 1;
-    align-items: center;
-    gap: 8px;
-    padding-top: 10px;
-    border-top: 3px solid var(--line);
-    color: var(--ink-muted);
-    font-size: 14px;
-    transition: border-color .2s ease, color .2s ease;
-  }
-  .stepper-item[data-state='current'],
-  .stepper-item[data-state='done'] { border-top-color: var(--periwinkle); color: var(--ink); }
-  .stepper-item[data-state='current'] { font-weight: 700; }
-  .stepper-dot {
-    display: grid;
-    width: 24px;
-    height: 24px;
-    flex: none;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    background: var(--canvas);
-    font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 700;
-    place-items: center;
-  }
-  .stepper-item[data-state='current'] .stepper-dot,
-  .stepper-item[data-state='done'] .stepper-dot {
-    border-color: var(--periwinkle);
-    background: var(--periwinkle);
-    color: var(--surface);
-  }
-  .stepper-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .step-counter { margin: 0 0 14px; color: var(--ink-muted); font-size: 14px; }
-
-  .step-actions { margin-top: 18px; }
-  .step-actions-split { display: flex; gap: 12px; }
-  .step-actions-split > :last-child { flex: 1; }
-
-  [data-step-panel]:focus { outline: none; }
-  [data-step-panel]:focus-visible { outline: 3px solid var(--periwinkle); outline-offset: 6px; }
-
-  .booking-frame {
-    width: 100%;
-    /* Lo que sobra de la ventana una vez descontado el resto del panel, para que
-       el paso entero quepa sin scroll y el boton de cerrar siga a la vista. */
-    height: clamp(360px, calc(100vh - 420px), 620px);
-    overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    background: var(--canvas);
-  }
-  .booking-iframe { display: block; width: 100%; height: 100%; border: 0; }
-  .booking-fallback { margin: 12px 0 0; color: var(--ink-muted); font-size: 14px; }
-  .booking-fallback a { color: var(--periwinkle-ink); }
-
   @media (max-width: 640px) {
     .modal-backdrop { padding: 30px 12px 12px; }
     .modal-close {
@@ -292,17 +161,9 @@ const { ui, labels } = await getSiteContent();
       height: 44px;
     }
     .modal-panel-form { padding: 26px 20px; border-radius: 22px; }
-    .stepper-label { display: none; }
-    .stepper-item { justify-content: center; }
-    .booking-frame { height: clamp(380px, calc(100vh - 330px), 560px); }
-    .step-actions-split { flex-direction: column-reverse; }
   }
 
   @media (max-width: 400px) {
     .field { padding-inline: 14px; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .modal-panel, .stepper-item { transition: none; }
   }
 </style>
