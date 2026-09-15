@@ -408,12 +408,6 @@
             ]
           },
           {
-            "q": "¿El contenido es el mismo del programa abierto para personas?",
-            "a": [
-              "No. Compartimos una metodología, pero en Grow construimos el entrenamiento a partir del contexto, las tareas y las necesidades del equipo."
-            ]
-          },
-          {
             "q": "¿Las sesiones son virtuales o presenciales?",
             "a": [
               "Podemos trabajar de las dos formas. Hacemos las sesiones de manera virtual o también podemos hacerlas presenciales en algunas ciudades de Colombia."
@@ -429,12 +423,6 @@
             "q": "¿Cuánto dura el programa y cuánto cuesta?",
             "a": [
               "Depende del diagnóstico. No tenemos un paquete de talla única, armamos la propuesta después de entender en qué se les va el tiempo."
-            ]
-          },
-          {
-            "q": "¿Cómo saben si funcionó?",
-            "a": [
-              "Antes de empezar acordamos qué queremos observar y con qué vamos a compararlo. Después revisamos qué cambió."
             ]
           }
         ],

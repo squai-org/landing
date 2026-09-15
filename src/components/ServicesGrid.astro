@@ -85,12 +85,13 @@ const { services, labels } = await getSiteContent();
   }
   .card-link:hover .discover { background: #26262B; transform: translateY(-1px); }
 
-  @media (max-width: 640px) {
+  @media (max-width: 1170px) {
     .service-card-footer {
-      flex-wrap: wrap;
+      flex-direction: column;
+      flex-wrap: nowrap;
       align-items: flex-start;
       gap: 20px;
     }
-    .service-card-footer h3 { flex: 1 1 100%; }
+    .service-card-footer h3 { flex: none; }
   }
 </style>
