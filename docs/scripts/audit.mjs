@@ -38,6 +38,12 @@ let total = 0;
 
 for (const route of PAGES) {
   const page = await ctx.newPage();
+
+  // addInitScript inyecta por CDP antes de que cargue el documento, asi que no
+  // lo frena la Content-Security-Policy del sitio. Con addScriptTag, axe se
+  // inyectaria como <script> inline y la propia politica lo bloquearia.
+  await page.addInitScript({ content: AXE });
+
   await page.goto(BASE + route, { waitUntil: 'networkidle' });
 
   // El modal de contacto arranca oculto: axe no audita lo que no se renderiza.
@@ -49,7 +55,6 @@ for (const route of PAGES) {
     }
   });
 
-  await page.addScriptTag({ content: AXE });
   const res = await page.evaluate(
     (tags) => window.axe.run(document, { runOnly: { type: 'tag', values: tags } }),
     TAGS

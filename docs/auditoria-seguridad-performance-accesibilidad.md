@@ -5,6 +5,11 @@ Documento de trabajo para resolver los hallazgos de los informes externos de
 **causa en este repositorio** (archivo y línea) y **solución** respaldada por
 documentación oficial enlazada.
 
+> **Estado:** los hallazgos de código están implementados en la rama
+> `bugfixing/security-performance`. Lo medido antes y después está en §7.4.
+> Queda pendiente un único cambio, que no es de código: subir la versión mínima
+> de TLS en el panel de Cloudflare (§4.3).
+
 ---
 
 ## 0. Alcance y método
@@ -64,12 +69,15 @@ Salida esperada con el código actual:
 
 ```
 ## / — 0 violaciones, 2 incompletas
-## /servicios/squai-one — 1 violaciones, 2 incompletas
-[serious] color-contrast :: .waitlist-promise — contraste 2.66, se exige 4.5
+## /servicios/squai-one — 0 violaciones, 2 incompletas
 ## /politica-de-privacidad — 0 violaciones, 1 incompletas
 ## /terminos-de-servicio — 0 violaciones, 1 incompletas
-Total: 1 violaciones
+Total: 0 violaciones
 ```
+
+Antes de los cambios de esta rama, `/servicios/squai-one` devolvía una
+violación: `color-contrast` en `.waitlist-promise`, 2.66:1 frente al 4.5:1
+exigido.
 
 Herramientas de referencia:
 
@@ -129,7 +137,7 @@ assets de Cloudflare, sin pasar por el Worker**, por lo que ninguna de esas
 cabeceras llega a las páginas que escanean Security Headers y Observatory. El
 middleware no está mal; está aplicado a un ámbito que los escáneres no miden.
 
-### 1.3 Solución: archivo `_headers`
+### 1.3 Solución implementada: archivo `_headers`
 
 Cloudflare Workers permite sobrescribir las cabeceras de los assets estáticos
 con un archivo de texto plano llamado `_headers`, sin extensión, ubicado en el
@@ -150,17 +158,17 @@ estáticos**, no a las respuestas que genera el código del Worker. Por eso
 `src/server/middleware/security-headers.ts` debe seguir existiendo para
 `/api/*`; no lo reemplaza, lo complementa.
 
-#### Contenido propuesto para `public/_headers`
+#### Contenido de `public/_headers`
 
 ```
 /*
+# @csp@
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), usb=(), xr-spatial-tracking=()
+  Permissions-Policy: accelerometer=(), autoplay=(), browsing-topics=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), usb=(), xr-spatial-tracking=()
   Cross-Origin-Opener-Policy: same-origin
-  Cross-Origin-Resource-Policy: same-origin
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
@@ -168,6 +176,10 @@ estáticos**, no a las respuestas que genera el código del Worker. Por eso
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 ```
+
+`# @csp@` es el marcador que la integración de build sustituye por la línea de
+`Content-Security-Policy` (§2.2). Es un comentario válido del formato, así que
+si la integración no corriera, no queda una política a medias.
 
 #### Justificación de cada cabecera
 
@@ -220,19 +232,18 @@ sitio no usa cámara, micrófono, geolocalización ni pagos, así que la lista
 vacía es la opción segura.
 [Permissions-Policy — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy)
 
-**`Cross-Origin-Opener-Policy: same-origin`** y
-**`Cross-Origin-Resource-Policy: same-origin`** — Observatory los marca como
-recomendados (`COOP` → `same-origin`, `CORP` → deja `cross-origin` por defecto
-si no se declara).
+**`Cross-Origin-Opener-Policy: same-origin`** — Aísla el contexto de
+navegación de la página de cualquier ventana que la haya abierto desde otro
+origen. El sitio no usa popups ni depende de `window.opener`, así que no tiene
+efecto sobre el funcionamiento.
+[Cross-Origin-Opener-Policy — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Opener-Policy)
 
-- [Cross-Origin-Opener-Policy — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Opener-Policy)
-- [Cross-Origin-Resource-Policy — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Resource-Policy)
-
-**Cuidado con `CORP: same-origin`:** bloquea que otros sitios incrusten
-recursos de `squai.io`. Si en algún momento se quiere que el logo o una imagen
-OG se carguen desde otro dominio, hay que relajarlo a `cross-origin` para esas
-rutas. Las imágenes de Open Graph las descargan los crawlers por HTTP directo,
-no como subrecurso, así que no se ven afectadas.
+**`Cross-Origin-Resource-Policy` se omite a propósito.** Observatory lo puntúa
+con 0: no declararlo no penaliza. Y `same-origin` impediría que otro sitio
+incruste las imágenes de `/og/`, que existen precisamente para que las muestren
+terceros. Cero puntos a cambio de un riesgo real sobre las vistas previas
+sociales es un mal negocio.
+[Cross-Origin-Resource-Policy — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Resource-Policy)
 
 **No se propone `Cross-Origin-Embedder-Policy`.** Observatory lo puntúa con 0
 (no penaliza su ausencia) y `require-corp` rompe la carga de recursos de
@@ -263,108 +274,100 @@ Los 6 scripts en línea son la razón por la que no se puede activar una CSP
 estricta de un día para otro: una política sin `'unsafe-inline'` ni hashes los
 bloquearía y rompería la navegación, el modal y Turnstile.
 
-### 2.2 Astro genera los hashes por sí solo
+### 2.2 Por qué la CSP se genera en el build
 
-Astro 7 (este repo usa **7.2.10**) incluye soporte de CSP bajo
-`security.csp`. Genera un `<meta http-equiv="Content-Security-Policy">` con los
-hashes de todos los scripts y estilos de la página, incluidos los que se cargan
-dinámicamente.
+Astro 7 (este repo usa **7.2.10**) trae soporte de CSP en `security.csp`, que
+genera un `<meta http-equiv="Content-Security-Policy">` con los hashes de los
+scripts y estilos de cada página.
+[Content Security Policy — Astro Docs](https://docs.astro.build/en/reference/experimental-flags/csp/)
 
-- [Content Security Policy — Astro Docs](https://docs.astro.build/en/reference/experimental-flags/csp/)
-- [Astro 5.9 — anuncio de la función](https://astro.build/blog/astro-590/)
+**No es lo que se usa aquí**, por dos razones concretas:
 
-```js
-// astro.config.mjs
-export default defineConfig({
-  // ...
-  security: {
-    csp: {
-      directives: [
-        "default-src 'self'",
-        "img-src 'self' data:",
-        "font-src 'self'",
-        "connect-src 'self'",
-        "base-uri 'self'",
-        "form-action 'self'",
-        "object-src 'none'",
-      ],
-      scriptDirective: {
-        resources: ["'self'", 'https://challenges.cloudflare.com'],
-      },
-      styleDirective: {
-        resources: ["'self'"],
-      },
-    },
-  },
-});
-```
+1. Una política entregada por `<meta>` **no puede** usar `frame-ancestors`,
+   `report-uri` ni `sandbox`: la especificación obliga a descartar esas
+   directivas al parsear una política entregada por meta, y no existe modo
+   *report-only* en `<meta>`. `frame-ancestors` se descarta **en silencio**: no
+   hay error en consola y la página sigue siendo embebible.
+   [CSP Level 2, W3C](https://www.w3.org/TR/CSP2/) ·
+   [CSP Cheat Sheet, OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html)
+2. Security Headers y Observatory puntúan la **cabecera HTTP**. Una CSP que
+   viaja solo en `<meta>` protege al usuario pero puede no sumar en la nota.
 
-Astro controla `script-src` y `style-src` (ahí inyecta los hashes); el resto de
-directivas se declaran en `csp.directives`.
+La cabecera, en cambio, vive en `_headers`, que es un archivo estático. Y los
+hashes no se pueden escribir a mano en un archivo estático, porque **Astro
+incrusta en el HTML los scripts de componente que son pequeños** en lugar de
+emitirlos como archivo: en el build actual hay 11 bloques de script en línea y
+4 de estilo, y su contenido cambia con cada cambio de código.
 
-### 2.3 Limitación del `<meta>`: `frame-ancestors` se ignora
+De ahí `src/integrations/csp-headers.mjs`: un hook `astro:build:done` que lee
+el HTML ya construido, calcula los hashes SHA-256 y sustituye el marcador
+`# @csp@` de `public/_headers` por la línea de política en `dist/_headers`.
+Si la integración no corriera, en el archivo no queda una política rota: queda
+un comentario.
 
-Una política entregada por `<meta>` **no** puede usar `frame-ancestors`,
-`report-uri` ni `sandbox`: la especificación obliga a descartar esas directivas
-al parsear una política entregada por meta, y no existe modo *report-only* en
-`<meta>`.
-
-> La especificación lo fija en [CSP Level 2 §3.3, W3C](https://www.w3.org/TR/CSP2/)
-> y lo resume el [Content Security Policy Cheat Sheet de OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html).
-
-Esto tiene dos consecuencias prácticas:
-
-1. `frame-ancestors` **tiene que ir en la cabecera HTTP**, es decir en
-   `public/_headers`. Si se escribe en el meta, el navegador lo descarta en
-   silencio: no hay error en consola y la página sigue siendo embebible.
-2. Security Headers y Observatory puntúan la **cabecera**. Una CSP entregada
-   solo por `<meta>` puede no sumar en la nota aunque sí proteja al usuario.
-
-### 2.4 Plan de despliegue en tres fases
-
-Activar una CSP estricta de golpe es la forma más rápida de romper el sitio en
-producción. El despliegue recomendado:
-
-**Fase 1 — Observar sin bloquear.** Añadir a `public/_headers` una política en
-modo informe. `Content-Security-Policy-Report-Only` **sí** funciona como
-cabecera HTTP (solo está prohibido en `<meta>`):
+### 2.3 Política que se emite hoy
 
 ```
-/*
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self';
+  frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; font-src 'self';
+  script-src 'self' <11 hashes sha256> https://challenges.cloudflare.com;
+  style-src 'self' <4 hashes sha256>; style-src-attr 'unsafe-inline';
+  connect-src 'self' https://challenges.cloudflare.com;
+  frame-src https://challenges.cloudflare.com; upgrade-insecure-requests
 ```
 
-Con esto el navegador reporta en consola todo lo que *habría* bloqueado, sin
-bloquear nada. Es el mecanismo que documenta
-[Content-Security-Policy-Report-Only — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy-Report-Only).
-Navegar el sitio completo (home, cada servicio, abrir el modal, enviar los dos
-formularios, páginas legales) y anotar cada violación.
+Sin `'unsafe-inline'` en `script-src` ni en `style-src`. La única concesión es
+`style-src-attr 'unsafe-inline'`, que cubre los atributos `style=""` del HTML
+(el color del verbo del hero en `src/components/Hero.astro`, los botones
+sociales de `src/components/Footer.astro`). Son atributos, no elementos, así
+que no se pueden cubrir con hash.
+[style-src-attr — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/style-src-attr)
 
-**Fase 2 — Eliminar los scripts en línea.** Es lo que permite pasar a una
-política estricta sin `'unsafe-inline'`. En `src/layouts/Layout.astro` hay tres
-bloques `is:inline`:
+### 2.4 Verificación y vuelta atrás
 
-- El de captura de Figma (`https://mcp.figma.com/mcp/html-to-design/capture.js`).
-  **Recomendación: eliminarlo del build de producción.** Es una herramienta de
-  diseño, y tal como está, cualquiera que abra `https://squai.io/#figmacapture`
-  provoca la carga y ejecución de un script de un tercero. Es superficie de
-  ataque sin contrapartida para el visitante.
-- El callback `window.squaiTurnstileSync`. Puede vivir en un `<script>` normal
-  (sin `is:inline`): Astro lo empaqueta como módulo externo y la asignación a
-  `window` sigue funcionando.
-- El bloque `<style is:global>` de `html[data-figma-capture]` desaparece junto
-  con el primero.
+La política se comprobó en Chromium sobre el build, con el servidor local
+aplicando las cabeceras reales de `dist/_headers`: se cargaron las seis páginas,
+se recorrió cada una entera, se abrió el modal de contacto y se desplegaron los
+dos combobox, escuchando el evento `securitypolicyviolation`.
 
-Queda el JSON-LD de `src/components/Seo.astro`
-(`<script type="application/ld+json">`). Los hashes de Astro lo cubren; si se
-quisiera una política puramente externa habría que moverlo a un endpoint, lo
-cual perjudica al SEO. **Mantenerlo y cubrirlo con hash es la opción correcta.**
+```
+/: 0 violaciones CSP, 0 errores de consola
+/servicios/squai-one: 0 violaciones CSP, 0 errores de consola
+/servicios/squai-grow: 0 violaciones CSP, 0 errores de consola
+/servicios/squai-learn: 0 violaciones CSP, 0 errores de consola
+/politica-de-privacidad: 0 violaciones CSP, 0 errores de consola
+/terminos-de-servicio: 0 violaciones CSP, 0 errores de consola
+```
 
-**Fase 3 — Hacer cumplir.** Cuando Report-Only no reporte violaciones durante
-un ciclo de despliegue, cambiar el nombre de la cabecera a
-`Content-Security-Policy`.
+Comprobación indirecta de que la política es real: al aplicarla, `axe-core`
+dejó de poder inyectarse con `page.addScriptTag`, porque eso crea un `<script>`
+en línea sin hash. `docs/scripts/audit.mjs` pasó a inyectarlo con
+`page.addInitScript`, que va por CDP y no lo frena la política del sitio.
 
-### 2.5 Verificación de las directivas propuestas
+**Lo que no se pudo verificar.** El proxy de este entorno bloquea
+`challenges.cloudflare.com`, así que no se pudo cargar Turnstile de verdad. Lo
+que sí se comprobó, construyendo con la sitekey de prueba de Cloudflare
+(`1x00000000000000000000AA`): la etiqueta `<script>` de Turnstile y su
+`preconnect` **no generan ninguna violación de CSP** — el único error es
+`net::ERR_TUNNEL_CONNECTION_FAILED`, que es el proxy, no la política. Queda sin
+verificar si `api.js`, una vez ejecutado, inyecta algo que la política bloquee.
+
+Para eso existe la salida de emergencia: `CSP_REPORT_ONLY=1` en el build emite
+`Content-Security-Policy-Report-Only` en lugar de la cabecera que bloquea. El
+navegador informa en consola de lo que *habría* bloqueado sin bloquear nada.
+
+```bash
+CSP_REPORT_ONLY=1 pnpm build
+```
+
+[Content-Security-Policy-Report-Only — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy-Report-Only)
+
+**Recomendación para el despliegue:** desplegar primero a una preview con
+Turnstile activo y mirar la consola. Si aparece cualquier violación que venga
+de Turnstile, redesplegar con `CSP_REPORT_ONLY=1`, recoger lo que reporte y
+ajustar las directivas antes de volver a hacer cumplir la política.
+
+### 2.5 Por qué cada directiva
 
 | Directiva | Por qué | Referencia |
 |---|---|---|
@@ -373,7 +376,7 @@ un ciclo de despliegue, cambiar el nombre de la cabecera a
 | `base-uri 'self'` | Impide que un `<base>` inyectado reescriba las URLs relativas | [MDN base-uri](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/base-uri) |
 | `form-action 'self'` | Los dos formularios envían a `/api/*`, mismo origen | [MDN form-action](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/form-action) |
 | `frame-ancestors 'none'` | Anti-clickjacking; solo válido en cabecera | [MDN frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/frame-ancestors) |
-| `frame-src https://challenges.cloudflare.com` | Turnstile se renderiza dentro de un iframe | [Turnstile — Cloudflare](https://developers.cloudflare.com/turnstile/) |
+| `frame-src https://challenges.cloudflare.com` | Turnstile se renderiza dentro de un iframe de su origen | [Turnstile — Cloudflare](https://developers.cloudflare.com/turnstile/) |
 | `img-src 'self' data:` | Hay SVG y WebP locales; `data:` cubre inlines de build | [MDN img-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/img-src) |
 
 `connect-src 'self'` es suficiente porque las llamadas van a `/api/waitlist` y
@@ -552,21 +555,41 @@ incluso la revalidación al recargar.
 
 [Cache-Control — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)
 
-Ya está incluido en el `_headers` propuesto en §1.3. Beneficia a la segunda
-visita y a la navegación entre páginas, no a la primera carga.
+Implementado en `public/_headers` (§1.3). Beneficia a la segunda visita y a la
+navegación entre páginas, no a la primera carga. No se declara regla para el
+HTML: el patrón `/*.html` no casaría, porque con `trailingSlash: 'never'` las
+URLs no llevan extensión, y el valor por defecto de Cloudflare para assets no
+inmutables ya obliga a revalidar.
 
-**B. Reducir la cadena crítica de CSS.** La home carga tres hojas
-(`index.css`, `Footer.css`, `ContactModal.css`, ~43 kB). `ContactModal.css` es
-para un modal que arranca oculto: no es CSS crítico. Opciones, de menor a mayor
-riesgo:
+**B. Reducir la cadena crítica de CSS — implementado, con medición.** La home
+cargaba tres hojas (`index.css`, `Footer.css`, `ContactModal.css`, ~43 kB)
+antes de poder pintar. Como el LCP es texto del hero, esa cadena de peticiones
+era lo que gobernaba la métrica.
 
-- Comprobar en el panel *Coverage* de DevTools cuánto de esos 43 kB se usa
-  above-the-fold antes de tocar nada.
-- Evaluar `build.inlineStylesheets` de Astro, que decide si el CSS pequeño se
-  incrusta en el HTML en lugar de generar una petición extra.
-  [build.inlineStylesheets — Astro](https://docs.astro.build/en/reference/configuration-reference/#buildinlinestylesheets)
+`build.inlineStylesheets: 'always'` en `astro.config.mjs` hace que el CSS viaje
+dentro del HTML.
+[build.inlineStylesheets — Astro](https://docs.astro.build/en/reference/configuration-reference/#buildinlinestylesheets)
 
-**Medir antes de cambiar.** No modificar la estrategia de CSS a ciegas.
+Medido con Slow 4G (1.6 Mbps de bajada, 150 ms de RTT) y CPU 4× más lenta,
+mediana de 7 ejecuciones sobre el build:
+
+| | antes | después |
+|---|---|---|
+| LCP | 1276 ms | **680 ms** (−47 %) |
+| FCP | 1276 ms | **656 ms** (−49 %) |
+| Peticiones | 16 | 13 |
+| Transferido | 207.7 kB | 206.7 kB |
+
+Los bytes son casi los mismos: el CSS no desaparece, cambia de sitio. Lo que
+desaparece son los viajes de ida y vuelta, que es lo que cuesta caro con 150 ms
+de RTT.
+
+**El coste**, que conviene tener presente: cada página lleva ahora su propio
+CSS y deja de compartirlo en caché entre navegaciones. `index.html` pasa de
+64.2 kB a 106.8 kB. Para una landing, donde la mayoría de visitas son primeras
+visitas, la primera pintura pesa más que la segunda navegación. Si el perfil de
+tráfico cambiara a muchas visitas recurrentes multipágina, esta decisión hay
+que volver a medirla.
 
 **C. `<link rel="preconnect">` a Cloudflare Turnstile.** Ya existe en
 `src/layouts/Layout.astro:79`, condicionado a que haya site key. Correcto.
@@ -635,22 +658,34 @@ forma de percibir ni corregir ese campo. Esto incumple:
   enfocables ni que reciban interacción:
   [aria-hidden — MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-hidden)
 
-**Solución recomendada — usar el patrón ARIA de combobox completo.** El
-componente ya tiene casi todo: `role="listbox"`, `aria-haspopup`,
-`aria-expanded`, `aria-controls`, `aria-labelledby`. Lo que falta es dejar de
-apoyarse en un input fantasma:
+**Solución implementada.** Se eliminó el input espejo y la obligatoriedad se
+valida contra el botón disparador, que sí es un control real, enfocable y con
+nombre accesible. En `src/components/CustomSelect.astro` el valor viaja ahora
+en un `type="hidden"` sin `required` ni `aria-hidden`, y el componente expone
+`data-select-required` y `data-select-message`. En
+`src/layouts/Layout.astro`, el manejador de envío comprueba esos combobox junto
+a `form.checkValidity()`, marca `aria-invalid` sobre el disparador, escribe el
+mensaje en el `field-error` que ya estaba enlazado por `aria-describedby`, y
+lleva el foco al primer campo inválido en orden de documento, sea nativo o no.
 
-1. Quitar `aria-hidden="true"` y `required` del input espejo y darle un nombre
-   accesible (`aria-labelledby={`${fieldId}-label`}`), o
-2. Mejor: eliminar el input espejo y **validar la selección en el envío**, junto
-   con el resto de la validación de cliente, escribiendo el error en el `<span
-   id={errorId} class="field-error">` que el componente ya renderiza y que ya
-   está referenciado por `aria-describedby` desde el botón disparador.
-
-La opción 2 es la que sigue el patrón oficial:
-[Combobox Pattern — WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
-y
+Es el patrón oficial:
+[Combobox Pattern — WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) ·
 [Select-Only Combobox Example](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/)
+
+Verificado en Chromium sobre el build:
+
+```
+sin seleccionar: { "checkValidityNativa": true, "triggerAriaInvalid": "true",
+                   "mensajeDeError": "Selecciona una opción",
+                   "focoEn": "contact-team_size" }
+tras seleccionar: { "valorEnviado": "menos-10", "triggerAriaInvalid": null,
+                    "mensajeDeError": "", "etiquetaVisible": "Menos de 10" }
+nombre accesible del combobox: Personas que se formarían * / Menos de 10
+```
+
+El envío sigue bloqueándose cuando falta la selección — que era el objetivo del
+input espejo — pero ahora el aviso llega a quien usa lector de pantalla y el
+foco aterriza en un control al que se puede llegar con el teclado.
 
 El mismo patrón aparece en `src/components/CountryCodeSelect.astro:42`, pero ahí
 el input es `type="hidden"` y no `required`, así que no se ve afectado.
@@ -716,7 +751,8 @@ texto grande, definido como ≥18 pt (≈24 px) o ≥14 pt (≈19 px) en negrita
 - [Contrast and Color Accessibility — WebAIM](https://webaim.org/articles/contrast/)
 - [Contrast Checker — WebAIM](https://webaim.org/resources/contrastchecker/)
 
-**Solución:** usar el token oscuro que ya existe en el sistema de diseño,
+**Solución implementada:** usar el token oscuro que ya existe en el sistema de
+diseño,
 `--periwinkle-ink` (`#4C50D8`, `src/styles/global.css:85`), que sobre `--canvas`
 da **5.65:1** (y 6.09:1 sobre `--surface`). Es el mismo color que ya se usa en `.hero-eyebrow-status` y
 `.service-eyebrow-text`, así que no introduce un color nuevo.
@@ -740,7 +776,11 @@ Los tres primeros son colores de **fondo**, y sobre ellos `--midnight` da
 11.9–10.6:1. `--periwinkle-dark` solo sirve para texto grande (≥3:1), y hoy se
 usa en `a:hover` (`src/styles/global.css:175`) — un enlace en hover sobre fondo
 claro a 3.96:1 **no cumple AA para texto normal**. Sustituirlo por
-`--periwinkle-ink` (5.65:1 sobre `--canvas`, 6.09:1 sobre `--surface`) resuelve ese caso.
+un token más oscuro resuelve ese caso. Se añadió `--periwinkle-deep`
+(`#3A3EC4`, **7.88:1** sobre blanco y 7.30:1 sobre `--canvas`) y `a:hover` pasa
+a usarlo. El hover tiene que ser *más* oscuro que el estado base, no más claro:
+`--periwinkle` (`#8A8EF9`, 2.87:1) habría empeorado el problema en vez de
+arreglarlo.
 
 **Causa estructural que probablemente explica los 3 errores de WAVE.** Medido
 en el build, cargando la home sin hacer scroll:
@@ -767,34 +807,43 @@ exactos, usando el panel *Details* y el botón de cada error, para saber si son
 elementos `.reveal` o texto real con color insuficiente. No fue posible ejecutar
 WAVE desde este entorno.
 
-**Solución — mejora progresiva del reveal.** Con independencia de lo que diga
-WAVE, el patrón actual tiene un riesgo real: si el JS falla, si
+**Solución implementada — mejora progresiva del reveal.** Con independencia de
+lo que diga WAVE, el patrón anterior tenía un riesgo real: si el JS falla, si
 `IntersectionObserver` no existe, o si un rastreador no ejecuta JS, **el
 contenido queda invisible de forma permanente**. El CSS ya contempla
 `prefers-reduced-motion` (`src/styles/global.css:523-527`), lo cual es
 correcto; falta el caso "el JS no llegó a correr".
 
-El patrón recomendado es no ocultar nada hasta que el JS confirme que puede
-revelarlo:
+El patrón aplicado es no ocultar nada hasta que el JS confirme que puede
+revelarlo. En `src/styles/global.css`:
 
 ```css
-/* Solo se oculta si el JS ya marcó el documento. */
-html.js-reveal .reveal {
+.js-reveal .reveal {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity .7s cubic-bezier(.22,.8,.3,1), transform .7s cubic-bezier(.22,.8,.3,1);
 }
-html.js-reveal .reveal.is-in { opacity: 1; transform: none; }
+.js-reveal .reveal.is-in { opacity: 1; transform: none; }
 ```
 
-y en el `<head>`, antes de pintar:
+y en el `<head>` de `src/layouts/Layout.astro`, síncrono y antes de pintar para
+que no haya parpadeo:
 
 ```js
 if ('IntersectionObserver' in window &&
-    !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.documentElement.classList.add('js-reveal');
 }
 ```
+
+El `IntersectionObserver` pasa a leer esa misma clase en vez de repetir la
+condición, para que las dos comprobaciones no puedan separarse y dejar
+contenido oculto sin nadie que lo revele.
+
+Verificado con JavaScript desactivado en el contexto del navegador: en la franja
+que va de 1.5× a 3× la altura del viewport, la captura de página completa tiene
+**243 tonos de gris distintos**, es decir hay texto renderizado bajo el pliegue.
+Con la regla anterior esa franja quedaba en el color plano del fondo.
 
 Referencias del criterio:
 [WCAG 2.2 SC 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
@@ -858,25 +907,21 @@ además cubre
 ### 7.1 `docs/scripts/serve-dist.mjs`
 
 Servidor estático mínimo que replica el routing de producción
-(`trailingSlash: 'never'` + `build.format: 'file'`). Sin él, `/servicios/squai-one`
-devuelve 404 y la auditoría analiza una página de error en lugar de la real —
+(`trailingSlash: 'never'` + `build.format: 'file'`, es decir `/servicios/squai-one`
+se sirve desde `dist/servicios/squai-one.html`). Sin él, las rutas internas
+devuelven 404 y la auditoría analiza una página de error en lugar de la real —
 un fallo que ocurrió en la primera pasada de esta auditoría.
 
-```js
-import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path';
-const ROOT = new URL('../../dist/', import.meta.url).pathname;
-const MIME = { '.html':'text/html;charset=utf-8', '.css':'text/css', '.js':'text/javascript',
-  '.svg':'image/svg+xml', '.woff2':'font/woff2', '.png':'image/png', '.webp':'image/webp',
-  '.xml':'application/xml', '.txt':'text/plain', '.json':'application/json' };
-http.createServer((req, res) => {
-  const p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  let f = path.join(ROOT, p);
-  if (p === '/') f = path.join(ROOT, 'index.html');
-  else if (!path.extname(f)) f += '.html';
-  if (!fs.existsSync(f)) { res.writeHead(404); return res.end('404 ' + p); }
-  res.writeHead(200, { 'Content-Type': MIME[path.extname(f)] ?? 'application/octet-stream' });
-  fs.createReadStream(f).pipe(res);
-}).listen(8799, () => console.log('http://127.0.0.1:8799'));
+Aplica además las reglas de `dist/_headers`, con un lector mínimo del formato de
+Cloudflare: una línea sin sangrar es un patrón de ruta y las líneas sangradas
+que la siguen son sus cabeceras. Eso es lo que permite comprobar la CSP real
+contra el navegador antes de desplegarla, en vez de confiar en que el archivo
+esté bien escrito.
+
+```bash
+pnpm build
+node docs/scripts/serve-dist.mjs
+curl -sI http://127.0.0.1:8799/ | grep -i content-security-policy
 ```
 
 ### 7.2 `docs/scripts/audit.mjs`
@@ -901,27 +946,67 @@ que el input sin etiqueta de §6.1 no aparece en una pasada ingenua.
 
 El script sale con código 1 si hay violaciones, así que sirve tal cual en CI.
 
-### 7.3 Orden de trabajo sugerido
+### 7.3 Estado de cada acción
 
-| # | Acción | Dónde | Esfuerzo | Efecto |
-|---|---|---|---|---|
-| 1 | `Minimum TLS Version = 1.2` | Dashboard Cloudflare | minutos | SSL Labs B → A |
-| 2 | Crear `public/_headers` sin CSP (§1.3) | repo | bajo | Security Headers F → A o superior; Observatory +45 |
-| 3 | Corregir `.waitlist-promise` a `--periwinkle-ink` | `src/components/Waitlist.astro:90` | trivial | 1 error WCAG AA menos |
-| 4 | Corregir `a:hover` a `--periwinkle-ink` | `src/styles/global.css:175` | trivial | AA en enlaces en hover |
-| 5 | Reveal con mejora progresiva (§6.2) | `global.css` + `Layout.astro` | medio | contenido visible sin JS; probables 3 errores WAVE |
-| 6 | Rehacer `CustomSelect` sin input fantasma | `src/components/CustomSelect.astro:37` | medio | 1 error WAVE; corrige fallo real de formulario |
-| 7 | CSP en `Report-Only` (§2.4 fase 1) | `public/_headers` | bajo | ninguno visible; recoge datos |
-| 8 | Quitar el script de captura de Figma de producción | `src/layouts/Layout.astro:44-55` | bajo | menos superficie de ataque; CSP más estricta |
-| 9 | Externalizar los scripts `is:inline` restantes | `src/layouts/Layout.astro` | medio | permite CSP sin `unsafe-inline` |
-| 10 | CSP en modo enforce | `public/_headers` | bajo | Observatory +25 |
-| 11 | Medir CSS con *Coverage* y decidir sobre `inlineStylesheets` | — | medio | posible mejora de LCP |
+| # | Acción | Dónde | Estado |
+|---|---|---|---|
+| 1 | `Minimum TLS Version = 1.2` | Dashboard Cloudflare | **Pendiente** — no es código (§4.3) |
+| 2 | Cabeceras de seguridad en `_headers` | `public/_headers` | Hecho |
+| 3 | `Cache-Control: immutable` en `/_astro/` y `/fonts/` | `public/_headers` | Hecho |
+| 4 | `.waitlist-promise` a `--periwinkle-ink` | `src/components/Waitlist.astro` | Hecho |
+| 5 | `a:hover` a `--periwinkle-deep` (token nuevo) | `src/styles/global.css` | Hecho |
+| 6 | Reveal con mejora progresiva | `global.css` + `Layout.astro` | Hecho |
+| 7 | `CustomSelect` sin input fantasma | `src/components/CustomSelect.astro`, `Layout.astro` | Hecho |
+| 8 | Quitar el script de captura de Figma | `src/layouts/Layout.astro` | Hecho |
+| 9 | CSP con hashes generados en build | `src/integrations/csp-headers.mjs` | Hecho, **verificar con Turnstile en preview** (§2.4) |
+| 10 | CSS en línea para acortar la cadena crítica | `astro.config.mjs` | Hecho, con medición (§5.5 B) |
 
-Los puntos 1–4 son de bajo riesgo y cubren la mayor parte de la diferencia de
-puntuación. Los puntos 7–10 deben hacerse **en ese orden**: activar CSP sin la
-fase de observación previa es la vía más rápida a un sitio roto en producción.
+No se implementó el punto que el borrador anterior llamaba "externalizar los
+scripts `is:inline`": dejó de hacer falta. Como la CSP se genera en el build con
+los hashes de lo que Astro emite, los scripts en línea ya no obligan a
+`'unsafe-inline'`, y sacarlos a archivos habría añadido peticiones a la cadena
+crítica justo mientras se trabajaba en acortarla.
 
-### 7.4 Cómo verificar cada cambio
+### 7.4 Resultados medidos
+
+Todo lo de esta tabla se midió con los mismos scripts, sobre el build, antes y
+después de los cambios. No son puntuaciones de los informes externos: son las
+magnitudes que esos informes miden.
+
+| Medición | Antes | Después |
+|---|---|---|
+| Violaciones de axe-core (4 páginas, WCAG 2.2 AA + best-practice) | 1 | **0** |
+| Controles de formulario sin nombre accesible | 1 | **0** |
+| Cabeceras de seguridad en respuestas de assets | 0 | **7** |
+| Violaciones de CSP en navegador (6 páginas, con interacción) | n/a | **0** |
+| Fallos de contraste por muestreo de píxeles (home) | 0 | 0 |
+| Contraste de `.waitlist-promise` | 2.66:1 | **5.65:1** |
+| Contraste de `a:hover` sobre blanco | 3.96:1 | **7.88:1** |
+| Contenido bajo el pliegue sin JavaScript | invisible | **visible** |
+| LCP (Slow 4G, CPU 4×, mediana de 7) | 1276 ms | **680 ms** |
+| FCP (mismas condiciones) | 1276 ms | **656 ms** |
+| Peticiones en la primera carga | 16 | **13** |
+
+Efecto esperado en los informes externos, a partir de lo que cada uno puntúa:
+
+- **Security Headers**: pasaba de F por no encontrar ninguna de las seis
+  cabeceras. Ahora están las seis.
+- **MDN HTTP Observatory**: los descuentos eran CSP −25, HSTS −20, XFO −20,
+  X-Content-Type-Options −5 y SRI −5, sobre 100. Los cuatro primeros dejan de
+  aplicar. El de SRI **no**, y no puede dejar de aplicar mientras se use
+  Turnstile (§3.1).
+- **Qualys SSL Labs**: sin cambios hasta que se suba la versión mínima de TLS
+  en el panel. Es el único punto que no está en el código.
+- **PageSpeed**: el LCP era la única métrica en rojo. Las cifras de arriba son
+  de laboratorio local y no son directamente comparables con las de PageSpeed,
+  que emula otra red y añade la latencia real del servidor; lo comparable es la
+  dirección y el tamaño del cambio.
+- **WAVE**: el error de etiqueta de formulario y el contraste de
+  `.waitlist-promise` están corregidos. Los 3 errores de contraste que WAVE
+  reporta en la home **no se reprodujeron** (§6.2), así que sobre esos no se
+  puede prometer nada: hay que volver a pasar WAVE y mirar qué señala.
+
+### 7.5 Cómo verificar cada cambio
 
 ```bash
 # cabeceras en produccion

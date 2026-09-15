@@ -83,6 +83,9 @@
 
   /* Functional periwinkle ramp (UI only — never identity) */
   --periwinkle-ink: #4C50D8;
+  /* Un paso mas oscuro que --periwinkle-ink, para estados hover sobre fondo
+     claro sin perder el matiz de marca. 7.88:1 sobre blanco. */
+  --periwinkle-deep: #3A3EC4;
   --periwinkle-dark: #6C71F4;
   --periwinkle-soft: #B4B7FB;
   --periwinkle-tint: #E4E5FE;
@@ -172,7 +175,12 @@ body {
 }
 
 a { color: var(--periwinkle-ink); text-decoration: none; }
-a:hover { color: var(--periwinkle-dark); }
+/* El hover tiene que ser mas oscuro que el estado base, no mas claro:
+   --periwinkle-dark (#6C71F4) daba 3.96:1 sobre blanco, por debajo del 4.5:1
+   que WCAG 2.2 AA exige para texto normal, y menos contraste que el propio
+   --periwinkle-ink del que parte. --periwinkle-deep da 7.88:1.
+   https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html */
+a:hover { color: var(--periwinkle-deep); }
 
 /* ---------------------------------------------------------------------------
    Page rhythm
@@ -511,18 +519,28 @@ textarea.field { min-height: 120px; resize: vertical; }
 /* Anchors land clear of the fixed nav bar. */
 :where(section, div)[id] { scroll-margin-top: 140px; }
 
-.reveal {
+/* El estado oculto depende de `html.js-reveal`, que el propio JS anade en el
+   <head> solo cuando puede garantizar que va a revelar el contenido (hay
+   IntersectionObserver y el visitante no pidio reducir movimiento).
+
+   Sin esa condicion, `.reveal { opacity: 0 }` incondicional deja el contenido
+   invisible de forma permanente si el JS falla, si no se ejecuta o si lo lee
+   un rastreador: 27 de las 31 secciones de la home arrancan ocultas. Ocultar
+   solo despues de confirmar que se puede mostrar es el orden correcto. */
+.js-reveal .reveal {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity .7s cubic-bezier(.22, .8, .3, 1), transform .7s cubic-bezier(.22, .8, .3, 1);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
-.reveal.is-in { opacity: 1; transform: none; }
+.js-reveal .reveal.is-in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .card-link:hover { transform: none; }
+  /* Red de seguridad por si el ajuste del sistema cambia despues de la carga,
+     cuando `js-reveal` ya esta puesto. */
   .reveal { opacity: 1; transform: none; transition: none; }
 }
 
