@@ -208,7 +208,7 @@
         "audience": "Personas",
         "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
         "cardCopy": "Un programa en vivo para personas que quieren entender IA. Anótate en la lista de espera para asegurar tu lugar en el próximo programa en lugar de guardar tutoriales que nunca vas a ver.",
-        "seoTitle": "Squai One — Programa para aprender IA en vivo | Squai",
+        "seoTitle": "Programa para aprender IA en vivo | Squai",
         "seoDescription": "Programa en vivo de inteligencia artificial para personas sin perfil técnico: 5 semanas, 20 horas, 100% virtual y con certificado. Preinscripción abierta.",
         "discoverLabel": "Conocer el programa",
         "cta": {
@@ -318,7 +318,7 @@
         "audience": "Para empresas y equipos de trabajo",
         "slogan": "Mientras otros equipos avanzan a toda velocidad con IA, el tuyo no puede quedarse resolviendo procesos a pedal.",
         "cardCopy": "Entrenamos a tu equipo sobre situaciones, tareas y preguntas que ya forman parte de su contexto, guiados por profesionales que han aplicado IA para resolver problemas en distintas industrias.",
-        "seoTitle": "Squai Grow — Entrenamiento en IA para empresas y equipos | Squai",
+        "seoTitle": "Entrenamiento en IA para empresas y equipos | Squai",
         "seoDescription": "Entrenamos a tu equipo en inteligencia artificial sobre las tareas y procesos que ya maneja, con profesionales que usan estas herramientas a diario.",
         "discoverLabel": "Ver cómo funciona para empresas",
         "cta": {
@@ -382,7 +382,7 @@
           {
             "q": "¿Cuántas personas pueden estar en la capacitación?",
             "a": [
-              "Hasta 15 personas por grupo. La idea es que sea una experiencia de práctica y no una conferencia donde solo habla el mentor. Si tienes un equipo más grande, armamos varias cohortes según lo que necesite aprender cada área."
+              "Hasta 15 personas por grupo. La idea es que sea una experiencia de práctica y no una conferencia donde solo habla el mentor. Si tienes un equipo más grande, armamos varias sesiones según lo que necesite aprender cada área."
             ]
           },
           {
@@ -418,8 +418,8 @@
         "audience": "Para colegios, universidades y comunidades educativas",
         "slogan": "Transformemos la IA en las aulas de \"máquina de hacer trampa\" a un aliado para profesores y alumnos.",
         "cardCopy": "Acompañamiento en IA para comunidades educativas. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con ética y pensamiento crítico.",
-        "seoTitle": "Squai Learn — Entrenamiento en IA para comunidades educativas | Squai",
-        "seoDescription": "Acompañamiento en IA para toda la comunidad educativa: preparamos a docentes para adaptar sus metodologías y guiamos a estudiantes a usarla con criterio.",
+        "seoTitle": "Formación en IA para comunidades educativas | Squai",
+        "seoDescription": "Formación en inteligencia artificial para docentes, estudiantes e instituciones educativas: adopción responsable, práctica y pensamiento crítico.",
         "discoverLabel": "Explorar el programa educativo",
         "cta": {
           "modal": "learn",
@@ -673,6 +673,9 @@
         "optional": "(opcional)",
         "countrySearch": "Buscar país o indicativo",
         "countryEmpty": "Ningún país coincide.",
+        "privacyConsentPrefix": "He leído y acepto la ",
+        "privacyConsentLink": "Política de Privacidad",
+        "privacyConsentSuffix": " de Squai.",
         "teamSizes": [
           {
             "value": "menos-10",
@@ -734,6 +737,19 @@
         "description": "Términos y condiciones de uso del programa Fundamentos de Inteligencia Artificial Generativa de Squai.",
         "updated": "14 de septiembre de 2026",
         "sections": [
+          {
+            "title": "Quiénes somos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Squai es una marca comercial de Squai S.A.S., identificada con NIT 902.071.792, con domicilio en Colombia."
+                  }
+                ]
+              }
+            ]
+          },
           {
             "title": "1. Sin letras chiquitas",
             "blocks": [
@@ -813,7 +829,27 @@
             ]
           },
           {
-            "title": "7. Flexibilidad y ajustes",
+            "title": "7. Cancelaciones",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Si confirmas tu cupo y luego decides no continuar antes de que inicie el programa, escríbenos a "
+                  },
+                  {
+                    "text": "team@squai.io",
+                    "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": " para coordinar tu caso. Si Squai debe cancelar o posponer un programa completo por causas de fuerza mayor o falta de cupo mínimo, te ofreceremos reprogramación para el siguiente grupo o la devolución total de lo pagado, a tu elección."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "8. Flexibilidad y ajustes",
             "blocks": [
               {
                 "type": "paragraph",
@@ -826,20 +862,20 @@
             ]
           },
           {
-            "title": "8. Responsabilidad de aplicación",
+            "title": "9. Responsabilidad de aplicación",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Nosotros enseñamos el criterio y la técnica; cómo apliques las herramientas en tu trabajo depende de ti. No nos hacemos responsables por decisiones comerciales tomadas con base en ejercicios del curso."
+                    "text": "Squai garantiza la calidad y la idoneidad del contenido y la ejecución del programa. Nosotros enseñamos el criterio y la técnica; cómo apliques las herramientas en tu trabajo depende de ti. No nos hacemos responsables por los resultados comerciales o decisiones de negocio que tomes con base en ejercicios del curso, ya que eso depende de tu contexto y ejecución."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "9. Cambios a estos términos",
+            "title": "10. Cambios a estos términos",
             "blocks": [
               {
                 "type": "paragraph",
@@ -852,7 +888,7 @@
             ]
           },
           {
-            "title": "10. Canal directo",
+            "title": "11. Canal directo",
             "blocks": [
               {
                 "type": "paragraph",
@@ -865,7 +901,14 @@
                     "href": "mailto:team@squai.io"
                   },
                   {
-                    "text": "."
+                    "text": ". Si consideras que no hemos resuelto tu solicitud de forma adecuada, puedes acudir a la "
+                  },
+                  {
+                    "text": "Superintendencia de Industria y Comercio",
+                    "href": "https://www.sic.gov.co"
+                  },
+                  {
+                    "text": ", autoridad de protección al consumidor en Colombia."
                   }
                 ]
               }
@@ -878,6 +921,19 @@
         "description": "Cómo Squai recopila, usa y protege los datos personales de quienes se registran o se ponen en contacto a través de esta página.",
         "updated": "14 de septiembre de 2026",
         "sections": [
+          {
+            "title": "Quiénes somos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Squai es una marca comercial de Squai S.A.S., identificada con NIT 902.071.792, con domicilio en Colombia."
+                  }
+                ]
+              }
+            ]
+          },
           {
             "title": "1. Quién cuida tus datos",
             "blocks": [
@@ -1069,6 +1125,13 @@
                   {
                     "text": "team@squai.io",
                     "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": ". Si tienes inquietudes sobre el tratamiento de tus datos que no hayamos resuelto, puedes acudir a la "
+                  },
+                  {
+                    "text": "Superintendencia de Industria y Comercio",
+                    "href": "https://www.sic.gov.co"
                   },
                   {
                     "text": "."

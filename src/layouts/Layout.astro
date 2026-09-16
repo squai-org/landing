@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import { getSiteContent } from '../lib/content';
+import { SITE_LANG } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -20,7 +21,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={SITE_LANG}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -52,13 +53,20 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     <script is:inline>
       window.squaiTurnstileSync = function () {
         document.querySelectorAll('form[data-form]').forEach(function (form) {
-          if (!form.querySelector('.cf-turnstile')) return;
+          var hasTurnstile = !!form.querySelector('.cf-turnstile');
           var token = form.querySelector('input[name="cf-turnstile-response"]');
+          var consent = form.querySelector('input[name="privacy_consent"]');
           var submit = form.querySelector('button[type="submit"]');
-          if (submit) submit.disabled = !(token && token.value);
+          if (!submit) return;
+          var turnstileOk = !hasTurnstile || !!(token && token.value);
+          var consentOk = !consent || consent.checked;
+          submit.disabled = !(turnstileOk && consentOk);
         });
       };
       document.addEventListener('DOMContentLoaded', window.squaiTurnstileSync);
+      document.addEventListener('change', function (event) {
+        if (event.target && event.target.name === 'privacy_consent') window.squaiTurnstileSync();
+      });
     </script>
     {
       turnstileSiteKey && (

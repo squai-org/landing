@@ -94,6 +94,15 @@ const { ui, labels } = await getSiteContent();
         <span id="contact-message-error" class="field-error" data-field-error="message"></span>
       </label>
       <Turnstile action="contact" />
+      <label class="field-group consent-field" for="contact-privacy-consent">
+        <span class="consent-row">
+          <input id="contact-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="contact-privacy-consent-error" />
+          <span class="consent-label">
+            {ui.forms.privacyConsentPrefix}<a href="/politica-de-privacidad" target="_blank" rel="noopener">{ui.forms.privacyConsentLink}</a>{ui.forms.privacyConsentSuffix}
+          </span>
+        </span>
+        <span id="contact-privacy-consent-error" class="field-error" data-field-error="privacy_consent"></span>
+      </label>
       <div class="form-submit">
         <Button variant="primary" type="submit" block>{labels.call}</Button>
       </div>
@@ -156,6 +165,20 @@ const { ui, labels } = await getSiteContent();
     line-height: 1.1;
   }
   .modal-copy { margin: 0 0 12px; color: var(--ink-body); font-size: 17px; line-height: 1.6; }
+  .consent-field { gap: 7px; margin: 4px 0 18px; }
+  .consent-row { display: flex; align-items: flex-start; gap: 10px; }
+  .consent-checkbox {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--periwinkle);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
+  .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+  .consent-label a:hover { color: var(--periwinkle-ink); }
   .form-status-booking { display: block; margin-top: 6px; color: var(--ink-body); font-size: 15px; font-weight: 400; }
   .form-status-booking a { display: block; color: var(--periwinkle-ink); }
   .modal-close { transition: background-color .18s ease, transform .18s ease; }
