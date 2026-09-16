@@ -75,8 +75,10 @@ export const organizationSchema = (content: SiteContent): Json => {
     knowsLanguage: ['es'],
     knowsAbout: [
       'Inteligencia artificial generativa',
+      'Entrenamiento en inteligencia artificial',
       'Formación en inteligencia artificial',
       'Adopción de inteligencia artificial',
+      'Capacitación en inteligencia artificial',
       'Uso seguro y ético de inteligencia artificial',
     ],
     areaServed: { '@type': 'Place', name: 'Latinoamérica' },
@@ -101,7 +103,7 @@ export const websiteSchema = (): Json => ({
   '@id': SITE_ID,
   url: SITE_URL,
   name: SITE_NAME,
-  description: 'Entrenamiento y formación práctica en inteligencia artificial para Latinoamérica.',
+  description: 'Entrenamiento en inteligencia artificial para personas, equipos y comunidades educativas para Latinoamérica.',
   inLanguage: SITE_LANG,
   publisher: { '@id': ORG_ID },
 });

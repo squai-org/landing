@@ -36,16 +36,17 @@ Squai trabaja en español con toda Latinoamérica.
 
 ## Qué ayuda a lograr Squai
 
-- Aprender inteligencia artificial desde cero, sin necesidad de programar.
-- Capacitar equipos para integrar la IA en tareas y procesos reales.
+- Aprender inteligencia artificial desde cero, sin necesidad de tecnisismos.
+- Capacitar equipos para integrar IA en tareas y procesos reales.
 - Adoptar la inteligencia artificial con criterios de seguridad, ética y revisión humana.
-- Formar docentes, estudiantes y comunidades educativas para usar IA con pensamiento crítico.
+- Integrar inteligencia artificial en comunidades educativas para usar IA.
+- Formar docentes, estudiantes y comunidades educativas para usar IA.
 
 ## Servicios
 
 ${serviceLines}
 
-## Programa con lista de espera
+## Programa actual, sujeto a preinscripción.
 
 **${program.name}** (${program.ecosystem}) — ${program.status}.
 

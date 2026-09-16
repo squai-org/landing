@@ -10,9 +10,9 @@ const { service } = Astro.props;
 const { program, labels, ui } = await getSiteContent();
 
 const searchHeadings: Record<string, string> = {
-  'squai-one': 'Curso en vivo para aprender inteligencia artificial desde cero',
-  'squai-grow': 'Capacitación en inteligencia artificial para empresas y equipos',
-  'squai-learn': 'Formación en inteligencia artificial para docentes e instituciones',
+  'squai-one': 'Programa en vivo para aprender inteligencia artificial',
+  'squai-grow': 'Entrenamiento en inteligencia artificial para empresas y equipos',
+  'squai-learn': 'Formación en inteligencia artificial para docentes, estudiantes y comunidades educativas',
 };
 
 const searchHeading = searchHeadings[service.slug];
