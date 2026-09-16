@@ -8,12 +8,14 @@
  * Sin PUBLIC_TURNSTILE_SITE_KEY no se renderiza nada y el formulario funciona
  * igual: el Worker omite la verificación cuando falta el secret.
  *
- * `appearance="interaction-only"` deja el widget fuera de la vista mientras no
- * haga falta interacción: el visitante normal no ve la caja de «Success!» bajo
- * el botón, y solo aparece a quien Cloudflare decide retar. El tipo de widget
- * (Managed, Non-Interactive o Invisible) no se decide aquí, sino en el panel de
- * Cloudflare junto a la sitekey, y en un widget Invisible esta opción no pinta
- * nada porque nunca se muestra.
+ * El widget se deja visible (appearance por defecto, `always`) y colocado
+ * dentro del formulario, justo encima del botón de envío. El motivo no es
+ * estético: el botón arranca deshabilitado y no se habilita hasta que Turnstile
+ * entrega un token, así que si el widget no se ve, quien espera no tiene forma
+ * de saber por qué el botón no responde. Enseñarlo es lo que explica la espera.
+ *
+ * El tipo de widget (Managed, Non-Interactive o Invisible) no se decide aquí,
+ * sino en el panel de Cloudflare junto a la sitekey.
  * https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/
  */
 interface Props {
@@ -32,7 +34,6 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         data-sitekey={siteKey}
         data-action={action}
         data-theme="light"
-        data-appearance="interaction-only"
         data-callback="squaiTurnstileSync"
         data-expired-callback="squaiTurnstileSync"
         data-error-callback="squaiTurnstileSync"
@@ -43,12 +44,12 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 }
 
 <style>
-  /* El hueco solo se reserva cuando el widget llega a pintarse: con
-     interaction-only el contenedor suele quedar vacio, y un margen fijo dejaria
-     un salto bajo el boton sin nada que lo ocupe. */
+  /* Se alinea al borde de los campos y toma la misma separacion que hay entre
+     grupos de campos (14px), no la del boton (18px): asi el widget se lee como
+     un paso mas del formulario y no como algo pegado debajo. */
   .turnstile-wrap {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    margin-top: 14px;
   }
-  .turnstile-wrap:has(iframe) { margin-top: 18px; }
 </style>

@@ -93,6 +93,7 @@ const { ui, labels } = await getSiteContent();
           aria-describedby="contact-message-error"></textarea>
         <span id="contact-message-error" class="field-error" data-field-error="message"></span>
       </label>
+      <Turnstile action="contact" />
       <div class="form-submit">
         <Button variant="primary" type="submit" block>{labels.call}</Button>
       </div>
@@ -105,7 +106,6 @@ const { ui, labels } = await getSiteContent();
           <a href={booking.url} target="_blank" rel="noopener noreferrer">{ui.contact.bookingFallbackLink}</a>
         </span>
       </div>
-      <Turnstile action="contact" />
     </form>
   </div>
 </div>

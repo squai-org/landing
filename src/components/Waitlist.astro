@@ -54,11 +54,11 @@ const { program, ui, labels } = await getSiteContent();
               <span id="waitlist-phone-error" class="field-error" data-field-error="phone"></span>
             </label>
           </div>
+          <Turnstile action="waitlist" />
           <div class="form-submit">
             <Button variant="primary" type="submit" block>{labels.reserve}</Button>
           </div>
           <div class="form-status" data-form-status role="status" aria-live="polite"></div>
-            <Turnstile action="waitlist" />
           </form>
         </div>
       </div>
