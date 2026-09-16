@@ -63,6 +63,8 @@ const graph = schemas.length
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+<link rel="alternate" hreflang={SITE_LANG} href={canonical} />
+<link rel="alternate" hreflang="x-default" href={canonical} />
 <meta name="robots" content={robots} />
 <meta name="googlebot" content={robots} />
 

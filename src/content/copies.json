@@ -208,8 +208,8 @@
         "audience": "Personas",
         "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
         "cardCopy": "Un programa en vivo para personas que quieren entender IA. Anótate en la lista de espera para asegurar tu lugar en el próximo programa en lugar de guardar tutoriales que nunca vas a ver.",
-        "seoTitle": "Squai One — Programa para aprender IA en vivo | Squai",
-        "seoDescription": "Programa en vivo de inteligencia artificial para personas sin perfil técnico: 5 semanas, 20 horas, 100% virtual y con certificado. Preinscripción abierta.",
+        "seoTitle": "Curso de inteligencia artificial para principiantes | Squai",
+        "seoDescription": "Aprende inteligencia artificial desde cero en un curso virtual y en vivo: 5 semanas, práctica guiada, lenguaje claro y certificado. Lista de espera abierta.",
         "discoverLabel": "Conocer el programa",
         "cta": {
           "modal": "",
@@ -318,8 +318,8 @@
         "audience": "Para empresas y equipos de trabajo",
         "slogan": "Mientras otros equipos avanzan a toda velocidad con IA, el tuyo no puede quedarse resolviendo procesos a pedal.",
         "cardCopy": "Entrenamos a tu equipo sobre situaciones, tareas y preguntas que ya forman parte de su contexto, guiados por profesionales que han aplicado IA para resolver problemas en distintas industrias.",
-        "seoTitle": "Squai Grow — Entrenamiento en IA para empresas y equipos | Squai",
-        "seoDescription": "Entrenamos a tu equipo en inteligencia artificial sobre las tareas y procesos que ya maneja, con profesionales que usan estas herramientas a diario.",
+        "seoTitle": "Capacitación en inteligencia artificial para empresas | Squai",
+        "seoDescription": "Capacitación práctica en inteligencia artificial para empresas y equipos. Integramos la IA en tareas reales con uso seguro, diagnóstico y acompañamiento.",
         "discoverLabel": "Ver cómo funciona para empresas",
         "cta": {
           "modal": "grow",
@@ -418,8 +418,8 @@
         "audience": "Para colegios, universidades y comunidades educativas",
         "slogan": "Transformemos la IA en las aulas de \"máquina de hacer trampa\" a un aliado para profesores y alumnos.",
         "cardCopy": "Acompañamiento en IA para comunidades educativas. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con ética y pensamiento crítico.",
-        "seoTitle": "Squai Learn — Entrenamiento en IA para comunidades educativas | Squai",
-        "seoDescription": "Acompañamiento en IA para toda la comunidad educativa: preparamos a docentes para adaptar sus metodologías y guiamos a estudiantes a usarla con criterio.",
+        "seoTitle": "Formación en IA para docentes e instituciones | Squai",
+        "seoDescription": "Formación en inteligencia artificial para docentes, estudiantes e instituciones educativas: adopción responsable, práctica y pensamiento crítico.",
         "discoverLabel": "Explorar el programa educativo",
         "cta": {
           "modal": "learn",
@@ -576,7 +576,7 @@
     "tagline": "Aprende IA, potencia tus habilidades.",
     "whatWeDo": {
       "body": [
-        "Trabajamos con personas, equipos y comunidades educativas para que la IA pase a ser una herramienta útil en cualquier contexto. Te enseñamos a usarla y a descubrir su potencial, basándonos en nuestros 5 pilares"
+        "Trabajamos con personas, equipos y comunidades educativas para que la IA pase a ser una herramienta útil en cualquier contexto. Te enseñamos a usarla, integrarla y adoptarla con criterio, basándonos en nuestros 5 pilares."
       ]
     },
     "labels": {
@@ -723,8 +723,8 @@
       "updated": "Última actualización:"
     },
     "seo": {
-      "title": "Squai — Aprende IA, potencia tus habilidades",
-      "description": "Squai entrenamiento en inteligencia artificial para personas, equipos y comunidades educativas que no vienen de la tecnología. Sin jerga tecnica, sin humo y con práctica.",
+      "title": "Entrenamiento y formación en inteligencia artificial | Squai",
+      "description": "Aprende a usar, integrar y adoptar la inteligencia artificial con formación práctica para personas, empresas y comunidades educativas en Latinoamérica.",
       "imageAlt": "Squai — Aprende IA, potencia tus habilidades",
       "serviceTitle": "{service} — Squai"
     },
