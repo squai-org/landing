@@ -67,7 +67,7 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
     <div class="team-heading">
       <h2 class="display d-h1 team-title">{labels.team}</h2>
       <div class="team-intro">
-        {ui.team.intro.map((paragraph) => <h4 class="lead">{paragraph}</h4>)}
+        {ui.team.intro.map((paragraph) => <p class="lead">{paragraph}</p>)}
       </div>
     </div>
 
@@ -132,7 +132,7 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
   .team-intro {
     max-width: 70ch;
     margin: clamp(20px, 2vw, 32px) 0 0;
-    color: var(--ink);
+    color: var(--ink-body);
   }
   .team-intro h4 {
     margin: 0;
@@ -224,15 +224,15 @@ const memberRows = [members.slice(0, 2), members.slice(2, 4), members.slice(4, 6
   .team-member-role {
     max-width: 34ch;
     color: #0A0C1A;
-    font-size: clamp(14px, 1.05vw, 17px);
+    font-size: clamp(18px, 1.10vw, 20px);
     font-weight: 700;
     line-height: 1.35;
   }
 
   .team-member-description {
     max-width: 37ch;
-    color: #0A0C1A;
-    font-size: clamp(14px, 1vw, 16px);
+    color: var(--ink-body);
+    font-size: clamp(18px, 1.10vw, 20px);
     line-height: 1.42;
   }
 
