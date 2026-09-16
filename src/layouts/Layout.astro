@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import { getSiteContent } from '../lib/content';
+import { SITE_LANG } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -20,7 +21,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={SITE_LANG}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

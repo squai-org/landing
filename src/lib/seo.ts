@@ -16,7 +16,7 @@ import type { Faq, Service, SiteContent } from './content';
 export const SITE_URL = 'https://squai.io';
 export const SITE_NAME = 'Squai';
 export const SITE_LOCALE = 'es_CO';
-export const SITE_LANG = 'es';
+export const SITE_LANG = 'es-419';
 export const CONTACT_EMAIL = 'team@squai.io';
 export const DEFAULT_OG_IMAGE = '/og/squai-og.png';
 export const ORG_ID = `${SITE_URL}/#organization`;
@@ -73,6 +73,12 @@ export const organizationSchema = (content: SiteContent): Json => {
     },
     image: absoluteUrl(DEFAULT_OG_IMAGE),
     knowsLanguage: ['es'],
+    knowsAbout: [
+      'Inteligencia artificial generativa',
+      'Formación en inteligencia artificial',
+      'Adopción de inteligencia artificial',
+      'Uso seguro y ético de inteligencia artificial',
+    ],
     areaServed: { '@type': 'Place', name: 'Latinoamérica' },
     ...(sameAs.length ? { sameAs } : {}),
     founder: founders.map((person) => ({
@@ -95,6 +101,7 @@ export const websiteSchema = (): Json => ({
   '@id': SITE_ID,
   url: SITE_URL,
   name: SITE_NAME,
+  description: 'Entrenamiento y formación práctica en inteligencia artificial para Latinoamérica.',
   inLanguage: SITE_LANG,
   publisher: { '@id': ORG_ID },
 });
@@ -141,11 +148,17 @@ export const courseSchema = (content: SiteContent, service: Service, pageUrl: st
   timeRequired: 'PT20H',
   educationalLevel: 'Principiante',
   educationalCredentialAwarded: 'Certificado digital de finalización',
+  teaches: [
+    'Fundamentos de inteligencia artificial generativa',
+    'Uso práctico de herramientas de inteligencia artificial',
+    'Evaluación y mejora de respuestas generadas por IA',
+    'Uso seguro y responsable de la inteligencia artificial',
+  ],
   provider: { '@id': ORG_ID },
   hasCourseInstance: {
     '@type': 'CourseInstance',
     courseMode: 'Online',
-    courseWorkload: 'PT4H',
+    courseWorkload: 'PT20H',
     inLanguage: SITE_LANG,
   },
 });

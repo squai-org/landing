@@ -34,6 +34,13 @@ export const GET: APIRoute = async () => {
 
 Squai trabaja en español con toda Latinoamérica.
 
+## Qué ayuda a lograr Squai
+
+- Aprender inteligencia artificial desde cero, sin necesidad de programar.
+- Capacitar equipos para integrar la IA en tareas y procesos reales.
+- Adoptar la inteligencia artificial con criterios de seguridad, ética y revisión humana.
+- Formar docentes, estudiantes y comunidades educativas para usar IA con pensamiento crítico.
+
 ## Servicios
 
 ${serviceLines}
