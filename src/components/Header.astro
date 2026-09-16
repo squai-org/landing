@@ -4,7 +4,7 @@ import Button from './Button.astro';
 import { getSiteContent } from '../lib/content';
 const { navLinks, services, ui } = await getSiteContent();
 
-const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const serviceLinks = services.map((service) => ({ name: service.name, subtitle: service.menuAudience, href: `/servicios/${service.slug}` }));
 const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath === '/servicios/squai-learn' ? 'learn' : undefined;
 ---
