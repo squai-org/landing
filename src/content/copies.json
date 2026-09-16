@@ -673,6 +673,9 @@
         "optional": "(opcional)",
         "countrySearch": "Buscar país o indicativo",
         "countryEmpty": "Ningún país coincide.",
+        "privacyConsentPrefix": "He leído y acepto la ",
+        "privacyConsentLink": "Política de Privacidad",
+        "privacyConsentSuffix": " de Squai.",
         "teamSizes": [
           {
             "value": "menos-10",
@@ -734,6 +737,19 @@
         "description": "Términos y condiciones de uso del programa Fundamentos de Inteligencia Artificial Generativa de Squai.",
         "updated": "14 de septiembre de 2026",
         "sections": [
+          {
+            "title": "0. Quiénes somos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Squai es una marca comercial de Squai S.A.S., identificada con NIT 902.071.792, con domicilio en Colombia."
+                  }
+                ]
+              }
+            ]
+          },
           {
             "title": "1. Sin letras chiquitas",
             "blocks": [
@@ -813,7 +829,27 @@
             ]
           },
           {
-            "title": "7. Flexibilidad y ajustes",
+            "title": "7. Cancelaciones",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Si confirmas tu cupo y luego decides no continuar antes de que inicie el programa, escríbenos a "
+                  },
+                  {
+                    "text": "team@squai.io",
+                    "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": " para coordinar tu caso. Si Squai debe cancelar o posponer un programa completo por causas de fuerza mayor o falta de cupo mínimo, te ofreceremos reprogramación para el siguiente grupo o la devolución total de lo pagado, a tu elección."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "8. Flexibilidad y ajustes",
             "blocks": [
               {
                 "type": "paragraph",
@@ -826,20 +862,20 @@
             ]
           },
           {
-            "title": "8. Responsabilidad de aplicación",
+            "title": "9. Responsabilidad de aplicación",
             "blocks": [
               {
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Nosotros enseñamos el criterio y la técnica; cómo apliques las herramientas en tu trabajo depende de ti. No nos hacemos responsables por decisiones comerciales tomadas con base en ejercicios del curso."
+                    "text": "Squai garantiza la calidad y la idoneidad del contenido y la ejecución del programa. Nosotros enseñamos el criterio y la técnica; cómo apliques las herramientas en tu trabajo depende de ti. No nos hacemos responsables por los resultados comerciales o decisiones de negocio que tomes con base en ejercicios del curso, ya que eso depende de tu contexto y ejecución."
                   }
                 ]
               }
             ]
           },
           {
-            "title": "9. Cambios a estos términos",
+            "title": "10. Cambios a estos términos",
             "blocks": [
               {
                 "type": "paragraph",
@@ -852,7 +888,7 @@
             ]
           },
           {
-            "title": "10. Canal directo",
+            "title": "11. Canal directo",
             "blocks": [
               {
                 "type": "paragraph",
@@ -865,7 +901,7 @@
                     "href": "mailto:team@squai.io"
                   },
                   {
-                    "text": "."
+                    "text": ". Si consideras que no hemos resuelto tu solicitud de forma adecuada, puedes acudir a la Superintendencia de Industria y Comercio, autoridad de protección al consumidor en Colombia."
                   }
                 ]
               }
@@ -878,6 +914,19 @@
         "description": "Cómo Squai recopila, usa y protege los datos personales de quienes se registran o se ponen en contacto a través de esta página.",
         "updated": "14 de septiembre de 2026",
         "sections": [
+          {
+            "title": "0. Quiénes somos",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Squai es una marca comercial de Squai S.A.S., identificada con NIT 902.071.792, con domicilio en Colombia."
+                  }
+                ]
+              }
+            ]
+          },
           {
             "title": "1. Quién cuida tus datos",
             "blocks": [
@@ -1071,7 +1120,7 @@
                     "href": "mailto:team@squai.io"
                   },
                   {
-                    "text": "."
+                    "text": ". Si tienes inquietudes sobre el tratamiento de tus datos que no hayamos resuelto, puedes acudir a la Superintendencia de Industria y Comercio."
                   }
                 ]
               }
