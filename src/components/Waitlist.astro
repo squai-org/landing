@@ -55,6 +55,15 @@ const { program, ui, labels } = await getSiteContent();
             </label>
           </div>
           <Turnstile action="waitlist" />
+          <label class="field-group consent-field" for="waitlist-privacy-consent">
+            <span class="consent-row">
+              <input id="waitlist-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="waitlist-privacy-consent-error" />
+              <span class="consent-label">
+                {ui.forms.privacyConsentPrefix}<a href="/politica-de-privacidad" target="_blank" rel="noopener">{ui.forms.privacyConsentLink}</a>{ui.forms.privacyConsentSuffix}
+              </span>
+            </span>
+            <span id="waitlist-privacy-consent-error" class="field-error" data-field-error="privacy_consent"></span>
+          </label>
           <div class="form-submit">
             <Button variant="primary" type="submit" block>{labels.reserve}</Button>
           </div>
@@ -172,6 +181,20 @@ const { program, ui, labels } = await getSiteContent();
     text-align: left;
   }
   .waitlist-form-heading { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .consent-field { gap: 7px; margin: 4px 0 18px; }
+  .consent-row { display: flex; align-items: flex-start; gap: 10px; }
+  .consent-checkbox {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--periwinkle);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
+  .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+  .consent-label a:hover { color: var(--periwinkle-ink); }
   .waitlist-form-title { color: var(--midnight); font-size: clamp(19px, 1.55vw, 27px); }
   .waitlist-form-subtitle { color: var(--midnight); }
   @media (max-width: 1100px) {
