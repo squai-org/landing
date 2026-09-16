@@ -738,7 +738,7 @@
         "updated": "14 de septiembre de 2026",
         "sections": [
           {
-            "title": "0. Quiénes somos",
+            "title": "Quiénes somos",
             "blocks": [
               {
                 "type": "paragraph",
@@ -901,7 +901,14 @@
                     "href": "mailto:team@squai.io"
                   },
                   {
-                    "text": ". Si consideras que no hemos resuelto tu solicitud de forma adecuada, puedes acudir a la Superintendencia de Industria y Comercio, autoridad de protección al consumidor en Colombia."
+                    "text": ". Si consideras que no hemos resuelto tu solicitud de forma adecuada, puedes acudir a la "
+                  },
+                  {
+                    "text": "Superintendencia de Industria y Comercio",
+                    "href": "https://www.sic.gov.co"
+                  },
+                  {
+                    "text": ", autoridad de protección al consumidor en Colombia."
                   }
                 ]
               }
@@ -915,7 +922,7 @@
         "updated": "14 de septiembre de 2026",
         "sections": [
           {
-            "title": "0. Quiénes somos",
+            "title": "Quiénes somos",
             "blocks": [
               {
                 "type": "paragraph",
@@ -1120,7 +1127,14 @@
                     "href": "mailto:team@squai.io"
                   },
                   {
-                    "text": ". Si tienes inquietudes sobre el tratamiento de tus datos que no hayamos resuelto, puedes acudir a la Superintendencia de Industria y Comercio."
+                    "text": ". Si tienes inquietudes sobre el tratamiento de tus datos que no hayamos resuelto, puedes acudir a la "
+                  },
+                  {
+                    "text": "Superintendencia de Industria y Comercio",
+                    "href": "https://www.sic.gov.co"
+                  },
+                  {
+                    "text": "."
                   }
                 ]
               }
