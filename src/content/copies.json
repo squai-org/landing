@@ -170,7 +170,8 @@
     ],
     "impact": {
       "body": [
-        "No optimizamos, no automatizamos y definitivamente no hacemos el trabajo por ti. Entrenamos a las personas para que entiendan y dominen la IA. Te damos las herramientas para que multipliques tus propias habilidades, dejes de pelear con la tecnología y la uses bien, ya sea para planear un viaje, organizar tu día o estructurar un proyecto gigante."
+        "No optimizamos, no automatizamos y definitivamente no hacemos el trabajo por ti. Entrenamos a las personas para que entiendan y dominen la IA. Te damos las herramientas para que multipliques tus propias habilidades, ya sea para planear un viaje, optimizar los procesos de tu empresa o mejorar tu metodología de enseñanza.",
+        "Eso es lo que construimos, gente y organizaciones que dejan de pelear con la tecnología y empiezan a usarla bien."
       ]
     },
     "navLinks": [
@@ -322,6 +323,8 @@
           "target": "",
           "label": "Armemos tu capacitación"
         },
+        "ctaSecondary": "Solicita una llamada",
+        "contactCta": "Hablemos de tu equipo",
         "contactCopy": "Cuéntanos en qué se le va el tiempo a tu equipo y armamos una capacitación a la medida.",
         "contactAside": "Hacemos preguntas antes de aparecer con 84 diapositivas.",
         "accent": "#44D4C8",
@@ -411,7 +414,7 @@
       {
         "slug": "squai-learn",
         "name": "Squai Learn",
-        "audience": "Para colegios, universidades y comunidades educativas",
+        "audience": "Para colegios y universidades",
         "slogan": "Transformemos la IA en las aulas de \"máquina de hacer trampa\" a un aliado para profesores y alumnos.",
         "cardCopy": "Acompañamiento en IA para comunidades educativas. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con ética y pensamiento crítico.",
         "seoTitle": "Formación en IA para comunidades educativas | Squai",
@@ -422,6 +425,8 @@
           "target": "",
           "label": "Quiero hablar de mi comunidad"
         },
+        "ctaSecondary": "Solicita una llamada",
+        "contactCta": "Hablemos de tu institución",
         "contactCopy": "No importa si tienes un problema puntual o si apenas están intentando entender cómo abordar el tema de IA en la institución.",
         "contactAside": "Hablemos unos minutos para conocer tu caso y ver cómo podemos ayudar.",
         "accent": "#F9C24D",
@@ -597,6 +602,7 @@
         "close": "Cerrar menú",
         "main": "Principal",
         "waitlist": "Preinscribirme",
+        "contactCta": "Agenda tu llamada",
         "servicesSubmenu": "Mostrar submenú de servicios"
       },
       "hero": {

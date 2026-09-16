@@ -11,7 +11,7 @@ const { services, labels } = await getSiteContent();
   <div class="bento services-grid">
     {
       services.map((s) => (
-        <a href={`/servicios/${s.slug}`} class={`bento-card card-link service-card ${s.span} ${s.tone}`}>
+        <div class={`bento-card service-card ${s.span} ${s.tone}`}>
           <div class="service-card-copy">
             <span class="service-eyebrow">
               <span class="service-eyebrow-dot" style={`background:${s.accent}`}></span>
@@ -19,13 +19,13 @@ const { services, labels } = await getSiteContent();
             </span>
             <p class="body service-summary">{s.cardCopy}</p>
           </div>
-          <div class={`service-card-footer${s.slug === 'squai-one' ? ' service-title-rise' : ''}`}>
+          <div class="service-card-footer">
             <h3 class="display d-h1">{s.name}</h3>
-            <span class="btn btn-dark discover" aria-hidden="true">
+            <a href={`/servicios/${s.slug}`} class="btn btn-dark discover">
               <span class="btn-label">{s.discoverLabel}</span>
-            </span>
+            </a>
           </div>
-        </a>
+        </div>
       ))
     }
   </div>
@@ -36,6 +36,11 @@ const { services, labels } = await getSiteContent();
   .services-grid {
     margin-top: clamp(36px, 4vw, 64px);
     margin-inline: calc(-1 * clamp(20px, 4vw, 64px));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .services-grid .service-card {
+    grid-column: span 1;
+    grid-row: auto;
   }
   .service-card { justify-content: space-between; gap: clamp(24px, 3vw, 48px); }
   .service-card-copy { display: flex; flex-direction: column; gap: 16px; }
@@ -68,30 +73,24 @@ const { services, labels } = await getSiteContent();
 
   .service-card-footer {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
     flex-wrap: nowrap;
-    gap: 16px;
+    gap: 20px;
   }
   .service-card-footer h3 {
     min-width: 0;
-    flex: 1 1 auto;
   }
   .service-card-footer .discover {
     flex: none;
   }
-  .service-title-rise {
-    will-change: transform;
-  }
-  .card-link:hover .discover { background: #26262B; transform: translateY(-1px); }
+  .discover:hover { background: #26262B; transform: translateY(-1px); }
 
-  @media (max-width: 1170px) {
-    .service-card-footer {
-      flex-direction: column;
-      flex-wrap: nowrap;
-      align-items: flex-start;
-      gap: 20px;
-    }
-    .service-card-footer h3 { flex: none; }
+  @media (max-width: 900px) {
+    .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    .services-grid { grid-template-columns: minmax(0, 1fr); }
   }
 </style>

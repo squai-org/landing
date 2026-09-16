@@ -62,7 +62,11 @@ const schemas = [
 
   <div class="content-shell content-shell-spaced">
 
-  <ServicePayback headline={service.payback.headline} body={service.payback.body} cta={service.cta} />
+  <ServicePayback
+    headline={service.payback.headline}
+    body={service.payback.body}
+    cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
+  />
 
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 
@@ -76,7 +80,7 @@ const schemas = [
             {service.contactCopy}
           </h2>
           {service.contactAside && <p class="service-contact-aside">{service.contactAside}</p>}
-          <Button variant="dark" data-open-modal={service.cta.modal}>{service.cta.label}</Button>
+          <Button variant="dark" data-open-modal={service.cta.modal}>{service.contactCta ?? service.cta.label}</Button>
         </div>
       </section>
     ) : (
