@@ -77,7 +77,7 @@ const { program, ui, labels } = await getSiteContent();
           <span class="service-eyebrow-dot" aria-hidden="true"></span>
           <span class="service-eyebrow-text">{ui.waitlist.investment.eyebrow}</span>
         </span>
-        <p class="body investment-copy">{ui.waitlist.investment.copy}</p>
+        {ui.waitlist.investment.copy.map((paragraph) => <p class="body investment-copy">{paragraph}</p>)}
         <div class="investment-price">
           <h3 class="display"><span>{ui.waitlist.investment.price}</span> <span>{ui.waitlist.investment.currency}</span></h3>
           <p class="body">{ui.waitlist.investment.referencePrice}</p>

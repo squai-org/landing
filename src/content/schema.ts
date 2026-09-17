@@ -88,7 +88,7 @@ export const siteSchema = z.object({
       copy: paragraphs,
       formTitle: text,
       formSubtitle: text,
-      investment: z.object({ eyebrow: text, copy: text, price: text, currency: text, referencePrice: text }),
+      investment: z.object({ eyebrow: text, copy: paragraphs, price: text, currency: text, referencePrice: text }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,

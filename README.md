@@ -69,7 +69,7 @@ directo: usan `getSiteContent()` de `src/lib/content.ts`.
   componentes no cambian.
 - Los campos de texto largo (`statement.body`, `whatWeDo.body`, `impact.body`,
   `originStory`, `faqs[].a`, `ui.team.intro`, `ui.finalCta.body`, `ui.follow.copy`,
-  `ui.waitlist.copy`) aceptan una lista de párrafos o un string donde una línea
+  `ui.waitlist.copy`, `ui.waitlist.investment.copy`) aceptan una lista de párrafos o un string donde una línea
   en blanco separa párrafos. Cada párrafo se renderiza como su propio `<p>`.
 - Rutas de la API y otra configuración de runtime van en `src/config/`, no en el
   contenido.
