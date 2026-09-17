@@ -5,6 +5,7 @@ export interface SiteverifyResponse {
   'error-codes'?: string[];
   challenge_ts?: string;
   hostname?: string;
+  action?: string;
 }
 
 export const verifyTurnstileToken = async (

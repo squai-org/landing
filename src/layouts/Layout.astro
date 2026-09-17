@@ -51,28 +51,15 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       }
     </script>
     <script is:inline>
-      window.squaiTurnstileSync = function () {
-        document.querySelectorAll('form[data-form]').forEach(function (form) {
-          var hasTurnstile = !!form.querySelector('.cf-turnstile');
-          var token = form.querySelector('input[name="cf-turnstile-response"]');
-          var consent = form.querySelector('input[name="privacy_consent"]');
-          var submit = form.querySelector('button[type="submit"]');
-          if (!submit) return;
-          var turnstileOk = !hasTurnstile || !!(token && token.value);
-          var consentOk = !consent || consent.checked;
-          submit.disabled = !(turnstileOk && consentOk);
-        });
+      window.squaiTurnstileLoad = function () {
+        document.dispatchEvent(new Event('squai:turnstile-ready'));
       };
-      document.addEventListener('DOMContentLoaded', window.squaiTurnstileSync);
-      document.addEventListener('change', function (event) {
-        if (event.target && event.target.name === 'privacy_consent') window.squaiTurnstileSync();
-      });
     </script>
     {
       turnstileSiteKey && (
         <>
           <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin />
-          <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+          <script is:inline defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=squaiTurnstileLoad" />
         </>
       )
     }
@@ -119,7 +106,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
   if (location.hash.length > 1) {
     const targetId = decodeURIComponent(location.hash.slice(1));
-    if (document.getElementById(targetId)) scrollToSection(targetId, true);
+    if (document.getElementById(targetId)) {
+      scrollToSection(targetId, true);
+      const pageLoaded = document.readyState === 'complete'
+        ? Promise.resolve()
+        : new Promise<void>((resolve) => window.addEventListener('load', () => resolve(), { once: true }));
+      const fontsReady = 'fonts' in document ? document.fonts.ready : Promise.resolve();
+      Promise.all([pageLoaded, fontsReady]).then(() => {
+        requestAnimationFrame(() => scrollToSection(targetId, true));
+      });
+    }
   }
 
   document.querySelectorAll<HTMLElement>('[data-scroll-to]').forEach((el) => {
@@ -136,32 +132,15 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
   if (header) {
     const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
-
-    /* El header va en claro mientras el hero siga ocupando la franja que hay
-       debajo de el. Eso se sabia leyendo `hero.offsetTop + hero.offsetHeight`,
-       una lectura de geometria que obligaba al navegador a calcular el layout
-       de forma sincrona nada mas cargar: 24 ms sobre 342 de 377 objetos en el
-       trace, el reflow forzado mas caro de la pagina.
-
-       Un IntersectionObserver con el borde superior recortado 96px da la misma
-       condicion sin leer geometria: el observador se cruza mientras
-       `scrollY < heroTop + heroHeight - 96`, que es exactamente lo que
-       calculaba la resta. El navegador lo resuelve en su propio ciclo, y se
-       actualiza solo al cambiar el viewport sin necesidad de un listener.
-       https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API */
     if (hero) {
       new IntersectionObserver(
         ([entry]) => header.classList.toggle('over-hero', entry.isIntersecting),
         { rootMargin: '-96px 0px 0px 0px', threshold: 0 }
       ).observe(hero);
     } else {
-      /* Las paginas legales no tienen hero: el header va siempre en oscuro.
-         La clase viene puesta desde el servidor, asi que hay que quitarla. */
       header.classList.remove('over-hero');
     }
 
-    /* scrollY no obliga a recalcular el layout, asi que esto puede seguir
-       colgado del scroll. */
     let ticking = false;
     window.addEventListener(
       'scroll',
@@ -177,10 +156,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     );
   }
 
-  /* La clase la pone el script sincrono del <head>, que es tambien lo que el
-     CSS mira para ocultar. Leerla aqui en vez de repetir la condicion evita que
-     las dos comprobaciones se separen y quede contenido oculto sin nadie que lo
-     revele. */
   if (document.documentElement.classList.contains('js-reveal')) {
     const targets = new Set<HTMLElement>();
 
@@ -253,12 +228,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (riseEls.length) {
       type Rise = { el: HTMLElement; card: HTMLElement; gap: number; current: number; target: number };
       let rises: Rise[] = [];
-
-      /* Escribir y leer geometria alternadamente dentro del mismo bucle obliga al
-         navegador a recalcular el layout en cada vuelta. Se separa en tres
-         pasadas —quitar transformaciones, medir, restaurarlas— para que haga un
-         solo recalculo por pasada en vez de uno por elemento.
-         https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Reflow */
+      
       const measureRises = () => {
         const prev = new Map(rises.map((r) => [r.el, r]));
         rises = [];
@@ -270,9 +240,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           if (!card || !body) return;
           pending.push({ el, card, body, transform: el.style.transform });
         });
-
-        /* En la primera medicion todavia no hay transformacion aplicada: escribir
-           'none' solo invalidaria el estilo para dejarlo igual. */
+        
         const dirty = pending.filter(({ transform }) => transform !== '');
         dirty.forEach(({ el }) => { el.style.transform = 'none'; });
         const gaps = pending.map(({ el, body }) => el.getBoundingClientRect().top - body.getBoundingClientRect().bottom);
@@ -299,12 +267,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         });
       };
 
-      /* computeTargets lee geometria y tick la escribe. Colgando computeTargets
-         del evento de scroll, cada scroll leia despues de la escritura del
-         ultimo frame y forzaba un layout sincrono, y los eventos de scroll son
-         mucho mas frecuentes que los frames. Ahora los dos viven en el mismo
-         frame y en el orden correcto: primero todas las lecturas, despues todas
-         las escrituras, como maximo una vez por frame. */
       let needsMeasure = false;
       let needsCompute = false;
 
@@ -445,6 +407,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     setBackgroundInert(open);
     document.body.style.overflow = open ? 'hidden' : '';
     if (open) {
+      renderTurnstile(modalForm);
       modal.querySelector<HTMLInputElement>('input, select, textarea')?.focus();
     } else {
       lastFocused?.focus();
@@ -497,25 +460,98 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const setStatus = (form: HTMLFormElement, text: string, state: '' | 'ok' | 'error') => {
     const status = form.querySelector<HTMLElement>('[data-form-status]');
     if (!status) return;
-    /* Donde el estado convive con otro contenido dentro de la misma region live
-       (el enlace a la agenda), el texto tiene su propio nodo. */
+
     const target = status.querySelector<HTMLElement>('[data-form-status-text]') ?? status;
     target.textContent = text;
     if (state) status.dataset.state = state;
     else delete status.dataset.state;
   };
 
+  const setTurnstileError = (form: HTMLFormElement, text: string) => {
+    form.dataset.turnstileError = 'true';
+    setStatus(form, text, 'error');
+  };
+
+  const syncFormAvailability = (form: HTMLFormElement) => {
+    const widget = form.querySelector<HTMLElement>('[data-turnstile-widget]');
+    const token = form.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
+    const consent = form.querySelector<HTMLInputElement>('input[name="privacy_consent"]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!submit) return;
+
+    const turnstileOk = !widget || Boolean(token?.value);
+    const consentOk = !consent || consent.checked;
+    const submitting = submit.getAttribute('aria-busy') === 'true';
+    submit.disabled = submitting || !turnstileOk || !consentOk;
+  };
+
+  const resetTurnstile = (form: HTMLFormElement) => {
+    const widget = form.querySelector<HTMLElement>('[data-turnstile-widget]');
+    const widgetId = widget?.dataset.turnstileId;
+    if (widgetId) window.turnstile?.reset(widgetId);
+    syncFormAvailability(form);
+  };
+
+  const renderTurnstile = (form: HTMLFormElement | null) => {
+    const widget = form?.querySelector<HTMLElement>('[data-turnstile-widget]');
+    if (!form || !widget || widget.dataset.turnstileId || !window.turnstile) return;
+
+    const sitekey = widget.dataset.sitekey;
+    const action = widget.dataset.action;
+    if (!sitekey || !action) return;
+
+    const widgetId = window.turnstile.render(widget, {
+      sitekey,
+      action,
+      theme: 'light',
+      language: 'es',
+      size: 'flexible',
+      callback: () => {
+        if (form.dataset.turnstileError) {
+          delete form.dataset.turnstileError;
+          setStatus(form, '', '');
+        }
+        syncFormAvailability(form);
+      },
+      'error-callback': () => {
+        setTurnstileError(form, clientCopy.feedback.turnstileError);
+        syncFormAvailability(form);
+      },
+      'expired-callback': () => {
+        setTurnstileError(form, clientCopy.feedback.turnstileError);
+        resetTurnstile(form);
+      },
+      'timeout-callback': () => syncFormAvailability(form),
+      'unsupported-callback': () => {
+        setTurnstileError(form, clientCopy.feedback.turnstileUnsupported);
+        syncFormAvailability(form);
+      },
+    });
+
+    widget.dataset.turnstileId = widgetId;
+    syncFormAvailability(form);
+  };
+
+  const waitlistForm = document.querySelector<HTMLFormElement>('[data-form="waitlist"]');
+  const renderReadyTurnstiles = () => {
+    renderTurnstile(waitlistForm);
+    if (modal && !modal.hidden) renderTurnstile(modalForm);
+  };
+  document.addEventListener('squai:turnstile-ready', renderReadyTurnstiles);
+  renderReadyTurnstiles();
+
+  document.addEventListener('change', (event) => {
+    const target = event.target;
+    if (target instanceof HTMLInputElement && target.name === 'privacy_consent') {
+      syncFormAvailability(target.form!);
+    }
+  });
+
   const clearFieldErrors = (form: HTMLFormElement) => {
     form.querySelectorAll<HTMLElement>('[data-field-error]').forEach((error) => { error.textContent = ''; });
     form.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
   };
-
-  /* Los mensajes nativos de validacion salen en el idioma de la interfaz del
-     navegador, no en el de la pagina: en un Chrome en ingles, un campo vacio de
-     este formulario responde "Please fill out this field". Se sustituyen por los
-     del contenido y solo se cae al del navegador ante una restriccion que aqui
-     no se usa.
-     https://developer.mozilla.org/en-US/docs/Web/API/ValidityState */
+  
   const fieldMessage = (field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
     if (field.validity.valueMissing) return clientCopy.feedback.fieldRequired;
     if (field.validity.typeMismatch && field instanceof HTMLInputElement && field.type === 'email') {
@@ -530,12 +566,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (field instanceof HTMLElement) field.setAttribute('aria-invalid', 'true');
     if (error) error.textContent = message;
   };
-
-  /* Los combobox de CustomSelect no son controles nativos: su valor viaja en un
-     input type=hidden, que esta excluido de la validacion de restricciones. Lo
-     obligatorio se comprueba aqui y se marca sobre el boton disparador, que es
-     el elemento que el lector de pantalla anuncia y al que puede llegar el foco.
-     https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ */
+  
   const invalidCustomSelects = (form: HTMLFormElement) =>
     Array.from(form.querySelectorAll<HTMLElement>('[data-custom-select][data-select-required="true"]')).filter(
       (root) => !root.querySelector<HTMLInputElement>('[data-select-value]')?.value
@@ -550,6 +581,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   };
 
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
+    syncFormAvailability(form);
+
     form.addEventListener('input', (event) => {
       const field = event.target;
       if (!(field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement)) return;
@@ -569,12 +602,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         invalidFields.forEach((field) => setFieldError(form, field.name, fieldMessage(field)));
         const customTriggers = customSelects.map(markCustomSelect);
         setStatus(form, clientCopy.feedback.invalid, 'error');
-        /* El primero en el orden del documento, sea nativo o no, para que el
-           foco no salte hacia atras. */
+        
         const firstInvalid = [...invalidFields, ...customTriggers].filter(Boolean).sort((a, b) =>
           a!.compareDocumentPosition(b!) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
         )[0];
         firstInvalid?.focus();
+        return;
+      }
+
+      const turnstileWidget = form.querySelector<HTMLElement>('[data-turnstile-widget]');
+      const turnstileToken = form.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
+      if (turnstileWidget && !turnstileToken?.value) {
+        setTurnstileError(form, clientCopy.feedback.turnstileError);
+        syncFormAvailability(form);
         return;
       }
 
@@ -592,9 +632,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
       const bookingFallback = form.querySelector<HTMLElement>('[data-booking-fallback]');
       const bookingUrl = kind === 'contact' ? form.dataset.bookingUrl : undefined;
-      /* El enlace acompana a todo envio que llegue a salir, termine como
-         termine: si la API falla, la agenda sigue siendo el camino para
-         reservar la llamada, y es la unica forma de llegar a ella. */
+      
       if (bookingUrl && bookingFallback) bookingFallback.hidden = false;
 
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
@@ -630,12 +668,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
         form.reset();
         clearFieldErrors(form);
-
-        /* La pestana se abre sola solo con el registro ya guardado. Abrir desde
-           aqui ya no ocurre dentro del gesto que disparo el envio, asi que
-           depende de la activacion transitoria del navegador y puede acabar
-           bloqueada; el enlace de arriba cubre ese caso y el del error.
-           https://developer.mozilla.org/en-US/docs/Web/API/Window/open */
+        
         if (bookingUrl) window.open(bookingUrl, '_blank', 'noopener,noreferrer');
 
         setStatus(
@@ -649,15 +682,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         setStatus(form, fallbackError, 'error');
       } finally {
         if (submit) {
-          submit.disabled = false;
           submit.removeAttribute('aria-busy');
         }
         if (labelNode) labelNode.textContent = label;
-        const widget = form.querySelector<HTMLElement>('.cf-turnstile');
-        if (widget) {
-          window.turnstile?.reset(widget);
-          window.squaiTurnstileSync?.();
-        }
+        resetTurnstile(form);
+        syncFormAvailability(form);
       }
     });
   });

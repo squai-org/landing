@@ -101,7 +101,7 @@ export const siteSchema = z.object({
     modal: z.object({ grow: modal, learn: modal }),
     feedback: z.object({
       invalid: text, sending: text, error: text, contactSuccess: text, waitlistSuccess: text,
-      fieldRequired: text, fieldEmail: text,
+      fieldRequired: text, fieldEmail: text, turnstileError: text, turnstileUnsupported: text,
     }),
     skip: text, updated: text,
   }),

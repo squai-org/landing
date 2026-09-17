@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:test';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../src/server/index';
 
 let ipCounter = 0;
@@ -181,5 +181,38 @@ describe('Turnstile', () => {
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toMatchObject({ error: { code: 'turnstile_missing' } });
+  });
+
+  it.each([
+    [{ success: true, action: 'contact', hostname: 'squai.io' }, 'turnstile_action_mismatch'],
+    [{ success: true, action: 'waitlist', hostname: 'otro.example' }, 'turnstile_hostname_mismatch'],
+  ])('rechaza una validación que no corresponde al formulario o dominio', async (verification, code) => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify(verification), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+
+    const res = await app.request(
+      'https://squai.io/api/waitlist',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: 'https://squai.io',
+          'CF-Connecting-IP': nextIp(),
+        },
+        body: JSON.stringify({
+          ...waitlistPayload,
+          'cf-turnstile-response': 'test-token',
+        }),
+      },
+      { ...env, TURNSTILE_SECRET_KEY: 'test-secret', TURNSTILE_HOSTNAME: 'squai.io' }
+    );
+
+    fetchMock.mockRestore();
+    expect(res.status).toBe(403);
+    await expect(res.json()).resolves.toMatchObject({ error: { code } });
   });
 });

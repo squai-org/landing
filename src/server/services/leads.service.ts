@@ -7,7 +7,12 @@ import type { ContactInput } from '../schemas/contact.schema';
 import type { WaitlistInput } from '../schemas/waitlist.schema';
 import type { Env, RequestMeta } from '../types';
 
-const assertHuman = async (env: Env, token: string | undefined, meta: RequestMeta) => {
+const assertHuman = async (
+  env: Env,
+  token: string | undefined,
+  expectedAction: 'contact' | 'waitlist',
+  meta: RequestMeta
+) => {
   const secret = env.TURNSTILE_SECRET_KEY;
 
   if (!secret) {
@@ -24,6 +29,16 @@ const assertHuman = async (env: Env, token: string | undefined, meta: RequestMet
   if (!verification.success) {
     console.warn('Turnstile rechazó el envío', verification['error-codes']);
     throw forbidden('turnstile_failed', 'No pudimos verificar que eres una persona. Recarga e inténtalo de nuevo.');
+  }
+
+  if (verification.action !== expectedAction) {
+    console.warn('Turnstile devolvió una acción inesperada', verification.action);
+    throw forbidden('turnstile_action_mismatch', 'No pudimos verificar que eres una persona. Recarga e inténtalo de nuevo.');
+  }
+
+  if (env.TURNSTILE_HOSTNAME && verification.hostname !== env.TURNSTILE_HOSTNAME) {
+    console.warn('Turnstile devolvió un hostname inesperado', verification.hostname);
+    throw forbidden('turnstile_hostname_mismatch', 'No pudimos verificar que eres una persona. Recarga e inténtalo de nuevo.');
   }
 };
 
@@ -44,7 +59,7 @@ export const submitWaitlist = async (
   input: WaitlistInput,
   meta: RequestMeta
 ): Promise<WaitlistUpsertResult> => {
-  await assertHuman(env, input['cf-turnstile-response'], meta);
+  await assertHuman(env, input['cf-turnstile-response'], 'waitlist', meta);
 
   const phone = requirePhone(input.country_code, input.phone);
 
@@ -65,7 +80,7 @@ export const submitContactRequest = async (
   input: ContactInput,
   meta: RequestMeta
 ): Promise<number> => {
-  await assertHuman(env, input['cf-turnstile-response'], meta);
+  await assertHuman(env, input['cf-turnstile-response'], 'contact', meta);
 
   const phone = requirePhone(input.country_code, input.phone);
 

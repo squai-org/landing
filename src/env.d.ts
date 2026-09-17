@@ -6,8 +6,9 @@ interface ImportMetaEnv {
 
 interface Window {
   turnstile?: {
-    reset: (container?: HTMLElement | string) => void;
-    remove: (container?: HTMLElement | string) => void;
+    render: (container: HTMLElement | string, options: Record<string, unknown>) => string;
+    reset: (widget?: string | HTMLElement) => void;
+    remove: (widget?: string | HTMLElement) => void;
   };
-  squaiTurnstileSync?: () => void;
+  squaiTurnstileLoad?: () => void;
 }

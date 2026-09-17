@@ -2,6 +2,7 @@
 export type Env = Omit<Cloudflare.Env, 'API_RATE_LIMITER'> & {
   API_RATE_LIMITER?: RateLimit;
   TURNSTILE_SECRET_KEY?: string;
+  TURNSTILE_HOSTNAME?: string;
 };
 
 export interface AppBindings {

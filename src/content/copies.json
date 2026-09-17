@@ -725,7 +725,9 @@
         "contactSuccess": "Listo, ya nos llegó. Te abrimos la agenda en otra pestaña para que elijas el horario de tu llamada.",
         "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa.",
         "fieldRequired": "Completa este campo.",
-        "fieldEmail": "Escribe un correo con formato válido, como nombre@empresa.com."
+        "fieldEmail": "Escribe un correo con formato válido, como nombre@dominio.com.",
+        "turnstileError": "No pudimos completar la verificación de seguridad. Revisa tu conexión e inténtalo de nuevo.",
+        "turnstileUnsupported": "Este navegador no permite completar la verificación de seguridad. Actualízalo o prueba con otro navegador."
       },
       "skip": "Saltar al contenido",
       "updated": "Última actualización:"
