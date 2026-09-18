@@ -27,15 +27,18 @@ const { program, labels, ui } = await getSiteContent();
           </p>
         )
       }
-      <h1 class="display d-display service-name" style={`color:${service.accent}`}>{service.name}.</h1>
+      <h1 class="service-heading">
+        <span class="display d-display service-name" style={`color:${service.accent}`}>{service.name}.</span>
+        <span class="service-seo-heading">{service.seoHeading}</span>
+      </h1>
     </div>
     <div class="service-hero-action">
       <p class="display d-h2 service-slogan">{service.slogan}</p>
       {
-        service.slug === 'squai-one' ? (
-          <Button variant="primary" href="#lista" data-scroll-to="lista" class="service-hero-cta">{ui.services.oneCta}</Button>
-        ) : (
+        service.cta.modal ? (
           <Button variant="primary" data-open-modal={service.cta.modal} class="service-hero-cta">{service.cta.label}</Button>
+        ) : (
+          <Button variant="primary" href={`#${service.cta.target}`} data-scroll-to={service.cta.target} class="service-hero-cta">{service.cta.label}</Button>
         )
       }
     </div>
@@ -100,7 +103,17 @@ const { program, labels, ui } = await getSiteContent();
   }
   .service-crumb-link { color: var(--canvas); }
   .service-crumb-link:hover { color: var(--periwinkle); }
+  .service-heading { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(12px, 1.5vw, 22px); margin: 0; }
   .service-name { color: var(--canvas); font-size: max(40px, min(10.8vw, 19svh)); }
+  .service-seo-heading {
+    max-width: 34ch;
+    color: #B7BCD0;
+    font-family: var(--font-body);
+    font-size: clamp(18px, 1.6vw, 26px);
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
   .service-slogan { margin: 0; color: var(--canvas); max-width: 20ch; }
   .service-hero-action { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(24px, 3vw, 40px); }
 
