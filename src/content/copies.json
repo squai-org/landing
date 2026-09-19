@@ -1,155 +1,11 @@
 {
   "site": {
-    "capabilities": [
-      {
-        "t": "Entrenamiento",
-        "d": "Aprende cómo funciona la IA por dentro. Dejas de copiar y pegar instrucciones de internet y entiendes por qué la IA no te funciona. ",
-        "span": "span-3",
-        "tone": "peri"
-      },
-      {
-        "t": "Adopción",
-        "d": "Te acompañamos a integrar la IA en tus tareas, hasta que dejes de pelear con ella y se vuelva una ayuda confiable.",
-        "span": "span-3",
-        "tone": ""
-      },
-      {
-        "t": "Cultura",
-        "d": "Construimos un lenguaje claro y la confianza necesaria para que preguntes y explores sin pena. Con nosotros no tienes que fingir que ya dominas el tema.",
-        "span": "span-2",
-        "tone": "dark"
-      },
-      {
-        "t": "Estrategia",
-        "d": "Te damos claridad para identificar dónde la IA aporta valor, por dónde conviene empezar y dónde estorba. Meterle IA a todo sin sentido no es una estrategia.",
-        "span": "span-2",
-        "tone": "teal"
-      },
-      {
-        "t": "Uso seguro y ético",
-        "d": "Te explicamos qué información puedes compartir, qué no, y cómo cuidar tus datos para sacarle el máximo provecho a la IA.",
-        "span": "span-2",
-        "tone": "gold"
-      }
-    ],
-    "program": {
-      "status": "Lista de espera abierta",
-      "name": "Fundamentos de Inteligencia Artificial Generativa",
-      "ecosystem": "Squai One",
-      "duration": "5 semanas · 20 horas. Menos de lo que pasas en redes sociales.",
-      "schedule": "100% virtual, en vivo y con grabaciones por si la vida se interpone.",
-      "modality": "Aprendes IA y además recibes tu certificado para chicanear en LinkedIn"
-    },
-    "faqs": [
-      {
-        "q": "¿Necesito saber programar o ser un experto en tecnología?",
-        "a": [
-          "Cero. Te explicamos todo clarito y al punto. No tienes ni qué saber que es un prompt."
-        ]
-      },
-      {
-        "q": "¿Cuál de los tres servicios me sirve?",
-        "a": [
-          "Squai One: Para personas que quieren aprender en vivo, a su ritmo y sin rodeos.",
-          "Squai Grow: Para empresas que quieren que su equipo adopte la IA y deje de usarla solo para redactar correos.",
-          "Squai Learn: Para instituciones educativas que buscan capacitar docentes y/o estudiantes y convertir a la IA en aliado y no en enemigo."
-        ]
-      },
-      {
-        "q": "¿Las sesiones son virtuales o presenciales?",
-        "a": [
-          "Los programas individuales de Squai One son 100% virtuales. Para empresas e instituciones educativas (Squai Grow y Squai Learn), nos adaptamos: pueden ser virtuales o presenciales en algunas ciudades de Colombia si quieres verle la cara al squad."
-        ]
-      },
-      {
-        "q": "¿Al terminar me dan un certificado?",
-        "a": [
-          "Claro que sí. Al finalizar cualquier programa te entregamos un certificado digital que respalda tu formación y las habilidades prácticas que aprendiste. Sirve para actualizar tu perfil, mostrar en tu trabajo o solo presumir que ya sabes de IA."
-        ]
-      },
-      {
-        "q": "¿Están solo en Colombia?",
-        "a": [
-          "No. Estamos en toda Latinoamérica. Mientras tengas conexión a internet y hables español, podemos acompañarte a ti, a tu empresa o a tu institución en cualquier rincón de la región."
-        ]
-      },
-      {
-        "q": "Ya me convencieron, ¿cómo empiezo esto?",
-        "a": [
-          "Si es para ti, entra a Squai One y asegura tu puesto en la lista de espera antes de que nos toque colgar el letrero de “Agotado”. Si es para tu empresa o institución educativa, pide una llamada desde la página de Squai Grow o Squai Learn. Te prometemos responder en menos de 24 horas hábiles.",
-          "Te responde un humano de carne y hueso."
-        ]
-      },
-      {
-        "q": "¿Qué herramientas vamos a usar?",
-        "a": [
-          "Varias, incluyendo ChatGPT, Gemini, Claude, entre otras. Pero la app no es el problema, es cómo la usas. Te enseñamos la lógica, así que si mañana sale una nueva IA aplicas lo que ya aprendiste con nosotros."
-        ]
-      }
-    ],
-    "footerCols": [
-      {
-        "links": [
-          {
-            "target": "que-hacemos",
-            "labelKey": "whatWeDo"
-          },
-          {
-            "target": "impacto",
-            "labelKey": "impact"
-          },
-          {
-            "target": "origen",
-            "labelKey": "origin"
-          },
-          {
-            "t": "El equipo",
-            "target": "equipo"
-          }
-        ],
-        "headingKey": "brand"
-      },
-      {
-        "links": [
-          {
-            "t": "Squai One — Personas",
-            "target": null,
-            "href": "/servicios/squai-one"
-          },
-          {
-            "t": "Squai Grow — Equipos",
-            "target": null,
-            "href": "/servicios/squai-grow"
-          },
-          {
-            "t": "Squai Learn — Educación",
-            "target": null,
-            "href": "/servicios/squai-learn"
-          }
-        ],
-        "headingKey": "services"
-      },
-      {
-        "h": "Contacto",
-        "links": [
-          {
-            "t": "team@squai.io",
-            "target": null,
-            "href": "mailto:team@squai.io"
-          },
-          {
-            "target": "faq",
-            "labelKey": "faq"
-          }
-        ]
-      }
-    ],
+    "tagline": "Aprende IA. Potencia tus habilidades.",
     "heroLines": {
-      "object": "IA.",
       "middle": "Potencia tus",
-      "last": "Habilidades."
+      "last": "Habilidades.",
+      "object": "IA."
     },
-    "heroSubtitle": "Entrenamiento en inteligencia artificial para personas, equipos e instituciones educativas.",
     "heroVerbs": [
       {
         "word": "Aprende",
@@ -168,56 +24,94 @@
         "color": "#F4F6FF"
       }
     ],
+    "heroSubtitle": "Entrenamiento en inteligencia artificial para personas, equipos e instituciones educativas.",
+    "program": {
+      "status": "Lista de espera abierta",
+      "name": "Fundamentos de Inteligencia Artificial Generativa",
+      "ecosystem": "Squai One",
+      "duration": "5 semanas · 20 horas. Menos de lo que pasas en redes sociales.",
+      "schedule": "100% virtual, en vivo y con grabaciones por si la vida se interpone.",
+      "modality": "Aprendes IA y además recibes tu certificado para chicanear en LinkedIn"
+    },
+    "statement": {
+      "headline": "Si corregir a la IA te da más trabajo, es porque falta método.",
+      "body": [
+        "Vivimos rodeados de gurús prometiendo agentes para no volver a trabajar. Sin embargo, cuando intentas aplicar eso a tus notas, proyectos o tareas diarias, el resultado es tan genérico que terminas rehaciendo todo a mano. Es desesperante.",
+        "Creemos firmemente que la inteligencia artificial no es un privilegio reservado para expertos en tecnología. Debe ser una capacidad que cualquiera puede aprender a usar si se explica con claridad, desde la práctica y sin vender humo (y no, no te vas a volver millonario creando una aplicación con IA en una semana).",
+        "Estamos aquí para que entiendas cómo funciona el asunto y dejes de pelear con las herramientas."
+      ]
+    },
+    "whatWeDo": {
+      "body": [
+        "Trabajamos con personas, equipos e instituciones educativas para que la IA pase a ser una herramienta útil en cualquier contexto. Te enseñamos a usarla y a descubrir su potencial, basándonos en nuestros 5 pilares:"
+      ]
+    },
+    "capabilities": [
+      {
+        "t": "Entrenamiento",
+        "d": "Aprende cómo funciona la IA por dentro. Dejas de copiar y pegar instrucciones de internet y entiendes por qué la IA no te funciona. ",
+        "tone": "peri",
+        "span": "span-3"
+      },
+      {
+        "t": "Adopción",
+        "d": "Te acompañamos a integrar la IA en tus tareas, hasta que dejes de pelear con ella y se vuelva una ayuda confiable.",
+        "span": "span-3"
+      },
+      {
+        "t": "Cultura",
+        "d": "Construimos un lenguaje claro y la confianza necesaria para que preguntes y explores sin pena. Con nosotros no tienes que fingir que ya dominas el tema.",
+        "tone": "dark",
+        "span": "span-2"
+      },
+      {
+        "t": "Estrategia",
+        "d": "Te damos claridad para identificar dónde la IA aporta valor, por dónde conviene empezar y dónde estorba. Meterle IA a todo sin sentido no es una estrategia.",
+        "tone": "teal",
+        "span": "span-2"
+      },
+      {
+        "t": "Uso seguro y ético",
+        "d": "Te explicamos qué información puedes compartir, qué no, y cómo cuidar tus datos para sacarle el máximo provecho a la IA.",
+        "tone": "gold",
+        "span": "span-2"
+      }
+    ],
     "impact": {
       "body": [
         "No optimizamos, no automatizamos y definitivamente no hacemos el trabajo por ti. Entrenamos a las personas para que entiendan y dominen la IA. Te damos las herramientas para que multipliques tus propias habilidades, ya sea para darle forma a esa idea de negocio que tienes guardada, optimizar los procesos de tu empresa o mejorar tu metodología de enseñanza.",
         "Eso es lo que construimos, gente y organizaciones que dejan de pelear con la tecnología y empiezan a usarla bien."
       ]
     },
-    "navLinks": [
-      {
-        "target": "que-hacemos",
-        "labelKey": "whatWeDo"
-      },
-      {
-        "target": "servicios",
-        "labelKey": "services"
-      },
-      {
-        "target": "equipo",
-        "labelKey": "team"
-      },
-      {
-        "target": "faq",
-        "labelKey": "faq"
-      }
-    ],
-    "originStory": [
-      "En el afán de implementar IA, se nos olvidó que lo más importante son las personas que la usan.",
-      "Vimos a personas con un talento enorme sentirse abrumadas por una tecnología que se suponía que iba a hacerles la vida más fácil. Ahí entendimos el reto: nadie les explica cómo funciona.",
-      "Squai nació para acompañar a quienes intentaban usar la IA y se frustraban sin lograr lo que esperaban. Se topaban con explicaciones llenas de jerga que hacían parecer que la IA es cosa de expertos. ¿Por qué te tienen que hablar en otro idioma para explicarte algo útil?",
-      "Entonces, buscamos otro enfoque. Quitamos la jerga innecesaria, conservamos lo que te sirve y armamos una metodología clara."
-    ],
+    "labels": {
+      "brand": "Squai",
+      "whatWeDo": "Qué hacemos",
+      "services": "Servicios",
+      "impact": "Nuestro impacto",
+      "origin": "Cómo nació Squai",
+      "team": "Nuestro Equipo",
+      "faq": "Preguntas frecuentes",
+      "challenge": "Nuestro desafío",
+      "capabilities": "Nuestro programa",
+      "reserve": "Reservar mi cupo para aprender IA",
+      "call": "Solicitar una llamada",
+      "terms": "Términos de Servicio",
+      "privacy": "Política de Privacidad"
+    },
     "services": [
       {
         "slug": "squai-one",
         "name": "Squai One",
         "audience": "Para Personas",
+        "menuAudience": "Personas",
         "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
         "cardCopy": "Un programa en vivo para entender la IA, en lugar de seguir guardando tutoriales que nunca vas a ver.",
-        "seoHeading": "Programa en vivo para aprender inteligencia artificial",
-        "seoTitle": "Programa en vivo para aprender inteligencia artificial | Squai",
-        "seoDescription": "Programa de inteligencia artificial en vivo: 5 semanas, 20 horas, práctica guiada y certificado. Aprende a usar IA en situaciones reales.",
         "discoverLabel": "Únete a la lista de espera",
         "cta": {
-          "modal": "",
-          "target": "lista",
-          "label": "Potencia tus habilidades"
+          "label": "Potencia tus habilidades",
+          "target": "lista"
         },
         "ctaSecondary": "Aprende IA",
-        "accent": "#8A8EF9",
-        "span": "span-3 row-2",
-        "tone": "peri",
         "payback": {
           "headline": "Vas a desarrollar un instinto para usar cualquier IA, la que está de moda hoy y la que se inventen mañana.",
           "body": [
@@ -244,24 +138,23 @@
           "groups": [
             {
               "t": "Entender",
-              "tone": "",
               "items": [
                 "Te enseñamos exactamente cómo procesa la IA lo que le escribes, desmitificando los conceptos clave para que detectes rápido por qué se equivoca."
               ]
             },
             {
               "t": "Practicar",
-              "tone": "peri",
               "items": [
                 "Pones en práctica instrucciones directas, aprendes a analizar información y descubres cómo integrar estas ayudas en tu rutina."
-              ]
+              ],
+              "tone": "peri"
             },
             {
               "t": "Ampliar",
-              "tone": "dark",
               "items": [
                 "Logras identificar qué tareas vale la pena delegar, qué debes revisar tú siempre, y eliges la herramienta adecuada sin sentir que estás adivinando."
-              ]
+              ],
+              "tone": "dark"
             }
           ]
         },
@@ -309,30 +202,29 @@
             ]
           }
         ],
-        "menuAudience": "Personas"
+        "seoHeading": "Programa en vivo para aprender inteligencia artificial",
+        "seoTitle": "Programa en vivo para aprender inteligencia artificial | Squai",
+        "seoDescription": "Programa de inteligencia artificial en vivo: 5 semanas, 20 horas, práctica guiada y certificado. Aprende a usar IA en situaciones reales.",
+        "accent": "#8A8EF9",
+        "tone": "peri",
+        "span": "span-3 row-2"
       },
       {
         "slug": "squai-grow",
         "name": "Squai Grow",
         "audience": "Para empresas",
+        "menuAudience": "Empresas",
         "slogan": "Mientras otras empresas avanzan a toda velocidad con IA, el tuyo no puede quedarse resolviendo procesos a pedal.",
         "cardCopy": "Entrenamos a tu equipo para mejorar cómo trabajan, deciden y resuelven problemas de su contexto usando IA.",
-        "seoHeading": "Capacitación en IA para empresas y equipos",
-        "seoTitle": "Capacitación en IA para empresas y equipos | Squai",
-        "seoDescription": "Capacitamos equipos en inteligencia artificial aplicada a sus tareas y procesos. Formación práctica para mejorar productividad, decisiones y adopción de IA.",
         "discoverLabel": "Capacita tu equipo",
         "cta": {
-          "modal": "grow",
-          "target": "",
-          "label": "Adopta IA en tu empresa"
+          "label": "Adopta IA en tu empresa",
+          "modal": "grow"
         },
         "ctaSecondary": "Armemos tu capacitación",
         "contactCta": "Hablemos de tu equipo",
         "contactCopy": "Cuéntanos en qué se le va el tiempo a tu equipo y armamos una capacitación a la medida.",
         "contactAside": "Hacemos preguntas antes de aparecer con 84 diapositivas.",
-        "accent": "#44D4C8",
-        "span": "span-3",
-        "tone": "teal",
         "payback": {
           "headline": "Un equipo que entiende cómo usar IA para emplear mejor el tiempo en el trabajo.",
           "body": [
@@ -359,24 +251,23 @@
           "groups": [
             {
               "t": "Diagnosticar",
-              "tone": "",
               "items": [
                 "Analizamos tus procesos para identificar dónde sí tiene sentido implementar IA y dónde es mejor no hacerlo."
               ]
             },
             {
               "t": "Formar",
-              "tone": "teal",
               "items": [
                 "Formamos a cada equipo en el uso seguro de IA trabajando con sus propios datos y armamos flujos que puedan mantener."
-              ]
+              ],
+              "tone": "teal"
             },
             {
               "t": "Sostener",
-              "tone": "dark",
               "items": [
                 "Establecemos lineamientos de uso dejando una guía para que el equipo decida de forma independiente cómo seguir aplicando la IA."
-              ]
+              ],
+              "tone": "dark"
             }
           ]
         },
@@ -412,30 +303,29 @@
             ]
           }
         ],
-        "menuAudience": "Empresas"
+        "seoHeading": "Capacitación en IA para empresas y equipos",
+        "seoTitle": "Capacitación en IA para empresas y equipos | Squai",
+        "seoDescription": "Capacitamos equipos en inteligencia artificial aplicada a sus tareas y procesos. Formación práctica para mejorar productividad, decisiones y adopción de IA.",
+        "accent": "#44D4C8",
+        "tone": "teal",
+        "span": "span-3"
       },
       {
         "slug": "squai-learn",
         "name": "Squai Learn",
         "audience": "Para instituciones educativas",
+        "menuAudience": "Instituciones educativas",
         "slogan": "Transformemos la IA en las aulas de \"máquina de hacer trampa\" a un aliado para profesores y alumnos.",
         "cardCopy": "Acompañamos a colegios, universidades y otros espacios de formación. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con ética y pensamiento crítico.",
-        "seoHeading": "Formación en IA para docentes e instituciones",
-        "seoTitle": "Formación en IA para docentes e instituciones | Squai",
-        "seoDescription": "Formación práctica en inteligencia artificial para docentes, estudiantes e instituciones. Uso responsable de IA, pensamiento crítico y aplicación en el aula.",
         "discoverLabel": "Integra IA en tu institución",
         "cta": {
-          "modal": "learn",
-          "target": "",
-          "label": "Adopta IA en tus aulas"
+          "label": "Adopta IA en tus aulas",
+          "modal": "learn"
         },
         "ctaSecondary": "Integra IA a tus procesos educativos",
         "contactCta": "Hablemos de tu institución",
         "contactCopy": "No importa si tienes un problema puntual o si apenas están intentando entender cómo abordar el tema de IA en la institución.",
         "contactAside": "Hablemos unos minutos para conocer tu caso y ver cómo podemos ayudar.",
-        "accent": "#F9C24D",
-        "span": "span-3",
-        "tone": "gold",
         "payback": {
           "headline": "Una comunidad donde la tecnología dejó de ser un dolor de cabeza y se convirtió en una ventaja para aprender y enseñar.",
           "body": [
@@ -462,24 +352,23 @@
           "groups": [
             {
               "t": "Preparar",
-              "tone": "",
               "items": [
                 "Empezamos entendiendo cómo se está usando IA dentro de la comunidad y qué problemas necesitan resolver los docentes y estudiantes."
               ]
             },
             {
               "t": "Enseñar",
-              "tone": "gold",
               "items": [
                 "Enseñamos fundamentos con lenguaje claro y practicamos casos de uso relacionados con el aprendizaje y la enseñanza."
-              ]
+              ],
+              "tone": "gold"
             },
             {
               "t": "Acompañar",
-              "tone": "dark",
               "items": [
                 "Construimos la base para que la adopción de IA continúe sola de forma segura y constante, convirtiendo la tecnología en una práctica institucional duradera."
-              ]
+              ],
+              "tone": "dark"
             }
           ]
         },
@@ -521,7 +410,58 @@
             ]
           }
         ],
-        "menuAudience": "Instituciones educativas"
+        "seoHeading": "Formación en IA para docentes e instituciones",
+        "seoTitle": "Formación en IA para docentes e instituciones | Squai",
+        "seoDescription": "Formación práctica en inteligencia artificial para docentes, estudiantes e instituciones. Uso responsable de IA, pensamiento crítico y aplicación en el aula.",
+        "accent": "#F9C24D",
+        "tone": "gold",
+        "span": "span-3"
+      }
+    ],
+    "originStory": [
+      "En el afán de implementar IA, se nos olvidó que lo más importante son las personas que la usan.",
+      "Vimos a personas con un talento enorme sentirse abrumadas por una tecnología que se suponía que iba a hacerles la vida más fácil. Ahí entendimos el reto: nadie les explica cómo funciona.",
+      "Squai nació para acompañar a quienes intentaban usar la IA y se frustraban sin lograr lo que esperaban. Se topaban con explicaciones llenas de jerga que hacían parecer que la IA es cosa de expertos. ¿Por qué te tienen que hablar en otro idioma para explicarte algo útil?",
+      "Entonces, buscamos otro enfoque. Quitamos la jerga innecesaria, conservamos lo que te sirve y armamos una metodología clara."
+    ],
+    "squadGrid": [
+      {
+        "name": "Laura Villada",
+        "role": "Estratega de Adopción de IA & Co-fundadora",
+        "d": "Tu traductora de jerga técnica a español. Laura diseña la estructura de nuestros programas para que el aprendizaje sea fácil, entretenido y sostenible.",
+        "img": "/images/team1.webp",
+        "linkedin": "https://www.linkedin.com/in/laura-villadaa/"
+      },
+      {
+        "name": "Sebastián Rico",
+        "role": "Ingeniero de IA & Co-fundador",
+        "d": "Nuestro filtro anti-humo. Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet.",
+        "img": "/images/team2.webp",
+        "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/"
+      },
+      {
+        "name": "Daniel Guzmán",
+        "role": "Analista de Procesos de Negocio",
+        "d": "El polo a tierra. Dani inyecta la realidad corporativa. Él estructura los módulos para asegurar que la IA se muestre como funciona en entornos profesionales.",
+        "img": "/images/team3.webp"
+      },
+      {
+        "name": "Ana Lasso",
+        "role": "Especialista en Gestión de Talento Humano",
+        "d": "Nuestra brújula humana. Ana diseña el enfoque de adopción. Se asegura de que no hablemos solo de botones y apps, sino de la estrategia necesaria para que las personas adopten la IA.",
+        "img": "/images/team4.webp"
+      },
+      {
+        "name": "Luis López",
+        "role": "Analista de Datos",
+        "d": "Nuestro filtro de entrada. Lucho enseña a organizar y estructurar la información antes de tocar la IA, porque sabemos que de datos malos, solo salen respuestas malas.",
+        "img": "/images/team5.webp"
+      },
+      {
+        "name": "Carlos Gómez",
+        "role": "Especialista en Seguridad de la Información",
+        "d": "El guardián de los datos. Carlos construye los pilares de seguridad del contenido. Te enseña a acelerar con la IA sin terminar exponiendo datos sensibles.",
+        "img": "/images/team6.webp"
       }
     ],
     "socials": [
@@ -530,212 +470,53 @@
         "href": "https://www.linkedin.com/company/heysquai"
       }
     ],
-    "squadGrid": [
+    "faqs": [
       {
-        "img": "/images/team1.webp",
-        "name": "Laura Villada",
-        "role": "Estratega de Adopción de IA & Co-fundadora",
-        "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
-        "d": "Tu traductora de jerga técnica a español. Laura diseña la estructura de nuestros programas para que el aprendizaje sea fácil, entretenido y sostenible."
-      },
-      {
-        "img": "/images/team2.webp",
-        "name": "Sebastián Rico",
-        "role": "Ingeniero de IA & Co-fundador",
-        "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
-        "d": "Nuestro filtro anti-humo. Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet."
-      },
-      {
-        "img": "/images/team3.webp",
-        "name": "Daniel Guzmán",
-        "role": "Analista de Procesos de Negocio",
-        "d": "El polo a tierra. Dani inyecta la realidad corporativa. Él estructura los módulos para asegurar que la IA se muestre como funciona en entornos profesionales."
-      },
-      {
-        "img": "/images/team4.webp",
-        "name": "Ana Lasso",
-        "role": "Especialista en Gestión de Talento Humano",
-        "d": "Nuestra brújula humana. Ana diseña el enfoque de adopción. Se asegura de que no hablemos solo de botones y apps, sino de la estrategia necesaria para que las personas adopten la IA."
-      },
-      {
-        "img": "/images/team5.webp",
-        "name": "Luis López",
-        "role": "Analista de Datos",
-        "d": "Nuestro filtro de entrada. Lucho enseña a organizar y estructurar la información antes de tocar la IA, porque sabemos que de datos malos, solo salen respuestas malas."
-      },
-      {
-        "img": "/images/team6.webp",
-        "name": "Carlos Gómez",
-        "role": "Especialista en Seguridad de la Información",
-        "d": "El guardián de los datos. Carlos construye los pilares de seguridad del contenido. Te enseña a acelerar con la IA sin terminar exponiendo datos sensibles."
-      }
-    ],
-    "statement": {
-      "headline": "Si corregir a la IA te da más trabajo, es porque falta método.",
-      "body": [
-        "Vivimos rodeados de gurús prometiendo agentes para no volver a trabajar. Sin embargo, cuando intentas aplicar eso a tus notas, proyectos o tareas diarias, el resultado es tan genérico que terminas rehaciendo todo a mano. Es desesperante.",
-        "Creemos firmemente que la inteligencia artificial no es un privilegio reservado para expertos en tecnología. Debe ser una capacidad que cualquiera puede aprender a usar si se explica con claridad, desde la práctica y sin vender humo (y no, no te vas a volver millonario creando una aplicación con IA en una semana).",
-        "Estamos aquí para que entiendas cómo funciona el asunto y dejes de pelear con las herramientas."
-      ]
-    },
-    "tagline": "Aprende IA. Potencia tus habilidades.",
-    "whatWeDo": {
-      "body": [
-        "Trabajamos con personas, equipos e instituciones educativas para que la IA pase a ser una herramienta útil en cualquier contexto. Te enseñamos a usarla y a descubrir su potencial, basándonos en nuestros 5 pilares:"
-      ]
-    },
-    "labels": {
-      "whatWeDo": "Qué hacemos",
-      "services": "Servicios",
-      "team": "Nuestro Equipo",
-      "faq": "Preguntas frecuentes",
-      "impact": "Nuestro impacto",
-      "origin": "Cómo nació Squai",
-      "brand": "Squai",
-      "reserve": "Reservar mi cupo para aprender IA",
-      "call": "Solicitar una llamada",
-      "challenge": "Nuestro desafío",
-      "capabilities": "Nuestro programa",
-      "terms": "Términos de Servicio",
-      "privacy": "Política de Privacidad"
-    },
-    "ui": {
-      "navigation": {
-        "home": "Squai — inicio",
-        "open": "Abrir menú",
-        "close": "Cerrar menú",
-        "main": "Principal",
-        "waitlist": "Empieza aquí",
-        "contactCta": "Agenda tu llamada",
-        "oneCta": "Preinscribirme",
-        "servicesSubmenu": "Mostrar submenú de servicios"
-      },
-      "hero": {
-        "pause": "Pausar palabras animadas",
-        "resume": "Reanudar palabras animadas",
-        "services": "Reservar mi cupo para aprender IA",
-        "scroll": "Seguir bajando",
-        "cta": "Explorar nuestros servicios"
-      },
-      "services": {
-        "payback": "Qué te llevas",
-        "capabilitiesFallback": "Nuestro programa"
-      },
-      "program": {
-        "duration": "Duración",
-        "schedule": "Modalidad",
-        "modality": "Resultado"
-      },
-      "team": {
-        "intro": [
-          "Podríamos solo decirte que somos un equipo \"altamente capacitado\" pero la verdad es que podemos ayudarte porque navegamos los mismos problemas que tú. Somos un squad de profesionales que nos unimos para diseñar el contenido de los programas de Squai desde nuestra experiencia, traduciendo casos reales de trabajo a una pedagogía clara, cercana y fácil de adoptar. "
-        ],
-        "memberAlt": "{name}, {role} en Squai"
-      },
-      "finalCta": {
-        "title": "La IA ya no es opcional, es una habilidad para la vida",
-        "body": [
-          "Aprender a usar IA dejó de ser un tema solo para perfiles técnicos. Hoy la diferencia está entre quienes resuelven cosas más rápido apoyados en IA y quienes siguen perdiendo horas en tareas manuales y repetitivas.",
-          "El mundo avanza rápido y quedarse al margen significa hacerte la vida más difícil de lo necesario, cuando podrías estar usando estas herramientas para simplificar tus procesos, aprender más rápido y tomar mejores decisiones."
-        ],
-        "cta": "Explorar servicios"
-      },
-      "follow": {
-        "title": "Síguenos"
-      },
-      "footer": {
-        "copyright": "© 2026 Squai · Todos los derechos reservados"
-      },
-      "waitlist": {
-        "title": "Preinscríbete a nuestro programa para aprender IA",
-        "copy": [
-          "Déjanos tu correo y serás el primero en enterarte cuando abramos el próximo programa. Esto no te cuesta nada, solo aseguras tu lugar en la fila.",
-          "Los cupos son limitados. Creemos que en una clase con muchas personas te conviertes en un avatar silenciado y las preguntas se pierden en el chat.",
-          "Prometemos no enviarte correos diarios de spam."
-        ],
-        "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
-        "formSubtitle": "Lista de espera abierta. Porque lo bueno se hace esperar.",
-        "investment": {
-          "eyebrow": "INVERSIÓN AL ABRIR CUPOS",
-          "copy": [
-            "No pagas ahora. Solo pagas si obtienes un cupo.",
-            "Cuesta menos que seguir perdiendo horas intentando entender la IA por tu cuenta."
-          ],
-          "price": "$399.000",
-          "currency": "COP",
-          "referencePrice": "/ $129 USD"
-        }
-      },
-      "forms": {
-        "required": "Campos obligatorios.",
-        "fullName": "Nombre completo",
-        "email": "Correo electrónico",
-        "corporateEmail": "Correo corporativo",
-        "organization": "Organización",
-        "role": "Tu rol",
-        "countryCode": "Indicativo",
-        "phone": "Número de teléfono",
-        "whatsapp": "WhatsApp",
-        "teamSize": "Personas que se formarían",
-        "select": "Selecciona una opción",
-        "message": "Mensaje",
-        "optional": "(opcional)",
-        "countrySearch": "Buscar país o indicativo",
-        "countryEmpty": "Ningún país coincide.",
-        "privacyConsentPrefix": "He leído y acepto la ",
-        "privacyConsentLink": "Política de Privacidad",
-        "privacyConsentSuffix": " de Squai.",
-        "teamSizes": [
-          {
-            "value": "menos-10",
-            "label": "Menos de 10"
-          },
-          {
-            "value": "10-30",
-            "label": "Entre 10 y 30"
-          },
-          {
-            "value": "30-100",
-            "label": "Entre 30 y 100"
-          },
-          {
-            "value": "mas-100",
-            "label": "Más de 100"
-          }
+        "q": "¿Necesito saber programar o ser un experto en tecnología?",
+        "a": [
+          "Cero. Te explicamos todo clarito y al punto. No tienes ni qué saber que es un prompt."
         ]
       },
-      "contact": {
-        "title": "Hablemos.",
-        "close": "Cerrar",
-        "bookingFallback": "Por si no pudiste ver nuestra agenda.",
-        "bookingFallbackLink": "Selecciona tu mejor momento para que hablemos aquí."
+      {
+        "q": "¿Cuál de los tres servicios me sirve?",
+        "a": [
+          "Squai One: Para personas que quieren aprender en vivo, a su ritmo y sin rodeos.",
+          "Squai Grow: Para empresas que quieren que su equipo adopte la IA y deje de usarla solo para redactar correos.",
+          "Squai Learn: Para instituciones educativas que buscan capacitar docentes y/o estudiantes y convertir a la IA en aliado y no en enemigo."
+        ]
       },
-      "modal": {
-        "grow": {
-          "title": "Cuéntanos qué tienes en mente",
-          "copy": "Danos un poco de contexto sobre lo que quieres lograr con IA y qué te gustaría mejorar. ",
-          "placeholder": "Cuéntanos qué quieres lograr o qué te gustaría resolver."
-        },
-        "learn": {
-          "title": "Empecemos por lo que necesitas",
-          "copy": "Cuéntanos qué retos tienen con la IA o qué te gustaría resolver.",
-          "placeholder": "Cuéntanos qué tienes en mente."
-        }
+      {
+        "q": "¿Las sesiones son virtuales o presenciales?",
+        "a": [
+          "Los programas individuales de Squai One son 100% virtuales. Para empresas e instituciones educativas (Squai Grow y Squai Learn), nos adaptamos: pueden ser virtuales o presenciales en algunas ciudades de Colombia si quieres verle la cara al squad."
+        ]
       },
-      "feedback": {
-        "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
-        "sending": "Mandando esto al lugar correcto…",
-        "error": "Eso no salió como debía. Inténtalo otra vez o escríbenos a team@squai.io.",
-        "contactSuccess": "Listo, ya nos llegó. Te abrimos la agenda en otra pestaña para que elijas el horario de tu llamada.",
-        "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa.",
-        "fieldRequired": "Completa este campo.",
-        "fieldEmail": "Escribe un correo con formato válido, como nombre@dominio.com.",
-        "turnstileError": "No pudimos completar la verificación de seguridad. Revisa tu conexión e inténtalo de nuevo.",
-        "turnstileUnsupported": "Este navegador no permite completar la verificación de seguridad. Actualízalo o prueba con otro navegador."
+      {
+        "q": "¿Al terminar me dan un certificado?",
+        "a": [
+          "Claro que sí. Al finalizar cualquier programa te entregamos un certificado digital que respalda tu formación y las habilidades prácticas que aprendiste. Sirve para actualizar tu perfil, mostrar en tu trabajo o solo presumir que ya sabes de IA."
+        ]
       },
-      "skip": "Saltar al contenido",
-      "updated": "Última actualización:"
-    },
+      {
+        "q": "¿Están solo en Colombia?",
+        "a": [
+          "No. Estamos en toda Latinoamérica. Mientras tengas conexión a internet y hables español, podemos acompañarte a ti, a tu empresa o a tu institución en cualquier rincón de la región."
+        ]
+      },
+      {
+        "q": "Ya me convencieron, ¿cómo empiezo esto?",
+        "a": [
+          "Si es para ti, entra a Squai One y asegura tu puesto en la lista de espera antes de que nos toque colgar el letrero de “Agotado”. Si es para tu empresa o institución educativa, pide una llamada desde la página de Squai Grow o Squai Learn. Te prometemos responder en menos de 24 horas hábiles.",
+          "Te responde un humano de carne y hueso."
+        ]
+      },
+      {
+        "q": "¿Qué herramientas vamos a usar?",
+        "a": [
+          "Varias, incluyendo ChatGPT, Gemini, Claude, entre otras. Pero la app no es el problema, es cómo la usas. Te enseñamos la lógica, así que si mañana sale una nueva IA aplicas lo que ya aprendiste con nosotros."
+        ]
+      }
+    ],
     "seo": {
       "title": "Capacitación y formación en inteligencia artificial | Squai",
       "description": "Capacitación en inteligencia artificial para personas, empresas e instituciones educativas. Programas prácticos, en vivo y sin necesidad de perfil técnico.",
@@ -972,31 +753,11 @@
               {
                 "type": "list",
                 "items": [
-                  [
-                    {
-                      "text": "Nombre completo"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Correo electrónico"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Número de contacto (WhatsApp)"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Nombre de la empresa o institución (si solicitas formación corporativa)"
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Mensajes adicionales que decidas redactar libremente"
-                    }
-                  ]
+                  "Nombre completo",
+                  "Correo electrónico",
+                  "Número de contacto (WhatsApp)",
+                  "Nombre de la empresa o institución (si solicitas formación corporativa)",
+                  "Mensajes adicionales que decidas redactar libremente"
                 ]
               }
             ]
@@ -1007,26 +768,10 @@
               {
                 "type": "list",
                 "items": [
-                  [
-                    {
-                      "text": "Notificarte cuándo se abren cupos en los programas."
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Responder las dudas que nos envías por el formulario."
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Coordinar llamadas breves de diagnóstico para servicios corporativos."
-                    }
-                  ],
-                  [
-                    {
-                      "text": "Enviarte novedades relevantes del programa."
-                    }
-                  ]
+                  "Notificarte cuándo se abren cupos en los programas.",
+                  "Responder las dudas que nos envías por el formulario.",
+                  "Coordinar llamadas breves de diagnóstico para servicios corporativos.",
+                  "Enviarte novedades relevantes del programa."
                 ]
               },
               {
@@ -1153,6 +898,214 @@
           }
         ]
       }
-    }
+    },
+    "ui": {
+      "navigation": {
+        "home": "Squai — inicio",
+        "main": "Principal",
+        "open": "Abrir menú",
+        "close": "Cerrar menú",
+        "servicesSubmenu": "Mostrar submenú de servicios",
+        "waitlist": "Empieza aquí",
+        "contactCta": "Agenda tu llamada",
+        "oneCta": "Preinscribirme"
+      },
+      "hero": {
+        "cta": "Explorar nuestros servicios",
+        "services": "Reservar mi cupo para aprender IA",
+        "scroll": "Seguir bajando",
+        "pause": "Pausar palabras animadas",
+        "resume": "Reanudar palabras animadas"
+      },
+      "services": {
+        "payback": "Qué te llevas",
+        "capabilitiesFallback": "Nuestro programa"
+      },
+      "program": {
+        "duration": "Duración",
+        "schedule": "Modalidad",
+        "modality": "Resultado"
+      },
+      "team": {
+        "intro": [
+          "Podríamos solo decirte que somos un equipo \"altamente capacitado\" pero la verdad es que podemos ayudarte porque navegamos los mismos problemas que tú. Somos un squad de profesionales que nos unimos para diseñar el contenido de los programas de Squai desde nuestra experiencia, traduciendo casos reales de trabajo a una pedagogía clara, cercana y fácil de adoptar. "
+        ],
+        "memberAlt": "{name}, {role} en Squai"
+      },
+      "finalCta": {
+        "title": "La IA ya no es opcional, es una habilidad para la vida",
+        "body": [
+          "Aprender a usar IA dejó de ser un tema solo para perfiles técnicos. Hoy la diferencia está entre quienes resuelven cosas más rápido apoyados en IA y quienes siguen perdiendo horas en tareas manuales y repetitivas.",
+          "El mundo avanza rápido y quedarse al margen significa hacerte la vida más difícil de lo necesario, cuando podrías estar usando estas herramientas para simplificar tus procesos, aprender más rápido y tomar mejores decisiones."
+        ],
+        "cta": "Explorar servicios"
+      },
+      "follow": {
+        "title": "Síguenos"
+      },
+      "footer": {
+        "copyright": "© 2026 Squai · Todos los derechos reservados"
+      },
+      "waitlist": {
+        "title": "Preinscríbete a nuestro programa para aprender IA",
+        "copy": [
+          "Déjanos tu correo y serás el primero en enterarte cuando abramos el próximo programa. Esto no te cuesta nada, solo aseguras tu lugar en la fila.",
+          "Los cupos son limitados. Creemos que en una clase con muchas personas te conviertes en un avatar silenciado y las preguntas se pierden en el chat.",
+          "Prometemos no enviarte correos diarios de spam."
+        ],
+        "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
+        "formSubtitle": "Lista de espera abierta. Porque lo bueno se hace esperar.",
+        "investment": {
+          "eyebrow": "INVERSIÓN AL ABRIR CUPOS",
+          "copy": [
+            "No pagas ahora. Solo pagas si obtienes un cupo.",
+            "Cuesta menos que seguir perdiendo horas intentando entender la IA por tu cuenta."
+          ],
+          "price": "$399.000",
+          "currency": "COP",
+          "referencePrice": "/ $129 USD"
+        }
+      },
+      "forms": {
+        "required": "Campos obligatorios.",
+        "fullName": "Nombre completo",
+        "email": "Correo electrónico",
+        "corporateEmail": "Correo corporativo",
+        "organization": "Organización",
+        "role": "Tu rol",
+        "countryCode": "Indicativo",
+        "phone": "Número de teléfono",
+        "whatsapp": "WhatsApp",
+        "teamSize": "Personas que se formarían",
+        "select": "Selecciona una opción",
+        "message": "Mensaje",
+        "optional": "(opcional)",
+        "countrySearch": "Buscar país o indicativo",
+        "countryEmpty": "Ningún país coincide.",
+        "privacyConsentPrefix": "He leído y acepto la ",
+        "privacyConsentLink": "Política de Privacidad",
+        "privacyConsentSuffix": " de Squai.",
+        "teamSizes": [
+          {
+            "label": "Menos de 10",
+            "value": "menos-10"
+          },
+          {
+            "label": "Entre 10 y 30",
+            "value": "10-30"
+          },
+          {
+            "label": "Entre 30 y 100",
+            "value": "30-100"
+          },
+          {
+            "label": "Más de 100",
+            "value": "mas-100"
+          }
+        ]
+      },
+      "contact": {
+        "title": "Hablemos.",
+        "close": "Cerrar",
+        "bookingFallback": "Por si no pudiste ver nuestra agenda.",
+        "bookingFallbackLink": "Selecciona tu mejor momento para que hablemos aquí."
+      },
+      "modal": {
+        "grow": {
+          "title": "Cuéntanos qué tienes en mente",
+          "copy": "Danos un poco de contexto sobre lo que quieres lograr con IA y qué te gustaría mejorar. ",
+          "placeholder": "Cuéntanos qué quieres lograr o qué te gustaría resolver."
+        },
+        "learn": {
+          "title": "Empecemos por lo que necesitas",
+          "copy": "Cuéntanos qué retos tienen con la IA o qué te gustaría resolver.",
+          "placeholder": "Cuéntanos qué tienes en mente."
+        }
+      },
+      "feedback": {
+        "sending": "Mandando esto al lugar correcto…",
+        "contactSuccess": "Listo, ya nos llegó. Te abrimos la agenda en otra pestaña para que elijas el horario de tu llamada.",
+        "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa.",
+        "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
+        "error": "Eso no salió como debía. Inténtalo otra vez o escríbenos a team@squai.io.",
+        "fieldRequired": "Completa este campo.",
+        "fieldEmail": "Escribe un correo con formato válido, como nombre@dominio.com.",
+        "turnstileError": "No pudimos completar la verificación de seguridad. Revisa tu conexión e inténtalo de nuevo.",
+        "turnstileUnsupported": "Este navegador no permite completar la verificación de seguridad. Actualízalo o prueba con otro navegador."
+      },
+      "skip": "Saltar al contenido",
+      "updated": "Última actualización:"
+    },
+    "footerCols": [
+      {
+        "links": [
+          {
+            "target": "que-hacemos",
+            "labelKey": "whatWeDo"
+          },
+          {
+            "target": "impacto",
+            "labelKey": "impact"
+          },
+          {
+            "target": "origen",
+            "labelKey": "origin"
+          },
+          {
+            "t": "El equipo",
+            "target": "equipo"
+          }
+        ],
+        "headingKey": "brand"
+      },
+      {
+        "links": [
+          {
+            "t": "Squai One — Personas",
+            "href": "/servicios/squai-one"
+          },
+          {
+            "t": "Squai Grow — Equipos",
+            "href": "/servicios/squai-grow"
+          },
+          {
+            "t": "Squai Learn — Educación",
+            "href": "/servicios/squai-learn"
+          }
+        ],
+        "headingKey": "services"
+      },
+      {
+        "h": "Contacto",
+        "links": [
+          {
+            "t": "team@squai.io",
+            "href": "mailto:team@squai.io"
+          },
+          {
+            "target": "faq",
+            "labelKey": "faq"
+          }
+        ]
+      }
+    ],
+    "navLinks": [
+      {
+        "target": "que-hacemos",
+        "labelKey": "whatWeDo"
+      },
+      {
+        "target": "servicios",
+        "labelKey": "services"
+      },
+      {
+        "target": "equipo",
+        "labelKey": "team"
+      },
+      {
+        "target": "faq",
+        "labelKey": "faq"
+      }
+    ]
   }
 }

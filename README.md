@@ -30,10 +30,13 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm db:migrate:remote`  | Aplica `migrations/` en el D1 de producción                    |
 | `pnpm deploy`             | Build + migraciones remotas + `wrangler deploy`                |
 | `pnpm deploy:ci`          | Migraciones + deploy, sin build (lo usa Workers Builds)        |
+| `pnpm version:upload`     | Build + sube una versión candidata, sin tocar producción        |
+| `pnpm version:promote`    | Promueve una versión candidata al 100% del tráfico             |
 
 ## Estructura
 
 ```
+.pages.yml          Modelo editorial de Pages CMS (ver docs/pages-cms.md)
 migrations/         Migraciones de D1 (wrangler d1 migrations)
 public/
   fonts/            Familjen Grotesk, Atkinson Hyperlegible Next y Gloria Hallelujah (woff2, self-hosted)
@@ -54,7 +57,7 @@ src/
   styles/global.css @font-face, tokens de diseño y estados hover/focus
   server/           Backend del Worker (ver abajo)
 test/server/        Tests de la API contra un D1 local
-docs/               Runbook de configuración en Cloudflare
+docs/               Runbook de Cloudflare y documentación de Pages CMS
 ```
 
 ## Contenido
@@ -73,6 +76,10 @@ directo: usan `getSiteContent()` de `src/lib/content.ts`.
   en blanco separa párrafos. Cada párrafo se renderiza como su propio `<p>`.
 - Rutas de la API y otra configuración de runtime van en `src/config/`, no en el
   contenido.
+- El contenido se edita desde [Pages CMS](docs/pages-cms.md), que escribe
+  directamente en `copies.json`. `.pages.yml` traduce el contrato a formularios:
+  si cambia `schema.ts`, cambia `.pages.yml` en el mismo commit. El inventario
+  campo a campo está en [`docs/pages-cms-inventario.md`](docs/pages-cms-inventario.md).
 
 ## SEO
 

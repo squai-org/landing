@@ -1,0 +1,1208 @@
+# Modelo editorial de Pages CMS (https://pagescms.org).
+#
+# Todo el contenido del sitio vive en src/content/copies.json bajo la clave
+# `site`, y src/content/schema.ts es el contrato que valida ese archivo en cada
+# build. Este archivo traduce ese contrato a formularios: mismas areas, mismos
+# campos, mismos limites. Si cambia el contrato, cambia tambien este archivo.
+#
+# Reglas de esta configuracion:
+#
+# - `settings.content.merge: true` es obligatorio. Cada area declara solo una
+#   parte de `site`; al guardar, Pages CMS mezcla lo editado con el archivo que
+#   ya esta en GitHub, de modo que las claves no declaradas (navLinks,
+#   footerCols) se conservan intactas.
+# - No se declara `media`: no hay carga de imagenes desde el CMS. Las fotos del
+#   equipo se resuelven por una relacion fija entre la ruta editorial y el
+#   recurso compilado (src/components/Team.astro), asi que `img` es una lista
+#   cerrada de las rutas que ese mapa conoce.
+# - Los campos estructurales (slug, destinos de scroll, tokens de maquetacion)
+#   van como `readonly`: el editor los ve, no los cambia.
+# - Las opciones cerradas van como `select`, nunca como texto libre.
+# - Los textos largos siguen siendo listas de parrafos, sin formato enriquecido:
+#   el frontend no tiene politica de sanitizado para HTML.
+
+settings:
+  content:
+    merge: true
+
+content:
+  - name: inicio
+    label: Inicio
+    description: Hero, manifiesto, programa y etiquetas de sección de la página principal.
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: tagline
+            label: Frase de marca
+            description: Acompaña al logo y abre la página.
+            type: string
+            required: true
+          - name: heroLines
+            label: Titular del hero
+            description: Se compone en tres partes; la palabra animada va aparte.
+            type: object
+            required: true
+            fields:
+              - name: middle
+                label: Primera línea
+                type: string
+                required: true
+              - name: last
+                label: Segunda línea
+                type: string
+                required: true
+              - name: object
+                label: Complemento
+                description: Cierra la frase animada, por ejemplo "IA.".
+                type: string
+                required: true
+          - name: heroVerbs
+            label: Palabras animadas
+            description: Rotan en el hero. Cada una lleva su color.
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{word}'
+            fields:
+              - name: word
+                label: Palabra
+                type: string
+                required: true
+              - name: color
+                label: Color
+                description: "Hexadecimal completo, por ejemplo #8A8EF9."
+                type: string
+                required: true
+                pattern:
+                  regex: '^#[0-9a-fA-F]{6}$'
+                  message: "Usa un hexadecimal de seis dígitos, por ejemplo #8A8EF9."
+          - name: heroSubtitle
+            label: Subtítulo del hero
+            type: string
+            required: true
+          - name: program
+            label: Programa
+            description: Ficha del programa que se muestra bajo el hero.
+            type: object
+            required: true
+            fields:
+              - name: status
+                label: Estado
+                type: string
+                required: true
+              - name: name
+                label: Nombre del programa
+                type: string
+                required: true
+              - name: ecosystem
+                label: Ecosistema
+                type: string
+                required: true
+              - name: duration
+                label: Duración
+                type: string
+                required: true
+              - name: schedule
+                label: Modalidad
+                type: string
+                required: true
+              - name: modality
+                label: Resultado
+                type: string
+                required: true
+          - name: statement
+            label: Manifiesto
+            type: object
+            required: true
+            fields:
+              - name: headline
+                label: Titular
+                type: string
+                required: true
+              - name: body
+                label: Párrafos
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+          - name: whatWeDo
+            label: Qué hacemos
+            description: El título de la sección se edita en "Etiquetas de sección".
+            type: object
+            required: true
+            fields:
+              - name: body
+                label: Párrafos
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+          - name: capabilities
+            label: Tarjetas de capacidades
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{t}'
+            fields:
+              - name: t
+                label: Título
+                type: string
+                required: true
+              - name: d
+                label: Descripción
+                type: text
+                required: true
+              - name: tone
+                label: Tono visual
+                type: select
+                options:
+                  values:
+                    - label: Neutro
+                      value: ''
+                    - label: Periwinkle
+                      value: peri
+                    - label: Oscuro
+                      value: dark
+                    - label: Turquesa
+                      value: teal
+                    - label: Dorado
+                      value: gold
+              - name: span
+                label: Tamaño en la retícula
+                description: Maquetación. Se consulta, no se edita.
+                type: string
+                readonly: true
+                required: true
+          - name: impact
+            label: Nuestro impacto
+            type: object
+            required: true
+            fields:
+              - name: body
+                label: Párrafos
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+          - name: labels
+            label: Etiquetas de sección y botones
+            description: Textos reutilizados en títulos de sección, menú y botones.
+            type: object
+            required: true
+            fields:
+              - name: brand
+                label: Marca (columna del footer)
+                type: string
+                required: true
+              - name: whatWeDo
+                label: Título "Qué hacemos"
+                type: string
+                required: true
+              - name: services
+                label: Título "Servicios"
+                type: string
+                required: true
+              - name: impact
+                label: Título "Nuestro impacto"
+                type: string
+                required: true
+              - name: origin
+                label: Título "Cómo nació"
+                type: string
+                required: true
+              - name: team
+                label: Título "Equipo"
+                type: string
+                required: true
+              - name: faq
+                label: Título "Preguntas frecuentes"
+                type: string
+                required: true
+              - name: challenge
+                label: Título "Desafío" (páginas de servicio)
+                type: string
+                required: true
+              - name: capabilities
+                label: Título "Programa" (páginas de servicio)
+                type: string
+                required: true
+              - name: reserve
+                label: Botón de reserva
+                type: string
+                required: true
+              - name: call
+                label: Botón de llamada
+                type: string
+                required: true
+              - name: terms
+                label: Enlace a Términos de Servicio
+                type: string
+                required: true
+              - name: privacy
+                label: Enlace a Política de Privacidad
+                type: string
+                required: true
+
+  - name: servicios
+    label: Servicios
+    description: Las tres páginas de servicio. La ruta (slug) no se edita aquí.
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: services
+            label: Servicios
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{name}'
+            fields:
+              - name: slug
+                label: Ruta
+                description: Define /servicios/<ruta>. Cambiarla rompe enlaces publicados, por eso no se edita.
+                type: string
+                readonly: true
+                required: true
+              - name: name
+                label: Nombre
+                type: string
+                required: true
+              - name: audience
+                label: Público
+                type: string
+                required: true
+              - name: menuAudience
+                label: Público (menú)
+                description: Versión corta para el submenú de Servicios.
+                type: string
+                required: true
+              - name: slogan
+                label: Eslogan
+                type: string
+                required: true
+              - name: cardCopy
+                label: Texto de la tarjeta
+                description: Aparece en la retícula de servicios de la página principal.
+                type: text
+                required: true
+              - name: discoverLabel
+                label: Enlace "descubrir"
+                type: string
+                required: true
+              - name: cta
+                label: Llamada a la acción principal
+                type: object
+                required: true
+                fields:
+                  - name: label
+                    label: Texto del botón
+                    type: string
+                    required: true
+                  - name: modal
+                    label: Formulario que abre
+                    description: Vacío significa que el botón lleva a una sección en vez de abrir un formulario.
+                    type: select
+                    options:
+                      values:
+                        - label: Ninguno (lleva a una sección)
+                          value: ''
+                        - label: Contacto para empresas
+                          value: grow
+                        - label: Contacto para instituciones educativas
+                          value: learn
+                  - name: target
+                    label: Sección destino
+                    description: Identificador de la sección a la que baja el botón. Se consulta, no se edita.
+                    type: string
+                    readonly: true
+              - name: ctaSecondary
+                label: Botón secundario
+                type: string
+              - name: contactCta
+                label: Botón de contacto
+                type: string
+              - name: contactCopy
+                label: Texto de contacto
+                type: text
+              - name: contactAside
+                label: Nota junto al contacto
+                type: text
+              - name: payback
+                label: Qué se lleva el cliente
+                type: object
+                required: true
+                fields:
+                  - name: headline
+                    label: Titular
+                    type: string
+                    required: true
+                  - name: body
+                    label: Párrafos
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+              - name: challenge
+                label: Desafío
+                type: object
+                required: true
+                fields:
+                  - name: cards
+                    label: Tarjetas
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{t}'
+                    fields:
+                      - name: t
+                        label: Título
+                        type: string
+                        required: true
+                      - name: d
+                        label: Descripción
+                        type: text
+                        required: true
+              - name: capabilities
+                label: Programa
+                type: object
+                required: true
+                fields:
+                  - name: groups
+                    label: Bloques del programa
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{t}'
+                    fields:
+                      - name: t
+                        label: Título
+                        type: string
+                        required: true
+                      - name: items
+                        label: Puntos
+                        type: string
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: false
+                      - name: tone
+                        label: Tono visual
+                        type: select
+                        options:
+                          values:
+                            - label: Neutro
+                              value: ''
+                            - label: Periwinkle
+                              value: peri
+                            - label: Oscuro
+                              value: dark
+                            - label: Turquesa
+                              value: teal
+                            - label: Dorado
+                              value: gold
+              - name: faqs
+                label: Preguntas frecuentes del servicio
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{q}'
+                fields:
+                  - name: q
+                    label: Pregunta
+                    type: string
+                    required: true
+                  - name: a
+                    label: Respuesta
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+              - name: seoHeading
+                label: Titular para buscadores
+                type: string
+                required: true
+              - name: seoTitle
+                label: Título SEO
+                description: Si se deja vacío se usa la plantilla general de SEO.
+                type: string
+              - name: seoDescription
+                label: Descripción SEO
+                type: text
+              - name: accent
+                label: Color de acento
+                type: string
+                required: true
+                pattern:
+                  regex: '^#[0-9a-fA-F]{6}$'
+                  message: "Usa un hexadecimal de seis dígitos, por ejemplo #8A8EF9."
+              - name: tone
+                label: Tono visual
+                type: select
+                options:
+                  values:
+                    - label: Neutro
+                      value: ''
+                    - label: Periwinkle
+                      value: peri
+                    - label: Oscuro
+                      value: dark
+                    - label: Turquesa
+                      value: teal
+                    - label: Dorado
+                      value: gold
+              - name: span
+                label: Tamaño en la retícula
+                description: Maquetación. Se consulta, no se edita.
+                type: string
+                readonly: true
+                required: true
+
+  - name: equipo
+    label: Equipo e historia
+    description: Cómo nació Squai, las personas del equipo y las redes sociales.
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: originStory
+            label: Cómo nació Squai
+            type: text
+            required: true
+            list:
+              min: 1
+              collapsible: true
+          - name: squadGrid
+            label: Equipo
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{name}'
+            fields:
+              - name: name
+                label: Nombre
+                type: string
+                required: true
+              - name: role
+                label: Cargo
+                type: string
+                required: true
+              - name: d
+                label: Descripción
+                type: text
+                required: true
+              - name: img
+                label: Foto
+                description: Solo las fotos ya compiladas en el sitio. Subir fotos nuevas es un cambio de código.
+                type: select
+                required: true
+                options:
+                  values:
+                    - /images/team1.webp
+                    - /images/team2.webp
+                    - /images/team3.webp
+                    - /images/team4.webp
+                    - /images/team5.webp
+                    - /images/team6.webp
+              - name: linkedin
+                label: LinkedIn
+                description: URL https completa. Vacío oculta el enlace.
+                type: string
+                pattern:
+                  regex: '^$|^https://'
+                  message: Usa una URL que empiece por https:// o deja el campo vacío.
+          - name: socials
+            label: Redes sociales
+            type: object
+            list:
+              collapsible:
+                summary: '{name}'
+            fields:
+              - name: name
+                label: Nombre
+                type: string
+                required: true
+              - name: href
+                label: Enlace
+                description: URL https completa. Vacío deja la red visible sin enlace.
+                type: string
+                pattern:
+                  regex: '^$|^https://'
+                  message: Usa una URL que empiece por https:// o deja el campo vacío.
+
+  - name: faqs
+    label: Preguntas frecuentes
+    description: Las preguntas de la página principal. Cada servicio tiene las suyas en "Servicios".
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: faqs
+            label: Preguntas frecuentes
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{q}'
+            fields:
+              - name: q
+                label: Pregunta
+                type: string
+                required: true
+              - name: a
+                label: Respuesta
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+
+  - name: seo-legal
+    label: SEO y textos legales
+    description: Metadatos para buscadores, Términos de Servicio y Política de Privacidad.
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: seo
+            label: Buscadores
+            type: object
+            required: true
+            fields:
+              - name: title
+                label: Título de la página principal
+                type: string
+                required: true
+              - name: description
+                label: Descripción de la página principal
+                type: text
+                required: true
+              - name: imageAlt
+                label: Texto alternativo de la imagen social
+                type: string
+                required: true
+              - name: serviceTitle
+                label: Plantilla de título para servicios
+                description: Tiene que contener {service}; ahí se inserta el nombre del servicio.
+                type: string
+                required: true
+                pattern:
+                  regex: '\{service\}'
+                  message: La plantilla tiene que contener {service}.
+          - name: legal
+            label: Páginas legales
+            type: object
+            required: true
+            fields:
+              - name: terms
+                label: Términos de Servicio
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: description
+                    label: Descripción para buscadores
+                    type: text
+                    required: true
+                  - name: updated
+                    label: Fecha de actualización
+                    description: Texto visible, por ejemplo "14 de septiembre de 2026".
+                    type: string
+                    required: true
+                  - name: sections
+                    label: Secciones
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{title}'
+                    fields:
+                      - name: title
+                        label: Título de la sección
+                        type: string
+                        required: true
+                      - name: blocks
+                        label: Bloques
+                        type: block
+                        required: true
+                        blockKey: type
+                        list:
+                          min: 1
+                          collapsible: true
+                        blocks:
+                          - name: paragraph
+                            label: Párrafo
+                            fields:
+                              - name: content
+                                label: Texto
+                                description: Un tramo por cada enlace. Sin enlaces, basta un tramo.
+                                type: object
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false
+                                fields:
+                                  - name: text
+                                    label: Texto
+                                    type: text
+                                    required: true
+                                  - name: href
+                                    label: Enlace
+                                    description: Vacío deja el tramo como texto plano.
+                                    type: string
+                                    pattern:
+                                      regex: '^$|^(?:/(?!/)|https://|mailto:|#)'
+                                      message: "Usa una ruta interna (/algo), https://, mailto: o #ancla."
+                          - name: list
+                            label: Lista
+                            fields:
+                              - name: items
+                                label: Puntos
+                                type: text
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false
+              - name: privacy
+                label: Política de Privacidad
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: description
+                    label: Descripción para buscadores
+                    type: text
+                    required: true
+                  - name: updated
+                    label: Fecha de actualización
+                    description: Texto visible, por ejemplo "14 de septiembre de 2026".
+                    type: string
+                    required: true
+                  - name: sections
+                    label: Secciones
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{title}'
+                    fields:
+                      - name: title
+                        label: Título de la sección
+                        type: string
+                        required: true
+                      - name: blocks
+                        label: Bloques
+                        type: block
+                        required: true
+                        blockKey: type
+                        list:
+                          min: 1
+                          collapsible: true
+                        blocks:
+                          - name: paragraph
+                            label: Párrafo
+                            fields:
+                              - name: content
+                                label: Texto
+                                description: Un tramo por cada enlace. Sin enlaces, basta un tramo.
+                                type: object
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false
+                                fields:
+                                  - name: text
+                                    label: Texto
+                                    type: text
+                                    required: true
+                                  - name: href
+                                    label: Enlace
+                                    description: Vacío deja el tramo como texto plano.
+                                    type: string
+                                    pattern:
+                                      regex: '^$|^(?:/(?!/)|https://|mailto:|#)'
+                                      message: "Usa una ruta interna (/algo), https://, mailto: o #ancla."
+                          - name: list
+                            label: Lista
+                            fields:
+                              - name: items
+                                label: Puntos
+                                type: text
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false
+
+  - name: interfaz
+    label: Interfaz y formularios
+    description: Textos de navegación, formularios, modales y mensajes de respuesta.
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: ui
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: navigation
+                label: Navegación
+                type: object
+                required: true
+                fields:
+                  - name: home
+                    label: Enlace al inicio (lector de pantalla)
+                    type: string
+                    required: true
+                  - name: main
+                    label: Nombre del menú principal
+                    type: string
+                    required: true
+                  - name: open
+                    label: Abrir menú
+                    type: string
+                    required: true
+                  - name: close
+                    label: Cerrar menú
+                    type: string
+                    required: true
+                  - name: servicesSubmenu
+                    label: Abrir submenú de servicios
+                    type: string
+                    required: true
+                  - name: waitlist
+                    label: Botón de lista de espera
+                    type: string
+                    required: true
+                  - name: contactCta
+                    label: Botón de contacto
+                    type: string
+                    required: true
+                  - name: oneCta
+                    label: Botón de preinscripción
+                    type: string
+                    required: true
+              - name: hero
+                label: Hero
+                type: object
+                required: true
+                fields:
+                  - name: cta
+                    label: Botón principal
+                    type: string
+                    required: true
+                  - name: services
+                    label: Botón de servicios
+                    type: string
+                    required: true
+                  - name: scroll
+                    label: Indicador de scroll
+                    type: string
+                    required: true
+                  - name: pause
+                    label: Pausar palabras animadas
+                    type: string
+                    required: true
+                  - name: resume
+                    label: Reanudar palabras animadas
+                    type: string
+                    required: true
+              - name: services
+                label: Páginas de servicio
+                type: object
+                required: true
+                fields:
+                  - name: payback
+                    label: Título "Qué te llevas"
+                    type: string
+                    required: true
+                  - name: capabilitiesFallback
+                    label: Título del programa (respaldo)
+                    type: string
+                    required: true
+              - name: program
+                label: Etiquetas de la ficha del programa
+                type: object
+                required: true
+                fields:
+                  - name: duration
+                    label: Etiqueta de duración
+                    type: string
+                    required: true
+                  - name: schedule
+                    label: Etiqueta de modalidad
+                    type: string
+                    required: true
+                  - name: modality
+                    label: Etiqueta de resultado
+                    type: string
+                    required: true
+              - name: team
+                label: Equipo
+                type: object
+                required: true
+                fields:
+                  - name: intro
+                    label: Párrafos de introducción
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+                  - name: memberAlt
+                    label: Texto alternativo de las fotos
+                    description: Tiene que contener {name} y {role}.
+                    type: string
+                    required: true
+                    pattern:
+                      regex: '^(?=.*\{name\})(?=.*\{role\}).*$'
+                      message: El texto tiene que contener {name} y {role}.
+              - name: finalCta
+                label: Cierre de la página
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: body
+                    label: Párrafos
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+                  - name: cta
+                    label: Botón
+                    type: string
+                    required: true
+              - name: follow
+                label: Redes
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+              - name: footer
+                label: Footer
+                type: object
+                required: true
+                fields:
+                  - name: copyright
+                    label: Aviso de copyright
+                    type: string
+                    required: true
+              - name: waitlist
+                label: Lista de espera
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: copy
+                    label: Párrafos
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+                  - name: formTitle
+                    label: Título del formulario
+                    type: string
+                    required: true
+                  - name: formSubtitle
+                    label: Subtítulo del formulario
+                    type: string
+                    required: true
+                  - name: investment
+                    label: Inversión
+                    type: object
+                    required: true
+                    fields:
+                      - name: eyebrow
+                        label: Antetítulo
+                        type: string
+                        required: true
+                      - name: copy
+                        label: Párrafos
+                        type: text
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: true
+                      - name: price
+                        label: Precio
+                        type: string
+                        required: true
+                      - name: currency
+                        label: Moneda
+                        type: string
+                        required: true
+                      - name: referencePrice
+                        label: Precio de referencia
+                        type: string
+                        required: true
+              - name: forms
+                label: Formularios
+                type: object
+                required: true
+                fields:
+                  - name: required
+                    label: Aviso de campos obligatorios
+                    type: string
+                    required: true
+                  - name: fullName
+                    label: Etiqueta "Nombre completo"
+                    type: string
+                    required: true
+                  - name: email
+                    label: Etiqueta "Correo electrónico"
+                    type: string
+                    required: true
+                  - name: corporateEmail
+                    label: Etiqueta "Correo corporativo"
+                    type: string
+                    required: true
+                  - name: organization
+                    label: Etiqueta "Organización"
+                    type: string
+                    required: true
+                  - name: role
+                    label: Etiqueta "Rol"
+                    type: string
+                    required: true
+                  - name: countryCode
+                    label: Etiqueta "Indicativo"
+                    type: string
+                    required: true
+                  - name: phone
+                    label: Etiqueta "Teléfono"
+                    type: string
+                    required: true
+                  - name: whatsapp
+                    label: Etiqueta "WhatsApp"
+                    type: string
+                    required: true
+                  - name: teamSize
+                    label: Etiqueta "Tamaño del equipo"
+                    type: string
+                    required: true
+                  - name: select
+                    label: Texto del desplegable vacío
+                    type: string
+                    required: true
+                  - name: message
+                    label: Etiqueta "Mensaje"
+                    type: string
+                    required: true
+                  - name: optional
+                    label: Marca de campo opcional
+                    type: string
+                    required: true
+                  - name: countrySearch
+                    label: Buscador de países
+                    type: string
+                    required: true
+                  - name: countryEmpty
+                    label: Buscador de países sin resultados
+                    type: string
+                    required: true
+                  - name: privacyConsentPrefix
+                    label: Consentimiento, texto previo
+                    type: string
+                    required: true
+                  - name: privacyConsentLink
+                    label: Consentimiento, texto del enlace
+                    type: string
+                    required: true
+                  - name: privacyConsentSuffix
+                    label: Consentimiento, texto posterior
+                    type: string
+                    required: true
+                  - name: teamSizes
+                    label: Rangos de tamaño de equipo
+                    description: Los cuatro rangos del desplegable. El valor técnico llega al backend y no se edita.
+                    type: object
+                    required: true
+                    list:
+                      min: 4
+                      max: 4
+                      collapsible:
+                        summary: '{label}'
+                    fields:
+                      - name: label
+                        label: Texto visible
+                        type: string
+                        required: true
+                      - name: value
+                        label: Valor técnico
+                        description: Lo espera la API. Se consulta, no se edita.
+                        type: string
+                        readonly: true
+                        required: true
+              - name: contact
+                label: Modal de contacto
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: close
+                    label: Botón de cierre
+                    type: string
+                    required: true
+                  - name: bookingFallback
+                    label: Nota de respaldo de la agenda
+                    type: string
+                    required: true
+                  - name: bookingFallbackLink
+                    label: Texto del enlace a la agenda
+                    type: string
+                    required: true
+              - name: modal
+                label: Formularios de contacto
+                type: object
+                required: true
+                fields:
+                  - name: grow
+                    label: Empresas
+                    type: object
+                    required: true
+                    fields:
+                      - name: title
+                        label: Título
+                        type: string
+                        required: true
+                      - name: copy
+                        label: Texto
+                        type: text
+                        required: true
+                      - name: placeholder
+                        label: Texto guía del mensaje
+                        type: string
+                        required: true
+                  - name: learn
+                    label: Instituciones educativas
+                    type: object
+                    required: true
+                    fields:
+                      - name: title
+                        label: Título
+                        type: string
+                        required: true
+                      - name: copy
+                        label: Texto
+                        type: text
+                        required: true
+                      - name: placeholder
+                        label: Texto guía del mensaje
+                        type: string
+                        required: true
+              - name: feedback
+                label: Mensajes de respuesta
+                type: object
+                required: true
+                fields:
+                  - name: sending
+                    label: Enviando
+                    type: string
+                    required: true
+                  - name: contactSuccess
+                    label: Contacto enviado
+                    type: string
+                    required: true
+                  - name: waitlistSuccess
+                    label: Registro en lista de espera
+                    type: string
+                    required: true
+                  - name: invalid
+                    label: Formulario incompleto
+                    type: string
+                    required: true
+                  - name: error
+                    label: Error inesperado
+                    type: string
+                    required: true
+                  - name: fieldRequired
+                    label: Campo obligatorio
+                    type: string
+                    required: true
+                  - name: fieldEmail
+                    label: Correo con formato inválido
+                    type: string
+                    required: true
+                  - name: turnstileError
+                    label: Falló la verificación de seguridad
+                    type: string
+                    required: true
+                  - name: turnstileUnsupported
+                    label: Navegador sin verificación de seguridad
+                    type: string
+                    required: true
+              - name: skip
+                label: Enlace "Saltar al contenido"
+                type: string
+                required: true
+              - name: updated
+                label: Prefijo de fecha de actualización
+                type: string
+                required: true
