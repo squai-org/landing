@@ -1,0 +1,101 @@
+{
+  "name": "Squai Grow",
+  "audience": "Para empresas",
+  "slogan": "Mientras otras empresas avanzan a toda velocidad con IA, el tuyo no puede quedarse resolviendo procesos a pedal.",
+  "cta": {
+    "modal": "grow",
+    "label": "Adopta IA en tu empresa"
+  },
+  "menuAudience": "Empresas",
+  "cardCopy": "Entrenamos a tu equipo para mejorar cómo trabajan, deciden y resuelven problemas de su contexto usando IA.",
+  "discoverLabel": "Capacita tu equipo",
+  "accent": "#44D4C8",
+  "span": "span-3",
+  "tone": "teal",
+  "order": 2,
+  "payback": {
+    "headline": "Un equipo que entiende cómo usar IA para emplear mejor el tiempo en el trabajo.",
+    "body": [
+      "Tomamos las situaciones propias de tu negocio, construimos un entrenamiento personalizado y dejamos acuerdos claros sobre qué conviene hacer, qué debe revisarse y cómo cuidar la información. "
+    ]
+  },
+  "ctaSecondary": "Armemos tu capacitación",
+  "challenge": {
+    "cards": [
+      {
+        "t": "Pruebas piloto",
+        "d": "Las pruebas de IA en las empresas no funcionan: dos personas muy emocionadas la usan una semana y seis meses después todos vuelven a los procesos manuales."
+      },
+      {
+        "t": "El \"eso no sirve para lo nuestro\"",
+        "d": "Probaron IA un par de veces, les dio un mal resultado y concluyeron que la IA no aplica para su negocio. La herramienta sirve, pero falta aterrizarla a su contexto."
+      },
+      {
+        "t": "Un equipo partido en dos",
+        "d": "La mitad del equipo usa IA a escondidas haciendo desastres y la otra mitad le da miedo usarla."
+      }
+    ]
+  },
+  "capabilities": {
+    "groups": [
+      {
+        "t": "Diagnosticar",
+        "items": [
+          "Analizamos tus procesos para identificar dónde sí tiene sentido implementar IA y dónde es mejor no hacerlo."
+        ]
+      },
+      {
+        "t": "Formar",
+        "tone": "teal",
+        "items": [
+          "Formamos a cada equipo en el uso seguro de IA trabajando con sus propios datos y armamos flujos que puedan mantener."
+        ]
+      },
+      {
+        "t": "Sostener",
+        "tone": "dark",
+        "items": [
+          "Establecemos lineamientos de uso dejando una guía para que el equipo decida de forma independiente cómo seguir aplicando la IA."
+        ]
+      }
+    ]
+  },
+  "contactCopy": "Cuéntanos en qué se le va el tiempo a tu equipo y armamos una capacitación a la medida.",
+  "contactAside": "Hacemos preguntas antes de aparecer con 84 diapositivas.",
+  "contactCta": "Hablemos de tu equipo",
+  "faqs": [
+    {
+      "q": "¿Cuántas personas pueden estar en la capacitación?",
+      "a": [
+        "Hasta 15 personas por grupo. La idea es que sea una experiencia de práctica y no una conferencia donde solo habla el mentor. Si tienes un equipo más grande, armamos varias sesiones según lo que necesite aprender cada área."
+      ]
+    },
+    {
+      "q": "¿Qué pasa si tengo gente de áreas muy distintas (marketing, finanzas, operaciones) o con experiencias diferentes usando IA?",
+      "a": [
+        "No hay problema, el programa se adapta a cualquier perfil. Nadie necesita saber nada de IA de antemano, ni siquiera haber abierto ChatGPT una vez. Armamos el contenido para que le sirva tanto a quien nunca la ha tocado como a quien ya la usa a diario."
+      ]
+    },
+    {
+      "q": "¿Las sesiones son virtuales o presenciales?",
+      "a": [
+        "Podemos trabajar de las dos formas. Hacemos las sesiones de manera virtual o también podemos hacerlas presenciales en algunas ciudades de Colombia."
+      ]
+    },
+    {
+      "q": "¿Necesitamos pagar suscripciones de IA antes de empezar?",
+      "a": [
+        "No. Podemos usar opciones gratuitas y, durante el proceso, entender si se necesita otro tipo de herramientas dependiendo de las necesidades de tu negocio."
+      ]
+    },
+    {
+      "q": "¿Cuánto dura el programa y cuánto cuesta?",
+      "a": [
+        "Depende del diagnóstico. No tenemos un paquete de talla única, armamos la propuesta después de entender en qué se les va el tiempo."
+      ]
+    }
+  ],
+  "seoHeading": "Capacitación en IA para empresas y equipos",
+  "seoTitle": "Capacitación en IA para empresas y equipos | Squai",
+  "seoDescription": "Capacitamos equipos en inteligencia artificial aplicada a sus tareas y procesos. Formación práctica para mejorar productividad, decisiones y adopción de IA."
+}

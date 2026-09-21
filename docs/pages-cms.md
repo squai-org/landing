@@ -29,36 +29,45 @@ formularios siguen funcionando igual.
 
 | Archivo | Papel |
 | :------ | :---- |
-| `src/content/copies.json` | Todo el contenido, bajo la clave `site` |
+| `src/content/copies.json` | El contenido del sitio, bajo la clave `site` |
+| `src/content/services/<slug>.json` | Un archivo por servicio; el nombre del archivo es su URL |
 | `src/content/schema.ts` | El contrato: se valida en cada build y decide qué llega a producción |
-| `.pages.yml` | El modelo editorial: traduce el contrato a formularios |
+| `.pages.yml` | El árbol editorial: traduce el contrato a formularios |
 
-`.pages.yml` define seis áreas, todas sobre el mismo archivo:
+El árbol sigue al sitio: un nodo por página y, dentro, un nodo por sección. Cada
+nodo lleva el contenido de su sección y los textos de interfaz que solo aparecen
+ahí; lo que se repite entre páginas vive en **Transversal**.
 
-| Área | Claves de `site` que administra |
-| :--- | :------------------------------ |
-| Inicio | `tagline`, `heroLines`, `heroVerbs`, `heroSubtitle`, `program`, `statement`, `whatWeDo`, `capabilities`, `impact`, `labels` |
-| Servicios | `services` |
-| Equipo e historia | `originStory`, `squadGrid`, `socials` |
-| Preguntas frecuentes | `faqs` |
-| SEO y textos legales | `seo`, `legal` |
-| Interfaz y formularios | `ui` |
+```
+Inicio            Hero · Manifiesto · Qué hacemos · Nuestro impacto · Servicios ·
+                  Cómo nació Squai · Equipo · Preguntas frecuentes · Cierre
+Squai One         Hero · Tarjeta en Inicio · Qué te llevas · Desafío · Programa ·
+Squai Grow        Contacto · Preguntas frecuentes
+Squai Learn
+Transversal       SEO (General · Inicio · un nodo por servicio · Términos · Política) ·
+                  Navegación · Footer · Formularios · Lista de espera · Títulos compartidos
+Términos de Servicio
+Política de Privacidad
+```
 
-`navLinks` y `footerCols` quedan fuera: son estructura (destinos de scroll,
-claves de etiqueta y la exclusividad `t` / `labelKey`) y no aportan texto que no
-se pueda editar desde `labels` o `ui`. `settings.content.merge: true` hace que
-cada guardado mezcle lo editado con el archivo que ya está en GitHub, así que
-esas claves no declaradas se conservan intactas.
+Son 44 nodos sobre cuatro archivos. `settings.content.merge: true` hace que cada
+guardado mezcle lo editado con lo que ya está en GitHub, así que un nodo nunca
+pisa lo que declara otro, y las claves que no declara ninguno (`navLinks` y
+`footerCols`, que son estructura) se conservan intactas.
+
+El inventario campo a campo está en
+[`pages-cms-inventario.md`](pages-cms-inventario.md).
 
 ### Cómo se protege el contenido estructural
 
+- **Las URL no se editan.** El nombre del archivo de cada servicio es su slug y
+  los nodos son de tipo `file` con ruta fija: desde el CMS no se puede crear,
+  renombrar ni borrar un servicio. Los destinos de scroll (`cta.target`), el
+  orden en la retícula y los tokens de maquetación son `readonly`.
 - **No hay medios.** `.pages.yml` no declara `media`, así que no se pueden subir
   imágenes. Las fotos del equipo se resuelven por una relación fija entre la
   ruta editorial y el recurso compilado (`src/components/Team.astro`), de modo
   que `img` es una lista cerrada con las seis rutas que ese mapa conoce.
-- **Las rutas no se editan.** `slug` y los destinos de scroll (`cta.target`) son
-  `readonly`: el editor los ve y no los cambia. Editar el texto de un servicio
-  nunca mueve `/servicios/<slug>`.
 - **Las opciones cerradas son selección.** Tono visual, formulario que abre un
   botón y foto del equipo son desplegables. El contrato cierra los mismos
   conjuntos: un tono fuera de la paleta o un `span` con una clase arbitraria
@@ -73,15 +82,17 @@ esas claves no declaradas se conservan intactas.
 ### Guardar no reordena el archivo
 
 Pages CMS reescribe el JSON completo con dos espacios de sangría, en el orden en
-que `.pages.yml` declara los campos, y descarta los valores vacíos. El
-contenido y la configuración ya están alineados con eso, y el contrato acepta
-como "sin valor" la ausencia de `tone`, `cta.modal`, `cta.target`,
-`socials[].href` y el `target` de los enlaces del footer. Consecuencia práctica:
-un guardado sin cambios deja `copies.json` byte a byte igual, y un guardado con
-un cambio produce un diff que solo contiene ese cambio.
+que `.pages.yml` declara los campos, y descarta los valores vacíos. El contenido
+y la configuración ya están alineados con eso, y el contrato acepta como "sin
+valor" la ausencia de `tone`, `cta.modal`, `cta.target`, `socials[].href` y el
+`target` de los enlaces del footer. Consecuencia práctica: un guardado sin
+cambios deja el archivo byte a byte igual, y un guardado con un cambio produce
+un diff que solo contiene ese cambio.
 
 Si el contrato cambia, hay que cambiar `.pages.yml` en el mismo commit: el orden
 de los campos dentro de una lista es el orden de las claves en el archivo.
+Añadir un servicio es un cambio de código: el archivo JSON, su `order` y su
+grupo de nodos.
 
 ## Fase 1 — entorno operativo
 

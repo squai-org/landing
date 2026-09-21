@@ -1,0 +1,110 @@
+{
+  "name": "Squai One",
+  "audience": "Para Personas",
+  "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
+  "cta": {
+    "target": "lista",
+    "label": "Potencia tus habilidades"
+  },
+  "menuAudience": "Personas",
+  "cardCopy": "Un programa en vivo para entender la IA, en lugar de seguir guardando tutoriales que nunca vas a ver.",
+  "discoverLabel": "Únete a la lista de espera",
+  "accent": "#8A8EF9",
+  "span": "span-3 row-2",
+  "tone": "peri",
+  "order": 1,
+  "payback": {
+    "headline": "Vas a desarrollar un instinto para usar cualquier IA, la que está de moda hoy y la que se inventen mañana.",
+    "body": [
+      "Entiendes mejor por qué la IA responde como responde, practicas con situaciones tuyas y aprendes una base que puedes llevar contigo aunque mañana aparezca otra herramienta con nombre nuevo."
+    ]
+  },
+  "ctaSecondary": "Aprende IA",
+  "challenge": {
+    "cards": [
+      {
+        "t": "No saber por dónde empezar",
+        "d": "Quieres aprovechar la IA, pero solo encuentras tutoriales confusos o promesas exageradas."
+      },
+      {
+        "t": "Respuestas inútiles",
+        "d": "Le pides algo y te devuelve un texto tan raro que tardas más arreglándolo que haciéndolo desde cero."
+      },
+      {
+        "t": "Una herramienta nueva cada día",
+        "d": "La ansiedad de estar atrasado no se quita probando diez herramientas diarias, sino entendiendo la base."
+      }
+    ]
+  },
+  "capabilities": {
+    "groups": [
+      {
+        "t": "Entender",
+        "items": [
+          "Te enseñamos exactamente cómo procesa la IA lo que le escribes, desmitificando los conceptos clave para que detectes rápido por qué se equivoca."
+        ]
+      },
+      {
+        "t": "Practicar",
+        "tone": "peri",
+        "items": [
+          "Pones en práctica instrucciones directas, aprendes a analizar información y descubres cómo integrar estas ayudas en tu rutina."
+        ]
+      },
+      {
+        "t": "Ampliar",
+        "tone": "dark",
+        "items": [
+          "Logras identificar qué tareas vale la pena delegar, qué debes revisar tú siempre, y eliges la herramienta adecuada sin sentir que estás adivinando."
+        ]
+      }
+    ]
+  },
+  "faqs": [
+    {
+      "q": "¿En qué se diferencia Squai de los otros 500 programas de IA que he visto?",
+      "a": [
+        "Que no te vendemos la herramienta de moda ni promesas vacías. Te enseñamos a entender qué pasa por detrás. Y si la IA no sirve para tu problema, te lo decimos de frente para que no pierdas tiempo."
+      ]
+    },
+    {
+      "q": "¿Hay cupos limitados?",
+      "a": [
+        "Sí. Cada programa tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que llega la lista de espera."
+      ]
+    },
+    {
+      "q": "¿Cuándo son las clases y cuánto duran?",
+      "a": [
+        "Horarios a definir. Te lo hacemos saber en el correo que enviamos si te apuntas en la lista de espera. Son 4 horas semanales durante 5 semanas, suficiente para avanzar sin abrumarte y sin perder el ritmo."
+      ]
+    },
+    {
+      "q": "¿Qué pasa si no puedo asistir a una clase en vivo?",
+      "a": [
+        "No tienes que inventar una emergencia. Las sesiones quedan grabadas durante el programa para que puedas ponerte al día o volver sobre algo que quieras repasar."
+      ]
+    },
+    {
+      "q": "¿Qué necesito para participar?",
+      "a": [
+        "Un computador con internet. Con eso es suficiente para empezar."
+      ]
+    },
+    {
+      "q": "¿Cómo entro al próximo programa?",
+      "a": [
+        "Te unes a la lista de espera. Cuando abramos inscripciones, te escribimos con las fechas confirmadas y la información de pago. Fácil."
+      ]
+    },
+    {
+      "q": "¿Anotarme en la lista de espera me obliga a algo?",
+      "a": [
+        "No. Solo nos da tu permiso para avisarte primero y mandarte la información completa antes de abrir al público general. Tú decides si te inscribes o pasas, sin presiones."
+      ]
+    }
+  ],
+  "seoHeading": "Programa en vivo para aprender inteligencia artificial",
+  "seoTitle": "Programa en vivo para aprender inteligencia artificial | Squai",
+  "seoDescription": "Programa de inteligencia artificial en vivo: 5 semanas, 20 horas, práctica guiada y certificado. Aprende a usar IA en situaciones reales."
+}

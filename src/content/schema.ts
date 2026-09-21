@@ -32,8 +32,10 @@ const labels = z.object({
 });
 const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone });
-const service = z.object({
-  slug: text.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+// Un servicio por archivo en src/content/services/: el nombre del archivo es el
+// slug y `order` fija el orden en la retícula de la pagina principal.
+export const serviceSchema = z.object({
+  order: z.number().int().min(1),
   name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text, discoverLabel: text,
   accent: hex, span, tone,
   payback: z.object({ headline: text, body: paragraphs }),
@@ -77,7 +79,6 @@ export const siteSchema = z.object({
   whatWeDo: z.object({ body: paragraphs }),
   capabilities: z.array(card.extend({ span, tone })).min(1),
   impact: z.object({ body: paragraphs }),
-  services: z.array(service).min(1).refine((items) => new Set(items.map((item) => item.slug)).size === items.length, 'Service slugs must be unique'),
   originStory: paragraphs,
   squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link) })).min(1),
   faqs: z.array(faq).min(1),

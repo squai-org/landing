@@ -149,7 +149,7 @@ de este repositorio:
 | Comprobación | Resultado |
 | :----------- | :-------- |
 | `.pages.yml` válido contra el esquema de configuración de Pages CMS | correcto |
-| Un guardado sin cambios en cada una de las seis áreas | `copies.json` byte a byte igual |
+| Un guardado sin cambios en cada uno de los 44 nodos | archivo byte a byte igual |
 | Toda propiedad del contenido está declarada o excluida a propósito | sin huecos |
 | Valores inválidos representativos (tono inventado, color sin `#`, foto fuera del mapa, plantilla SEO sin `{service}`, enlace con `javascript:`, lista obligatoria vacía, slug duplicado) | rechazados por el formulario y por el build |
 | HTML generado antes y después de la migración del contrato | idéntico |

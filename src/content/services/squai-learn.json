@@ -1,0 +1,107 @@
+{
+  "name": "Squai Learn",
+  "audience": "Para instituciones educativas",
+  "slogan": "Transformemos la IA en las aulas de \"máquina de hacer trampa\" a un aliado para profesores y alumnos.",
+  "cta": {
+    "modal": "learn",
+    "label": "Adopta IA en tus aulas"
+  },
+  "menuAudience": "Instituciones educativas",
+  "cardCopy": "Acompañamos a colegios, universidades y otros espacios de formación. Preparamos a los docentes para adaptar sus metodologías y guiamos a los estudiantes para que usen la IA como una herramienta de aprendizaje con ética y pensamiento crítico.",
+  "discoverLabel": "Integra IA en tu institución",
+  "accent": "#F9C24D",
+  "span": "span-3",
+  "tone": "gold",
+  "order": 3,
+  "payback": {
+    "headline": "Una comunidad donde la tecnología dejó de ser un dolor de cabeza y se convirtió en una ventaja para aprender y enseñar.",
+    "body": [
+      "Preparamos a tus docentes para que enseñen apoyándose en la IA, y a tus estudiantes para que la usen como herramienta de comprensión, no como atajo para no pensar. Construimos una postura sensata que le da tranquilidad a todos, logrando que la educación avance en lugar de pelear contra la corriente."
+    ]
+  },
+  "ctaSecondary": "Integra IA a tus procesos educativos",
+  "challenge": {
+    "cards": [
+      {
+        "t": "Prohibición",
+        "d": "Prohibir la IA en el aula no funcionó. Los estudiantes la tienen en el bolsillo y la usan todos los días."
+      },
+      {
+        "t": "Integridad académica",
+        "d": "El desafío es ayudar a docentes y estudiantes a entender qué papel puede tener en el aprendizaje y cómo cambia la forma de enseñar."
+      },
+      {
+        "t": "Docentes sin tiempo",
+        "d": "Un programa de adopción interno solo significa más trabajo extra para los docentes. Por eso, ignoran la tecnología y siguen fingiendo que nada ha pasado."
+      }
+    ]
+  },
+  "capabilities": {
+    "groups": [
+      {
+        "t": "Preparar",
+        "items": [
+          "Empezamos entendiendo cómo se está usando IA dentro de la comunidad y qué problemas necesitan resolver los docentes y estudiantes."
+        ]
+      },
+      {
+        "t": "Enseñar",
+        "tone": "gold",
+        "items": [
+          "Enseñamos fundamentos con lenguaje claro y practicamos casos de uso relacionados con el aprendizaje y la enseñanza."
+        ]
+      },
+      {
+        "t": "Acompañar",
+        "tone": "dark",
+        "items": [
+          "Construimos la base para que la adopción de IA continúe sola de forma segura y constante, convirtiendo la tecnología en una práctica institucional duradera."
+        ]
+      }
+    ]
+  },
+  "contactCopy": "No importa si tienes un problema puntual o si apenas están intentando entender cómo abordar el tema de IA en la institución.",
+  "contactAside": "Hablemos unos minutos para conocer tu caso y ver cómo podemos ayudar.",
+  "contactCta": "Hablemos de tu institución",
+  "faqs": [
+    {
+      "q": "¿Trabajan con colegios o solo con universidades?",
+      "a": [
+        "Con ambos, y también con otros espacios de formación. Adaptamos el lenguaje, los ejemplos y el recorrido según las personas con las que vamos a trabajar."
+      ]
+    },
+    {
+      "q": "¿La formación es para docentes o para estudiantes?",
+      "a": [
+        "Las dos rutas existen y se pueden tomar por separado. Nuestra recomendación es hacer ambas porque la adopción de IA funciona mejor cuando todos participan."
+      ]
+    },
+    {
+      "q": "¿Las sesiones son virtuales o presenciales?",
+      "a": [
+        "Podemos trabajar de las dos formas. Hacemos las sesiones de manera virtual o también podemos hacerlas presenciales en algunas ciudades de Colombia."
+      ]
+    },
+    {
+      "q": "¿Nos ayudan a definir lineamientos de uso de IA?",
+      "a": [
+        "Sí. Podemos trabajar con ustedes para construir lineamientos escritos, comprensibles y aplicables dentro de la comunidad. La idea es que no terminen siendo otro PDF que solo se queda en papel."
+      ]
+    },
+    {
+      "q": "¿Enseñan a detectar trabajos hechos con IA?",
+      "a": [
+        "Trabajamos el tema con honestidad: no hay una herramienta que permita identificar esto con confianza. Es más sólido hacer un cambio de cultura de adopción de IA que apostarle a una herramienta que se equivoca."
+      ]
+    },
+    {
+      "q": "¿Cuánto dura una formación?",
+      "a": [
+        "Depende de a quién vamos a entrenar, qué necesitan aprender y qué alcance tiene el acompañamiento. Primero hacemos un diagnóstico breve y después proponemos la ruta."
+      ]
+    }
+  ],
+  "seoHeading": "Formación en IA para docentes e instituciones",
+  "seoTitle": "Formación en IA para docentes e instituciones | Squai",
+  "seoDescription": "Formación práctica en inteligencia artificial para docentes, estudiantes e instituciones. Uso responsable de IA, pensamiento crítico y aplicación en el aula."
+}
