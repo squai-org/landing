@@ -81,8 +81,9 @@ El inventario campo a campo está en
 
 ### Guardar no reordena el archivo
 
-Pages CMS reescribe el JSON completo con dos espacios de sangría, en el orden en
-que `.pages.yml` declara los campos, y descarta los valores vacíos. El contenido
+Pages CMS reescribe el JSON completo con dos espacios de sangría y sin salto de
+línea final, en el orden en que `.pages.yml` declara los campos, y descarta los
+valores vacíos. El contenido
 y la configuración ya están alineados con eso, y el contrato acepta como "sin
 valor" la ausencia de `tone`, `cta.modal`, `cta.target`, `socials[].href` y el
 `target` de los enlaces del footer. Consecuencia práctica: un guardado sin

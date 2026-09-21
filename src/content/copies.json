@@ -227,10 +227,10 @@
       ]
     },
     "originStory": [
-      "En el afán de implementar IA, se nos olvidó que lo más importante son las personas que la usan.",
-      "Vimos a personas con un talento enorme sentirse abrumadas por una tecnología que se suponía que iba a hacerles la vida más fácil. Ahí entendimos el reto: nadie les explica cómo funciona.",
-      "Squai nació para acompañar a quienes intentaban usar la IA y se frustraban sin lograr lo que esperaban. Se topaban con explicaciones llenas de jerga que hacían parecer que la IA es cosa de expertos. ¿Por qué te tienen que hablar en otro idioma para explicarte algo útil?",
-      "Entonces, buscamos otro enfoque. Quitamos la jerga innecesaria, conservamos lo que te sirve y armamos una metodología clara."
+      "Mientras todo el mundo corría a implementar IA, se olvidaban de algo básico: las personas que la usan.",
+      "Vimos personas, equipos y organizaciones con un talento enorme sentirse abrumados por una tecnología que se suponía que iba a hacerles la vida más fácil. Ahí entendimos que el reto es que nadie les explica cómo funciona.",
+      "Squai nació para acompañar a quienes intentaban incorporar la IA y se frustraban sin lograr lo que esperaban. Se topaban con explicaciones llenas de jerga que hacían parecer que la IA es cosa de expertos. ¿Por qué te tienen que hablar en otro idioma para explicarte algo útil?",
+      "Entonces, buscamos otro enfoque. Quitamos la jerga innecesaria, conservamos lo que sirve y armamos una metodología clara."
     ],
     "squadGrid": [
       {
@@ -238,38 +238,38 @@
         "name": "Laura Villada",
         "role": "Estratega de Adopción de IA & Co-fundadora",
         "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
-        "d": "Tu traductora de jerga técnica a español. Laura diseña la estructura de nuestros programas para que el aprendizaje sea fácil, entretenido y sostenible."
+        "d": "Laura diseña la estructura de nuestros programas para que el aprendizaje sea fácil, entretenido y sostenible."
       },
       {
         "img": "/images/team2.webp",
         "name": "Sebastián Rico",
         "role": "Ingeniero de IA & Co-fundador",
         "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
-        "d": "Nuestro filtro anti-humo. Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet."
+        "d": "Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet."
       },
       {
         "img": "/images/team3.webp",
         "name": "Daniel Guzmán",
         "role": "Analista de Procesos de Negocio",
-        "d": "El polo a tierra. Dani inyecta la realidad corporativa. Él estructura los módulos para asegurar que la IA se muestre como funciona en entornos profesionales."
+        "d": "Dani inyecta la realidad corporativa. Él estructura los módulos para asegurar que la IA se muestre como funciona en entornos profesionales."
       },
       {
         "img": "/images/team4.webp",
         "name": "Ana Lasso",
         "role": "Especialista en Gestión de Talento Humano",
-        "d": "Nuestra brújula humana. Ana diseña el enfoque de adopción. Se asegura de que no hablemos solo de botones y apps, sino de la estrategia necesaria para que las personas adopten la IA."
+        "d": "Ana diseña el enfoque de adopción. Se asegura de que no hablemos solo de botones y apps, sino de la estrategia necesaria para que las personas adopten la IA."
       },
       {
         "img": "/images/team5.webp",
         "name": "Luis López",
         "role": "Analista de Datos",
-        "d": "Nuestro filtro de entrada. Lucho enseña a organizar y estructurar la información antes de tocar la IA, porque sabemos que de datos malos, solo salen respuestas malas."
+        "d": "Lucho enseña a organizar y estructurar la información antes de tocar la IA, porque sabemos que de datos malos, solo salen respuestas malas."
       },
       {
         "img": "/images/team6.webp",
         "name": "Carlos Gómez",
         "role": "Especialista en Seguridad de la Información",
-        "d": "El guardián de los datos. Carlos construye los pilares de seguridad del contenido. Te enseña a acelerar con la IA sin terminar exponiendo datos sensibles."
+        "d": "Carlos construye los pilares de seguridad del contenido. Te enseña a acelerar con la IA sin terminar exponiendo datos sensibles."
       }
     ],
     "faqs": [
