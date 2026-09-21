@@ -1260,10 +1260,6 @@ content:
             path: src/content/services/squai-one.json
             format: json
             fields:
-              - name: seoHeading
-                label: Titular para buscadores
-                type: string
-                required: true
               - name: seoTitle
                 label: Título
                 description: Vacío usa la plantilla general.
@@ -1277,10 +1273,6 @@ content:
             path: src/content/services/squai-grow.json
             format: json
             fields:
-              - name: seoHeading
-                label: Titular para buscadores
-                type: string
-                required: true
               - name: seoTitle
                 label: Título
                 description: Vacío usa la plantilla general.
@@ -1294,10 +1286,6 @@ content:
             path: src/content/services/squai-learn.json
             format: json
             fields:
-              - name: seoHeading
-                label: Titular para buscadores
-                type: string
-                required: true
               - name: seoTitle
                 label: Título
                 description: Vacío usa la plantilla general.
