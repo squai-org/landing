@@ -1,0 +1,2069 @@
+# Modelo editorial de Pages CMS (https://pagescms.org).
+#
+# El arbol sigue al sitio: un nodo por pagina y, dentro, un nodo por seccion.
+# Cada nodo lleva el contenido de su seccion y los textos de interfaz que solo
+# aparecen ahi; lo que se repite entre paginas vive en "Transversal".
+#
+# El contenido esta en src/content/copies.json (clave `site`) y en un archivo
+# por servicio en src/content/services/. src/content/schema.ts es el contrato
+# que valida ambos en cada build. Si cambia el contrato, cambia este archivo.
+#
+# Reglas de esta configuracion:
+#
+# - `settings.content.merge: true` es obligatorio. Cada nodo declara solo una
+#   parte del archivo; al guardar, Pages CMS mezcla lo editado con lo que ya
+#   esta en GitHub, de modo que el resto se conserva intacto. Las claves que
+#   ningun nodo declara (navLinks y las columnas estructurales del footer)
+#   tambien sobreviven asi.
+# - No se declara `media`: no hay carga de imagenes desde el CMS. Las fotos del
+#   equipo se resuelven por una relacion fija entre la ruta editorial y el
+#   recurso compilado (src/components/Team.astro), asi que `img` es una lista
+#   cerrada de las rutas que ese mapa conoce.
+# - El nombre del archivo de cada servicio es su slug, y no se edita desde el
+#   CMS: renombrarlo cambiaria la URL publicada.
+# - Los campos estructurales (destinos de scroll, tokens de maquetacion, orden)
+#   van como `readonly`: el editor los ve, no los cambia.
+# - Las opciones cerradas van como `select`, nunca como texto libre.
+# - Los textos largos siguen siendo listas de parrafos, sin formato enriquecido:
+#   el frontend no tiene politica de sanitizado para HTML.
+#
+# El orden de los campos dentro de una lista es el orden de las claves en el
+# archivo: cambiarlo mueve el JSON al siguiente guardado.
+
+settings:
+  content:
+    merge: true
+content:
+  - name: inicio
+    label: Inicio
+    description: La página principal, sección por sección.
+    type: group
+    items:
+      - name: inicio-hero
+        label: Hero
+        description: 'Lo primero que se ve: titular, palabras animadas y botones.'
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: heroLines
+                label: Titular
+                description: Se compone en tres partes; la palabra animada va aparte.
+                type: object
+                required: true
+                fields:
+                  - name: middle
+                    label: Primera línea
+                    type: string
+                    required: true
+                  - name: last
+                    label: Segunda línea
+                    type: string
+                    required: true
+                  - name: object
+                    label: Complemento
+                    description: Cierra la frase animada, por ejemplo "IA.".
+                    type: string
+                    required: true
+              - name: heroVerbs
+                label: Palabras animadas
+                description: Rotan en el titular. Cada una lleva su color.
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{word}'
+                fields:
+                  - name: word
+                    label: Palabra
+                    type: string
+                    required: true
+                  - name: color
+                    label: Color
+                    description: 'Hexadecimal completo, por ejemplo #8A8EF9.'
+                    type: string
+                    required: true
+                    pattern:
+                      regex: ^#[0-9a-fA-F]{6}$
+                      message: 'Usa un hexadecimal de seis dígitos, por ejemplo #8A8EF9.'
+              - name: heroSubtitle
+                label: Subtítulo
+                type: string
+                required: true
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: hero
+                    label: Textos de interfaz
+                    type: object
+                    required: true
+                    fields:
+                      - name: cta
+                        label: Botón principal
+                        type: string
+                        required: true
+                      - name: services
+                        label: Botón de servicios
+                        type: string
+                        required: true
+                      - name: scroll
+                        label: Indicador de scroll
+                        type: string
+                        required: true
+                      - name: pause
+                        label: Pausar palabras animadas
+                        type: string
+                        required: true
+                      - name: resume
+                        label: Reanudar palabras animadas
+                        type: string
+                        required: true
+      - name: inicio-manifiesto
+        label: Manifiesto
+        description: El bloque de texto que abre el cuerpo de la página.
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: statement
+                label: false
+                type: object
+                required: true
+                fields:
+                  - name: headline
+                    label: Titular
+                    type: string
+                    required: true
+                  - name: body
+                    label: Párrafos
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+      - name: inicio-que-hacemos
+        label: Qué hacemos
+        description: Texto de la sección y las tarjetas de capacidades.
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: whatWeDo
+                    label: Título de la sección
+                    type: string
+                    required: true
+              - name: whatWeDo
+                label: false
+                type: object
+                required: true
+                fields:
+                  - name: body
+                    label: Párrafos
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+              - name: capabilities
+                label: Tarjetas
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: d
+                    label: Descripción
+                    type: text
+                    required: true
+                  - name: span
+                    label: Tamaño en la retícula
+                    description: Maquetación. Se consulta, no se edita.
+                    type: string
+                    required: true
+                    readonly: true
+                  - name: tone
+                    label: Tono visual
+                    type: select
+                    options:
+                      values:
+                        - label: Neutro
+                          value: ''
+                        - label: Periwinkle
+                          value: peri
+                        - label: Oscuro
+                          value: dark
+                        - label: Turquesa
+                          value: teal
+                        - label: Dorado
+                          value: gold
+      - name: inicio-impacto
+        label: Nuestro impacto
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: impact
+                    label: Título de la sección
+                    type: string
+                    required: true
+              - name: impact
+                label: false
+                type: object
+                required: true
+                fields:
+                  - name: body
+                    label: Párrafos
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+      - name: inicio-servicios
+        label: Servicios
+        description: 'Solo el título de la sección: cada tarjeta se edita en su servicio, en "Tarjeta en Inicio".'
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: services
+                    label: Título de la sección
+                    type: string
+                    required: true
+      - name: inicio-origen
+        label: Cómo nació Squai
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: origin
+                    label: Título de la sección
+                    type: string
+                    required: true
+              - name: originStory
+                label: Párrafos
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+      - name: inicio-equipo
+        label: Equipo
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: team
+                    label: Título de la sección
+                    type: string
+                    required: true
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: team
+                    label: Textos de interfaz
+                    type: object
+                    required: true
+                    fields:
+                      - name: intro
+                        label: Párrafos de introducción
+                        type: text
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: true
+                      - name: memberAlt
+                        label: Texto alternativo de las fotos
+                        description: Tiene que contener {name} y {role}.
+                        type: string
+                        required: true
+                        pattern:
+                          regex: ^(?=.*\{name\})(?=.*\{role\}).*$
+                          message: El texto tiene que contener {name} y {role}.
+              - name: squadGrid
+                label: Personas
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{name}'
+                fields:
+                  - name: img
+                    label: Foto
+                    description: Solo las fotos ya compiladas en el sitio. Subir fotos nuevas es un cambio de código.
+                    type: select
+                    required: true
+                    options:
+                      values:
+                        - /images/team1.webp
+                        - /images/team2.webp
+                        - /images/team3.webp
+                        - /images/team4.webp
+                        - /images/team5.webp
+                        - /images/team6.webp
+                  - name: name
+                    label: Nombre
+                    type: string
+                    required: true
+                  - name: role
+                    label: Cargo
+                    type: string
+                    required: true
+                  - name: linkedin
+                    label: LinkedIn
+                    description: URL https completa. Vacío oculta el enlace.
+                    type: string
+                    pattern:
+                      regex: ^$|^https://
+                      message: Usa una URL que empiece por https:// o deja el campo vacío.
+                  - name: d
+                    label: Descripción
+                    type: text
+                    required: true
+      - name: inicio-faq
+        label: Preguntas frecuentes
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: faq
+                    label: Título de la sección
+                    type: string
+                    required: true
+              - name: faqs
+                label: Preguntas
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{q}'
+                fields:
+                  - name: q
+                    label: Pregunta
+                    type: string
+                    required: true
+                  - name: a
+                    label: Respuesta
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
+      - name: inicio-cierre
+        label: Cierre
+        description: El último bloque antes del footer.
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: finalCta
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: title
+                        label: Título
+                        type: string
+                        required: true
+                      - name: body
+                        label: Párrafos
+                        type: text
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: true
+                      - name: cta
+                        label: Botón
+                        type: string
+                        required: true
+  - name: servicio-one
+    label: Squai One
+    description: La página /servicios/squai-one, sección por sección.
+    type: group
+    items:
+      - name: one-hero
+        label: Hero
+        description: La cabecera de la página del servicio.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: name
+            label: Nombre
+            type: string
+            required: true
+          - name: audience
+            label: Público
+            type: string
+            required: true
+          - name: slogan
+            label: Eslogan
+            type: string
+            required: true
+          - name: cta
+            label: Botón principal
+            type: object
+            required: true
+            fields:
+              - name: modal
+                label: Formulario que abre
+                type: select
+                options:
+                  values:
+                    - label: Ninguno (lleva a una sección)
+                      value: ''
+                    - label: Contacto para empresas
+                      value: grow
+                    - label: Contacto para instituciones educativas
+                      value: learn
+              - name: target
+                label: Sección destino
+                description: Identificador de la sección a la que baja el botón. Se consulta, no se edita.
+                type: string
+                readonly: true
+              - name: label
+                label: Texto del botón
+                type: string
+                required: true
+      - name: one-tarjeta
+        label: Tarjeta en Inicio
+        description: Cómo se ve este servicio en la retícula de la página principal y en el menú.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: menuAudience
+            label: Público (menú)
+            description: Versión corta para el submenú de Servicios.
+            type: string
+            required: true
+          - name: cardCopy
+            label: Texto de la tarjeta
+            type: text
+            required: true
+          - name: discoverLabel
+            label: Enlace "descubrir"
+            type: string
+            required: true
+          - name: accent
+            label: Color de acento
+            type: string
+            required: true
+            pattern:
+              regex: ^#[0-9a-fA-F]{6}$
+              message: 'Usa un hexadecimal de seis dígitos, por ejemplo #8A8EF9.'
+          - name: span
+            label: Tamaño en la retícula
+            description: Maquetación. Se consulta, no se edita.
+            type: string
+            required: true
+            readonly: true
+          - name: tone
+            label: Tono visual
+            type: select
+            options:
+              values:
+                - label: Neutro
+                  value: ''
+                - label: Periwinkle
+                  value: peri
+                - label: Oscuro
+                  value: dark
+                - label: Turquesa
+                  value: teal
+                - label: Dorado
+                  value: gold
+          - name: order
+            label: Posición en la retícula
+            description: Orden en el que aparece el servicio. Se consulta, no se edita.
+            type: number
+            required: true
+            readonly: true
+      - name: one-payback
+        label: Qué te llevas
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: payback
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: headline
+                label: Titular
+                type: string
+                required: true
+              - name: body
+                label: Párrafos
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+          - name: ctaSecondary
+            label: Texto del botón en esta sección
+            description: Vacío usa el texto del botón principal.
+            type: string
+      - name: one-desafio
+        label: Desafío
+        description: El título de la sección se edita en Transversal → Títulos compartidos.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: challenge
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: cards
+                label: Tarjetas
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: d
+                    label: Descripción
+                    type: text
+                    required: true
+      - name: one-programa
+        label: Programa
+        description: El título de la sección se edita en Transversal → Títulos compartidos.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: capabilities
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: groups
+                label: Bloques
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: tone
+                    label: Tono visual
+                    type: select
+                    options:
+                      values:
+                        - label: Neutro
+                          value: ''
+                        - label: Periwinkle
+                          value: peri
+                        - label: Oscuro
+                          value: dark
+                        - label: Turquesa
+                          value: teal
+                        - label: Dorado
+                          value: gold
+                  - name: items
+                    label: Puntos
+                    type: string
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: false
+      - name: one-contacto
+        label: Contacto
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: contactCopy
+            label: Titular
+            type: text
+          - name: contactAside
+            label: Nota junto al titular
+            type: text
+          - name: contactCta
+            label: Texto del botón
+            description: Vacío usa el texto del botón principal.
+            type: string
+      - name: one-faq
+        label: Preguntas frecuentes
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: faqs
+            label: Preguntas
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{q}'
+            fields:
+              - name: q
+                label: Pregunta
+                type: string
+                required: true
+              - name: a
+                label: Respuesta
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+  - name: servicio-grow
+    label: Squai Grow
+    description: La página /servicios/squai-grow, sección por sección.
+    type: group
+    items:
+      - name: grow-hero
+        label: Hero
+        description: La cabecera de la página del servicio.
+        type: file
+        path: src/content/services/squai-grow.json
+        format: json
+        fields:
+          - name: name
+            label: Nombre
+            type: string
+            required: true
+          - name: audience
+            label: Público
+            type: string
+            required: true
+          - name: slogan
+            label: Eslogan
+            type: string
+            required: true
+          - name: cta
+            label: Botón principal
+            type: object
+            required: true
+            fields:
+              - name: modal
+                label: Formulario que abre
+                type: select
+                options:
+                  values:
+                    - label: Ninguno (lleva a una sección)
+                      value: ''
+                    - label: Contacto para empresas
+                      value: grow
+                    - label: Contacto para instituciones educativas
+                      value: learn
+              - name: target
+                label: Sección destino
+                description: Identificador de la sección a la que baja el botón. Se consulta, no se edita.
+                type: string
+                readonly: true
+              - name: label
+                label: Texto del botón
+                type: string
+                required: true
+      - name: grow-tarjeta
+        label: Tarjeta en Inicio
+        description: Cómo se ve este servicio en la retícula de la página principal y en el menú.
+        type: file
+        path: src/content/services/squai-grow.json
+        format: json
+        fields:
+          - name: menuAudience
+            label: Público (menú)
+            description: Versión corta para el submenú de Servicios.
+            type: string
+            required: true
+          - name: cardCopy
+            label: Texto de la tarjeta
+            type: text
+            required: true
+          - name: discoverLabel
+            label: Enlace "descubrir"
+            type: string
+            required: true
+          - name: accent
+            label: Color de acento
+            type: string
+            required: true
+            pattern:
+              regex: ^#[0-9a-fA-F]{6}$
+              message: 'Usa un hexadecimal de seis dígitos, por ejemplo #8A8EF9.'
+          - name: span
+            label: Tamaño en la retícula
+            description: Maquetación. Se consulta, no se edita.
+            type: string
+            required: true
+            readonly: true
+          - name: tone
+            label: Tono visual
+            type: select
+            options:
+              values:
+                - label: Neutro
+                  value: ''
+                - label: Periwinkle
+                  value: peri
+                - label: Oscuro
+                  value: dark
+                - label: Turquesa
+                  value: teal
+                - label: Dorado
+                  value: gold
+          - name: order
+            label: Posición en la retícula
+            description: Orden en el que aparece el servicio. Se consulta, no se edita.
+            type: number
+            required: true
+            readonly: true
+      - name: grow-payback
+        label: Qué te llevas
+        type: file
+        path: src/content/services/squai-grow.json
+        format: json
+        fields:
+          - name: payback
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: headline
+                label: Titular
+                type: string
+                required: true
+              - name: body
+                label: Párrafos
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+          - name: ctaSecondary
+            label: Texto del botón en esta sección
+            description: Vacío usa el texto del botón principal.
+            type: string
+      - name: grow-desafio
+        label: Desafío
+        description: El título de la sección se edita en Transversal → Títulos compartidos.
+        type: file
+        path: src/content/services/squai-grow.json
+        format: json
+        fields:
+          - name: challenge
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: cards
+                label: Tarjetas
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: d
+                    label: Descripción
+                    type: text
+                    required: true
+      - name: grow-programa
+        label: Programa
+        description: El título de la sección se edita en Transversal → Títulos compartidos.
+        type: file
+        path: src/content/services/squai-grow.json
+        format: json
+        fields:
+          - name: capabilities
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: groups
+                label: Bloques
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: tone
+                    label: Tono visual
+                    type: select
+                    options:
+                      values:
+                        - label: Neutro
+                          value: ''
+                        - label: Periwinkle
+                          value: peri
+                        - label: Oscuro
+                          value: dark
+                        - label: Turquesa
+                          value: teal
+                        - label: Dorado
+                          value: gold
+                  - name: items
+                    label: Puntos
+                    type: string
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: false
+      - name: grow-contacto
+        label: Contacto
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        type: file
+        path: src/content/services/squai-grow.json
+        format: json
+        fields:
+          - name: contactCopy
+            label: Titular
+            type: text
+          - name: contactAside
+            label: Nota junto al titular
+            type: text
+          - name: contactCta
+            label: Texto del botón
+            description: Vacío usa el texto del botón principal.
+            type: string
+      - name: grow-faq
+        label: Preguntas frecuentes
+        type: file
+        path: src/content/services/squai-grow.json
+        format: json
+        fields:
+          - name: faqs
+            label: Preguntas
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{q}'
+            fields:
+              - name: q
+                label: Pregunta
+                type: string
+                required: true
+              - name: a
+                label: Respuesta
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+  - name: servicio-learn
+    label: Squai Learn
+    description: La página /servicios/squai-learn, sección por sección.
+    type: group
+    items:
+      - name: learn-hero
+        label: Hero
+        description: La cabecera de la página del servicio.
+        type: file
+        path: src/content/services/squai-learn.json
+        format: json
+        fields:
+          - name: name
+            label: Nombre
+            type: string
+            required: true
+          - name: audience
+            label: Público
+            type: string
+            required: true
+          - name: slogan
+            label: Eslogan
+            type: string
+            required: true
+          - name: cta
+            label: Botón principal
+            type: object
+            required: true
+            fields:
+              - name: modal
+                label: Formulario que abre
+                type: select
+                options:
+                  values:
+                    - label: Ninguno (lleva a una sección)
+                      value: ''
+                    - label: Contacto para empresas
+                      value: grow
+                    - label: Contacto para instituciones educativas
+                      value: learn
+              - name: target
+                label: Sección destino
+                description: Identificador de la sección a la que baja el botón. Se consulta, no se edita.
+                type: string
+                readonly: true
+              - name: label
+                label: Texto del botón
+                type: string
+                required: true
+      - name: learn-tarjeta
+        label: Tarjeta en Inicio
+        description: Cómo se ve este servicio en la retícula de la página principal y en el menú.
+        type: file
+        path: src/content/services/squai-learn.json
+        format: json
+        fields:
+          - name: menuAudience
+            label: Público (menú)
+            description: Versión corta para el submenú de Servicios.
+            type: string
+            required: true
+          - name: cardCopy
+            label: Texto de la tarjeta
+            type: text
+            required: true
+          - name: discoverLabel
+            label: Enlace "descubrir"
+            type: string
+            required: true
+          - name: accent
+            label: Color de acento
+            type: string
+            required: true
+            pattern:
+              regex: ^#[0-9a-fA-F]{6}$
+              message: 'Usa un hexadecimal de seis dígitos, por ejemplo #8A8EF9.'
+          - name: span
+            label: Tamaño en la retícula
+            description: Maquetación. Se consulta, no se edita.
+            type: string
+            required: true
+            readonly: true
+          - name: tone
+            label: Tono visual
+            type: select
+            options:
+              values:
+                - label: Neutro
+                  value: ''
+                - label: Periwinkle
+                  value: peri
+                - label: Oscuro
+                  value: dark
+                - label: Turquesa
+                  value: teal
+                - label: Dorado
+                  value: gold
+          - name: order
+            label: Posición en la retícula
+            description: Orden en el que aparece el servicio. Se consulta, no se edita.
+            type: number
+            required: true
+            readonly: true
+      - name: learn-payback
+        label: Qué te llevas
+        type: file
+        path: src/content/services/squai-learn.json
+        format: json
+        fields:
+          - name: payback
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: headline
+                label: Titular
+                type: string
+                required: true
+              - name: body
+                label: Párrafos
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+          - name: ctaSecondary
+            label: Texto del botón en esta sección
+            description: Vacío usa el texto del botón principal.
+            type: string
+      - name: learn-desafio
+        label: Desafío
+        description: El título de la sección se edita en Transversal → Títulos compartidos.
+        type: file
+        path: src/content/services/squai-learn.json
+        format: json
+        fields:
+          - name: challenge
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: cards
+                label: Tarjetas
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: d
+                    label: Descripción
+                    type: text
+                    required: true
+      - name: learn-programa
+        label: Programa
+        description: El título de la sección se edita en Transversal → Títulos compartidos.
+        type: file
+        path: src/content/services/squai-learn.json
+        format: json
+        fields:
+          - name: capabilities
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: groups
+                label: Bloques
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: tone
+                    label: Tono visual
+                    type: select
+                    options:
+                      values:
+                        - label: Neutro
+                          value: ''
+                        - label: Periwinkle
+                          value: peri
+                        - label: Oscuro
+                          value: dark
+                        - label: Turquesa
+                          value: teal
+                        - label: Dorado
+                          value: gold
+                  - name: items
+                    label: Puntos
+                    type: string
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: false
+      - name: learn-contacto
+        label: Contacto
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        type: file
+        path: src/content/services/squai-learn.json
+        format: json
+        fields:
+          - name: contactCopy
+            label: Titular
+            type: text
+          - name: contactAside
+            label: Nota junto al titular
+            type: text
+          - name: contactCta
+            label: Texto del botón
+            description: Vacío usa el texto del botón principal.
+            type: string
+      - name: learn-faq
+        label: Preguntas frecuentes
+        type: file
+        path: src/content/services/squai-learn.json
+        format: json
+        fields:
+          - name: faqs
+            label: Preguntas
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                summary: '{q}'
+            fields:
+              - name: q
+                label: Pregunta
+                type: string
+                required: true
+              - name: a
+                label: Respuesta
+                type: text
+                required: true
+                list:
+                  min: 1
+                  collapsible: true
+  - name: transversal
+    label: Transversal
+    description: Lo que se repite en varias páginas.
+    type: group
+    items:
+      - name: seo
+        label: SEO
+        description: Lo que ven los buscadores, una rama por página.
+        type: group
+        items:
+          - name: seo-general
+            label: General
+            type: file
+            path: src/content/copies.json
+            format: json
+            fields:
+              - name: site
+                label: false
+                type: object
+                fields:
+                  - name: seo
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: imageAlt
+                        label: Texto alternativo de la imagen social
+                        type: string
+                        required: true
+                      - name: serviceTitle
+                        label: Plantilla de título para servicios
+                        description: Tiene que contener {service}; ahí se inserta el nombre del servicio.
+                        type: string
+                        required: true
+                        pattern:
+                          regex: \{service\}
+                          message: La plantilla tiene que contener {service}.
+          - name: seo-inicio
+            label: Inicio
+            type: file
+            path: src/content/copies.json
+            format: json
+            fields:
+              - name: site
+                label: false
+                type: object
+                fields:
+                  - name: seo
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: title
+                        label: Título
+                        type: string
+                        required: true
+                      - name: description
+                        label: Descripción
+                        type: text
+                        required: true
+          - name: seo-one
+            label: Squai One
+            type: file
+            path: src/content/services/squai-one.json
+            format: json
+            fields:
+              - name: seoTitle
+                label: Título
+                description: Vacío usa la plantilla general.
+                type: string
+              - name: seoDescription
+                label: Descripción
+                type: text
+          - name: seo-grow
+            label: Squai Grow
+            type: file
+            path: src/content/services/squai-grow.json
+            format: json
+            fields:
+              - name: seoTitle
+                label: Título
+                description: Vacío usa la plantilla general.
+                type: string
+              - name: seoDescription
+                label: Descripción
+                type: text
+          - name: seo-learn
+            label: Squai Learn
+            type: file
+            path: src/content/services/squai-learn.json
+            format: json
+            fields:
+              - name: seoTitle
+                label: Título
+                description: Vacío usa la plantilla general.
+                type: string
+              - name: seoDescription
+                label: Descripción
+                type: text
+          - name: seo-terminos
+            label: Términos de Servicio
+            type: file
+            path: src/content/copies.json
+            format: json
+            fields:
+              - name: site
+                label: false
+                type: object
+                fields:
+                  - name: legal
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: terms
+                        label: false
+                        type: object
+                        required: true
+                        fields:
+                          - name: title
+                            label: Título
+                            type: string
+                            required: true
+                          - name: description
+                            label: Descripción
+                            type: text
+                            required: true
+          - name: seo-politica
+            label: Política de Privacidad
+            type: file
+            path: src/content/copies.json
+            format: json
+            fields:
+              - name: site
+                label: false
+                type: object
+                fields:
+                  - name: legal
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: privacy
+                        label: false
+                        type: object
+                        required: true
+                        fields:
+                          - name: title
+                            label: Título
+                            type: string
+                            required: true
+                          - name: description
+                            label: Descripción
+                            type: text
+                            required: true
+      - name: navegacion
+        label: Navegación
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: brand
+                    label: Marca
+                    description: Nombre junto al logo y encabezado de la primera columna del footer.
+                    type: string
+                    required: true
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: navigation
+                    label: Menú
+                    type: object
+                    required: true
+                    fields:
+                      - name: home
+                        label: Enlace al inicio (lector de pantalla)
+                        type: string
+                        required: true
+                      - name: main
+                        label: Nombre del menú principal
+                        type: string
+                        required: true
+                      - name: open
+                        label: Abrir menú
+                        type: string
+                        required: true
+                      - name: close
+                        label: Cerrar menú
+                        type: string
+                        required: true
+                      - name: servicesSubmenu
+                        label: Abrir submenú de servicios
+                        type: string
+                        required: true
+                      - name: waitlist
+                        label: Botón de lista de espera
+                        type: string
+                        required: true
+                      - name: contactCta
+                        label: Botón de contacto
+                        type: string
+                        required: true
+                      - name: oneCta
+                        label: Botón de preinscripción
+                        type: string
+                        required: true
+                  - name: skip
+                    label: Enlace "Saltar al contenido"
+                    type: string
+                    required: true
+      - name: footer
+        label: Footer
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: tagline
+                label: Frase de marca
+                description: Aparece en el footer, bajo el logo.
+                type: string
+                required: true
+              - name: footerServices
+                label: Columna de servicios
+                description: El título y los textos son editables. Las rutas se muestran, pero no se pueden cambiar desde el CMS.
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título de la columna
+                    type: string
+                    required: true
+                  - name: links
+                    label: Enlaces
+                    type: object
+                    required: true
+                    list:
+                      min: 3
+                      max: 3
+                      collapsible:
+                        summary: '{label}'
+                    fields:
+                      - name: label
+                        label: Texto
+                        type: string
+                        required: true
+                      - name: href
+                        label: Ruta
+                        description: Ruta estructural. Se consulta, no se edita.
+                        type: string
+                        required: true
+                        readonly: true
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: footer
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: copyright
+                        label: Aviso de copyright
+                        type: string
+                        required: true
+                  - name: follow
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: title
+                        label: Título de la sección de redes
+                        type: string
+                        required: true
+              - name: socials
+                label: Redes sociales
+                type: object
+                list:
+                  collapsible:
+                    summary: '{name}'
+                fields:
+                  - name: name
+                    label: Nombre
+                    type: string
+                    required: true
+                  - name: href
+                    label: Enlace
+                    description: URL https completa. Vacío deja la red visible sin enlace.
+                    type: string
+                    pattern:
+                      regex: ^$|^https://
+                      message: Usa una URL que empiece por https:// o deja el campo vacío.
+      - name: formularios
+        label: Formularios
+        description: Los mismos textos en el formulario de empresas, el de instituciones educativas y la lista de espera.
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: call
+                    label: Botón "Solicitar una llamada"
+                    type: string
+                    required: true
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: modal
+                    label: Formularios de contacto
+                    type: object
+                    required: true
+                    fields:
+                      - name: grow
+                        label: Empresas
+                        type: object
+                        required: true
+                        fields:
+                          - name: title
+                            label: Título
+                            type: string
+                            required: true
+                          - name: copy
+                            label: Texto
+                            type: text
+                            required: true
+                          - name: placeholder
+                            label: Texto guía del mensaje
+                            type: string
+                            required: true
+                      - name: learn
+                        label: Instituciones educativas
+                        type: object
+                        required: true
+                        fields:
+                          - name: title
+                            label: Título
+                            type: string
+                            required: true
+                          - name: copy
+                            label: Texto
+                            type: text
+                            required: true
+                          - name: placeholder
+                            label: Texto guía del mensaje
+                            type: string
+                            required: true
+                  - name: contact
+                    label: Ventana de contacto
+                    type: object
+                    required: true
+                    fields:
+                      - name: title
+                        label: Título
+                        type: string
+                        required: true
+                      - name: close
+                        label: Botón de cierre
+                        type: string
+                        required: true
+                      - name: bookingFallback
+                        label: Nota de respaldo de la agenda
+                        type: string
+                        required: true
+                      - name: bookingFallbackLink
+                        label: Texto del enlace a la agenda
+                        type: string
+                        required: true
+                  - name: forms
+                    label: Campos
+                    type: object
+                    required: true
+                    fields:
+                      - name: required
+                        label: Aviso de campos obligatorios
+                        type: string
+                        required: true
+                      - name: fullName
+                        label: Etiqueta "Nombre completo"
+                        type: string
+                        required: true
+                      - name: email
+                        label: Etiqueta "Correo electrónico"
+                        type: string
+                        required: true
+                      - name: corporateEmail
+                        label: Etiqueta "Correo corporativo"
+                        type: string
+                        required: true
+                      - name: organization
+                        label: Etiqueta "Organización"
+                        type: string
+                        required: true
+                      - name: role
+                        label: Etiqueta "Rol"
+                        type: string
+                        required: true
+                      - name: countryCode
+                        label: Etiqueta "Indicativo"
+                        type: string
+                        required: true
+                      - name: phone
+                        label: Etiqueta "Teléfono"
+                        type: string
+                        required: true
+                      - name: whatsapp
+                        label: Etiqueta "WhatsApp"
+                        type: string
+                        required: true
+                      - name: teamSize
+                        label: Etiqueta "Tamaño del equipo"
+                        type: string
+                        required: true
+                      - name: select
+                        label: Texto del desplegable vacío
+                        type: string
+                        required: true
+                      - name: message
+                        label: Etiqueta "Mensaje"
+                        type: string
+                        required: true
+                      - name: optional
+                        label: Marca de campo opcional
+                        type: string
+                        required: true
+                      - name: countrySearch
+                        label: Buscador de países
+                        type: string
+                        required: true
+                      - name: countryEmpty
+                        label: Buscador de países sin resultados
+                        type: string
+                        required: true
+                      - name: privacyConsentPrefix
+                        label: Consentimiento, texto previo
+                        type: string
+                        required: true
+                      - name: privacyConsentLink
+                        label: Consentimiento, texto del enlace
+                        type: string
+                        required: true
+                      - name: privacyConsentSuffix
+                        label: Consentimiento, texto posterior
+                        type: string
+                        required: true
+                      - name: teamSizes
+                        label: Rangos de tamaño de equipo
+                        description: Los cuatro rangos del desplegable. El valor técnico llega al backend y no se edita.
+                        type: object
+                        required: true
+                        list:
+                          min: 4
+                          max: 4
+                          collapsible:
+                            summary: '{label}'
+                        fields:
+                          - name: value
+                            label: Valor técnico
+                            description: Lo espera la API. Se consulta, no se edita.
+                            type: string
+                            required: true
+                            readonly: true
+                          - name: label
+                            label: Texto visible
+                            type: string
+                            required: true
+                  - name: feedback
+                    label: Mensajes de respuesta
+                    type: object
+                    required: true
+                    fields:
+                      - name: invalid
+                        label: Formulario incompleto
+                        type: string
+                        required: true
+                      - name: sending
+                        label: Enviando
+                        type: string
+                        required: true
+                      - name: error
+                        label: Error inesperado
+                        type: string
+                        required: true
+                      - name: contactSuccess
+                        label: Contacto enviado
+                        type: string
+                        required: true
+                      - name: waitlistSuccess
+                        label: Registro en lista de espera
+                        type: string
+                        required: true
+                      - name: fieldRequired
+                        label: Campo obligatorio
+                        type: string
+                        required: true
+                      - name: fieldEmail
+                        label: Correo con formato inválido
+                        type: string
+                        required: true
+                      - name: turnstileError
+                        label: Falló la verificación de seguridad
+                        type: string
+                        required: true
+                      - name: turnstileUnsupported
+                        label: Navegador sin verificación de seguridad
+                        type: string
+                        required: true
+      - name: lista-de-espera
+        label: Lista de espera
+        description: La ficha del programa en el hero de Inicio y la sección de inscripción de Squai One.
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: reserve
+                    label: Botón de reserva
+                    type: string
+                    required: true
+              - name: program
+                label: Ficha del programa
+                type: object
+                required: true
+                fields:
+                  - name: status
+                    label: Estado
+                    type: string
+                    required: true
+                  - name: name
+                    label: Nombre del programa
+                    type: string
+                    required: true
+                  - name: ecosystem
+                    label: Ecosistema
+                    type: string
+                    required: true
+                  - name: duration
+                    label: Duración
+                    type: string
+                    required: true
+                  - name: schedule
+                    label: Modalidad
+                    type: string
+                    required: true
+                  - name: modality
+                    label: Resultado
+                    type: string
+                    required: true
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: program
+                    label: Etiquetas de la ficha
+                    type: object
+                    required: true
+                    fields:
+                      - name: duration
+                        label: Etiqueta de duración
+                        type: string
+                        required: true
+                      - name: schedule
+                        label: Etiqueta de modalidad
+                        type: string
+                        required: true
+                      - name: modality
+                        label: Etiqueta de resultado
+                        type: string
+                        required: true
+                  - name: waitlist
+                    label: Sección de inscripción
+                    type: object
+                    required: true
+                    fields:
+                      - name: title
+                        label: Título
+                        type: string
+                        required: true
+                      - name: copy
+                        label: Párrafos
+                        type: text
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: true
+                      - name: formTitle
+                        label: Título del formulario
+                        type: string
+                        required: true
+                      - name: formSubtitle
+                        label: Subtítulo del formulario
+                        type: string
+                        required: true
+                      - name: investment
+                        label: Inversión
+                        type: object
+                        required: true
+                        fields:
+                          - name: eyebrow
+                            label: Antetítulo
+                            type: string
+                            required: true
+                          - name: copy
+                            label: Párrafos
+                            type: text
+                            required: true
+                            list:
+                              min: 1
+                              collapsible: true
+                          - name: price
+                            label: Precio
+                            type: string
+                            required: true
+                          - name: currency
+                            label: Moneda
+                            type: string
+                            required: true
+                          - name: referencePrice
+                            label: Precio de referencia
+                            type: string
+                            required: true
+      - name: titulos-compartidos
+        label: Títulos compartidos
+        description: Títulos que se repiten igual en las tres páginas de servicio y en las legales.
+        type: file
+        path: src/content/copies.json
+        format: json
+        fields:
+          - name: site
+            label: false
+            type: object
+            fields:
+              - name: labels
+                label: false
+                type: object
+                fields:
+                  - name: challenge
+                    label: Título de la sección "Desafío"
+                    type: string
+                    required: true
+                  - name: capabilities
+                    label: Título de la sección "Programa"
+                    type: string
+                    required: true
+              - name: ui
+                label: false
+                type: object
+                fields:
+                  - name: services
+                    label: Páginas de servicio
+                    type: object
+                    required: true
+                    fields:
+                      - name: payback
+                        label: Título de la sección "Qué te llevas"
+                        type: string
+                        required: true
+                      - name: capabilitiesFallback
+                        label: Título del programa (respaldo)
+                        description: Se usa en Squai Grow y Squai Learn en lugar del título anterior.
+                        type: string
+                        required: true
+                  - name: updated
+                    label: Prefijo de fecha de actualización
+                    description: Precede a la fecha en las páginas legales.
+                    type: string
+                    required: true
+  - name: terminos
+    label: Términos de Servicio
+    description: El texto legal completo.
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: labels
+            label: false
+            type: object
+            fields:
+              - name: terms
+                label: Título visible
+                description: Encabeza la página y nombra el enlace en el footer.
+                type: string
+                required: true
+          - name: legal
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: terms
+                label: false
+                type: object
+                required: true
+                fields:
+                  - name: updated
+                    label: Fecha de actualización
+                    description: Texto visible, por ejemplo "14 de septiembre de 2026".
+                    type: string
+                    required: true
+                  - name: sections
+                    label: Secciones
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{title}'
+                    fields:
+                      - name: title
+                        label: Título de la sección
+                        type: string
+                        required: true
+                      - name: blocks
+                        label: Bloques
+                        type: block
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: true
+                        blockKey: type
+                        blocks:
+                          - name: paragraph
+                            label: Párrafo
+                            fields:
+                              - name: content
+                                label: Texto
+                                description: Un tramo por cada enlace. Sin enlaces, basta un tramo.
+                                type: object
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false
+                                fields:
+                                  - name: text
+                                    label: Texto
+                                    type: text
+                                    required: true
+                                  - name: href
+                                    label: Enlace
+                                    description: Vacío deja el tramo como texto plano.
+                                    type: string
+                                    pattern:
+                                      regex: ^$|^(?:/(?!/)|https://|mailto:|#)
+                                      message: 'Usa una ruta interna (/algo), https://, mailto: o #ancla.'
+                          - name: list
+                            label: Lista
+                            fields:
+                              - name: items
+                                label: Puntos
+                                type: text
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false
+  - name: politica
+    label: Política de Privacidad
+    description: El texto legal completo.
+    type: file
+    path: src/content/copies.json
+    format: json
+    fields:
+      - name: site
+        label: false
+        type: object
+        fields:
+          - name: labels
+            label: false
+            type: object
+            fields:
+              - name: privacy
+                label: Título visible
+                description: Encabeza la página y nombra el enlace en el footer.
+                type: string
+                required: true
+          - name: legal
+            label: false
+            type: object
+            required: true
+            fields:
+              - name: privacy
+                label: false
+                type: object
+                required: true
+                fields:
+                  - name: updated
+                    label: Fecha de actualización
+                    description: Texto visible, por ejemplo "14 de septiembre de 2026".
+                    type: string
+                    required: true
+                  - name: sections
+                    label: Secciones
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{title}'
+                    fields:
+                      - name: title
+                        label: Título de la sección
+                        type: string
+                        required: true
+                      - name: blocks
+                        label: Bloques
+                        type: block
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: true
+                        blockKey: type
+                        blocks:
+                          - name: paragraph
+                            label: Párrafo
+                            fields:
+                              - name: content
+                                label: Texto
+                                description: Un tramo por cada enlace. Sin enlaces, basta un tramo.
+                                type: object
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false
+                                fields:
+                                  - name: text
+                                    label: Texto
+                                    type: text
+                                    required: true
+                                  - name: href
+                                    label: Enlace
+                                    description: Vacío deja el tramo como texto plano.
+                                    type: string
+                                    pattern:
+                                      regex: ^$|^(?:/(?!/)|https://|mailto:|#)
+                                      message: 'Usa una ruta interna (/algo), https://, mailto: o #ancla.'
+                          - name: list
+                            label: Lista
+                            fields:
+                              - name: items
+                                label: Puntos
+                                type: text
+                                required: true
+                                list:
+                                  min: 1
+                                  collapsible: false

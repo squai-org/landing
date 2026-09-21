@@ -11,6 +11,8 @@
     "preview:worker": "astro build && wrangler dev",
     "deploy": "astro build && pnpm db:migrate:remote && wrangler deploy",
     "deploy:ci": "pnpm db:migrate:remote && wrangler deploy",
+    "version:upload": "astro build && wrangler versions upload",
+    "version:promote": "wrangler versions deploy",
     "typecheck": "tsc -p src/server",
     "test": "vitest run",
     "cf-typegen": "wrangler types",

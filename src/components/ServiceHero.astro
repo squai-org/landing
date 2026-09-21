@@ -32,10 +32,10 @@ const { program, labels, ui } = await getSiteContent();
     <div class="service-hero-action">
       <p class="display d-h2 service-slogan">{service.slogan}</p>
       {
-        service.slug === 'squai-one' ? (
-          <Button variant="primary" href="#lista" data-scroll-to="lista" class="service-hero-cta">{ui.services.oneCta}</Button>
-        ) : (
+        service.cta.modal ? (
           <Button variant="primary" data-open-modal={service.cta.modal} class="service-hero-cta">{service.cta.label}</Button>
+        ) : (
+          <Button variant="primary" href={`#${service.cta.target}`} data-scroll-to={service.cta.target} class="service-hero-cta">{service.cta.label}</Button>
         )
       }
     </div>
@@ -101,7 +101,7 @@ const { program, labels, ui } = await getSiteContent();
   .service-crumb-link { color: var(--canvas); }
   .service-crumb-link:hover { color: var(--periwinkle); }
   .service-name { color: var(--canvas); font-size: max(40px, min(10.8vw, 19svh)); }
-  .service-slogan { margin: 0; color: var(--canvas); max-width: 20ch; }
+  .service-slogan { margin: 0; color: var(--canvas); max-width: 30ch; }
   .service-hero-action { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(24px, 3vw, 40px); }
 
   @media (max-width: 900px) {
@@ -114,8 +114,6 @@ const { program, labels, ui } = await getSiteContent();
       padding-block: calc(var(--nav-space) + 6px) 18px;
     }
     .service-hero-inner { gap: 12px; }
-    .service-name { font-size: max(40px, min(10.8vw, 12svh)); }
-    .service-slogan { font-size: clamp(22px, 4svh, 34px); }
     .service-hero-action { gap: 12px; }
   }
 

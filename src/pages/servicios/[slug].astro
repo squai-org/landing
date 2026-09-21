@@ -36,8 +36,9 @@ const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
 const seo = serviceSeo(service, content.seo.serviceTitle);
 const capabilitiesHeadline = service.slug === 'squai-one' ? service.capabilities.headline : content.ui.services.capabilitiesFallback;
 
-const offering =
-  service.slug === 'squai-one' ? courseSchema(content, service, pageUrl) : serviceSchema(service, pageUrl);
+const offering = service.slug === 'squai-one'
+  ? courseSchema(content, service, pageUrl)
+  : serviceSchema(service, pageUrl);
 
 const schemas = [
   organizationSchema(content),

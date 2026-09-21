@@ -30,10 +30,13 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm db:migrate:remote`  | Aplica `migrations/` en el D1 de producción                    |
 | `pnpm deploy`             | Build + migraciones remotas + `wrangler deploy`                |
 | `pnpm deploy:ci`          | Migraciones + deploy, sin build (lo usa Workers Builds)        |
+| `pnpm version:upload`     | Build + sube una versión candidata, sin tocar producción        |
+| `pnpm version:promote`    | Promueve una versión candidata al 100% del tráfico             |
 
 ## Estructura
 
 ```
+.pages.yml          Arbol editorial de Pages CMS (ver docs/pages-cms.md)
 migrations/         Migraciones de D1 (wrangler d1 migrations)
 public/
   fonts/            Familjen Grotesk, Atkinson Hyperlegible Next y Gloria Hallelujah (woff2, self-hosted)
@@ -45,7 +48,8 @@ src/
   components/       Cada sección de la página + Logo, Badge, Turnstile y Seo
   config/           Configuración de runtime (endpoints de la API)
   content/          Contenido editorial: copies.json + schema.ts (contrato Zod)
-  content.config.ts Colección `copies` del Content Layer (loader `file`)
+  content/services/ Un archivo por servicio; el nombre del archivo es su URL
+  content.config.ts Colecciones `copies` (loader `file`) y `services` (loader `glob`)
   lib/content.ts    getSiteContent(): único punto de acceso al contenido
   lib/seo.ts        Dominio canónico, URL canónica y constructores de JSON-LD
   layouts/          Layout base (head, meta, fuentes) y el script de los forms
@@ -54,14 +58,16 @@ src/
   styles/global.css @font-face, tokens de diseño y estados hover/focus
   server/           Backend del Worker (ver abajo)
 test/server/        Tests de la API contra un D1 local
-docs/               Runbook de configuración en Cloudflare
+docs/               Runbook de Cloudflare y documentación de Pages CMS
 ```
 
 ## Contenido
 
-Todos los textos viven en `src/content/copies.json` y se cargan con el Content
-Layer de Astro (`src/content.config.ts`). Los componentes nunca leen el JSON
-directo: usan `getSiteContent()` de `src/lib/content.ts`.
+Los textos viven en `src/content/copies.json` y, los de cada servicio, en
+`src/content/services/<slug>.json`. Se cargan con el Content Layer de Astro
+(`src/content.config.ts`) y los componentes nunca leen el JSON directo: usan
+`getSiteContent()` de `src/lib/content.ts`, que devuelve los servicios ordenados
+por su campo `order` y con el slug tomado del nombre del archivo.
 
 - `src/content/schema.ts` es el contrato editorial. Se valida en build: si falta
   un campo o un link es inválido, el build falla.
@@ -73,6 +79,11 @@ directo: usan `getSiteContent()` de `src/lib/content.ts`.
   en blanco separa párrafos. Cada párrafo se renderiza como su propio `<p>`.
 - Rutas de la API y otra configuración de runtime van en `src/config/`, no en el
   contenido.
+- El contenido se edita desde [Pages CMS](docs/pages-cms.md), que escribe
+  directamente en esos archivos. `.pages.yml` traduce el contrato a un árbol de
+  formularios: un nodo por página y, dentro, un nodo por sección. Si cambia
+  `schema.ts`, cambia `.pages.yml` en el mismo commit. El inventario campo a
+  campo está en [`docs/pages-cms-inventario.md`](docs/pages-cms-inventario.md).
 
 ## SEO
 

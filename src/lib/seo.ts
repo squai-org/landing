@@ -103,7 +103,7 @@ export const websiteSchema = (): Json => ({
   '@id': SITE_ID,
   url: SITE_URL,
   name: SITE_NAME,
-  description: 'Entrenamiento en inteligencia artificial para personas, equipos y comunidades educativas para Latinoamérica.',
+  description: 'Capacitación y formación en inteligencia artificial para personas, empresas e instituciones educativas.',
   inLanguage: SITE_LANG,
   publisher: { '@id': ORG_ID },
 });
@@ -142,13 +142,12 @@ export const webPageSchema = (page: { url: string; title: string; description: s
 
 export const courseSchema = (content: SiteContent, service: Service, pageUrl: string): Json => ({
   '@type': 'Course',
-  '@id': `${pageUrl}#course`,
+  '@id': `${pageUrl}#program`,
   name: content.program.name,
-  description: service.cardCopy,
+  description: service.slogan,
   url: pageUrl,
   inLanguage: SITE_LANG,
   timeRequired: 'PT20H',
-  educationalLevel: 'Principiante',
   educationalCredentialAwarded: 'Certificado digital de finalización',
   teaches: [
     'Fundamentos de inteligencia artificial generativa',
@@ -156,11 +155,19 @@ export const courseSchema = (content: SiteContent, service: Service, pageUrl: st
     'Evaluación y mejora de respuestas generadas por IA',
     'Uso seguro y responsable de la inteligencia artificial',
   ],
-  provider: { '@id': ORG_ID },
+  provider: {
+    '@type': 'Organization',
+    '@id': ORG_ID,
+    name: SITE_NAME,
+    url: SITE_URL,
+  },
   hasCourseInstance: {
     '@type': 'CourseInstance',
-    courseMode: 'Online',
-    courseWorkload: 'PT20H',
+    '@id': `${pageUrl}#program-instance`,
+    name: content.program.name,
+    courseMode: 'Online, en vivo',
+    courseWorkload: '4 horas por semana durante 5 semanas',
+    duration: 'PT20H',
     inLanguage: SITE_LANG,
   },
 });
@@ -169,10 +176,8 @@ export const serviceSchema = (service: Service, pageUrl: string): Json => ({
   '@type': 'Service',
   '@id': `${pageUrl}#service`,
   name: service.name,
-  serviceType: service.slug === 'squai-learn'
-    ? 'Entrenamiento en IA para comunidades educativas'
-    : 'Entrenamiento en IA para empresas y equipos',
-  description: service.cardCopy,
+  serviceType: service.seoTitle?.replace(/\s*\|\s*Squai$/, '') || service.name,
+  description: service.slogan,
   url: pageUrl,
   provider: { '@id': ORG_ID },
   areaServed: { '@type': 'Place', name: 'Latinoamérica' },
@@ -186,7 +191,7 @@ export const servicesItemList = (services: Service[]): Json => ({
   itemListElement: services.map((service, index) => ({
     '@type': 'ListItem',
     position: index + 1,
-    name: `${service.name} — ${service.menuAudience}`,
+    name: `${service.name} — ${service.audience}`,
     url: absoluteUrl(`/servicios/${service.slug}`),
   })),
 });

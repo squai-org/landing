@@ -7,6 +7,7 @@ const { navLinks, services, ui } = await getSiteContent();
 const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const serviceLinks = services.map((service) => ({ name: service.name, subtitle: service.menuAudience, href: `/servicios/${service.slug}` }));
 const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath === '/servicios/squai-learn' ? 'learn' : undefined;
+const isSquaiOne = currentPath === '/servicios/squai-one';
 ---
 
 <header class="header-wrap over-hero" data-header>
@@ -86,14 +87,18 @@ const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath 
               <Button variant="primary" data-open-modal={navModal} compact class="nav-cta">
                 {ui.navigation.contactCta}
               </Button>
+            ) : isSquaiOne ? (
+              <Button variant="primary" href="#lista" data-scroll-to="lista" compact class="nav-cta">
+                {ui.navigation.oneCta}
+              </Button>
             ) : (
               <Button
                 variant="primary"
-                href="/servicios/squai-one#lista"
-                data-scroll-to={currentPath === '/servicios/squai-one' ? 'lista' : undefined}
+                href="/#servicios"
+                data-scroll-to="servicios"
                 compact
                 class="nav-cta"
-                aria-current={currentPath === '/servicios/squai-one' ? 'page' : undefined}
+                aria-current={currentPath.startsWith('/servicios') ? 'page' : undefined}
               >
                 {ui.navigation.waitlist}
               </Button>
