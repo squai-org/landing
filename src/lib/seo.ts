@@ -144,7 +144,7 @@ export const courseSchema = (content: SiteContent, service: Service, pageUrl: st
   '@type': 'Course',
   '@id': `${pageUrl}#program`,
   name: content.program.name,
-  description: service.seoHeading,
+  description: service.slogan,
   url: pageUrl,
   inLanguage: SITE_LANG,
   timeRequired: 'PT20H',
@@ -176,8 +176,8 @@ export const serviceSchema = (service: Service, pageUrl: string): Json => ({
   '@type': 'Service',
   '@id': `${pageUrl}#service`,
   name: service.name,
-  serviceType: service.seoHeading,
-  description: service.cardCopy,
+  serviceType: service.seoTitle?.replace(/\s*\|\s*Squai$/, '') || service.name,
+  description: service.slogan,
   url: pageUrl,
   provider: { '@id': ORG_ID },
   areaServed: { '@type': 'Place', name: 'Latinoamérica' },
@@ -191,7 +191,7 @@ export const servicesItemList = (services: Service[]): Json => ({
   itemListElement: services.map((service, index) => ({
     '@type': 'ListItem',
     position: index + 1,
-    name: `${service.name} — ${service.seoHeading}`,
+    name: `${service.name} — ${service.audience}`,
     url: absoluteUrl(`/servicios/${service.slug}`),
   })),
 });

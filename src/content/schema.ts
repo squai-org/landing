@@ -46,7 +46,6 @@ export const serviceSchema = z.object({
   contactCta: optional(text),
   contactCopy: optional(text),
   contactAside: optional(text),
-  seoHeading: text,
   seoTitle: optional(text),
   seoDescription: optional(text),
   faqs: z.array(faq).min(1),
