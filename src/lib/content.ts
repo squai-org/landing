@@ -13,6 +13,20 @@ export async function getSiteContent() {
   if (!entry) throw new Error('Missing required content entry: copies/site');
   const data = entry.data;
   const { labels } = data;
+  const footerCols = data.footerCols.map((col) => ({
+    ...col,
+    h: col.headingKey ? labels[col.headingKey] : col.h!,
+    links: col.links.map((item) => ({ ...item, t: item.labelKey ? labels[item.labelKey] : item.t! })),
+  }));
+
+  footerCols.splice(1, 0, {
+    h: data.footerServices.title,
+    links: data.footerServices.links.map((item) => ({
+      t: item.label,
+      href: item.href,
+      target: null,
+    })),
+  });
 
   return {
     ...data,
@@ -27,10 +41,6 @@ export async function getSiteContent() {
         capabilities: { ...service.capabilities, headline: labels.capabilities },
       }))
       .sort((a, b) => a.order - b.order),
-    footerCols: data.footerCols.map((col) => ({
-      ...col,
-      h: col.headingKey ? labels[col.headingKey] : col.h!,
-      links: col.links.map((item) => ({ ...item, t: item.labelKey ? labels[item.labelKey] : item.t! })),
-    })),
+    footerCols,
   };
 }

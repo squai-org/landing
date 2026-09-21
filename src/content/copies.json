@@ -716,6 +716,23 @@
       "schedule": "100% virtual, en vivo y con grabaciones por si la vida se interpone.",
       "modality": "Aprendes IA y además recibes el certificado para respaldar tus nuevas habilidades."
     },
+    "footerServices": {
+      "title": "Servicios",
+      "links": [
+        {
+          "label": "Squai One — Personas",
+          "href": "/servicios/squai-one"
+        },
+        {
+          "label": "Squai Grow — Empresas",
+          "href": "/servicios/squai-grow"
+        },
+        {
+          "label": "Squai Learn — Educación",
+          "href": "/servicios/squai-learn"
+        }
+      ]
+    },
     "footerCols": [
       {
         "links": [
@@ -737,23 +754,6 @@
           }
         ],
         "headingKey": "brand"
-      },
-      {
-        "links": [
-          {
-            "t": "Squai One — Personas",
-            "href": "/servicios/squai-one"
-          },
-          {
-            "t": "Squai Grow — Equipos",
-            "href": "/servicios/squai-grow"
-          },
-          {
-            "t": "Squai Learn — Educación",
-            "href": "/servicios/squai-learn"
-          }
-        ],
-        "headingKey": "services"
       },
       {
         "h": "Contacto",

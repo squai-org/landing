@@ -13,7 +13,8 @@
 # - `settings.content.merge: true` es obligatorio. Cada nodo declara solo una
 #   parte del archivo; al guardar, Pages CMS mezcla lo editado con lo que ya
 #   esta en GitHub, de modo que el resto se conserva intacto. Las claves que
-#   ningun nodo declara (navLinks, footerCols) tambien sobreviven asi.
+#   ningun nodo declara (navLinks y las columnas estructurales del footer)
+#   tambien sobreviven asi.
 # - No se declara `media`: no hay carga de imagenes desde el CMS. Las fotos del
 #   equipo se resuelven por una relacion fija entre la ruta editorial y el
 #   recurso compilado (src/components/Team.astro), asi que `img` es una lista
@@ -1439,6 +1440,36 @@ content:
                 description: Aparece en el footer, bajo el logo.
                 type: string
                 required: true
+              - name: footerServices
+                label: Columna de servicios
+                description: El título y los textos son editables. Las rutas se muestran, pero no se pueden cambiar desde el CMS.
+                type: object
+                required: true
+                fields:
+                  - name: title
+                    label: Título de la columna
+                    type: string
+                    required: true
+                  - name: links
+                    label: Enlaces
+                    type: object
+                    required: true
+                    list:
+                      min: 3
+                      max: 3
+                      collapsible:
+                        summary: '{label}'
+                    fields:
+                      - name: label
+                        label: Texto
+                        type: string
+                        required: true
+                      - name: href
+                        label: Ruta
+                        description: Ruta estructural. Se consulta, no se edita.
+                        type: string
+                        required: true
+                        readonly: true
               - name: ui
                 label: false
                 type: object

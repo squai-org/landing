@@ -82,6 +82,10 @@ export const siteSchema = z.object({
   squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link) })).min(1),
   faqs: z.array(faq).min(1),
   socials: z.array(z.object({ name: text, href: optionalLink.default('') })),
+  footerServices: z.object({
+    title: text,
+    links: z.array(z.object({ label: text, href: link })).length(3),
+  }),
   footerCols: z.array(z.object({
     h: optional(text), headingKey: optional(labelKey),
     links: z.array(z.object({
