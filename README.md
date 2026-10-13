@@ -1,7 +1,6 @@
 # Squai
 
-Landing page estática construida con [Astro](https://astro.build), a partir del
-diseño `Landing Fundamentos de IA`, más un backend de captura de leads sobre
+Landing page estática construida con [Astro](https://astro.build), más un backend de captura de leads sobre
 Cloudflare Workers + D1.
 
 Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
