@@ -92,6 +92,8 @@
         "phone": "Número de teléfono",
         "whatsapp": "WhatsApp",
         "teamSize": "Personas que se formarían",
+        "referralSourceProgram": "¿Cómo descubriste este programa?",
+        "referralSourceUs": "¿Cómo nos descubriste?",
         "select": "Selecciona una opción",
         "message": "Mensaje",
         "optional": "(opcional)",
@@ -100,6 +102,14 @@
         "privacyConsentPrefix": "He leído y acepto la ",
         "privacyConsentLink": "Política de Privacidad",
         "privacyConsentSuffix": " de Squai.",
+        "referralSources": [
+          { "value": "instagram", "label": "Instagram" },
+          { "value": "linkedin", "label": "LinkedIn" },
+          { "value": "tiktok", "label": "Tiktok" },
+          { "value": "youtube", "label": "Youtube" },
+          { "value": "google", "label": "Google" },
+          { "value": "otras", "label": "Otras" }
+        ],
         "teamSizes": [
           {
             "value": "menos-10",
