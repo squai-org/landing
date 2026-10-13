@@ -1,4 +1,4 @@
-# Squai — Fundamentos de Inteligencia Artificial Generativa
+# Squai
 
 Landing page estática construida con [Astro](https://astro.build), a partir del
 diseño `Landing Fundamentos de IA`, más un backend de captura de leads sobre
