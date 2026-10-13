@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { countryCodeField, emailField, nameField, phoneField, turnstileTokenField } from './common';
+import { countryCodeField, emailField, nameField, phoneField, referralSourceField, turnstileTokenField } from './common';
 
 export const waitlistSchema = z.object({
   full_name: nameField,
   email: emailField,
   country_code: countryCodeField,
   phone: phoneField,
+  referral_source: referralSourceField,
   'cf-turnstile-response': turnstileTokenField,
 });
 

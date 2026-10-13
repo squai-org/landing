@@ -81,6 +81,15 @@ const { ui, labels } = await getSiteContent();
           options={ui.forms.teamSizes}
         />
       </div>
+      <div class="field-group-spaced">
+        <CustomSelect
+          idPrefix="contact"
+          name="referral_source"
+          label={ui.forms.referralSourceUs}
+          placeholder={ui.forms.select}
+          options={ui.forms.referralSources}
+        />
+      </div>
       <label class="field-group field-group-spaced" for="contact-message">
         <span class="field-label">{ui.forms.message} <span class="field-optional">{ui.forms.optional}</span></span>
         <textarea

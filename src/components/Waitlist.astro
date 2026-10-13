@@ -1,6 +1,7 @@
 ---
 import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
+import CustomSelect from './CustomSelect.astro';
 import { endpoints } from '../config/endpoints';
 import { getSiteContent } from '../lib/content';
 import Turnstile from './Turnstile.astro';
@@ -53,6 +54,15 @@ const { program, ui, labels } = await getSiteContent();
               <input id="waitlist-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="waitlist-phone-error" />
               <span id="waitlist-phone-error" class="field-error" data-field-error="phone"></span>
             </label>
+          </div>
+          <div class="field-group-spaced">
+            <CustomSelect
+              idPrefix="waitlist"
+              name="referral_source"
+              label={ui.forms.referralSourceProgram}
+              placeholder={ui.forms.select}
+              options={ui.forms.referralSources}
+            />
           </div>
           <Turnstile action="waitlist" />
           <label class="field-group consent-field" for="waitlist-privacy-consent">

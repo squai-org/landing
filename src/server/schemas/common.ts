@@ -24,6 +24,10 @@ export const phoneField = z
   .transform((value) => value.trim())
   .pipe(z.string().regex(/^[\d\s().+-]{6,20}$/, 'El teléfono no es válido.'));
 
+export const REFERRAL_SOURCES = ['instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras'] as const;
+
+export const referralSourceField = z.enum(REFERRAL_SOURCES, 'Selecciona cómo nos descubriste.');
+
 export const optionalText = (max: number) =>
   z
     .string()
