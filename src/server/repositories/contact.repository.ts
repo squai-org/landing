@@ -8,6 +8,7 @@ export interface ContactRecord {
   phone: string;
   phoneE164: string;
   teamSize: string;
+  referralSource: string;
   message: string | null;
   sourcePage: string | null;
   ipCountry: string | null;
@@ -17,8 +18,8 @@ export interface ContactRecord {
 const INSERT_SQL = `
   INSERT INTO contact_requests
     (ecosystem, full_name, email, organization, role, country_code, phone, phone_e164,
-      team_size, message, source_page, ip_country, user_agent)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      team_size, referral_source, message, source_page, ip_country, user_agent)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   RETURNING id
 `;
 
@@ -35,6 +36,7 @@ export const insertContactRequest = async (db: D1Database, record: ContactRecord
       record.phone,
       record.phoneE164,
       record.teamSize,
+      record.referralSource,
       record.message,
       record.sourcePage,
       record.ipCountry,

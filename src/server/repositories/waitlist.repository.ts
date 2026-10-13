@@ -4,6 +4,7 @@ export interface WaitlistRecord {
   countryCode: string;
   phone: string;
   phoneE164: string;
+  referralSource: string;
   sourcePage: string | null;
   ipCountry: string | null;
   userAgent: string | null;
@@ -16,13 +17,14 @@ export interface WaitlistUpsertResult {
 
 const UPSERT_SQL = `
   INSERT INTO waitlist_signups
-    (full_name, email, country_code, phone, phone_e164, source_page, ip_country, user_agent)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (full_name, email, country_code, phone, phone_e164, referral_source, source_page, ip_country, user_agent)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (email) DO UPDATE SET
     full_name    = excluded.full_name,
     country_code = excluded.country_code,
     phone        = excluded.phone,
     phone_e164   = excluded.phone_e164,
+    referral_source = excluded.referral_source,
     source_page  = excluded.source_page,
     ip_country   = excluded.ip_country,
     user_agent   = excluded.user_agent,
@@ -42,6 +44,7 @@ export const upsertWaitlistSignup = async (
       record.countryCode,
       record.phone,
       record.phoneE164,
+      record.referralSource,
       record.sourcePage,
       record.ipCountry,
       record.userAgent

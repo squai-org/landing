@@ -5,6 +5,7 @@ import {
   nameField,
   optionalText,
   phoneField,
+  referralSourceField,
   turnstileTokenField,
 } from './common';
 
@@ -22,6 +23,7 @@ export const contactSchema = z.object({
   country_code: countryCodeField,
   phone: phoneField,
   team_size: z.enum(TEAM_SIZES, 'Selecciona cuántas personas se formarían.'),
+  referral_source: referralSourceField,
   message: optionalText(2000),
   ecosystem: z.enum(ECOSYSTEMS).default('grow'),
   'cf-turnstile-response': turnstileTokenField,

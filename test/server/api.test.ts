@@ -26,6 +26,7 @@ const waitlistPayload = {
   email: ' ANA@Empresa.CO ',
   country_code: '+57',
   phone: '320 555 1234',
+  referral_source: 'instagram',
 };
 
 const contactPayload = {
@@ -36,6 +37,7 @@ const contactPayload = {
   country_code: '57',
   phone: '3205551234',
   team_size: '10-30',
+  referral_source: 'linkedin',
   message: 'Queremos automatizar soporte.',
   ecosystem: 'grow',
 };
@@ -113,6 +115,13 @@ describe('POST /api/contact', () => {
   it('rechaza un team_size fuera del catálogo', async () => {
     const res = await post('/api/contact', { ...contactPayload, team_size: 'mil' });
     expect(res.status).toBe(400);
+  });
+
+  it('rechaza un referral_source fuera del catálogo', async () => {
+    const waitlist = await post('/api/waitlist', { ...waitlistPayload, referral_source: 'radio' });
+    const contact = await post('/api/contact', { ...contactPayload, referral_source: 'radio' });
+    expect(waitlist.status).toBe(400);
+    expect(contact.status).toBe(400);
   });
 
   it('bloquea peticiones con Origin de otro dominio', async () => {
