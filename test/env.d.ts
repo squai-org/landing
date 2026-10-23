@@ -1,8 +1,8 @@
-/// <reference types="@cloudflare/vitest-pool-workers/types" />
+/// <reference types="@cloudflare/vitest-plugin/types" />
 
 declare namespace Cloudflare {
   interface Env {
-    TEST_MIGRATIONS: import('@cloudflare/vitest-pool-workers').D1Migration[];
+    TEST_MIGRATIONS: import('@cloudflare/vitest-plugin').D1Migration[];
     TURNSTILE_SECRET_KEY?: string;
   }
 }
