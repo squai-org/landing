@@ -25,6 +25,16 @@ const TURNSTILE = 'https://challenges.cloudflare.com';
  * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-manual
  */
 const BOLD = 'https://checkout.bold.co';
+/**
+ * La libreria de Bold inyecta el CSS de su modal en un <style> dentro del
+ * shadow DOM de <bold-embedded-checkout>. Sin este hash, `style-src` lo
+ * descarta y el iframe aparece sin posicion al final de la pagina en vez de
+ * como modal centrado. Es el SHA-256 de ese CSS en boldPaymentButton.js; si
+ * Bold lo cambia, el modal se rompe y test/build/csp-headers.test.ts avisa al
+ * actualizar test/fixtures/bold-library.js.txt. No se usa 'unsafe-inline': el
+ * navegador lo ignora si hay hashes en la misma directiva.
+ */
+const BOLD_MODAL_STYLE_HASH = "'sha256-HWW5OulSqEamYflM9NfAJzyYXakwOF3M2m1VSzCGOAo='";
 
 /** Bloques <script> y <style> sin `src`/`href`, que son los que necesitan hash. */
 const INLINE_SCRIPT = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
@@ -84,7 +94,7 @@ export default function cspHeaders(options = {}) {
         }
 
         const scriptHashes = new Set();
-        const styleHashes = new Set();
+        const styleHashes = new Set([BOLD_MODAL_STYLE_HASH]);
         for (const file of await htmlFiles(outDir)) {
           const html = await readFile(file, 'utf8');
           collect(html, INLINE_SCRIPT, scriptHashes);

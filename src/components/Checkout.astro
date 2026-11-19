@@ -1,9 +1,9 @@
 ---
 /**
- * Seccion de inscripcion de Squai One con el Boton de pagos de Bold en modo
- * embebido (data-render-mode="embedded"): el formulario de pago se abre en un
- * modal sobre la misma pagina, sin sacar al comprador del sitio.
- * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-manual
+ * Seccion de inscripcion de Squai One con la integracion personalizada de Bold
+ * en modo embebido: el boton es del sitio y la libreria de Bold solo abre el
+ * formulario de pago en un modal sobre la misma pagina.
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
  *
  * Nada de esto se puede resolver en el build: el monto vive en D1 para poder
  * cambiarse sin desplegar y la firma de integridad necesita la llave secreta,
@@ -40,17 +40,18 @@ const { program, ui } = await getSiteContent();
             data-session-endpoint={endpoints.checkoutSession}
             data-library-url={checkout.libraryUrl}
             data-return-path={checkout.returnPath}
-            data-button-style={checkout.buttonStyle}
           >
             <div class="checkout-card-heading">
               <h3 class="display checkout-card-title">{ui.checkout.formTitle}</h3>
               <p class="body checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
             </div>
 
-            <!-- Bold pinta su boton dentro de este contenedor. El hueco se
-                 reserva antes para que la tarjeta no salte al pintarlo. -->
-            <div class="checkout-button" data-bold-mount aria-busy="true">
-              <span class="checkout-skeleton" data-bold-loading aria-hidden="true"></span>
+            <!-- Boton del sitio: se habilita cuando el Worker entrega la venta
+                 firmada y la libreria de Bold esta cargada. -->
+            <div class="checkout-button">
+              <button type="button" class="btn btn-dark btn-block" data-bold-pay disabled aria-busy="true">
+                <span class="btn-label">{checkout.buttonLabel}</span>
+              </button>
             </div>
 
             <div class="checkout-status" data-bold-status role="status" aria-live="polite"></div>
@@ -94,34 +95,30 @@ const { program, ui } = await getSiteContent();
 </section>
 
 <script>
+  import { boldCheckoutConfig, type CheckoutSession } from '../lib/bold-checkout';
   import type { ClientCopy } from '../lib/content';
 
   // Las cadenas llegan por data-client-copy, como el resto del JS de cliente:
   // el contenido se lee en el servidor, no se importa en el navegador.
   const { feedback } = JSON.parse(document.body.dataset.clientCopy!) as ClientCopy;
 
-  interface CheckoutSession {
-    apiKey: string;
-    orderId: string;
-    amount: number;
-    currency: string;
-    description: string;
-    integritySignature: string;
+  declare global {
+    interface Window {
+      BoldCheckout: new (config: ReturnType<typeof boldCheckoutConfig>) => { open(): void };
+    }
   }
 
   const root = document.querySelector<HTMLElement>('[data-bold-checkout]');
 
   if (root) {
-    const mount = root.querySelector<HTMLElement>('[data-bold-mount]');
-    const loading = root.querySelector<HTMLElement>('[data-bold-loading]');
+    const payButton = root.querySelector<HTMLButtonElement>('[data-bold-pay]');
     const status = root.querySelector<HTMLElement>('[data-bold-status]');
     const priceSlot = document.querySelector<HTMLElement>('[data-bold-price]');
     const currencySlot = document.querySelector<HTMLElement>('[data-bold-currency]');
     const plan = root.dataset.plan ?? '';
 
     const fail = () => {
-      loading?.remove();
-      mount?.removeAttribute('aria-busy');
+      payButton?.removeAttribute('aria-busy');
       if (status) status.textContent = feedback.checkoutError;
     };
 
@@ -134,34 +131,29 @@ const { program, ui } = await getSiteContent();
       if (currencySlot) currencySlot.textContent = currency;
     };
 
+    const loadLibrary = () =>
+      new Promise<void>((resolve, reject) => {
+        const library = document.createElement('script');
+        library.src = root.dataset.libraryUrl ?? '';
+        library.async = true;
+        library.onload = () => resolve();
+        library.onerror = () => reject(new Error('bold_library'));
+        document.head.appendChild(library);
+      });
+
     /**
-     * El orden importa: primero se inserta el <script data-bold-button>, y solo
-     * despues la libreria. La libreria busca ese tag cuando carga, asi que si
-     * llegara antes no encontraria nada que pintar.
+     * Integracion personalizada de Bold: el boton es de la pagina y la libreria
+     * (window.BoldCheckout) solo abre el modal embebido. Asi el boton lleva el
+     * estilo del sitio y no el de Bold.
      */
-    const renderButton = (session: CheckoutSession) => {
-      if (!mount) return;
-
-      const button = document.createElement('script');
-      button.setAttribute('data-bold-button', root.dataset.buttonStyle ?? 'dark-L');
-      button.setAttribute('data-render-mode', 'embedded');
-      button.setAttribute('data-api-key', session.apiKey);
-      button.setAttribute('data-order-id', session.orderId);
-      button.setAttribute('data-amount', String(session.amount));
-      button.setAttribute('data-currency', session.currency);
-      button.setAttribute('data-integrity-signature', session.integritySignature);
-      button.setAttribute('data-description', session.description);
-      button.setAttribute('data-redirection-url', `${window.location.origin}${root.dataset.returnPath ?? '/'}`);
-      mount.appendChild(button);
-
-      const library = document.createElement('script');
-      library.src = root.dataset.libraryUrl ?? '';
-      library.async = true;
-      library.onerror = fail;
-      document.head.appendChild(library);
-
-      loading?.remove();
-      mount.removeAttribute('aria-busy');
+    const enableButton = (session: CheckoutSession) => {
+      if (!payButton) return;
+      const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
+      payButton.addEventListener('click', () => {
+        new window.BoldCheckout(boldCheckoutConfig(session, redirectionUrl)).open();
+      });
+      payButton.disabled = false;
+      payButton.removeAttribute('aria-busy');
     };
 
     const start = async () => {
@@ -187,7 +179,8 @@ const { program, ui } = await getSiteContent();
 
         const { session } = (await res.json()) as { session: CheckoutSession };
         showPrice(session.amount, session.currency);
-        renderButton(session);
+        await loadLibrary();
+        enableButton(session);
       } catch {
         fail();
       }
@@ -279,15 +272,7 @@ const { program, ui } = await getSiteContent();
   .checkout-card-heading { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
   .checkout-card-title { color: var(--midnight); font-size: clamp(19px, 1.55vw, 27px); }
   .checkout-card-subtitle { color: var(--midnight); }
-  /* Reserva la altura del boton de Bold para que la tarjeta no salte cuando
-     la libreria lo pinta. */
-  .checkout-button { display: flex; align-items: center; min-height: 56px; }
-  .checkout-skeleton {
-    width: min(280px, 100%);
-    height: 48px;
-    border-radius: var(--radius-pill);
-    background: color-mix(in srgb, var(--midnight) 8%, transparent);
-  }
+  .checkout-button { display: flex; }
   .checkout-status { margin-top: 12px; color: var(--ink-body); font-size: 14px; }
   .checkout-status:empty { margin-top: 0; }
   .checkout-legal { margin: 18px 0 0; color: var(--ink-body); font-size: 14px; line-height: 1.4; }
