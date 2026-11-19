@@ -98,6 +98,26 @@ describe('POST /api/checkout/session', () => {
     expect(JSON.stringify(body)).not.toContain(TEST_SECRET_KEY);
   });
 
+  it('usa como descripcion de la venta el nombre del plan que hay en D1', async () => {
+    // Bold muestra esta descripcion al comprador: tiene que salir de la tabla y
+    // no de un texto fijo en el codigo, para poder cambiarla sin desplegar.
+    await env.DB.prepare('UPDATE payment_plans SET description = ? WHERE code = ?')
+      .bind('Plan de prueba desde D1', 'squai-one')
+      .run();
+
+    try {
+      const res = await postSession(enrollmentPayload);
+
+      expect(res.status).toBe(201);
+      const { session } = (await res.json()) as { session: { description: string } };
+      expect(session.description).toBe('Plan de prueba desde D1');
+    } finally {
+      await env.DB.prepare('UPDATE payment_plans SET description = ? WHERE code = ?')
+        .bind('Fundamentos de Inteligencia Artificial Generativa', 'squai-one')
+        .run();
+    }
+  });
+
   it('ignora el monto que mande el navegador y cobra el de la base', async () => {
     const res = await postSession({ ...enrollmentPayload, amount: 1000, currency: 'USD' });
 

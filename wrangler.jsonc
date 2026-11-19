@@ -6,6 +6,12 @@
   "observability": {
     "enabled": true
   },
+  // Workers Builds corre `npx wrangler preview` en las ramas que no son la de
+  // produccion y exige este bloque aunque este vacio. Los Previews no heredan
+  // los bindings de produccion (D1, rate limit, llaves de Bold): hasta que se
+  // les asigne una base de pruebas, /api/* no funciona en una preview.
+  // https://developers.cloudflare.com/workers/previews/configuration/
+  "previews": {},
   "assets": {
     "directory": "./dist",
     "run_worker_first": ["/api/*"]
