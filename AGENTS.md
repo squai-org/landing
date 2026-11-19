@@ -45,6 +45,9 @@ Squai's marketing site (https://squai.io): a static Astro site plus a lead-captu
 * `pnpm typecheck` covers only `src/server`; the root `tsconfig.json` excludes it, and Astro files are not checked by it. `pnpm build` is what catches content and Astro errors.
 * `README.md` links to `docs/pages-cms.md`, `docs/pages-cms-inventario.md` and `docs/cloudflare-setup.md`, which do not exist, and says team photos are in `public/images/` when they are in `src/assets/`. Do not rely on those references.
 * To check the built site with production routing and headers, use `pnpm build && node docs/scripts/serve-dist.mjs`; a generic static server returns 404 on internal routes.
+* Production builds run on Cloudflare Workers Builds, not GitHub Actions. The image pins pnpm `9.10.0`, takes Node from `.node-version`, and already runs `pnpm install --frozen-lockfile` before the build command — do not repeat the install there. Never state what that image does from memory; check `developers.cloudflare.com/workers/ci-cd/builds/`.
+* Before changing anything the build touches (`package.json` scripts or `pnpm.onlyBuiltDependencies`, `.node-version`, lockfile, a new root config file), run the real sequence in a clean clone with those exact versions — `pnpm install --frozen-lockfile && pnpm verify`. Passing with the local pnpm or Node proves nothing: a version skew is what breaks the deploy.
+* `pnpm install` on pnpm 11 writes a `pnpm-workspace.yaml` stub. It is gitignored; never commit it. pnpm 9 requires a `packages:` field in that file and the production build dies with `ERROR packages field missing or empty` before installing anything.
 
 ## Maintenance
 

@@ -109,26 +109,66 @@ configuración del Worker, no en un `.yml`:
 
 Workers & Pages → `landing-page` → Settings → **Builds**
 
-| Campo | Valor |
-| --- | --- |
-| Build command | `pnpm install --frozen-lockfile && pnpm verify` |
-| Deploy command | `pnpm deploy:ci` |
+| Campo | Valor | Por defecto traía |
+| --- | --- | --- |
+| Build command | `pnpm verify` | vacío |
+| Deploy command | `pnpm deploy:ci` | `npx wrangler deploy` |
+| Preview command | dejar el valor por defecto | `npx wrangler preview` |
 
-Workers Builds detecta la versión de pnpm por su cuenta (hoy `pnpm@9.10.0`) y
-lee los scripts de instalación permitidos de `pnpm.onlyBuiltDependencies` en
-`package.json`. **No agregar `pnpm-workspace.yaml`**: pnpm 9 exige en ese archivo
-un campo `packages:` y, sin él, `pnpm install` muere con
-`ERROR packages field missing or empty` antes de instalar nada. Con pnpm 11 en
-local el mismo `install` avisa `ERR_PNPM_IGNORED_BUILDS` y sale con código 1,
-cosa que rompe los comandos `pnpm <script>` posteriores; mientras local y CI no
-usen la misma versión, en local conviene invocar los binarios directamente
-(`npx vitest run`, `npx astro build`).
+**El Build command no lleva `pnpm install`.** Workers Builds instala las
+dependencias por su cuenta antes de ejecutarlo; en el registro del build se ve
+como `Installing project dependencies: pnpm install --frozen-lockfile`.
+Repetirlo solo alarga el build.
 
-`pnpm verify` corre `pnpm test` y `pnpm build`. Si un test falla, el comando
-sale con código distinto de cero, Workers Builds no ejecuta el deploy y
-producción se queda en la versión anterior. `pnpm deploy:ci` aplica las
-migraciones pendientes (`db:migrate:remote`) antes de `wrangler deploy`, así que
+`pnpm verify` corre `pnpm test` y `pnpm build`. Si un test falla, sale con
+código distinto de cero y Workers Builds no ejecuta el deploy: producción se
+queda en la versión anterior. `pnpm deploy:ci` aplica las migraciones pendientes
+(`db:migrate:remote`) antes de `wrangler deploy`, así que
 `0003_bold_checkout.sql` entra con el primer despliegue.
+
+El **Preview command** corre en las ramas que no son la de producción y, por
+defecto, no aplica migraciones: una preview levantada antes del primer deploy a
+producción no encuentra `payment_plans` y `/api/checkout/plan/squai-one`
+responde 404. Después del primer deploy el problema desaparece, porque la
+preview usa la misma base D1 que producción.
+
+### Versiones de la imagen de build
+
+Según la [documentación de la imagen][img], la imagen fija **pnpm `9.10.0`** y
+toma Node de `.node-version` (aquí `22.23.4`). Se cambian con las variables
+`PNPM_VERSION` y `NODE_VERSION` en Settings → Build → Build variables, o con el
+campo `packageManager` de `package.json`, que tiene prioridad sobre
+`PNPM_VERSION`. La versión anotada en `pnpm-lock.yaml` **no** fija nada.
+
+Dos consecuencias que ya rompieron un despliegue:
+
+- **No versionar `pnpm-workspace.yaml`.** pnpm 11 lo crea solo en cada
+  `pnpm install` con un stub de `allowBuilds`, y pnpm 9 exige en él un campo
+  `packages:`: sin él el build muere con
+  `ERROR packages field missing or empty` antes de instalar nada. Está en
+  `.gitignore`. Los scripts de instalación permitidos viven en
+  `pnpm.onlyBuiltDependencies`, dentro de `package.json`, que pnpm 9 sí lee.
+- **Las Build variables no existen en runtime.** La documentación lo dice
+  explícito, así que `BOLD_IDENTITY_KEY` y `BOLD_SECRET_KEY` van en
+  Settings → **Variables and Secrets**, no en Settings → Build.
+
+[img]: https://developers.cloudflare.com/workers/ci-cd/builds/build-image/
+
+### Comprobar el gate antes de empujar
+
+Un `pnpm verify` que pasa en local no prueba que el build de producción pase: la
+pnpm y el Node locales suelen ser otros. La secuencia equivalente, en un clon
+limpio y con las versiones de la imagen:
+
+```bash
+git clone -b <rama> <repo> /tmp/ci-check && cd /tmp/ci-check
+# node 22.23.4 y pnpm 9.10.0 en el PATH
+pnpm install --frozen-lockfile && pnpm verify
+```
+
+Las dos órdenes deben salir con código 0. Así se detectó que un
+`pnpm-workspace.yaml` versionado rompía el install, y que Astro exige Node
+`>=22.23.4` (un 22.23.0 falla el build aunque los tests pasen).
 
 Lo que cubre el gate:
 
