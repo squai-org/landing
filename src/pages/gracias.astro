@@ -1,0 +1,192 @@
+---
+/**
+ * Pagina de retorno del checkout de Bold.
+ *
+ * Bold devuelve al comprador aqui con `bold-order-id` y `bold-tx-status` en la
+ * URL, pero ese estado es provisional y, sobre todo, lo puede escribir
+ * cualquiera en la barra de direcciones. Asi que esta pagina no lo lee: le
+ * pregunta al Worker, que a su vez consulta la API de Bold y actualiza la
+ * inscripcion. El veredicto siempre viene del servidor.
+ *
+ * El webhook hace el mismo trabajo por detras, para quien cierre la pestana
+ * sin volver.
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/consulta-de-transacciones
+ */
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+import { endpoints } from '../config/endpoints';
+import { checkout } from '../config/checkout';
+import { getSiteContent } from '../lib/content';
+
+const { ui } = await getSiteContent();
+const { thanks } = ui.checkout;
+---
+
+<Layout title={thanks.approvedTitle} description={thanks.approvedBody} noindex>
+  <div class="page-frame">
+    <Header />
+
+    <main id="contenido">
+      <section class="section">
+        <div class="shell">
+          <div
+            class="thanks-card card-pad-lg"
+            data-thanks
+            data-status-endpoint={endpoints.checkoutStatus}
+            data-back-path={`/servicios/${checkout.plan}`}
+          >
+            <p class="thanks-state" data-thanks-state="checking">
+              <span class="thanks-spinner" aria-hidden="true"></span>{thanks.checking}
+            </p>
+
+            <div class="thanks-state" data-thanks-state="approved" hidden>
+              <h1 class="display d-h2 thanks-title">{thanks.approvedTitle}</h1>
+              <p class="lead thanks-body">{thanks.approvedBody}</p>
+            </div>
+
+            <div class="thanks-state" data-thanks-state="pending" hidden>
+              <h1 class="display d-h2 thanks-title">{thanks.pendingTitle}</h1>
+              <p class="lead thanks-body">{thanks.pendingBody}</p>
+            </div>
+
+            <div class="thanks-state" data-thanks-state="rejected" hidden>
+              <h1 class="display d-h2 thanks-title">{thanks.rejectedTitle}</h1>
+              <p class="lead thanks-body">{thanks.rejectedBody}</p>
+            </div>
+
+            <div class="thanks-state" data-thanks-state="error" hidden>
+              <h1 class="display d-h2 thanks-title">{thanks.errorTitle}</h1>
+              <p class="lead thanks-body">{thanks.errorBody}</p>
+            </div>
+
+            <p class="thanks-order" data-thanks-order hidden>
+              {thanks.orderLabel}: <code data-thanks-order-id></code>
+            </p>
+
+            <div class="thanks-cta">
+              <Button variant="dark" href={`/servicios/${checkout.plan}`}>{thanks.backCta}</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-thanks]');
+
+  if (root) {
+    const show = (state: string) => {
+      root.querySelectorAll<HTMLElement>('[data-thanks-state]').forEach((block) => {
+        block.hidden = block.dataset.thanksState !== state;
+      });
+    };
+
+    /** Bold solo documenta `bold-order-id` como parametro de la vuelta. */
+    const orderId = new URLSearchParams(window.location.search).get('bold-order-id');
+
+    if (!orderId) {
+      show('error');
+    } else {
+      const orderSlot = root.querySelector<HTMLElement>('[data-thanks-order-id]');
+      const orderBox = root.querySelector<HTMLElement>('[data-thanks-order]');
+      if (orderSlot) orderSlot.textContent = orderId;
+      if (orderBox) orderBox.hidden = false;
+
+      // Bold avisa de que una venta tarda hasta diez minutos en aparecer en su
+      // API. No se espera tanto con la pagina abierta: tras ~2 minutos se
+      // muestra "en proceso", que es cierto, y el webhook termina el trabajo.
+      const RETRY_MS = 6000;
+      const MAX_TRIES = 20;
+
+      const check = async (attempt = 1): Promise<void> => {
+        try {
+          const res = await fetch(`${root.dataset.statusEndpoint}?order_id=${encodeURIComponent(orderId)}`, {
+            headers: { Accept: 'application/json' },
+          });
+
+          if (!res.ok) {
+            show('error');
+            return;
+          }
+
+          const { enrollment } = (await res.json()) as { enrollment: { status: string } };
+
+          if (enrollment.status === 'approved') {
+            show('approved');
+            return;
+          }
+
+          if (['rejected', 'failed', 'voided'].includes(enrollment.status)) {
+            show('rejected');
+            return;
+          }
+
+          if (attempt >= MAX_TRIES) {
+            show('pending');
+            return;
+          }
+
+          window.setTimeout(() => void check(attempt + 1), RETRY_MS);
+        } catch {
+          show('error');
+        }
+      };
+
+      void check();
+    }
+  }
+</script>
+
+<style>
+  .page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .thanks-card {
+    max-width: 62ch;
+    margin: clamp(40px, 6vw, 96px) auto;
+    padding: clamp(28px, 3.2vw, 48px);
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    background: var(--surface);
+    text-align: left;
+  }
+  .thanks-title { margin: 0 0 12px; color: var(--ink); }
+  .thanks-body { margin: 0; color: var(--ink-body); }
+  .thanks-state[data-thanks-state='checking'] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: var(--ink-body);
+  }
+  .thanks-spinner {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--line);
+    border-top-color: var(--periwinkle-ink);
+    border-radius: 50%;
+    animation: thanks-spin 900ms linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .thanks-spinner { animation: none; }
+  }
+  @keyframes thanks-spin {
+    to { transform: rotate(360deg); }
+  }
+  .thanks-order {
+    margin: 20px 0 0;
+    color: var(--ink-body);
+    font-size: 14px;
+  }
+  .thanks-order code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    word-break: break-all;
+  }
+  .thanks-cta { margin-top: clamp(24px, 2.6vw, 36px); }
+</style>

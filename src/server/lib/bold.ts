@@ -88,3 +88,72 @@ export const verifyBoldWebhookSignature = async (
 
   return crypto.subtle.verify('HMAC', key, expected, new TextEncoder().encode(toBase64(rawBody)));
 };
+
+/**
+ * Consulta de transacciones del Boton de pagos.
+ *
+ * La ruta lleva el mismo data-order-id que se firmo y la cabecera va con la
+ * LLAVE DE IDENTIDAD, no con la secreta. Bold avisa de dos cosas: la venta
+ * puede tardar hasta 10 minutos en aparecer (hasta entonces responde
+ * NO_TRANSACTION_FOUND) y solo queda consultable 24 horas.
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/consulta-de-transacciones
+ */
+const VOUCHER_URL = 'https://payments.api.bold.co/v2/payment-voucher';
+
+/** En curso: PROCESSING y, solo en PSE, PENDING. Finales: el resto. */
+export const BOLD_PAYMENT_STATUSES = [
+  'NO_TRANSACTION_FOUND',
+  'PROCESSING',
+  'PENDING',
+  'APPROVED',
+  'REJECTED',
+  'FAILED',
+  'VOIDED',
+] as const;
+
+export type BoldPaymentStatus = (typeof BOLD_PAYMENT_STATUSES)[number];
+
+export interface BoldVoucher {
+  status: BoldPaymentStatus;
+  transactionId: string | null;
+  total: number | null;
+  paymentMethod: string | null;
+  payerEmail: string | null;
+  transactionDate: string | null;
+}
+
+interface VoucherResponse {
+  payment_status?: string;
+  transaction_id?: string;
+  total?: number;
+  payment_method?: string;
+  payer_email?: string;
+  transaction_date?: string;
+}
+
+export const fetchBoldPaymentStatus = async (
+  identityKey: string,
+  orderId: string
+): Promise<BoldVoucher> => {
+  const res = await fetch(`${VOUCHER_URL}/${encodeURIComponent(orderId)}`, {
+    headers: { Authorization: `x-api-key ${identityKey}`, Accept: 'application/json' },
+  });
+
+  if (!res.ok) {
+    throw new Error(`La consulta de transacciones de Bold respondio ${res.status}.`);
+  }
+
+  const body = (await res.json()) as VoucherResponse;
+  const status = body.payment_status as BoldPaymentStatus | undefined;
+
+  return {
+    // Un estado que no conocemos se trata como "todavia no hay nada": no se
+    // puede dar por buena una venta por un valor que no esta documentado.
+    status: status && BOLD_PAYMENT_STATUSES.includes(status) ? status : 'NO_TRANSACTION_FOUND',
+    transactionId: body.transaction_id ?? null,
+    total: body.total ?? null,
+    paymentMethod: body.payment_method ?? null,
+    payerEmail: body.payer_email ?? null,
+    transactionDate: body.transaction_date ?? null,
+  };
+};

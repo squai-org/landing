@@ -14,21 +14,31 @@ Referencias: [integración manual][manual] · [ambiente de pruebas][pruebas] ·
 
 ## Cómo encaja
 
+Doble validación: la vuelta del comprador confirma contra la API de Bold, y el
+webhook cubre a quien nunca vuelve.
+
 ```
 navegador                         Worker                         Bold
 ---------                         ------                         ----
-GET  /api/checkout/plan/squai-one  -> lee payment_plans (D1)
-                                   <- { amount, currency }        (pinta el precio)
-POST /api/checkout/session         -> lee el plan + firma con
-                                      BOLD_SECRET_KEY
-                                   <- { apiKey, orderId, amount,
-                                        currency, signature }
-<script data-bold-button ...>  ------------------------------->  abre el modal
+formulario de inscripción
+POST /api/checkout/session         -> Turnstile, valida campos,
+                                      lee el precio de payment_plans,
+                                      INSERT enrollments (pending),
+                                      firma con BOLD_SECRET_KEY
+                                   <- { apiKey, orderId, amount, firma }
+<script data-bold-button ...>  ------------------------------->  modal de pago
+                                                                      |
+/gracias?bold-order-id=...  <-----------------------------------------+
+GET /api/checkout/status           -> GET payments.api.bold.co
+                                      /v2/payment-voucher/{orderId}
+                                   <- payment_status
+                                   -> enrollments.status
+   (y en paralelo, pase lo que pase con el navegador)
 POST /api/checkout/webhook        <- SALE_APPROVED / SALE_REJECTED / VOID_*
-                                   -> bold_transactions (D1)
+                                   -> bold_transactions + enrollments.status
 ```
 
-Dos reglas que no se pueden relajar:
+Cuatro reglas que no se pueden relajar:
 
 1. **La firma se calcula en el Worker.** Es `SHA-256` de
    `{orderId}{amount}{currency}{llaveSecreta}` concatenados sin separadores. Si
@@ -36,6 +46,44 @@ Dos reglas que no se pueden relajar:
 2. **El monto sale de la base, no del navegador.** `POST /api/checkout/session`
    ignora cualquier `amount` que llegue en el cuerpo. El precio que se pinta en
    la tarjeta es el mismo que se firma.
+3. **La inscripción se guarda antes de pagar.** El `order-id` es lo único que
+   liga un pago con una persona. Además deja rastro de quien empieza y no
+   termina.
+4. **La URL de retorno no decide nada.** Bold añade `bold-tx-status`, pero
+   cualquiera puede escribirlo a mano y el propio Bold advierte de que ese
+   estado puede no ser el definitivo. `/gracias` solo muestra lo que responde
+   `GET /api/checkout/status`, que pregunta a Bold desde el servidor.
+
+### Las dos tablas
+
+`enrollments` es el estado de negocio: una fila por intento, con los datos de la
+persona, el `order_id` y el estado del pago. `bold_transactions` es el registro
+crudo de lo que mandó el webhook, para auditar un cobro disputado.
+
+Los dos caminos de confirmación —la consulta de `/gracias` y el webhook—
+escriben la misma fila con `applyEnrollmentPayment`, que es idempotente y no
+degrada: una inscripción ya aprobada solo cambia si llega una anulación. Da
+igual quién llegue primero.
+
+### La consulta de estado
+
+```
+GET https://payments.api.bold.co/v2/payment-voucher/{data-order-id}
+Authorization: x-api-key <LLAVE DE IDENTIDAD>
+```
+
+Ojo con la llave: esta consulta usa la **de identidad**, no la secreta. La
+secreta solo firma.
+
+`payment_status` puede ser `NO_TRANSACTION_FOUND` (aún no hay intento),
+`PROCESSING`, `PENDING` (solo PSE), `APPROVED`, `REJECTED`, `FAILED` o
+`VOIDED`. Bold avisa de dos límites: una venta tarda **hasta 10 minutos** en
+aparecer y solo queda consultable **24 horas**. Por eso `/gracias` reintenta
+unos dos minutos y, si para entonces no hay veredicto, muestra "en proceso" y
+deja que el webhook termine el trabajo.
+
+Si la inscripción ya tiene un estado final, el Worker responde desde D1 sin
+volver a llamar a Bold.
 
 ## Dónde se configuran las llaves
 
@@ -197,10 +245,21 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
 ```
 
 1. La tarjeta de inversión muestra el precio que tiene `payment_plans`.
-2. El botón de Bold aparece y abre el modal **sobre la página**, sin navegar.
-3. El modal lleva la etiqueta amarilla **Modo de pruebas**.
-4. La consola del navegador no reporta nada bloqueado por CSP.
-5. Pagar con cada dato de prueba de Bold y comprobar el resultado:
+2. El botón de Bold **no** aparece hasta enviar el formulario. Al enviarlo debe
+   quedar una fila en `enrollments` con `status = 'pending'`:
+
+   ```bash
+   wrangler d1 execute squai --local --command "SELECT order_id, status, email FROM enrollments"
+   ```
+3. El botón abre el modal **sobre la página**, sin navegar, con los datos de la
+   persona ya prellenados.
+4. El modal lleva la etiqueta amarilla **Modo de pruebas**.
+5. La consola del navegador no reporta nada bloqueado por CSP.
+6. Al terminar, el comprador llega a `/gracias?bold-order-id=...`, que debe
+   confirmar contra Bold y dejar la inscripción en su estado final. Comprobar
+   también que escribir `?bold-tx-status=approved` a mano **no** pinta la
+   pantalla de éxito.
+7. Pagar con cada dato de prueba de Bold y comprobar el resultado:
 
    | Dato | Resultado esperado |
    | --- | --- |
@@ -239,10 +298,12 @@ al lado de `BOLD` en la integración y se vuelve a construir sin la variable.
 
 ## Lo que queda fuera
 
-- **No hay página de confirmación propia.** El comprador ve el resumen de compra
-  de Bold dentro del modal y vuelve a `/servicios/squai-one`, donde Bold añade
-  `bold-order-id` y `bold-tx-status` a la URL. Ese estado puede no ser
-  definitivo: el registro que vale es el del webhook.
+- **El comportamiento del modo embebido al terminar el pago no está claro en la
+  documentación de Bold**: dice que el comprador "será dirigido al resumen de la
+  compra dentro de tu sitio web **o** a la URL que hayas configurado". Hay que
+  verificar en el ambiente de pruebas si la página padre llega de verdad a
+  `/gracias`. Si no llegara, el webhook sigue registrando la venta, pero el
+  comprador se quedaría sin confirmación en el sitio.
 - **La tabla `waitlist_signups` sigue existiendo** con los registros de la lista
   de espera, aunque `/api/waitlist` ya no exista. No se borra para no perder esos
   datos.
