@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Escribe la Content-Security-Policy en dist/_headers al terminar el build.
@@ -18,6 +19,12 @@ import path from 'node:path';
 
 const MARKER = '# @csp@';
 const TURNSTILE = 'https://challenges.cloudflare.com';
+/**
+ * Boton de pagos de Bold: la libreria se carga desde este origen y el checkout
+ * embebido abre su formulario en un iframe del mismo origen.
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-manual
+ */
+const BOLD = 'https://checkout.bold.co';
 
 /** Bloques <script> y <style> sin `src`/`href`, que son los que necesitan hash. */
 const INLINE_SCRIPT = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
@@ -58,7 +65,10 @@ export default function cspHeaders(options = {}) {
     name: 'squai:csp-headers',
     hooks: {
       'astro:build:done': async ({ dir, logger }) => {
-        const outDir = path.resolve(dir.pathname);
+        // fileURLToPath y no dir.pathname: en Windows ese pathname es
+        // /C:/... y path.resolve lo convierte en C:\C:\..., con lo que el
+        // build no encontraba dist/_headers y se quedaba sin CSP en local.
+        const outDir = fileURLToPath(dir);
         const headersFile = path.join(outDir, '_headers');
 
         let template;
@@ -92,16 +102,16 @@ export default function cspHeaders(options = {}) {
           "object-src 'none'",
           "img-src 'self' data:",
           "font-src 'self'",
-          `script-src 'self' ${[...scriptHashes].join(' ')} ${TURNSTILE}`,
+          `script-src 'self' ${[...scriptHashes].join(' ')} ${TURNSTILE} ${BOLD}`,
           `style-src 'self'${styleHashes.size ? ' ' + [...styleHashes].join(' ') : ''}`,
           // Los atributos style="" del HTML (el color del verbo del hero, los
           // botones sociales del footer) los gobierna style-src-attr. Sin esto
           // se bloquean, y no se pueden cubrir con hash porque no son elementos.
           "style-src-attr 'unsafe-inline'",
-          `connect-src 'self' ${TURNSTILE}`,
+          `connect-src 'self' ${TURNSTILE} ${BOLD}`,
           // Turnstile se renderiza dentro de un iframe de su propio origen.
           // https://developers.cloudflare.com/turnstile/
-          `frame-src ${TURNSTILE}`,
+          `frame-src ${TURNSTILE} ${BOLD}`,
           'upgrade-insecure-requests',
         ];
 

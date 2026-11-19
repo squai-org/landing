@@ -134,7 +134,7 @@
         "sending": "Mandando esto al lugar correcto…",
         "error": "Eso no salió como debía. Inténtalo otra vez o escríbenos a team@squai.io.",
         "contactSuccess": "Listo, ya nos llegó. Te abrimos la agenda en otra pestaña para que elijas el horario de tu llamada.",
-        "waitlistSuccess": "¡Quedaste registrado! Te avisaremos al correo apenas abramos los cupos del programa.",
+        "checkoutError": "No pudimos abrir el pago. Recarga la página e inténtalo de nuevo o escríbenos a team@squai.io.",
         "fieldRequired": "Completa este campo.",
         "fieldEmail": "Escribe un correo con formato válido, como nombre@dominio.com.",
         "turnstileError": "No pudimos completar la verificación de seguridad. Revisa tu conexión e inténtalo de nuevo.",
@@ -145,23 +145,21 @@
         "schedule": "Modalidad",
         "modality": "Resultado"
       },
-      "waitlist": {
-        "title": "Preinscríbete a nuestro programa para aprender IA",
+      "checkout": {
+        "title": "Inscríbete a nuestro programa para aprender IA",
         "copy": [
-          "Déjanos tu correo y serás el primero en enterarte cuando abramos el próximo programa. Esto no te cuesta nada, solo aseguras tu lugar en la fila.",
+          "Paga en línea y tu cupo queda reservado en el mismo momento. Te llega la confirmación al correo con los datos del programa.",
           "Los cupos son limitados. Creemos que en una clase con muchas personas te conviertes en un avatar silenciado y las preguntas se pierden en el chat.",
-          "Prometemos no enviarte correos diarios de spam."
+          "Es un pago único por todo el programa. No hay cobros automáticos después."
         ],
         "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
-        "formSubtitle": "Lista de espera abierta. Porque lo bueno se hace esperar.",
+        "formSubtitle": "Inscripciones abiertas. Pagas con tarjeta, PSE o Nequi.",
         "investment": {
-          "eyebrow": "INVERSIÓN AL ABRIR CUPOS",
+          "eyebrow": "INVERSIÓN",
           "copy": [
-            "No pagas ahora. Solo pagas si obtienes un cupo.",
+            "Un solo pago por las cinco semanas del programa.",
             "Cuesta menos que seguir perdiendo horas intentando entender la IA por tu cuenta."
           ],
-          "price": "$399.000",
-          "currency": "COP",
           "referencePrice": "/ $129 USD"
         }
       },
@@ -719,7 +717,7 @@
       }
     ],
     "program": {
-      "status": "Lista de espera abierta",
+      "status": "Inscripciones abiertas",
       "name": "Fundamentos de Inteligencia Artificial Generativa",
       "ecosystem": "Squai One",
       "duration": "5 semanas · 20 horas. Menos de lo que pasas en redes sociales.",

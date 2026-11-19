@@ -2,15 +2,13 @@ import { badRequest, forbidden } from '../lib/http';
 import { normalizePhone } from '../lib/phone';
 import { verifyTurnstileToken } from '../lib/turnstile';
 import { insertContactRequest } from '../repositories/contact.repository';
-import { upsertWaitlistSignup, type WaitlistUpsertResult } from '../repositories/waitlist.repository';
 import type { ContactInput } from '../schemas/contact.schema';
-import type { WaitlistInput } from '../schemas/waitlist.schema';
 import type { Env, RequestMeta } from '../types';
 
 const assertHuman = async (
   env: Env,
   token: string | undefined,
-  expectedAction: 'contact' | 'waitlist',
+  expectedAction: 'contact',
   meta: RequestMeta
 ) => {
   const secret = env.TURNSTILE_SECRET_KEY;
@@ -52,28 +50,6 @@ const requirePhone = (countryCode: string, phone: string) => {
   }
 
   return normalized;
-};
-
-export const submitWaitlist = async (
-  env: Env,
-  input: WaitlistInput,
-  meta: RequestMeta
-): Promise<WaitlistUpsertResult> => {
-  await assertHuman(env, input['cf-turnstile-response'], 'waitlist', meta);
-
-  const phone = requirePhone(input.country_code, input.phone);
-
-  return upsertWaitlistSignup(env.DB, {
-    fullName: input.full_name,
-    email: input.email,
-    countryCode: phone.countryCode,
-    phone: phone.nationalNumber,
-    phoneE164: phone.e164,
-    referralSource: input.referral_source,
-    sourcePage: meta.sourcePage,
-    ipCountry: meta.ipCountry,
-    userAgent: meta.userAgent,
-  });
 };
 
 export const submitContactRequest = async (

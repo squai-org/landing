@@ -1,0 +1,19 @@
+# Secretos del Worker para `pnpm preview:worker` (wrangler dev).
+#
+# Copia este archivo a .dev.vars, que esta en .gitignore. No van en .env:
+# el sitio se compila estatico, asi que cualquier variable de .env termina
+# dentro del HTML publicado. Estas las lee el Worker en tiempo de ejecucion.
+#
+# En produccion se configuran como Secret en el panel de Cloudflare:
+# Workers & Pages -> landing-page -> Settings -> Variables and Secrets.
+# Ver docs/bold-checkout.md.
+
+# Llaves de PRUEBA del Boton de pagos de Bold (bold.co -> Integraciones ->
+# Llaves de integracion -> Boton de pagos). Las dos tienen que ser del mismo
+# ambiente o Bold responde con un error.
+BOLD_IDENTITY_KEY=
+BOLD_SECRET_KEY=
+
+# Turnstile (formulario de contacto)
+TURNSTILE_SECRET_KEY=
+TURNSTILE_HOSTNAME=

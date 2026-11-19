@@ -1,0 +1,304 @@
+---
+/**
+ * Seccion de inscripcion de Squai One con el Boton de pagos de Bold en modo
+ * embebido (data-render-mode="embedded"): el formulario de pago se abre en un
+ * modal sobre la misma pagina, sin sacar al comprador del sitio.
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-manual
+ *
+ * Nada de esto se puede resolver en el build: el monto vive en D1 para poder
+ * cambiarse sin desplegar y la firma de integridad necesita la llave secreta,
+ * que no puede salir del Worker. Asi que la pagina pide una sesion a
+ * /api/checkout/session y pinta el precio que esa misma sesion firma: lo que se
+ * muestra y lo que cobra Bold no pueden separarse.
+ */
+import { endpoints } from '../config/endpoints';
+import { checkout } from '../config/checkout';
+import { getSiteContent } from '../lib/content';
+
+const { program, ui } = await getSiteContent();
+---
+
+<section class="section tint">
+  <div id="lista" class="shell">
+    <div class="bento checkout-grid">
+      <div class="checkout-column span-4 row-5">
+        <div class="checkout-sticky">
+          <h2 class="display d-h2 checkout-title">{ui.checkout.title}</h2>
+          <div class="checkout-copy">
+            {
+              ui.checkout.copy.map((paragraph, index) => (
+                <p class={`lead${index === ui.checkout.copy.length - 1 ? ' checkout-promise' : ''}`}>{paragraph}</p>
+              ))
+            }
+          </div>
+
+          <div
+            class="card-pad-lg checkout-card"
+            data-bold-checkout
+            data-plan={checkout.plan}
+            data-plan-endpoint={endpoints.checkoutPlan}
+            data-session-endpoint={endpoints.checkoutSession}
+            data-library-url={checkout.libraryUrl}
+            data-return-path={checkout.returnPath}
+            data-button-style={checkout.buttonStyle}
+          >
+            <div class="checkout-card-heading">
+              <h3 class="display checkout-card-title">{ui.checkout.formTitle}</h3>
+              <p class="body checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
+            </div>
+
+            <!-- Bold pinta su boton dentro de este contenedor. El hueco se
+                 reserva antes para que la tarjeta no salte al pintarlo. -->
+            <div class="checkout-button" data-bold-mount aria-busy="true">
+              <span class="checkout-skeleton" data-bold-loading aria-hidden="true"></span>
+            </div>
+
+            <div class="checkout-status" data-bold-status role="status" aria-live="polite"></div>
+
+            <p class="checkout-legal">
+              {ui.forms.privacyConsentPrefix}<a href="/politica-de-privacidad" target="_blank" rel="noopener"
+                >{ui.forms.privacyConsentLink}</a
+              >{ui.forms.privacyConsentSuffix}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card span-2 row-2 investment-card">
+        <span class="service-eyebrow investment-eyebrow">
+          <span class="service-eyebrow-dot" aria-hidden="true"></span>
+          <span class="service-eyebrow-text">{ui.checkout.investment.eyebrow}</span>
+        </span>
+        {ui.checkout.investment.copy.map((paragraph) => <p class="body investment-copy">{paragraph}</p>)}
+        <div class="investment-price">
+          <h3 class="display">
+            <span data-bold-price>&nbsp;</span> <span data-bold-currency>&nbsp;</span>
+          </h3>
+          <p class="body">{ui.checkout.investment.referencePrice}</p>
+        </div>
+      </div>
+      <div class="bento-card span-2 peri program-detail-card">
+        <h3 class="display d-h3">{ui.program.duration}</h3>
+        <p class="body">{program.duration}</p>
+      </div>
+      <div class="bento-card span-2 teal program-detail-card">
+        <h3 class="display d-h3">{ui.program.schedule}</h3>
+        <p class="body">{program.schedule}</p>
+      </div>
+      <div class="bento-card span-2 gold program-detail-card">
+        <h3 class="display d-h3">{ui.program.modality}</h3>
+        <p class="body">{program.modality}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import type { ClientCopy } from '../lib/content';
+
+  // Las cadenas llegan por data-client-copy, como el resto del JS de cliente:
+  // el contenido se lee en el servidor, no se importa en el navegador.
+  const { feedback } = JSON.parse(document.body.dataset.clientCopy!) as ClientCopy;
+
+  interface CheckoutSession {
+    apiKey: string;
+    orderId: string;
+    amount: number;
+    currency: string;
+    description: string;
+    integritySignature: string;
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-bold-checkout]');
+
+  if (root) {
+    const mount = root.querySelector<HTMLElement>('[data-bold-mount]');
+    const loading = root.querySelector<HTMLElement>('[data-bold-loading]');
+    const status = root.querySelector<HTMLElement>('[data-bold-status]');
+    const priceSlot = document.querySelector<HTMLElement>('[data-bold-price]');
+    const currencySlot = document.querySelector<HTMLElement>('[data-bold-currency]');
+    const plan = root.dataset.plan ?? '';
+
+    const fail = () => {
+      loading?.remove();
+      mount?.removeAttribute('aria-busy');
+      if (status) status.textContent = feedback.checkoutError;
+    };
+
+    /** Bold cobra enteros sin decimales, asi que no se formatean centavos. */
+    const formatAmount = (amount: number) =>
+      `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(amount)}`;
+
+    const showPrice = (amount: number, currency: string) => {
+      if (priceSlot) priceSlot.textContent = formatAmount(amount);
+      if (currencySlot) currencySlot.textContent = currency;
+    };
+
+    /**
+     * El orden importa: primero se inserta el <script data-bold-button>, y solo
+     * despues la libreria. La libreria busca ese tag cuando carga, asi que si
+     * llegara antes no encontraria nada que pintar.
+     */
+    const renderButton = (session: CheckoutSession) => {
+      if (!mount) return;
+
+      const button = document.createElement('script');
+      button.setAttribute('data-bold-button', root.dataset.buttonStyle ?? 'dark-L');
+      button.setAttribute('data-render-mode', 'embedded');
+      button.setAttribute('data-api-key', session.apiKey);
+      button.setAttribute('data-order-id', session.orderId);
+      button.setAttribute('data-amount', String(session.amount));
+      button.setAttribute('data-currency', session.currency);
+      button.setAttribute('data-integrity-signature', session.integritySignature);
+      button.setAttribute('data-description', session.description);
+      button.setAttribute('data-redirection-url', `${window.location.origin}${root.dataset.returnPath ?? '/'}`);
+      mount.appendChild(button);
+
+      const library = document.createElement('script');
+      library.src = root.dataset.libraryUrl ?? '';
+      library.async = true;
+      library.onerror = fail;
+      document.head.appendChild(library);
+
+      loading?.remove();
+      mount.removeAttribute('aria-busy');
+    };
+
+    const start = async () => {
+      try {
+        // El precio se pinta con la respuesta del plan para que la tarjeta no
+        // quede en blanco si la sesion tarda o falla.
+        const planRes = await fetch(`${root.dataset.planEndpoint}/${plan}`, { headers: { Accept: 'application/json' } });
+        if (planRes.ok) {
+          const { plan: loaded } = (await planRes.json()) as { plan: { amount: number; currency: string } };
+          showPrice(loaded.amount, loaded.currency);
+        }
+
+        const res = await fetch(root.dataset.sessionEndpoint ?? '', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan }),
+        });
+
+        if (!res.ok) {
+          fail();
+          return;
+        }
+
+        const { session } = (await res.json()) as { session: CheckoutSession };
+        showPrice(session.amount, session.currency);
+        renderButton(session);
+      } catch {
+        fail();
+      }
+    };
+
+    void start();
+  }
+</script>
+
+<style>
+  .checkout-grid { align-items: stretch; }
+  .row-5 { grid-row: span 5; }
+  .checkout-column { display: flex; flex-direction: column; min-width: 0; }
+  .checkout-sticky { position: sticky; top: calc(var(--nav-space) + 24px); }
+  .checkout-title { color: var(--ink); }
+  .checkout-copy {
+    max-width: 60ch;
+    margin: clamp(16px, 1.6vw, 24px) 0 clamp(28px, 3vw, 44px);
+    color: var(--ink-body);
+  }
+  .checkout-copy p + p { margin-top: 12px; }
+  /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1; WCAG 2.2 AA exige 4.5:1
+     para texto normal. --periwinkle-ink da 5.65:1. */
+  .checkout-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle-ink); }
+  .program-detail-card {
+    gap: 8px;
+    padding: clamp(20px, 1.8vw, 30px);
+  }
+  .program-detail-card h3 { font-size: clamp(19px, 1.55vw, 27px); }
+  .program-detail-card p { font-size: clamp(16px, .95vw, 18px); }
+  .investment-card {
+    justify-content: space-between;
+    min-height: clamp(320px, 30vw, 460px);
+    background: var(--midnight);
+    border-color: transparent;
+  }
+  .investment-eyebrow {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 22px;
+    background: var(--canvas);
+    border: 1px solid var(--canvas);
+    border-radius: var(--radius-pill);
+  }
+  .service-eyebrow-dot {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--periwinkle);
+  }
+  .service-eyebrow-text {
+    color: var(--midnight);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .investment-price {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .investment-price h3 {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .18em;
+    width: 100%;
+    font-size: clamp(30px, 2.65vw, 50px);
+    white-space: nowrap;
+  }
+  .investment-card .investment-price h3,
+  .investment-card .investment-price p,
+  .investment-copy { color: var(--canvas); }
+  .investment-copy { max-width: 32ch; }
+  .checkout-card {
+    padding: 32px;
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(10, 12, 26, .03), 0 30px 70px -44px rgba(10, 12, 26, .45);
+    text-align: left;
+  }
+  .checkout-card-heading { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .checkout-card-title { color: var(--midnight); font-size: clamp(19px, 1.55vw, 27px); }
+  .checkout-card-subtitle { color: var(--midnight); }
+  /* Reserva la altura del boton de Bold para que la tarjeta no salte cuando
+     la libreria lo pinta. */
+  .checkout-button { display: flex; align-items: center; min-height: 56px; }
+  .checkout-skeleton {
+    width: min(280px, 100%);
+    height: 48px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--midnight) 8%, transparent);
+  }
+  .checkout-status { margin-top: 12px; color: var(--ink-body); font-size: 14px; }
+  .checkout-status:empty { margin-top: 0; }
+  .checkout-legal { margin: 18px 0 0; color: var(--ink-body); font-size: 14px; line-height: 1.4; }
+  .checkout-legal a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+  .checkout-legal a:hover { color: var(--periwinkle-ink); }
+  @media (max-width: 1100px) {
+    .checkout-column { order: -1; }
+    .row-5, .investment-card { grid-row: auto; }
+    .checkout-sticky { position: static; }
+  }
+  @media (max-width: 640px) {
+    .checkout-card { padding: 22px; border-radius: 22px; }
+  }
+</style>
