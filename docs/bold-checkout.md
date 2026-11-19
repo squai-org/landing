@@ -1,8 +1,11 @@
 # Checkout de Bold (Squai One)
 
-El pago de Squai One usa el **Botón de pagos de Bold en modo embebido**
-(`data-render-mode="embedded"`): el formulario de pago se abre en un modal sobre
-`/servicios/squai-one`, sin sacar al comprador del sitio.
+El pago de Squai One usa la **integración personalizada de Bold** en modo
+embebido (`renderMode: 'embedded'`): el botón es del sitio (clases `.btn
+.btn-dark`, texto en `src/config/checkout.ts`) y la librería de Bold solo abre el
+formulario de pago en un modal sobre `/servicios/squai-one`, sin sacar al
+comprador del sitio. No se usa el botón con diseño de Bold (`<script
+data-bold-button>`) porque no admite el estilo de la página.
 
 Referencias: [integración manual][manual] · [ambiente de pruebas][pruebas] ·
 [webhook][webhook] · [llaves de integración][llaves].
@@ -26,7 +29,7 @@ POST /api/checkout/session         -> Turnstile, valida campos,
                                       INSERT enrollments (pending),
                                       firma con BOLD_SECRET_KEY
                                    <- { apiKey, orderId, amount, firma }
-<script data-bold-button ...>  ------------------------------->  modal de pago
+new BoldCheckout({...}).open() ------------------------------->  modal de pago
                                                                       |
 /gracias?bold-order-id=...  <-----------------------------------------+
 GET /api/checkout/status           -> GET payments.api.bold.co
@@ -251,8 +254,10 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
    ```bash
    wrangler d1 execute squai --local --command "SELECT order_id, status, email FROM enrollments"
    ```
-3. El botón abre el modal **sobre la página**, sin navegar, con los datos de la
-   persona ya prellenados.
+3. El botón «Pagar mi inscripción» (estilo del sitio) abre el modal **centrado
+   sobre la página**, sin navegar, con los datos de la persona ya prellenados. En
+   `http://localhost` Bold responde `BTN-001` porque exige una URL de retorno
+   `https`: probar en una preview.
 4. El modal lleva la etiqueta amarilla **Modo de pruebas**.
 5. La consola del navegador no reporta nada bloqueado por CSP.
 6. Al terminar, el comprador llega a `/gracias?bold-order-id=...`, que debe
@@ -283,6 +288,14 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
    ```
 
 ### Si algo queda bloqueado por la CSP
+
+El modal de Bold pinta su CSS en un `<style>` dentro de un shadow DOM, que
+`style-src` solo deja pasar con hash: `BOLD_MODAL_STYLE_HASH` en
+`src/integrations/csp-headers.mjs`. Si Bold cambia ese CSS, el modal vuelve a
+salir sin posición. Para actualizarlo, bajar
+`https://checkout.bold.co/library/boldPaymentButton.js` a
+`test/fixtures/bold-library.js.txt`; `test/build/csp-headers.test.ts` falla y
+da el hash nuevo que va en la constante.
 
 La política se escribe en el build desde `src/integrations/csp-headers.mjs`. Si
 la librería de Bold pide un origen que no está permitido, conviene descubrirlo

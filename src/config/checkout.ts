@@ -11,6 +11,6 @@ export const checkout = {
   /** A donde vuelve el comprador. Bold le anade bold-order-id y bold-tx-status,
    * pero ese estado es provisional: /gracias lo confirma contra el Worker. */
   returnPath: '/gracias',
-  /** `data-bold-button`: tema y tamano del boton que pinta Bold. */
-  buttonStyle: 'dark-L',
+  /** Texto del boton. El boton es del sitio (clase .btn); Bold solo abre el modal. */
+  buttonLabel: 'Pagar mi inscripción',
 };

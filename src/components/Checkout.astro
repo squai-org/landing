@@ -1,8 +1,8 @@
 ---
 /**
- * Inscripcion a Squai One: formulario de registro y, al enviarlo, el Boton de
- * pagos de Bold en modo embebido (data-render-mode="embedded"), que abre el
- * pago en un modal sobre la misma pagina.
+ * Inscripcion a Squai One: formulario de registro y, al enviarlo, un boton del
+ * sitio que abre el pago de Bold en un modal sobre la misma pagina
+ * (integracion personalizada, renderMode "embedded").
  *
  * El orden importa y no es cosmetico. Primero el formulario: al enviarlo, el
  * Worker guarda la inscripcion en estado pendiente y devuelve el data-order-id
@@ -12,7 +12,7 @@
  *
  * El monto no se decide aqui: viene de la sesion que firma el Worker, que a su
  * vez lo lee de la base. Lo que se muestra y lo que se cobra son el mismo dato.
- * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-manual
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
  */
 import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
@@ -46,7 +46,6 @@ const { program, ui, labels } = await getSiteContent();
             data-plan-endpoint={endpoints.checkoutPlan}
             data-library-url={checkout.libraryUrl}
             data-return-path={checkout.returnPath}
-            data-button-style={checkout.buttonStyle}
           >
             <div class="checkout-card-heading">
               <h3 class="display checkout-card-title">{ui.checkout.formTitle}</h3>
@@ -108,8 +107,13 @@ const { program, ui, labels } = await getSiteContent();
               <div class="form-status" data-form-status role="status" aria-live="polite"></div>
             </form>
 
-            <!-- Bold pinta su boton aqui cuando la inscripcion queda guardada. -->
-            <div class="checkout-button" data-bold-mount hidden></div>
+            <!-- Boton del sitio: aparece cuando la inscripcion queda guardada y
+                 abre el modal de Bold. -->
+            <div class="checkout-button" data-bold-mount hidden>
+              <button type="button" class="btn btn-dark btn-block" data-bold-pay>
+                <span class="btn-label">{checkout.buttonLabel}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -144,13 +148,12 @@ const { program, ui, labels } = await getSiteContent();
 </section>
 
 <script>
-  interface CheckoutSession {
-    apiKey: string;
-    orderId: string;
-    amount: number;
-    currency: string;
-    description: string;
-    integritySignature: string;
+  import { boldCheckoutConfig, type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
+
+  declare global {
+    interface Window {
+      BoldCheckout: new (config: ReturnType<typeof boldCheckoutConfig>) => { open(): void };
+    }
   }
 
   const root = document.querySelector<HTMLElement>('[data-bold-checkout]');
@@ -180,47 +183,59 @@ const { program, ui, labels } = await getSiteContent();
       }
     };
 
-    /**
-     * El orden importa: primero se inserta el <script data-bold-button>, y solo
-     * despues la libreria. La libreria busca ese tag cuando carga, asi que si
-     * llegara antes no encontraria nada que pintar.
-     */
-    const renderButton = (session: CheckoutSession) => {
-      if (!mount || mount.dataset.rendered) return;
+    const loadLibrary = () =>
+      new Promise<void>((resolve, reject) => {
+        const library = document.createElement('script');
+        library.src = root.dataset.libraryUrl ?? '';
+        library.async = true;
+        library.onload = () => resolve();
+        library.onerror = () => reject(new Error('bold_library'));
+        document.head.appendChild(library);
+      });
 
-      const button = document.createElement('script');
-      button.setAttribute('data-bold-button', root.dataset.buttonStyle ?? 'dark-L');
-      button.setAttribute('data-render-mode', 'embedded');
-      button.setAttribute('data-api-key', session.apiKey);
-      button.setAttribute('data-order-id', session.orderId);
-      button.setAttribute('data-amount', String(session.amount));
-      button.setAttribute('data-currency', session.currency);
-      button.setAttribute('data-integrity-signature', session.integritySignature);
-      button.setAttribute('data-description', session.description);
-      button.setAttribute('data-redirection-url', `${window.location.origin}${root.dataset.returnPath ?? '/'}`);
+    /**
+     * Integracion personalizada de Bold: el boton es del sitio y la libreria
+     * (window.BoldCheckout) solo abre el modal embebido. Cada envio del
+     * formulario trae una sesion nueva (otro orderId): el click usa siempre la
+     * ultima.
+     */
+    let current: { session: CheckoutSession; customer: CustomerData } | null = null;
+
+    const renderButton = (session: CheckoutSession) => {
+      if (!mount) return;
 
       // Prellena el formulario de Bold con lo que la persona ya escribio.
       const data = new FormData(form!);
-      button.setAttribute(
-        'data-customer-data',
-        JSON.stringify({
+      current = {
+        session,
+        customer: {
           fullName: String(data.get('full_name') ?? ''),
           email: String(data.get('email') ?? ''),
           phone: String(data.get('phone') ?? '').replace(/\D/g, ''),
           dialCode: String(data.get('country_code') ?? ''),
-        })
-      );
+        },
+      };
 
-      mount.appendChild(button);
-      mount.hidden = false;
-      mount.dataset.rendered = 'true';
-
-      const library = document.createElement('script');
-      library.src = root.dataset.libraryUrl ?? '';
-      library.async = true;
-      document.head.appendChild(library);
-
-      mount.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (!mount.dataset.rendered) {
+        mount.dataset.rendered = 'true';
+        const payButton = mount.querySelector<HTMLButtonElement>('[data-bold-pay]');
+        payButton?.addEventListener('click', () => {
+          if (!current) return;
+          const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
+          new window.BoldCheckout(boldCheckoutConfig(current.session, redirectionUrl, current.customer)).open();
+        });
+        // Si la libreria no carga, el boton sigue oculto: no hay nada que abrir.
+        loadLibrary()
+          .then(() => {
+            mount.hidden = false;
+            mount.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          })
+          .catch(() => {
+            delete mount.dataset.rendered;
+          });
+      } else {
+        mount.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     };
 
     // El Layout envia este evento cuando /api/checkout/session responde bien.
