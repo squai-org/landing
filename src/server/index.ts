@@ -5,8 +5,8 @@ import { rateLimit } from './middleware/rate-limit';
 import { requestMeta } from './middleware/request-meta';
 import { sameOrigin } from './middleware/same-origin';
 import { securityHeaders } from './middleware/security-headers';
+import { checkoutRoute } from './routes/checkout';
 import { contactRoute } from './routes/contact';
-import { waitlistRoute } from './routes/waitlist';
 import type { AppBindings } from './types';
 
 const app = new Hono<AppBindings>();
@@ -22,10 +22,10 @@ api.use('*', requestMeta());
 
 api.get('/health', (c) => c.json({ ok: true }));
 
-api.use('/waitlist', rateLimit(), jsonRequest());
 api.use('/contact', rateLimit(), jsonRequest());
+api.use('/checkout/session', jsonRequest());
 
-api.route('/waitlist', waitlistRoute);
+api.route('/checkout', checkoutRoute);
 api.route('/contact', contactRoute);
 
 app.route('/api', api);

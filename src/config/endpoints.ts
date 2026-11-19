@@ -1,5 +1,6 @@
 export const endpoints = {
-  waitlist: '/api/waitlist',
   grow: '/api/contact',
   learn: '/api/contact',
+  checkoutPlan: '/api/checkout/plan',
+  checkoutSession: '/api/checkout/session',
 };
