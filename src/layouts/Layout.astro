@@ -478,6 +478,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     const consent = form.querySelector<HTMLInputElement>('input[name="privacy_consent"]');
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (!submit) return;
+    // Mientras el flujo de pago gobierna el boton (src/components/Checkout.astro),
+    // el formulario no lo habilita ni deshabilita.
+    if (form.dataset.checkoutPhase && form.dataset.checkoutPhase !== 'idle') return;
 
     const turnstileOk = !widget || Boolean(token?.value);
     const consentOk = !consent || consent.checked;
@@ -538,6 +541,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (modal && !modal.hidden) renderTurnstile(modalForm);
   };
   document.addEventListener('squai:turnstile-ready', renderReadyTurnstiles);
+  document.addEventListener('squai:form-sync', () => {
+    if (checkoutForm) syncFormAvailability(checkoutForm);
+  });
   renderReadyTurnstiles();
 
   document.addEventListener('change', (event) => {
@@ -690,7 +696,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         if (submit) {
           submit.removeAttribute('aria-busy');
         }
-        if (labelNode) labelNode.textContent = label;
+        // En checkout el boton pasa a manos del flujo de pago: no se le devuelve el texto.
+        if (labelNode && (!form.dataset.checkoutPhase || form.dataset.checkoutPhase === 'idle')) {
+          labelNode.textContent = label;
+        }
         resetTurnstile(form);
         syncFormAvailability(form);
       }

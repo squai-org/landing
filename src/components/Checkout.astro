@@ -46,6 +46,9 @@ const { program, ui, labels } = await getSiteContent();
             data-plan-endpoint={endpoints.checkoutPlan}
             data-library-url={checkout.libraryUrl}
             data-return-path={checkout.returnPath}
+            data-status-endpoint={endpoints.checkoutStatus}
+            data-paying-label={checkout.payingLabel}
+            data-retry-label={checkout.retryLabel}
           >
             <div class="checkout-card-heading">
               <h3 class="display checkout-card-title">{ui.checkout.formTitle}</h3>
@@ -106,14 +109,6 @@ const { program, ui, labels } = await getSiteContent();
 
               <div class="form-status" data-form-status role="status" aria-live="polite"></div>
             </form>
-
-            <!-- Boton del sitio: aparece cuando la inscripcion queda guardada y
-                 abre el modal de Bold. -->
-            <div class="checkout-button" data-bold-mount hidden>
-              <button type="button" class="btn btn-dark btn-block" data-bold-pay>
-                <span class="btn-label">{checkout.buttonLabel}</span>
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -149,6 +144,11 @@ const { program, ui, labels } = await getSiteContent();
 
 <script>
   import { boldCheckoutConfig, type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
+  import { buttonView, canReopen, nextPhase, type FlowEvent, type Phase } from '../lib/checkout-flow';
+  import type { ClientCopy } from '../lib/content';
+
+  // Las cadenas llegan por data-client-copy, como el resto del JS de cliente.
+  const { feedback } = JSON.parse(document.body.dataset.clientCopy!) as ClientCopy;
 
   declare global {
     interface Window {
@@ -160,7 +160,6 @@ const { program, ui, labels } = await getSiteContent();
 
   if (root) {
     const form = root.querySelector<HTMLFormElement>('[data-form="checkout"]');
-    const mount = root.querySelector<HTMLElement>('[data-bold-mount]');
     const priceSlot = document.querySelector<HTMLElement>('[data-bold-price]');
     const currencySlot = document.querySelector<HTMLElement>('[data-bold-currency]');
 
@@ -183,26 +182,129 @@ const { program, ui, labels } = await getSiteContent();
       }
     };
 
-    const loadLibrary = () =>
-      new Promise<void>((resolve, reject) => {
-        const library = document.createElement('script');
-        library.src = root.dataset.libraryUrl ?? '';
-        library.async = true;
-        library.onload = () => resolve();
-        library.onerror = () => reject(new Error('bold_library'));
-        document.head.appendChild(library);
-      });
+    const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null;
+    const labelNode = submit?.querySelector<HTMLElement>('.btn-label') ?? null;
+    const statusNode = root.querySelector<HTMLElement>('[data-form-status]');
+    const boldOrigin = new URL(root.dataset.libraryUrl ?? '', window.location.origin).origin;
 
-    /**
-     * Integracion personalizada de Bold: el boton es del sitio y la libreria
-     * (window.BoldCheckout) solo abre el modal embebido. Cada envio del
-     * formulario trae una sesion nueva (otro orderId): el click usa siempre la
-     * ultima.
-     */
+    // Un solo boton conduce todo el flujo: cambia de estilo y de texto segun la
+    // fase (src/lib/checkout-flow.ts) en vez de aparecer un segundo boton.
+    const labels = {
+      reserve: labelNode?.textContent ?? '',
+      paying: root.dataset.payingLabel ?? '',
+      retry: root.dataset.retryLabel ?? '',
+    };
+    let phase: Phase = 'idle';
     let current: { session: CheckoutSession; customer: CustomerData } | null = null;
 
-    const renderButton = (session: CheckoutSession) => {
-      if (!mount) return;
+    const render = () => {
+      if (!submit || !form) return;
+      const view = buttonView(phase);
+      submit.classList.toggle('btn-primary', view.variant === 'primary');
+      submit.classList.toggle('btn-dark', view.variant === 'dark');
+      if (labelNode) labelNode.textContent = labels[view.text];
+      // El Layout lee esta marca para no pisar el boton mientras el flujo lo gobierna.
+      form.dataset.checkoutPhase = phase;
+      if (view.locked) submit.disabled = view.disabled;
+      else document.dispatchEvent(new Event('squai:form-sync'));
+    };
+
+    const step = (event: FlowEvent) => {
+      phase = nextPhase(phase, event);
+      render();
+    };
+
+    const showError = (message: string) => {
+      if (statusNode) {
+        statusNode.textContent = message;
+        statusNode.dataset.state = message ? 'error' : '';
+      }
+    };
+
+    let library: Promise<void> | null = null;
+    const loadLibrary = () => {
+      library ??= new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = root.dataset.libraryUrl ?? '';
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('bold_library'));
+        document.head.appendChild(script);
+      });
+      library.catch(() => {
+        library = null;
+      });
+      return library;
+    };
+
+    /**
+     * Integracion personalizada de Bold: la libreria (window.BoldCheckout) solo
+     * abre el modal embebido. Se reabre siempre con la MISMA sesion firmada, asi
+     * un reintento no crea otra inscripcion.
+     */
+    const openPayment = async () => {
+      if (!current) return;
+      try {
+        await loadLibrary();
+        showError('');
+        const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
+        new window.BoldCheckout(boldCheckoutConfig(current.session, redirectionUrl, current.customer)).open();
+      } catch {
+        showError(feedback.checkoutError);
+        step('closed');
+      }
+    };
+
+    const returnUrl = (orderId: string) => `${root.dataset.returnPath ?? '/'}?bold-order-id=${encodeURIComponent(orderId)}`;
+
+    const retryPayment = async () => {
+      if (!current) return;
+      step('retry');
+      try {
+        const res = await fetch(`${root.dataset.statusEndpoint}?order_id=${encodeURIComponent(current.session.orderId)}`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (res.ok) {
+          const { enrollment } = (await res.json()) as { enrollment: { status: string } };
+          if (!canReopen(enrollment.status)) {
+            window.location.assign(returnUrl(current.session.orderId));
+            return;
+          }
+        }
+      } catch {
+        // Sin poder consultar, se deja reintentar: Bold rechaza un orderId ya pagado.
+      }
+      await openPayment();
+    };
+
+    // En reintento el click no debe reenviar el formulario (crearia otra inscripcion).
+    submit?.addEventListener('click', (event) => {
+      if (phase === 'idle') return;
+      event.preventDefault();
+      if (phase === 'retry') void retryPayment();
+    });
+
+    // Bold avisa por postMessage cuando el comprador cierra el modal.
+    window.addEventListener('message', (event) => {
+      if (event.origin !== boldOrigin || event.data?.type !== 'BOLD_CHECKOUT_EVENT') return;
+      step('closed');
+    });
+
+    // Si cambia sus datos, la inscripcion ya firmada deja de corresponderle: se
+    // vuelve a "Reservar" y el siguiente envio creara una nueva.
+    const edited = () => {
+      if (phase !== 'retry') return;
+      current = null;
+      showError('');
+      step('edited');
+    };
+    form?.addEventListener('input', edited);
+    form?.addEventListener('change', edited);
+
+    // El Layout envia este evento cuando /api/checkout/session responde bien.
+    document.addEventListener('squai:checkout-session', (event) => {
+      const session = (event as CustomEvent<CheckoutSession>).detail;
+      showPrice(session.amount, session.currency);
 
       // Prellena el formulario de Bold con lo que la persona ya escribio.
       const data = new FormData(form!);
@@ -215,34 +317,8 @@ const { program, ui, labels } = await getSiteContent();
           dialCode: String(data.get('country_code') ?? ''),
         },
       };
-
-      if (!mount.dataset.rendered) {
-        mount.dataset.rendered = 'true';
-        const payButton = mount.querySelector<HTMLButtonElement>('[data-bold-pay]');
-        payButton?.addEventListener('click', () => {
-          if (!current) return;
-          const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
-          new window.BoldCheckout(boldCheckoutConfig(current.session, redirectionUrl, current.customer)).open();
-        });
-        // Si la libreria no carga, el boton sigue oculto: no hay nada que abrir.
-        loadLibrary()
-          .then(() => {
-            mount.hidden = false;
-            mount.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          })
-          .catch(() => {
-            delete mount.dataset.rendered;
-          });
-      } else {
-        mount.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    };
-
-    // El Layout envia este evento cuando /api/checkout/session responde bien.
-    document.addEventListener('squai:checkout-session', (event) => {
-      const session = (event as CustomEvent<CheckoutSession>).detail;
-      showPrice(session.amount, session.currency);
-      renderButton(session);
+      step('session');
+      void openPayment();
     });
 
     void loadPrice();
@@ -338,13 +414,6 @@ const { program, ui, labels } = await getSiteContent();
   .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
   .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
   .consent-label a:hover { color: var(--periwinkle-ink); }
-  .checkout-button {
-    display: flex;
-    align-items: center;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
-  }
   @media (max-width: 1100px) {
     .checkout-column { order: -1; }
     .row-5, .investment-card { grid-row: auto; }

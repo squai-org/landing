@@ -164,7 +164,7 @@ Workers & Pages → `landing-page` → Settings → **Builds**
 | --- | --- | --- |
 | Build command | `pnpm verify` | vacío |
 | Deploy command | `pnpm deploy:ci` | `npx wrangler deploy` |
-| Preview command | dejar el valor por defecto | `npx wrangler preview` |
+| Preview command | dejar el valor por defecto (`npx wrangler preview`) | `npx wrangler preview` |
 
 **El Build command no lleva `pnpm install`.** Workers Builds instala las
 dependencias por su cuenta antes de ejecutarlo; en el registro del build se ve
@@ -177,11 +177,23 @@ queda en la versión anterior. `pnpm deploy:ci` aplica las migraciones pendiente
 (`db:migrate:remote`) antes de `wrangler deploy`, así que
 `0003_bold_checkout.sql` entra con el primer despliegue.
 
-El **Preview command** corre en las ramas que no son la de producción y, por
-defecto, no aplica migraciones: una preview levantada antes del primer deploy a
-producción no encuentra `payment_plans` y `/api/checkout/plan/squai-one`
-responde 404. Después del primer deploy el problema desaparece, porque la
-preview usa la misma base D1 que producción.
+El **Preview command** corre en las ramas que no son la de producción. Su valor
+por defecto, `npx wrangler preview`, crea un Preview de la rama bajo el mismo
+Worker y **exige un bloque `previews` en `wrangler.jsonc`**, aunque esté vacío;
+sin él el deploy de la rama falla con `missing a previews block`
+(`test/build/wrangler-config.test.ts` lo protege). Según la
+[documentación de Previews][prev], los Previews **no heredan** los bindings de
+producción: con el bloque vacío la rama se despliega, pero `/api/*` no tiene D1,
+rate limit ni llaves de Bold. Para probar el pago en una preview hay que darle
+una base de pruebas en `previews.d1_databases` (con sus migraciones aplicadas) y
+las llaves de **pruebas** con `npx wrangler preview base-config secret put`.
+
+`npx wrangler versions upload` como Preview command **no** sirve aquí: en este
+proyecto falló con `The name in your wrangler.jsonc file (landing-page) must
+match the name of your Worker`. Es el error documentado de nombre de Worker; no
+se arregla cambiando el nombre, sino usando el comando de Previews.
+
+[prev]: https://developers.cloudflare.com/workers/previews/configuration/
 
 ### Versiones de la imagen de build
 
@@ -248,16 +260,22 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
 ```
 
 1. La tarjeta de inversión muestra el precio que tiene `payment_plans`.
-2. El botón de Bold **no** aparece hasta enviar el formulario. Al enviarlo debe
-   quedar una fila en `enrollments` con `status = 'pending'`:
+2. Hay **un solo botón** de acción. Al enviar el formulario debe quedar una fila
+   en `enrollments` con `status = 'pending'`, y el modal de Bold se abre **solo**,
+   centrado sobre la página y con los datos de la persona prellenados (en
+   `http://localhost` Bold responde `BTN-001` porque exige una URL de retorno
+   `https`: probar en una preview):
 
    ```bash
    wrangler d1 execute squai --local --command "SELECT order_id, status, email FROM enrollments"
    ```
-3. El botón «Pagar mi inscripción» (estilo del sitio) abre el modal **centrado
-   sobre la página**, sin navegar, con los datos de la persona ya prellenados. En
-   `http://localhost` Bold responde `BTN-001` porque exige una URL de retorno
-   `https`: probar en una preview.
+3. Con el modal abierto, el botón dice «Completa el pago en la ventana de Bold» y
+   está deshabilitado. Al cerrar el modal sin pagar cambia de estilo (oscuro) y
+   de texto a «Continuar con el pago»; al pulsarlo se reabre **la misma sesión**
+   (mismo `order_id`, sin otra fila en `enrollments`). Si el comprador edita el
+   formulario, vuelve a «Reservar» y el siguiente envío crea una inscripción
+   nueva. Si la compra ya figura `approved`, el botón lleva a `/gracias` en vez
+   de abrir otro pago.
 4. El modal lleva la etiqueta amarilla **Modo de pruebas**.
 5. La consola del navegador no reporta nada bloqueado por CSP.
 6. Al terminar, el comprador llega a `/gracias?bold-order-id=...`, que debe
@@ -286,6 +304,13 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
    ```bash
    wrangler d1 execute squai --local --command "SELECT payment_id, type, amount FROM bold_transactions"
    ```
+
+### Un solo botón: fases
+
+`src/lib/checkout-flow.ts` define las fases del botón (`idle` → `paying` →
+`retry`) y `test/build/checkout-flow.test.ts` las fija. El Layout no toca el
+botón mientras `data-checkout-phase` no sea `idle`. Al cerrarse el modal, Bold
+avisa con `postMessage` (`BOLD_CHECKOUT_EVENT`).
 
 ### Si algo queda bloqueado por la CSP
 
