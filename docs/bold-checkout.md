@@ -248,16 +248,22 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
 ```
 
 1. La tarjeta de inversión muestra el precio que tiene `payment_plans`.
-2. El botón de Bold **no** aparece hasta enviar el formulario. Al enviarlo debe
-   quedar una fila en `enrollments` con `status = 'pending'`:
+2. Hay **un solo botón** de acción. Al enviar el formulario debe quedar una fila
+   en `enrollments` con `status = 'pending'`, y el modal de Bold se abre **solo**,
+   centrado sobre la página y con los datos de la persona prellenados (en
+   `http://localhost` Bold responde `BTN-001` porque exige una URL de retorno
+   `https`: probar en una preview):
 
    ```bash
    wrangler d1 execute squai --local --command "SELECT order_id, status, email FROM enrollments"
    ```
-3. El botón «Pagar mi inscripción» (estilo del sitio) abre el modal **centrado
-   sobre la página**, sin navegar, con los datos de la persona ya prellenados. En
-   `http://localhost` Bold responde `BTN-001` porque exige una URL de retorno
-   `https`: probar en una preview.
+3. Con el modal abierto, el botón dice «Completa el pago en la ventana de Bold» y
+   está deshabilitado. Al cerrar el modal sin pagar cambia de estilo (oscuro) y
+   de texto a «Continuar con el pago»; al pulsarlo se reabre **la misma sesión**
+   (mismo `order_id`, sin otra fila en `enrollments`). Si el comprador edita el
+   formulario, vuelve a «Reservar» y el siguiente envío crea una inscripción
+   nueva. Si la compra ya figura `approved`, el botón lleva a `/gracias` en vez
+   de abrir otro pago.
 4. El modal lleva la etiqueta amarilla **Modo de pruebas**.
 5. La consola del navegador no reporta nada bloqueado por CSP.
 6. Al terminar, el comprador llega a `/gracias?bold-order-id=...`, que debe
@@ -286,6 +292,13 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
    ```bash
    wrangler d1 execute squai --local --command "SELECT payment_id, type, amount FROM bold_transactions"
    ```
+
+### Un solo botón: fases
+
+`src/lib/checkout-flow.ts` define las fases del botón (`idle` → `paying` →
+`retry`) y `test/build/checkout-flow.test.ts` las fija. El Layout no toca el
+botón mientras `data-checkout-phase` no sea `idle`. Al cerrarse el modal, Bold
+avisa con `postMessage` (`BOLD_CHECKOUT_EVENT`).
 
 ### Si algo queda bloqueado por la CSP
 

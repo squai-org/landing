@@ -11,6 +11,10 @@ export const checkout = {
   /** A donde vuelve el comprador. Bold le anade bold-order-id y bold-tx-status,
    * pero ese estado es provisional: /gracias lo confirma contra el Worker. */
   returnPath: '/gracias',
-  /** Texto del boton. El boton es del sitio (clase .btn); Bold solo abre el modal. */
-  buttonLabel: 'Pagar mi inscripción',
+  /**
+   * Textos del boton unico (el de "Reservar" viene del contenido). El boton es
+   * del sitio (clase .btn); Bold solo abre el modal. Ver src/lib/checkout-flow.ts.
+   */
+  payingLabel: 'Completa el pago en la ventana de Bold',
+  retryLabel: 'Continuar con el pago',
 };
