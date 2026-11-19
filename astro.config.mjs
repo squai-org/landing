@@ -26,7 +26,9 @@ export default defineConfig({
   },
 
   integrations: [
-    sitemap(),
+    // /gracias es la vuelta del checkout: va con noindex y no describe
+    // nada, asi que tampoco tiene por que aparecer en el sitemap.
+    sitemap({ filter: (page) => !page.endsWith('/gracias') }),
 
     // Escribe la Content-Security-Policy en dist/_headers con los hashes de
     // los scripts que Astro incrusta en el HTML. El resto de cabeceras de

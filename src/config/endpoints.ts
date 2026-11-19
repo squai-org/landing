@@ -3,4 +3,5 @@ export const endpoints = {
   learn: '/api/contact',
   checkoutPlan: '/api/checkout/plan',
   checkoutSession: '/api/checkout/session',
+  checkoutStatus: '/api/checkout/status',
 };

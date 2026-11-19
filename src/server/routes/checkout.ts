@@ -2,7 +2,12 @@ import { Hono } from 'hono';
 import { badRequest, ok } from '../lib/http';
 import { parseBody } from '../lib/validate';
 import { checkoutSessionSchema } from '../schemas/checkout.schema';
-import { createCheckoutSession, handleBoldWebhook, loadPaymentPlan } from '../services/checkout.service';
+import {
+  confirmEnrollment,
+  createCheckoutSession,
+  handleBoldWebhook,
+  loadPaymentPlan,
+} from '../services/checkout.service';
 import type { AppBindings } from '../types';
 
 export const checkoutRoute = new Hono<AppBindings>()
@@ -12,12 +17,23 @@ export const checkoutRoute = new Hono<AppBindings>()
 
     return ok(c, { plan });
   })
+  /**
+   * Verificacion de retorno. La pagina de gracias llega con el order-id en la
+   * URL; el veredicto lo da Bold, no el parametro bold-tx-status.
+   */
+  .get('/status', async (c) => {
+    const orderId = c.req.query('order_id')?.trim();
+
+    if (!orderId) throw badRequest('order_id_missing', 'Falta el identificador de la compra.');
+
+    return ok(c, { enrollment: await confirmEnrollment(c.env, orderId) });
+  })
   .post('/session', async (c) => {
     const raw = await c.req.json().catch(() => {
       throw badRequest('invalid_json', 'El cuerpo de la peticion no es JSON valido.');
     });
 
-    const session = await createCheckoutSession(c.env, parseBody(checkoutSessionSchema, raw));
+    const session = await createCheckoutSession(c.env, parseBody(checkoutSessionSchema, raw), c.get('requestMeta'));
 
     return ok(c, { session }, 201);
   })

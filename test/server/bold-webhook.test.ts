@@ -33,8 +33,20 @@ const postWebhook = (body: string, signature?: string) =>
     withKeys
   );
 
+/** Las notificaciones de prueba referencian esta inscripcion. */
+const seedEnrollment = (orderId: string) =>
+  env.DB.prepare(
+    `INSERT INTO enrollments
+      (order_id, plan_code, full_name, email, country_code, phone, phone_e164, referral_source, amount, currency)
+     VALUES (?, 'squai-one', 'Ana Rios', 'ana@empresa.co', '+57', '3205551234', '+573205551234', 'instagram', 399000, 'COP')`
+  )
+    .bind(orderId)
+    .run();
+
 beforeEach(async () => {
   await env.DB.exec('DELETE FROM bold_transactions');
+  await env.DB.exec('DELETE FROM enrollments');
+  await seedEnrollment('SQUAI-ONE-TEST');
 });
 
 describe('POST /api/checkout/webhook', () => {
@@ -111,5 +123,36 @@ describe('POST /api/checkout/webhook', () => {
     expect(res.status).toBe(200);
     const row = await env.DB.prepare('SELECT payment_method, card_brand FROM bold_transactions').first();
     expect(row).toMatchObject({ payment_method: 'PSE', card_brand: null });
+  });
+
+  it('confirma la inscripcion aunque el comprador nunca vuelva a la pagina', async () => {
+    const res = await postWebhook(APPROVED_SALE_BODY, APPROVED_SALE_SIGNATURE);
+
+    expect(res.status).toBe(200);
+    const row = await env.DB.prepare('SELECT status, bold_transaction_id FROM enrollments').first();
+    expect(row).toMatchObject({ status: 'approved', bold_transaction_id: 'TX-4111-APPROVED' });
+  });
+
+  it('marca la inscripcion como rechazada con SALE_REJECTED', async () => {
+    await postWebhook(REJECTED_SALE_BODY, REJECTED_SALE_SIGNATURE);
+
+    const row = await env.DB.prepare('SELECT status FROM enrollments').first();
+    expect(row).toMatchObject({ status: 'rejected' });
+  });
+
+  it('una anulacion si revierte una inscripcion ya aprobada', async () => {
+    await postWebhook(APPROVED_SALE_BODY, APPROVED_SALE_SIGNATURE);
+    await postWebhook(VOID_APPROVED_BODY, VOID_APPROVED_SIGNATURE);
+
+    const row = await env.DB.prepare('SELECT status FROM enrollments').first();
+    expect(row).toMatchObject({ status: 'voided' });
+  });
+
+  it('acepta una notificacion cuya referencia no corresponde a ninguna inscripcion', async () => {
+    const res = await postWebhook(PSE_APPROVED_BODY, PSE_APPROVED_SIGNATURE);
+
+    expect(res.status).toBe(200);
+    const stored = await env.DB.prepare('SELECT payment_id FROM bold_transactions').first();
+    expect(stored).toMatchObject({ payment_id: 'TX-PSE-APPROVED' });
   });
 });

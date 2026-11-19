@@ -154,6 +154,19 @@
         ],
         "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
         "formSubtitle": "Inscripciones abiertas. Pagas con tarjeta, PSE o Nequi.",
+        "thanks": {
+          "checking": "Estamos confirmando tu pago con Bold…",
+          "approvedTitle": "¡Listo! Tu cupo quedó reservado",
+          "approvedBody": "Recibimos tu pago. Te escribimos al correo con los datos del programa y el enlace de las sesiones.",
+          "pendingTitle": "Tu pago sigue en proceso",
+          "pendingBody": "Algunos medios, como PSE, tardan unos minutos en confirmar. Puedes cerrar esta página: te avisamos al correo en cuanto el pago quede confirmado.",
+          "rejectedTitle": "El pago no se completó",
+          "rejectedBody": "Tu banco no autorizó la transacción y no te cobramos nada. Puedes intentarlo de nuevo con otro medio de pago.",
+          "errorTitle": "No pudimos confirmar tu pago",
+          "errorBody": "Si el cobro aparece en tu banco, escríbenos a team@squai.io con el número de tu compra y lo revisamos.",
+          "orderLabel": "Número de compra",
+          "backCta": "Volver al programa"
+        },
         "investment": {
           "eyebrow": "INVERSIÓN",
           "copy": [

@@ -1,11 +1,24 @@
-import { boldIntegritySignature, verifyBoldWebhookSignature } from '../lib/bold';
+import {
+  boldIntegritySignature,
+  fetchBoldPaymentStatus,
+  verifyBoldWebhookSignature,
+  type BoldPaymentStatus,
+} from '../lib/bold';
+import { assertHuman } from '../lib/human';
+import { normalizePhone } from '../lib/phone';
 import { badRequest, notFound, serviceUnavailable, unauthorized } from '../lib/http';
 import { recordBoldTransaction } from '../repositories/bold-transaction.repository';
+import {
+  applyEnrollmentPayment,
+  findEnrollmentByOrderId,
+  insertEnrollment,
+  type EnrollmentStatus,
+} from '../repositories/enrollment.repository';
 import { findActivePaymentPlan, type PaymentPlan } from '../repositories/payment-plan.repository';
 import { boldWebhookEventSchema } from '../schemas/bold-webhook.schema';
 import type { CheckoutSessionInput } from '../schemas/checkout.schema';
 import { parseBody } from '../lib/validate';
-import type { Env } from '../types';
+import type { Env, RequestMeta } from '../types';
 
 export interface CheckoutSession {
   apiKey: string;
@@ -33,7 +46,8 @@ export const loadPaymentPlan = async (env: Env, code: string): Promise<PaymentPl
 
 export const createCheckoutSession = async (
   env: Env,
-  input: CheckoutSessionInput
+  input: CheckoutSessionInput,
+  meta: RequestMeta
 ): Promise<CheckoutSession> => {
   const apiKey = env.BOLD_IDENTITY_KEY;
   const secretKey = env.BOLD_SECRET_KEY;
@@ -45,8 +59,36 @@ export const createCheckoutSession = async (
     throw serviceUnavailable('bold_not_configured', 'Los pagos no estan disponibles en este momento.');
   }
 
+  await assertHuman(env, input['cf-turnstile-response'], 'checkout', meta);
+
+  const phone = normalizePhone(input.country_code, input.phone);
+
+  if (!phone) {
+    throw badRequest('invalid_phone', 'Revisa los campos del formulario.', {
+      phone: 'El número de teléfono no es válido.',
+    });
+  }
+
   const plan = await loadPaymentPlan(env, input.plan);
   const orderId = newOrderId(plan.code);
+
+  // La inscripcion se guarda antes de abrir el pago: es lo que liga el
+  // order-id con la persona, y deja rastro de quien empieza y no termina.
+  await insertEnrollment(env.DB, {
+    orderId,
+    planCode: plan.code,
+    fullName: input.full_name,
+    email: input.email,
+    countryCode: phone.countryCode,
+    phone: phone.nationalNumber,
+    phoneE164: phone.e164,
+    referralSource: input.referral_source,
+    amount: plan.amount,
+    currency: plan.currency,
+    sourcePage: meta.sourcePage,
+    ipCountry: meta.ipCountry,
+    userAgent: meta.userAgent,
+  });
 
   return {
     apiKey,
@@ -61,6 +103,17 @@ export const createCheckoutSession = async (
       secretKey,
     }),
   };
+};
+
+/**
+ * Tipos de evento del webhook traducidos a estado de inscripcion.
+ * VOID_REJECTED (una anulacion que fallo) no cambia nada: el pago sigue como
+ * estaba. https://developers.bold.co/webhook
+ */
+const WEBHOOK_STATUS: Record<string, EnrollmentStatus | undefined> = {
+  SALE_APPROVED: 'approved',
+  SALE_REJECTED: 'rejected',
+  VOID_APPROVED: 'voided',
 };
 
 /**
@@ -108,5 +161,85 @@ export const handleBoldWebhook = async (env: Env, rawBody: string, signature: st
     payload: rawBody,
   });
 
+  // Red de seguridad: si el comprador cerro la pestana y nunca volvio a la
+  // pagina de gracias, la venta queda registrada igual. applyEnrollmentPayment
+  // es idempotente, asi que no importa quien llegue primero.
+  const status = WEBHOOK_STATUS[parsed.type];
+  const reference = data.metadata?.reference;
+
+  if (status && reference) {
+    await applyEnrollmentPayment(env.DB, reference, {
+      status,
+      transactionId: data.payment_id,
+      paymentMethod: data.payment_method,
+    });
+  }
+
   return { type: parsed.type, paymentId: data.payment_id };
+};
+
+/**
+ * Estados de Bold traducidos a los de una inscripcion. NO_TRANSACTION_FOUND y
+ * PENDING (que solo usa PSE) son "todavia no hay veredicto", no un rechazo.
+ */
+const ENROLLMENT_STATUS: Record<BoldPaymentStatus, EnrollmentStatus> = {
+  NO_TRANSACTION_FOUND: 'pending',
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  FAILED: 'failed',
+  VOIDED: 'voided',
+};
+
+const FINAL_STATUSES: EnrollmentStatus[] = ['approved', 'rejected', 'failed', 'voided'];
+
+export interface EnrollmentStatusView {
+  status: EnrollmentStatus;
+  planCode: string;
+  amount: number;
+  currency: string;
+  fullName: string;
+}
+
+/**
+ * Verificacion de retorno: la pagina de gracias pregunta por un order-id y el
+ * Worker le pregunta a Bold. Los parametros que Bold anade a la URL
+ * (bold-tx-status) no entran aqui: cualquiera puede escribirlos a mano.
+ *
+ * Si la inscripcion ya tiene un estado final no se vuelve a llamar a Bold:
+ * ahorra la llamada saliente y hace inofensivo que la pagina reintente.
+ */
+export const confirmEnrollment = async (env: Env, orderId: string): Promise<EnrollmentStatusView> => {
+  const enrollment = await findEnrollmentByOrderId(env.DB, orderId);
+
+  if (!enrollment) throw notFound('enrollment_not_found', 'No encontramos esa inscripcion.');
+
+  const view: EnrollmentStatusView = {
+    status: enrollment.status,
+    planCode: enrollment.planCode,
+    amount: enrollment.amount,
+    currency: enrollment.currency,
+    fullName: enrollment.fullName,
+  };
+
+  if (FINAL_STATUSES.includes(enrollment.status)) return view;
+
+  const identityKey = env.BOLD_IDENTITY_KEY;
+
+  if (!identityKey) {
+    console.error('BOLD_IDENTITY_KEY no configurado: no se puede consultar el estado del pago.');
+    throw serviceUnavailable('bold_not_configured', 'Los pagos no estan disponibles en este momento.');
+  }
+
+  const voucher = await fetchBoldPaymentStatus(identityKey, orderId);
+  const status = ENROLLMENT_STATUS[voucher.status];
+
+  await applyEnrollmentPayment(env.DB, orderId, {
+    status,
+    transactionId: voucher.transactionId,
+    paymentMethod: voucher.paymentMethod,
+  });
+
+  return { ...view, status };
 };
