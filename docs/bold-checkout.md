@@ -114,6 +114,16 @@ Workers & Pages → `landing-page` → Settings → **Builds**
 | Build command | `pnpm install --frozen-lockfile && pnpm verify` |
 | Deploy command | `pnpm deploy:ci` |
 
+Workers Builds detecta la versión de pnpm por su cuenta (hoy `pnpm@9.10.0`) y
+lee los scripts de instalación permitidos de `pnpm.onlyBuiltDependencies` en
+`package.json`. **No agregar `pnpm-workspace.yaml`**: pnpm 9 exige en ese archivo
+un campo `packages:` y, sin él, `pnpm install` muere con
+`ERROR packages field missing or empty` antes de instalar nada. Con pnpm 11 en
+local el mismo `install` avisa `ERR_PNPM_IGNORED_BUILDS` y sale con código 1,
+cosa que rompe los comandos `pnpm <script>` posteriores; mientras local y CI no
+usen la misma versión, en local conviene invocar los binarios directamente
+(`npx vitest run`, `npx astro build`).
+
 `pnpm verify` corre `pnpm test` y `pnpm build`. Si un test falla, el comando
 sale con código distinto de cero, Workers Builds no ejecuta el deploy y
 producción se queda en la versión anterior. `pnpm deploy:ci` aplica las
