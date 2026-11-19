@@ -28,6 +28,8 @@ pnpm-debug.log*
 # secrets locales de wrangler dev
 .dev.vars
 .dev.vars.*
+# ...pero la plantilla sin valores si se versiona
+!.dev.vars.example
 .gstack/
 
 # Dependencias aisladas de la auditoría (docs/scripts/audit.mjs)

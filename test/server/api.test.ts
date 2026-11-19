@@ -21,14 +21,6 @@ const post = (path: string, body: unknown, headers: Record<string, string> = {})
     env
   );
 
-const waitlistPayload = {
-  full_name: 'Ana  Ríos',
-  email: ' ANA@Empresa.CO ',
-  country_code: '+57',
-  phone: '320 555 1234',
-  referral_source: 'instagram',
-};
-
 const contactPayload = {
   full_name: 'Luis Gómez',
   email: 'luis@empresa.co',
@@ -43,63 +35,28 @@ const contactPayload = {
 };
 
 beforeEach(async () => {
-  await env.DB.exec('DELETE FROM waitlist_signups');
   await env.DB.exec('DELETE FROM contact_requests');
 });
 
-describe('POST /api/waitlist', () => {
-  it('normaliza los datos y los guarda', async () => {
-    const res = await post('/api/waitlist', waitlistPayload);
+describe('POST /api/contact', () => {
+  it('normaliza los datos y guarda la solicitud con su ecosistema', async () => {
+    const res = await post('/api/contact', {
+      ...contactPayload,
+      full_name: 'Luis  Gómez',
+      email: ' LUIS@Empresa.CO ',
+    });
     expect(res.status).toBe(201);
     await expect(res.json()).resolves.toMatchObject({ ok: true, created: true });
-
-    const row = await env.DB.prepare('SELECT * FROM waitlist_signups').first<Record<string, string>>();
-    expect(row).toMatchObject({
-      full_name: 'Ana Ríos',
-      email: 'ana@empresa.co',
-      country_code: '+57',
-      phone: '3205551234',
-      phone_e164: '+573205551234',
-    });
-  });
-
-  it('reutiliza la fila cuando el mismo correo se registra dos veces', async () => {
-    await post('/api/waitlist', waitlistPayload);
-    const res = await post('/api/waitlist', { ...waitlistPayload, full_name: 'Ana Ríos Pérez' });
-
-    expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toMatchObject({ ok: true, created: false });
-
-    const { results } = await env.DB.prepare('SELECT full_name FROM waitlist_signups').all();
-    expect(results).toEqual([{ full_name: 'Ana Ríos Pérez' }]);
-  });
-
-  it('rechaza correos con formato inválido señalando el campo', async () => {
-    const res = await post('/api/waitlist', { ...waitlistPayload, email: 'ana(at)empresa.co' });
-
-    expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchObject({
-      ok: false,
-      error: { code: 'validation_failed', fields: { email: expect.any(String) } },
-    });
-  });
-
-  it('rechaza teléfonos demasiado cortos', async () => {
-    const res = await post('/api/waitlist', { ...waitlistPayload, phone: '123' });
-    expect(res.status).toBe(400);
-  });
-});
-
-describe('POST /api/contact', () => {
-  it('guarda la solicitud con su ecosistema', async () => {
-    const res = await post('/api/contact', contactPayload);
-    expect(res.status).toBe(201);
 
     const row = await env.DB.prepare('SELECT * FROM contact_requests').first<Record<string, string>>();
     expect(row).toMatchObject({
       ecosystem: 'grow',
+      full_name: 'Luis Gómez',
+      email: 'luis@empresa.co',
       organization: 'Empresa SAS',
       team_size: '10-30',
+      country_code: '+57',
+      phone: '3205551234',
       phone_e164: '+573205551234',
     });
   });
@@ -112,16 +69,29 @@ describe('POST /api/contact', () => {
     expect(row).toMatchObject({ ecosystem, email: 'luis@gmail.com' });
   });
 
+  it('rechaza correos con formato inválido señalando el campo', async () => {
+    const res = await post('/api/contact', { ...contactPayload, email: 'luis(at)empresa.co' });
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      ok: false,
+      error: { code: 'validation_failed', fields: { email: expect.any(String) } },
+    });
+  });
+
+  it('rechaza teléfonos demasiado cortos', async () => {
+    const res = await post('/api/contact', { ...contactPayload, phone: '123' });
+    expect(res.status).toBe(400);
+  });
+
   it('rechaza un team_size fuera del catálogo', async () => {
     const res = await post('/api/contact', { ...contactPayload, team_size: 'mil' });
     expect(res.status).toBe(400);
   });
 
   it('rechaza un referral_source fuera del catálogo', async () => {
-    const waitlist = await post('/api/waitlist', { ...waitlistPayload, referral_source: 'radio' });
-    const contact = await post('/api/contact', { ...contactPayload, referral_source: 'radio' });
-    expect(waitlist.status).toBe(400);
-    expect(contact.status).toBe(400);
+    const res = await post('/api/contact', { ...contactPayload, referral_source: 'radio' });
+    expect(res.status).toBe(400);
   });
 
   it('bloquea peticiones con Origin de otro dominio', async () => {
@@ -151,7 +121,7 @@ describe('Rate limiting', () => {
   it('corta a partir de la sexta petición del mismo minuto y la misma IP', async () => {
     const send = () =>
       app.request(
-        'https://squai.io/api/waitlist',
+        'https://squai.io/api/contact',
         {
           method: 'POST',
           headers: {
@@ -159,7 +129,7 @@ describe('Rate limiting', () => {
             Origin: 'https://squai.io',
             'CF-Connecting-IP': '203.0.113.7',
           },
-          body: JSON.stringify(waitlistPayload),
+          body: JSON.stringify(contactPayload),
         },
         env
       );
@@ -175,7 +145,7 @@ describe('Rate limiting', () => {
 describe('Turnstile', () => {
   it('exige el token cuando TURNSTILE_SECRET_KEY está configurado', async () => {
     const res = await app.request(
-      'https://squai.io/api/waitlist',
+      'https://squai.io/api/contact',
       {
         method: 'POST',
         headers: {
@@ -183,7 +153,7 @@ describe('Turnstile', () => {
           Origin: 'https://squai.io',
           'CF-Connecting-IP': nextIp(),
         },
-        body: JSON.stringify(waitlistPayload),
+        body: JSON.stringify(contactPayload),
       },
       { ...env, TURNSTILE_SECRET_KEY: 'test-secret' }
     );
@@ -193,8 +163,8 @@ describe('Turnstile', () => {
   });
 
   it.each([
-    [{ success: true, action: 'contact', hostname: 'squai.io' }, 'turnstile_action_mismatch'],
-    [{ success: true, action: 'waitlist', hostname: 'otro.example' }, 'turnstile_hostname_mismatch'],
+    [{ success: true, action: 'otro', hostname: 'squai.io' }, 'turnstile_action_mismatch'],
+    [{ success: true, action: 'contact', hostname: 'otro.example' }, 'turnstile_hostname_mismatch'],
   ])('rechaza una validación que no corresponde al formulario o dominio', async (verification, code) => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify(verification), {
@@ -204,7 +174,7 @@ describe('Turnstile', () => {
     );
 
     const res = await app.request(
-      'https://squai.io/api/waitlist',
+      'https://squai.io/api/contact',
       {
         method: 'POST',
         headers: {
@@ -213,7 +183,7 @@ describe('Turnstile', () => {
           'CF-Connecting-IP': nextIp(),
         },
         body: JSON.stringify({
-          ...waitlistPayload,
+          ...contactPayload,
           'cf-turnstile-response': 'test-token',
         }),
       },

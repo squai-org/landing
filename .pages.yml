@@ -1398,7 +1398,7 @@ content:
                         type: string
                         required: true
                       - name: waitlist
-                        label: Botón de lista de espera
+                        label: Botón de inscripción
                         type: string
                         required: true
                       - name: contactCta
@@ -1700,8 +1700,8 @@ content:
                         label: Contacto enviado
                         type: string
                         required: true
-                      - name: waitlistSuccess
-                        label: Registro en lista de espera
+                      - name: checkoutError
+                        label: Error al abrir el pago
                         type: string
                         required: true
                       - name: fieldRequired
@@ -1720,9 +1720,9 @@ content:
                         label: Navegador sin verificación de seguridad
                         type: string
                         required: true
-      - name: lista-de-espera
-        label: Lista de espera
-        description: La ficha del programa en el hero de Inicio y la sección de inscripción de Squai One.
+      - name: inscripcion
+        label: Inscripción y pago
+        description: La ficha del programa en el hero de Inicio y la sección de pago de Squai One.
         type: file
         path: src/content/copies.json
         format: json
@@ -1789,7 +1789,7 @@ content:
                         label: Etiqueta de resultado
                         type: string
                         required: true
-                  - name: waitlist
+                  - name: checkout
                     label: Sección de inscripción
                     type: object
                     required: true
@@ -1829,14 +1829,6 @@ content:
                             list:
                               min: 1
                               collapsible: true
-                          - name: price
-                            label: Precio
-                            type: string
-                            required: true
-                          - name: currency
-                            label: Moneda
-                            type: string
-                            required: true
                           - name: referencePrice
                             label: Precio de referencia
                             type: string

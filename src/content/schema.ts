@@ -104,12 +104,17 @@ export const siteSchema = z.object({
     finalCta: z.object({ title: text, body: paragraphs, cta: text }),
     follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
-    waitlist: z.object({
+    /**
+     * El precio no esta aqui: vive en la tabla payment_plans de D1 para poder
+     * cambiarlo sin desplegar, y es el mismo monto que se firma para Bold.
+     * Ver docs/bold-checkout.md.
+     */
+    checkout: z.object({
       title: text,
       copy: paragraphs,
       formTitle: text,
       formSubtitle: text,
-      investment: z.object({ eyebrow: text, copy: paragraphs, price: text, currency: text, referencePrice: text }),
+      investment: z.object({ eyebrow: text, copy: paragraphs, referencePrice: text }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,
@@ -122,7 +127,7 @@ export const siteSchema = z.object({
     contact: z.object({ title: text, close: text, bookingFallback: text, bookingFallbackLink: text }),
     modal: z.object({ grow: modal, learn: modal }),
     feedback: z.object({
-      invalid: text, sending: text, error: text, contactSuccess: text, waitlistSuccess: text,
+      invalid: text, sending: text, error: text, contactSuccess: text, checkoutError: text,
       fieldRequired: text, fieldEmail: text, turnstileError: text, turnstileUnsupported: text,
     }),
     skip: text, updated: text,

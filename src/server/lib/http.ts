@@ -18,5 +18,11 @@ export const badRequest = (code: string, message: string, fields?: Record<string
 
 export const forbidden = (code: string, message: string) => new ApiError(403, code, message);
 
+export const unauthorized = (code: string, message: string) => new ApiError(401, code, message);
+
+export const notFound = (code: string, message: string) => new ApiError(404, code, message);
+
+export const serviceUnavailable = (code: string, message: string) => new ApiError(503, code, message);
+
 export const ok = <T extends Record<string, unknown>>(c: Context, data: T, status: 200 | 201 = 200) =>
   c.json({ ok: true, ...data }, status);

@@ -172,7 +172,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       const teamMembers = Array.from(section.querySelectorAll<HTMLElement>('.team-member'));
       teamMembers.forEach((member, index) => addReveal(member, 'card', (index % 2) * 70));
 
-      const waitlistColumn = section.querySelector<HTMLElement>('.waitlist-column');
+      const waitlistColumn = section.querySelector<HTMLElement>('.checkout-column');
       if (waitlistColumn) addReveal(waitlistColumn, 'copy');
 
       const teamHeading = section.querySelector<HTMLElement>('.team-heading');
@@ -187,7 +187,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
       Array.from(root.children).forEach((child, index) => {
         const el = child as HTMLElement;
-        if (targets.has(el) || el.querySelector('.bento-card, .team-member, .waitlist-column')) return;
+        if (targets.has(el) || el.querySelector('.bento-card, .team-member, .checkout-column')) return;
 
         const isSidebar = root.classList.contains('grid-sidebar');
         const kind = isSidebar
@@ -532,9 +532,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     syncFormAvailability(form);
   };
 
-  const waitlistForm = document.querySelector<HTMLFormElement>('[data-form="waitlist"]');
   const renderReadyTurnstiles = () => {
-    renderTurnstile(waitlistForm);
     if (modal && !modal.hidden) renderTurnstile(modalForm);
   };
   document.addEventListener('squai:turnstile-ready', renderReadyTurnstiles);
@@ -671,13 +669,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         
         if (bookingUrl) window.open(bookingUrl, '_blank', 'noopener,noreferrer');
 
-        setStatus(
-          form,
-          kind === 'contact'
-            ? clientCopy.feedback.contactSuccess
-            : clientCopy.feedback.waitlistSuccess,
-          'ok'
-        );
+        setStatus(form, clientCopy.feedback.contactSuccess, 'ok');
       } catch {
         setStatus(form, fallbackError, 'error');
       } finally {
