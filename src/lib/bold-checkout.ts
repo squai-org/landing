@@ -18,7 +18,14 @@ export interface CheckoutSession {
  * camelCase.
  * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
  */
-export const boldCheckoutConfig = (session: CheckoutSession, redirectionUrl: string) => ({
+export interface CustomerData {
+  fullName: string;
+  email: string;
+  phone: string;
+  dialCode: string;
+}
+
+export const boldCheckoutConfig = (session: CheckoutSession, redirectionUrl: string, customer?: CustomerData) => ({
   apiKey: session.apiKey,
   orderId: session.orderId,
   amount: String(session.amount),
@@ -27,4 +34,6 @@ export const boldCheckoutConfig = (session: CheckoutSession, redirectionUrl: str
   integritySignature: session.integritySignature,
   redirectionUrl,
   renderMode: 'embedded',
+  // Prellena el formulario de Bold con lo que la persona ya escribio.
+  ...(customer && { customerData: JSON.stringify(customer) }),
 });

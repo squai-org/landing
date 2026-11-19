@@ -114,6 +114,13 @@ export const siteSchema = z.object({
       copy: paragraphs,
       formTitle: text,
       formSubtitle: text,
+      thanks: z.object({
+        checking: text, approvedTitle: text, approvedBody: text,
+        pendingTitle: text, pendingBody: text,
+        rejectedTitle: text, rejectedBody: text,
+        errorTitle: text, errorBody: text,
+        orderLabel: text, backCta: text,
+      }),
       investment: z.object({ eyebrow: text, copy: paragraphs, referencePrice: text }),
     }),
     forms: z.object({

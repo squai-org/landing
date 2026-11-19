@@ -12,6 +12,16 @@ const nextIp = () => `203.0.113.${++ipCounter % 250}`;
 const get = (path: string) =>
   app.request(`https://squai.io${path}`, { headers: { Origin: 'https://squai.io' } }, withKeys);
 
+/** Datos de la persona que se inscribe: sin ellos no se abre el pago. */
+const enrollmentPayload = {
+  plan: 'squai-one',
+  full_name: 'Ana  Rios',
+  email: ' ANA@Empresa.CO ',
+  country_code: '+57',
+  phone: '320 555 1234',
+  referral_source: 'instagram',
+};
+
 const postSession = (body: unknown, bindings: typeof withKeys = withKeys) =>
   app.request(
     'https://squai.io/api/checkout/session',
@@ -69,7 +79,7 @@ describe('GET /api/checkout/plan/:code', () => {
 
 describe('POST /api/checkout/session', () => {
   it('firma el monto del plan y nunca devuelve la llave secreta', async () => {
-    const res = await postSession({ plan: 'squai-one' });
+    const res = await postSession(enrollmentPayload);
 
     expect(res.status).toBe(201);
     const body = (await res.json()) as {
@@ -89,7 +99,7 @@ describe('POST /api/checkout/session', () => {
   });
 
   it('ignora el monto que mande el navegador y cobra el de la base', async () => {
-    const res = await postSession({ plan: 'squai-one', amount: 1000, currency: 'USD' });
+    const res = await postSession({ ...enrollmentPayload, amount: 1000, currency: 'USD' });
 
     expect(res.status).toBe(201);
     const { session } = (await res.json()) as { session: { amount: number; currency: string } };
@@ -98,8 +108,8 @@ describe('POST /api/checkout/session', () => {
 
   it('da un orderId distinto a cada sesion', async () => {
     const [first, second] = await Promise.all([
-      postSession({ plan: 'squai-one' }),
-      postSession({ plan: 'squai-one' }),
+      postSession(enrollmentPayload),
+      postSession(enrollmentPayload),
     ]);
     const ids = await Promise.all(
       [first, second].map(async (res) => ((await res.json()) as { session: { orderId: string } }).session.orderId)
@@ -109,17 +119,61 @@ describe('POST /api/checkout/session', () => {
   });
 
   it('responde 404 si el plan no existe', async () => {
-    const res = await postSession({ plan: 'no-existe' });
+    const res = await postSession({ ...enrollmentPayload, plan: 'no-existe' });
     expect(res.status).toBe(404);
   });
 
   it('responde 400 si falta el plan', async () => {
-    const res = await postSession({});
+    const res = await postSession({ ...enrollmentPayload, plan: undefined });
     expect(res.status).toBe(400);
   });
 
+  it('guarda la inscripcion como pendiente, ligada al orderId firmado', async () => {
+    await env.DB.exec('DELETE FROM enrollments');
+    const res = await postSession(enrollmentPayload);
+
+    expect(res.status).toBe(201);
+    const { session } = (await res.json()) as { session: { orderId: string } };
+
+    const row = await env.DB.prepare('SELECT * FROM enrollments').first<Record<string, unknown>>();
+    expect(row).toMatchObject({
+      order_id: session.orderId,
+      plan_code: 'squai-one',
+      status: 'pending',
+      full_name: 'Ana Rios',
+      email: 'ana@empresa.co',
+      phone_e164: '+573205551234',
+      referral_source: 'instagram',
+      amount: 399000,
+      currency: 'COP',
+    });
+  });
+
+  it('rechaza un correo invalido senalando el campo y no deja fila', async () => {
+    await env.DB.exec('DELETE FROM enrollments');
+    const res = await postSession({ ...enrollmentPayload, email: 'ana(at)empresa.co' });
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: { code: 'validation_failed', fields: { email: expect.any(String) } },
+    });
+
+    const { results } = await env.DB.prepare('SELECT order_id FROM enrollments').all();
+    expect(results).toEqual([]);
+  });
+
+  it('exige el token de Turnstile cuando hay secret configurado', async () => {
+    const res = await postSession(enrollmentPayload, {
+      ...withKeys,
+      TURNSTILE_SECRET_KEY: 'test-secret',
+    } as typeof withKeys);
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({ error: { code: 'turnstile_missing' } });
+  });
+
   it('responde 503 cuando las llaves de Bold no estan configuradas', async () => {
-    const res = await postSession({ plan: 'squai-one' }, {
+    const res = await postSession(enrollmentPayload, {
       ...env,
       BOLD_IDENTITY_KEY: undefined,
       BOLD_SECRET_KEY: undefined,

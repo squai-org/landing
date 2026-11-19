@@ -532,7 +532,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     syncFormAvailability(form);
   };
 
+  const checkoutForm = document.querySelector<HTMLFormElement>('[data-form="checkout"]');
   const renderReadyTurnstiles = () => {
+    renderTurnstile(checkoutForm);
     if (modal && !modal.hidden) renderTurnstile(modalForm);
   };
   document.addEventListener('squai:turnstile-ready', renderReadyTurnstiles);
@@ -664,9 +666,21 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           return;
         }
 
-        form.reset();
         clearFieldErrors(form);
-        
+
+        if (kind === 'checkout') {
+          // La inscripcion quedo guardada y firmada. El formulario NO se
+          // limpia: sus datos prellenan el formulario de pago de Bold, y
+          // vaciarlo haria pensar que el proceso ya termino.
+          setStatus(form, '', '');
+          document.dispatchEvent(
+            new CustomEvent('squai:checkout-session', { detail: (data as { session?: unknown })?.session })
+          );
+          return;
+        }
+
+        form.reset();
+
         if (bookingUrl) window.open(bookingUrl, '_blank', 'noopener,noreferrer');
 
         setStatus(form, clientCopy.feedback.contactSuccess, 'ok');

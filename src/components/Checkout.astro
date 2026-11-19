@@ -1,21 +1,28 @@
 ---
 /**
- * Seccion de inscripcion de Squai One con la integracion personalizada de Bold
- * en modo embebido: el boton es del sitio y la libreria de Bold solo abre el
- * formulario de pago en un modal sobre la misma pagina.
- * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
+ * Inscripcion a Squai One: formulario de registro y, al enviarlo, un boton del
+ * sitio que abre el pago de Bold en un modal sobre la misma pagina
+ * (integracion personalizada, renderMode "embedded").
  *
- * Nada de esto se puede resolver en el build: el monto vive en D1 para poder
- * cambiarse sin desplegar y la firma de integridad necesita la llave secreta,
- * que no puede salir del Worker. Asi que la pagina pide una sesion a
- * /api/checkout/session y pinta el precio que esa misma sesion firma: lo que se
- * muestra y lo que cobra Bold no pueden separarse.
+ * El orden importa y no es cosmetico. Primero el formulario: al enviarlo, el
+ * Worker guarda la inscripcion en estado pendiente y devuelve el data-order-id
+ * ya firmado. Ese identificador es lo unico que liga el pago de Bold con la
+ * persona; sin el, una venta solo se podria cruzar por el correo que el
+ * comprador escriba dentro de Bold.
+ *
+ * El monto no se decide aqui: viene de la sesion que firma el Worker, que a su
+ * vez lo lee de la base. Lo que se muestra y lo que se cobra son el mismo dato.
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
  */
-import { endpoints } from '../config/endpoints';
+import Button from './Button.astro';
+import CountryCodeSelect from './CountryCodeSelect.astro';
+import CustomSelect from './CustomSelect.astro';
+import Turnstile from './Turnstile.astro';
 import { checkout } from '../config/checkout';
+import { endpoints } from '../config/endpoints';
 import { getSiteContent } from '../lib/content';
 
-const { program, ui } = await getSiteContent();
+const { program, ui, labels } = await getSiteContent();
 ---
 
 <section class="section tint">
@@ -33,11 +40,10 @@ const { program, ui } = await getSiteContent();
           </div>
 
           <div
-            class="card-pad-lg checkout-card"
+            class="checkout-card card-pad-lg"
             data-bold-checkout
             data-plan={checkout.plan}
             data-plan-endpoint={endpoints.checkoutPlan}
-            data-session-endpoint={endpoints.checkoutSession}
             data-library-url={checkout.libraryUrl}
             data-return-path={checkout.returnPath}
           >
@@ -46,21 +52,68 @@ const { program, ui } = await getSiteContent();
               <p class="body checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
             </div>
 
-            <!-- Boton del sitio: se habilita cuando el Worker entrega la venta
-                 firmada y la libreria de Bold esta cargada. -->
-            <div class="checkout-button">
-              <button type="button" class="btn btn-dark btn-block" data-bold-pay disabled aria-busy="true">
+            <form data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
+              <input type="hidden" name="plan" value={checkout.plan} />
+              <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
+
+              <div class="field-grid-2">
+                <label class="field-group" for="checkout-full-name">
+                  <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
+                  <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="checkout-full-name-error" />
+                  <span id="checkout-full-name-error" class="field-error" data-field-error="full_name"></span>
+                </label>
+                <label class="field-group" for="checkout-email">
+                  <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
+                  <input id="checkout-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="checkout-email-error" />
+                  <span id="checkout-email-error" class="field-error" data-field-error="email"></span>
+                </label>
+              </div>
+
+              <div class="field-grid-phone">
+                <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} />
+                <label class="field-group" for="checkout-phone">
+                  <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
+                  <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="checkout-phone-error" />
+                  <span id="checkout-phone-error" class="field-error" data-field-error="phone"></span>
+                </label>
+              </div>
+
+              <div class="field-group-spaced">
+                <CustomSelect
+                  idPrefix="checkout"
+                  name="referral_source"
+                  label={ui.forms.referralSourceProgram}
+                  placeholder={ui.forms.select}
+                  options={ui.forms.referralSources}
+                />
+              </div>
+
+              <Turnstile action="checkout" />
+
+              <label class="field-group consent-field" for="checkout-privacy-consent">
+                <span class="consent-row">
+                  <input id="checkout-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="checkout-privacy-consent-error" />
+                  <span class="consent-label">
+                    {ui.forms.privacyConsentPrefix}<a href="/politica-de-privacidad" target="_blank" rel="noopener">{ui.forms.privacyConsentLink}</a>{ui.forms.privacyConsentSuffix}
+                  </span>
+                </span>
+                <span id="checkout-privacy-consent-error" class="field-error" data-field-error="privacy_consent"></span>
+              </label>
+
+              <div class="form-submit">
+                <Button variant="primary" type="submit" block>{labels.reserve}</Button>
+              </div>
+
+              <div class="form-status" data-form-status role="status" aria-live="polite"></div>
+            </form>
+
+            <!-- Boton del sitio: aparece cuando la inscripcion queda guardada y
+                 abre el modal de Bold. -->
+            <div class="checkout-button" data-bold-mount hidden>
+              <button type="button" class="btn btn-dark btn-block" data-bold-pay>
                 <span class="btn-label">{checkout.buttonLabel}</span>
               </button>
             </div>
-
-            <div class="checkout-status" data-bold-status role="status" aria-live="polite"></div>
-
-            <p class="checkout-legal">
-              {ui.forms.privacyConsentPrefix}<a href="/politica-de-privacidad" target="_blank" rel="noopener"
-                >{ui.forms.privacyConsentLink}</a
-              >{ui.forms.privacyConsentSuffix}
-            </p>
           </div>
         </div>
       </div>
@@ -95,12 +148,7 @@ const { program, ui } = await getSiteContent();
 </section>
 
 <script>
-  import { boldCheckoutConfig, type CheckoutSession } from '../lib/bold-checkout';
-  import type { ClientCopy } from '../lib/content';
-
-  // Las cadenas llegan por data-client-copy, como el resto del JS de cliente:
-  // el contenido se lee en el servidor, no se importa en el navegador.
-  const { feedback } = JSON.parse(document.body.dataset.clientCopy!) as ClientCopy;
+  import { boldCheckoutConfig, type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
 
   declare global {
     interface Window {
@@ -111,24 +159,28 @@ const { program, ui } = await getSiteContent();
   const root = document.querySelector<HTMLElement>('[data-bold-checkout]');
 
   if (root) {
-    const payButton = root.querySelector<HTMLButtonElement>('[data-bold-pay]');
-    const status = root.querySelector<HTMLElement>('[data-bold-status]');
+    const form = root.querySelector<HTMLFormElement>('[data-form="checkout"]');
+    const mount = root.querySelector<HTMLElement>('[data-bold-mount]');
     const priceSlot = document.querySelector<HTMLElement>('[data-bold-price]');
     const currencySlot = document.querySelector<HTMLElement>('[data-bold-currency]');
-    const plan = root.dataset.plan ?? '';
-
-    const fail = () => {
-      payButton?.removeAttribute('aria-busy');
-      if (status) status.textContent = feedback.checkoutError;
-    };
 
     /** Bold cobra enteros sin decimales, asi que no se formatean centavos. */
-    const formatAmount = (amount: number) =>
-      `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(amount)}`;
-
     const showPrice = (amount: number, currency: string) => {
-      if (priceSlot) priceSlot.textContent = formatAmount(amount);
+      if (priceSlot) priceSlot.textContent = `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(amount)}`;
       if (currencySlot) currencySlot.textContent = currency;
+    };
+
+    const loadPrice = async () => {
+      try {
+        const res = await fetch(`${root.dataset.planEndpoint}/${root.dataset.plan}`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) return;
+        const { plan } = (await res.json()) as { plan: { amount: number; currency: string } };
+        showPrice(plan.amount, plan.currency);
+      } catch {
+        // El precio tambien viaja en la sesion: si esto falla, se pinta al pagar.
+      }
     };
 
     const loadLibrary = () =>
@@ -142,51 +194,58 @@ const { program, ui } = await getSiteContent();
       });
 
     /**
-     * Integracion personalizada de Bold: el boton es de la pagina y la libreria
-     * (window.BoldCheckout) solo abre el modal embebido. Asi el boton lleva el
-     * estilo del sitio y no el de Bold.
+     * Integracion personalizada de Bold: el boton es del sitio y la libreria
+     * (window.BoldCheckout) solo abre el modal embebido. Cada envio del
+     * formulario trae una sesion nueva (otro orderId): el click usa siempre la
+     * ultima.
      */
-    const enableButton = (session: CheckoutSession) => {
-      if (!payButton) return;
-      const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
-      payButton.addEventListener('click', () => {
-        new window.BoldCheckout(boldCheckoutConfig(session, redirectionUrl)).open();
-      });
-      payButton.disabled = false;
-      payButton.removeAttribute('aria-busy');
-    };
+    let current: { session: CheckoutSession; customer: CustomerData } | null = null;
 
-    const start = async () => {
-      try {
-        // El precio se pinta con la respuesta del plan para que la tarjeta no
-        // quede en blanco si la sesion tarda o falla.
-        const planRes = await fetch(`${root.dataset.planEndpoint}/${plan}`, { headers: { Accept: 'application/json' } });
-        if (planRes.ok) {
-          const { plan: loaded } = (await planRes.json()) as { plan: { amount: number; currency: string } };
-          showPrice(loaded.amount, loaded.currency);
-        }
+    const renderButton = (session: CheckoutSession) => {
+      if (!mount) return;
 
-        const res = await fetch(root.dataset.sessionEndpoint ?? '', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan }),
+      // Prellena el formulario de Bold con lo que la persona ya escribio.
+      const data = new FormData(form!);
+      current = {
+        session,
+        customer: {
+          fullName: String(data.get('full_name') ?? ''),
+          email: String(data.get('email') ?? ''),
+          phone: String(data.get('phone') ?? '').replace(/\D/g, ''),
+          dialCode: String(data.get('country_code') ?? ''),
+        },
+      };
+
+      if (!mount.dataset.rendered) {
+        mount.dataset.rendered = 'true';
+        const payButton = mount.querySelector<HTMLButtonElement>('[data-bold-pay]');
+        payButton?.addEventListener('click', () => {
+          if (!current) return;
+          const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
+          new window.BoldCheckout(boldCheckoutConfig(current.session, redirectionUrl, current.customer)).open();
         });
-
-        if (!res.ok) {
-          fail();
-          return;
-        }
-
-        const { session } = (await res.json()) as { session: CheckoutSession };
-        showPrice(session.amount, session.currency);
-        await loadLibrary();
-        enableButton(session);
-      } catch {
-        fail();
+        // Si la libreria no carga, el boton sigue oculto: no hay nada que abrir.
+        loadLibrary()
+          .then(() => {
+            mount.hidden = false;
+            mount.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          })
+          .catch(() => {
+            delete mount.dataset.rendered;
+          });
+      } else {
+        mount.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     };
 
-    void start();
+    // El Layout envia este evento cuando /api/checkout/session responde bien.
+    document.addEventListener('squai:checkout-session', (event) => {
+      const session = (event as CustomEvent<CheckoutSession>).detail;
+      showPrice(session.amount, session.currency);
+      renderButton(session);
+    });
+
+    void loadPrice();
   }
 </script>
 
@@ -205,10 +264,7 @@ const { program, ui } = await getSiteContent();
   /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1; WCAG 2.2 AA exige 4.5:1
      para texto normal. --periwinkle-ink da 5.65:1. */
   .checkout-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle-ink); }
-  .program-detail-card {
-    gap: 8px;
-    padding: clamp(20px, 1.8vw, 30px);
-  }
+  .program-detail-card { gap: 8px; padding: clamp(20px, 1.8vw, 30px); }
   .program-detail-card h3 { font-size: clamp(19px, 1.55vw, 27px); }
   .program-detail-card p { font-size: clamp(16px, .95vw, 18px); }
   .investment-card {
@@ -242,11 +298,7 @@ const { program, ui } = await getSiteContent();
     letter-spacing: .08em;
     text-transform: uppercase;
   }
-  .investment-price {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  .investment-price { display: flex; flex-direction: column; gap: 8px; }
   .investment-price h3 {
     display: flex;
     flex-wrap: nowrap;
@@ -272,12 +324,27 @@ const { program, ui } = await getSiteContent();
   .checkout-card-heading { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
   .checkout-card-title { color: var(--midnight); font-size: clamp(19px, 1.55vw, 27px); }
   .checkout-card-subtitle { color: var(--midnight); }
-  .checkout-button { display: flex; }
-  .checkout-status { margin-top: 12px; color: var(--ink-body); font-size: 14px; }
-  .checkout-status:empty { margin-top: 0; }
-  .checkout-legal { margin: 18px 0 0; color: var(--ink-body); font-size: 14px; line-height: 1.4; }
-  .checkout-legal a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
-  .checkout-legal a:hover { color: var(--periwinkle-ink); }
+  .consent-field { gap: 7px; margin: 4px 0 18px; }
+  .consent-row { display: flex; align-items: flex-start; gap: 10px; }
+  .consent-checkbox {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--periwinkle);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
+  .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+  .consent-label a:hover { color: var(--periwinkle-ink); }
+  .checkout-button {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
   @media (max-width: 1100px) {
     .checkout-column { order: -1; }
     .row-5, .investment-card { grid-row: auto; }
@@ -285,5 +352,8 @@ const { program, ui } = await getSiteContent();
   }
   @media (max-width: 640px) {
     .checkout-card { padding: 22px; border-radius: 22px; }
+  }
+  @media (max-width: 400px) {
+    .field { padding-inline: 14px; }
   }
 </style>

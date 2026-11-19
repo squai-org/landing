@@ -37,4 +37,16 @@ describe('boldCheckoutConfig', () => {
       'https://squai.io/servicios/squai-one'
     );
   });
+
+  it('prellena el formulario de Bold con los datos del comprador, como texto JSON', () => {
+    const customer = { fullName: 'Ana Perez', email: 'ana@example.com', phone: '3001234567', dialCode: '+57' };
+
+    const config = boldCheckoutConfig(session, 'https://squai.io/gracias', customer);
+
+    expect(JSON.parse(config.customerData as string)).toEqual(customer);
+  });
+
+  it('no manda customerData si no hay datos del comprador', () => {
+    expect(boldCheckoutConfig(session, 'https://squai.io/gracias')).not.toHaveProperty('customerData');
+  });
 });

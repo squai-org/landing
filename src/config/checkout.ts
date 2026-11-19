@@ -8,8 +8,9 @@ export const checkout = {
   plan: 'squai-one',
   /** Libreria del Boton de pagos. Debe estar permitida en la CSP. */
   libraryUrl: 'https://checkout.bold.co/library/boldPaymentButton.js',
-  /** A donde vuelve el comprador. Bold le anade bold-order-id y bold-tx-status. */
-  returnPath: '/servicios/squai-one',
+  /** A donde vuelve el comprador. Bold le anade bold-order-id y bold-tx-status,
+   * pero ese estado es provisional: /gracias lo confirma contra el Worker. */
+  returnPath: '/gracias',
   /** Texto del boton. El boton es del sitio (clase .btn); Bold solo abre el modal. */
   buttonLabel: 'Pagar mi inscripción',
 };
