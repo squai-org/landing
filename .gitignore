@@ -34,3 +34,9 @@ pnpm-debug.log*
 
 # Dependencias aisladas de la auditoría (docs/scripts/audit.mjs)
 .audit/
+
+# pnpm 11 lo crea solo al instalar, con un stub de allowBuilds. Pero
+# Workers Builds usa pnpm 9, que exige en el un campo `packages:` y muere
+# con "packages field missing or empty" si no esta. Los scripts de
+# instalacion permitidos viven en package.json, en pnpm.onlyBuiltDependencies.
+pnpm-workspace.yaml
