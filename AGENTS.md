@@ -54,3 +54,17 @@ Squai's marketing site (https://squai.io): a static Astro site plus a lead-captu
 * Humans own this file. Agents propose edits, humans approve them.
 * When an agent repeats a mistake, add one line under Known pitfalls.
 * Keep it short: if the agent can learn something by reading the code, remove it from here.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues en `squai-org/landing`, vía `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Etiquetas por defecto: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` y `docs/adr/` en la raíz. See `docs/agents/domain.md`.
