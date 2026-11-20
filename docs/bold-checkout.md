@@ -434,8 +434,9 @@ Resumen del diseño de #49; cada ticket detalla su parte.
 
 - **Correo de confirmación (#55).** Un único correo por orden aprobada,
   registrado en `email_messages`; ver "Correo de confirmación (Brevo)".
-- **Cron (#56).** Un `scheduled` del Worker reintenta las confirmaciones
-  fallidas o colgadas, y envía la recuperación.
+- **Cron (#56).** Un `scheduled` del Worker, cada 5 minutos, reintenta las
+  confirmaciones fallidas o colgadas (ver "Reintento por cron"); #58 le agrega
+  el envío de la recuperación.
 - **Recuperación (#58).** A las 2 horas de una orden sin pago, un único correo
   por cliente y programa con el enlace para retomar.
 - **Retomar (#57).** `/retomar?order_id=<orderId>` (también el `origin-url`
