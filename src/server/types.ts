@@ -5,6 +5,7 @@ export type Env = Omit<Cloudflare.Env, 'API_RATE_LIMITER'> & {
   TURNSTILE_HOSTNAME?: string;
   BOLD_IDENTITY_KEY?: string;
   BOLD_SECRET_KEY?: string;
+  BREVO_API_KEY?: string;
 };
 
 export interface AppBindings {

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Tu inscripción en Squai One está confirmada</title>
+  <!--
+    Correo de confirmacion de inscripcion (acuse de recibo, Ley 1480 art. 50).
+    Fuente versionada: se sube a Brevo como plantilla (New Template Language)
+    y su id va en src/config/email.ts. Cada placeholder de params lo llena el Worker
+    (CONFIRMATION_PARAMS en src/server/services/email.service.ts); un test de
+    build comprueba que coinciden.
+    Marca: squai-org/brand-book (Periwinkle #8A8EF9, Midnight #0A0C1A, Canvas
+    #F4F6FF, texto oscuro sobre color) y squai-org/landing-design (tokens y voz:
+    tuteo, sin emojis). Maquetacion con tablas y estilos en linea para Gmail,
+    Outlook y Apple Mail; las fuentes web solo cargan donde se soportan.
+  -->
+  <!--[if mso]>
+  <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+  <style>td, th, div, p, a, h1, h2 { font-family: Arial, sans-serif !important; }</style>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Familjen+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table { border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; }
+    img { border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+    a { color: #4C50D8; }
+    @media only screen and (max-width: 620px) {
+      .container { width: 100% !important; }
+      .px { padding-left: 20px !important; padding-right: 20px !important; }
+      .detail-label, .detail-value { display: block !important; width: 100% !important; text-align: left !important; }
+      .detail-label { padding-bottom: 0 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0; background-color:#F4F6FF;">
+  <!-- Texto de vista previa (oculto). -->
+  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#F4F6FF;">
+    Tu pago fue aprobado. Aquí están tu orden {{ params.ORDER_ID }} y los datos del programa.
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F4F6FF;">
+    <tr>
+      <td align="center" style="padding:32px 12px;">
+        <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+        <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px;">
+
+          <!-- Logo sobre Canvas: el PNG ya trae ese fondo. -->
+          <tr>
+            <td align="left" class="px" style="padding:0 32px 20px 32px;">
+              <a href="https://squai.io" target="_blank" style="text-decoration:none;">
+                <img src="https://squai.io/og/squai-logo.png" width="180" height="60" alt="Squai" style="display:block; width:180px; height:60px;">
+              </a>
+            </td>
+          </tr>
+
+          <!-- Banda Periwinkle con texto Midnight (regla de marca: tinta oscura sobre color). -->
+          <tr>
+            <td class="px" style="background-color:#8A8EF9; border-radius:16px 16px 0 0; padding:32px 32px 28px 32px;">
+              <p style="margin:0 0 8px 0; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:#0A0C1A;">
+                Inscripción confirmada
+              </p>
+              <h1 style="margin:0; font-family:'Familjen Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:30px; line-height:36px; font-weight:700; color:#0A0C1A;">
+                {{ params.FIRST_NAME }}, ya tienes tu cupo en {{ params.PROGRAM_NAME }}
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Cuerpo -->
+          <tr>
+            <td class="px" style="background-color:#FFFFFF; padding:28px 32px 8px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:16px; line-height:26px; color:#4B5167;">
+              <p style="margin:0 0 16px 0;">
+                Recibimos tu pago y tu inscripción quedó confirmada. Este correo es tu comprobante: guárdalo, aquí está todo lo que compraste y cuándo empieza.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Resumen de la compra -->
+          <tr>
+            <td class="px" style="background-color:#FFFFFF; padding:8px 32px 8px 32px;">
+              <h2 style="margin:0 0 12px 0; font-family:'Familjen Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:20px; line-height:26px; font-weight:700; color:#0A0C1A;">
+                Tu compra
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #DCE1F0; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:15px; line-height:22px;">
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Número de orden</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A; font-weight:700; word-break:break-all;">{{ params.ORDER_ID }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Programa</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.PROGRAM_NAME }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Valor antes de IVA</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.AMOUNT_BASE }} {{ params.CURRENCY }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">IVA (19%)</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.AMOUNT_VAT }} {{ params.CURRENCY }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A; font-weight:700;">Total pagado</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A; font-weight:700;">{{ params.AMOUNT_TOTAL }} {{ params.CURRENCY }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Forma de pago</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.PAYMENT_METHOD }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Fechas del programa -->
+          <tr>
+            <td class="px" style="background-color:#FFFFFF; padding:24px 32px 8px 32px;">
+              <h2 style="margin:0 0 12px 0; font-family:'Familjen Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:20px; line-height:26px; font-weight:700; color:#0A0C1A;">
+                Tu programa
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #DCE1F0; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:15px; line-height:22px;">
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Inicio</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.START_DATE }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Fin</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.END_DATE }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Horario</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.SCHEDULE }}</td>
+                </tr>
+                <tr>
+                  <td class="detail-label" width="45%" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#4B5167;">Duración</td>
+                  <td class="detail-value" align="right" style="padding:10px 0; border-bottom:1px solid #DCE1F0; color:#0A0C1A;">{{ params.DURATION }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Que sigue -->
+          <tr>
+            <td class="px" style="background-color:#FFFFFF; padding:24px 32px 8px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color:#F4F6FF; border-left:4px solid #44D4C8; border-radius:8px; padding:16px 20px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:15px; line-height:24px; color:#0A0C1A;">
+                    <strong>Qué sigue.</strong> Te enviaremos a este correo el enlace de las sesiones y la invitación a la comunidad {{ params.SESSIONS_LINK_INFO }}. Si no te llega, revisa la carpeta de spam o respóndenos.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Dudas y retracto -->
+          <tr>
+            <td class="px" style="background-color:#FFFFFF; padding:24px 32px 32px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:16px; line-height:26px; color:#4B5167;">
+              <p style="margin:0 0 20px 0;">
+                ¿Tienes alguna duda? Responde este correo y le llega directo al equipo.
+              </p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" bgcolor="#8A8EF9" style="border-radius:999px; background-color:#8A8EF9;">
+                    <a href="{{ params.TERMS_URL }}" target="_blank" style="display:inline-block; padding:12px 24px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:15px; line-height:20px; font-weight:700; color:#0A0C1A; text-decoration:none; border-radius:999px;">Ver Términos de Servicio</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:16px 0 0 0; font-size:14px; line-height:22px;">
+                En los Términos de Servicio está cómo ejercer tu derecho de retracto.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Pie con datos de Squai (Ley 1480 art. 50) -->
+          <tr>
+            <td class="px" style="background-color:#0A0C1A; border-radius:0 0 16px 16px; padding:24px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:13px; line-height:20px; color:#DCE1F0;">
+              <p style="margin:0 0 4px 0; color:#FFFFFF; font-weight:700;">{{ params.COMPANY_NAME }}</p>
+              <p style="margin:0;">NIT {{ params.COMPANY_NIT }}</p>
+              <p style="margin:0;">{{ params.COMPANY_ADDRESS }}</p>
+              <p style="margin:0;">Teléfono: {{ params.COMPANY_PHONE }}</p>
+              <p style="margin:0 0 12px 0;">Correo: <a href="mailto:{{ params.COMPANY_CONTACT }}" style="color:#8A8EF9;">{{ params.COMPANY_CONTACT }}</a></p>
+              <p style="margin:0; color:#9AA0B8;">
+                Recibes este correo porque compraste un programa en squai.io. Es un mensaje transaccional: no es publicidad.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

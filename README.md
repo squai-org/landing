@@ -154,7 +154,9 @@ SQL fuera de `repositories/`.
 | `POST` | `/api/contact`              | `ContactModal.astro` — Grow y Learn        |
 | `GET`  | `/api/health`               | Sonda de salud                             |
 
-El flujo de `/api/checkout/*` está en `docs/bold-checkout.md`.
+El flujo de `/api/checkout/*` está en `docs/bold-checkout.md`, incluido el
+correo de confirmación por Brevo (plantilla en `src/emails/`, secret
+`BREVO_API_KEY`).
 
 Respuesta de éxito de `/api/contact`: `{ "ok": true, "id": 1, "created": true }`.
 Respuesta de error: `{ "ok": false, "error": { "code", "message", "fields"? } }`,
@@ -166,6 +168,10 @@ donde `fields` mapea campo → mensaje para pintarlo en el formulario.
 
 - **Bots**: Turnstile en los dos formularios, validado contra `siteverify` en el
   Worker. Sin `TURNSTILE_SECRET_KEY` la verificación se omite con un warning.
+- **Secrets del Worker**: `TURNSTILE_SECRET_KEY`, `BOLD_IDENTITY_KEY`,
+  `BOLD_SECRET_KEY` y `BREVO_API_KEY` (correo de confirmación). En local van en
+  `.dev.vars`; en producción, con `wrangler secret put` o en Settings →
+  Variables and Secrets. Nunca en `.env`: terminaría en el HTML publicado.
 - **Inyección SQL**: todas las consultas son prepared statements con `.bind()`.
 - **Validación**: Zod en el edge; normaliza nombre, correo (minúsculas) y
   teléfono a E.164. Los formularios aceptan cualquier proveedor de correo

@@ -114,6 +114,12 @@ export const createCheckoutSession = async (
 };
 
 /**
+ * Aviso de que una orden acaba de pasar a aprobada (solo en la transicion).
+ * La ruta lo usa para programar el correo de confirmacion sin esperar a Brevo.
+ */
+export type OnApproved = (orderId: string) => void;
+
+/**
  * Tipos de evento del webhook traducidos a estado de orden.
  * VOID_REJECTED (una anulacion que fallo) no cambia nada: el pago sigue como
  * estaba. https://developers.bold.co/webhook
@@ -131,7 +137,12 @@ const WEBHOOK_STATUS: Record<string, OrderStatus | undefined> = {
  * se verifica antes de mirar el contenido: sin firma valida el cuerpo no es
  * informacion, es una peticion anonima de internet.
  */
-export const handleBoldWebhook = async (env: Env, rawBody: string, signature: string | undefined) => {
+export const handleBoldWebhook = async (
+  env: Env,
+  rawBody: string,
+  signature: string | undefined,
+  onApproved: OnApproved = () => {}
+) => {
   const secretKey = env.BOLD_SECRET_KEY;
 
   if (!secretKey) {
@@ -176,11 +187,13 @@ export const handleBoldWebhook = async (env: Env, rawBody: string, signature: st
   const reference = data.metadata?.reference;
 
   if (status && reference) {
-    await applyOrderPayment(env.DB, reference, {
+    const { becameApproved } = await applyOrderPayment(env.DB, reference, {
       status,
       transactionId: data.payment_id,
       paymentMethod: data.payment_method,
     });
+
+    if (becameApproved) onApproved(reference);
   }
 
   return { type: parsed.type, paymentId: data.payment_id };
@@ -218,7 +231,11 @@ export interface OrderStatusView {
  * Si la orden ya tiene un estado final no se vuelve a llamar a Bold: ahorra
  * la llamada saliente y hace inofensivo que la pagina reintente.
  */
-export const confirmOrder = async (env: Env, orderId: string): Promise<OrderStatusView> => {
+export const confirmOrder = async (
+  env: Env,
+  orderId: string,
+  onApproved: OnApproved = () => {}
+): Promise<OrderStatusView> => {
   const order = await findOrderByOrderId(env.DB, orderId);
 
   if (!order) throw notFound('order_not_found', 'No encontramos esa orden.');
@@ -243,11 +260,13 @@ export const confirmOrder = async (env: Env, orderId: string): Promise<OrderStat
   const voucher = await fetchBoldPaymentStatus(identityKey, orderId);
   const status = ORDER_STATUS[voucher.status];
 
-  await applyOrderPayment(env.DB, orderId, {
+  const { becameApproved } = await applyOrderPayment(env.DB, orderId, {
     status,
     transactionId: voucher.transactionId,
     paymentMethod: voucher.paymentMethod,
   });
+
+  if (becameApproved) onApproved(orderId);
 
   return { ...view, status };
 };
