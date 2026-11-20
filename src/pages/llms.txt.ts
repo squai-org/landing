@@ -46,7 +46,7 @@ Squai trabaja en español.
 
 ${serviceLines}
 
-## Programa actual, sujeto a preinscripción.
+## Programa actual, con inscripciones abiertas.
 
 **${program.name}** (${program.ecosystem}) — ${program.status}.
 

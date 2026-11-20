@@ -88,7 +88,7 @@ const isSquaiOne = currentPath === '/servicios/squai-one';
                 {ui.navigation.contactCta}
               </Button>
             ) : isSquaiOne ? (
-              <Button variant="primary" href="#lista" data-scroll-to="lista" compact class="nav-cta">
+              <Button variant="primary" href="#inscripcion" data-scroll-to="inscripcion" compact class="nav-cta">
                 {ui.navigation.oneCta}
               </Button>
             ) : (
@@ -100,7 +100,7 @@ const isSquaiOne = currentPath === '/servicios/squai-one';
                 class="nav-cta"
                 aria-current={currentPath.startsWith('/servicios') ? 'page' : undefined}
               >
-                {ui.navigation.waitlist}
+                {ui.navigation.program}
               </Button>
             )
           }

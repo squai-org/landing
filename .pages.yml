@@ -657,7 +657,7 @@ content:
                       collapsible: false
       - name: one-contacto
         label: Contacto
-        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la sección de inscripción.
         type: file
         path: src/content/services/squai-one.json
         format: json
@@ -905,7 +905,7 @@ content:
                       collapsible: false
       - name: grow-contacto
         label: Contacto
-        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la sección de inscripción.
         type: file
         path: src/content/services/squai-grow.json
         format: json
@@ -1153,7 +1153,7 @@ content:
                       collapsible: false
       - name: learn-contacto
         label: Contacto
-        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la sección de inscripción.
         type: file
         path: src/content/services/squai-learn.json
         format: json
@@ -1397,8 +1397,8 @@ content:
                         label: Abrir submenú de servicios
                         type: string
                         required: true
-                      - name: waitlist
-                        label: Botón de inscripción
+                      - name: program
+                        label: Botón hacia los programas
                         type: string
                         required: true
                       - name: contactCta
@@ -1406,7 +1406,7 @@ content:
                         type: string
                         required: true
                       - name: oneCta
-                        label: Botón de preinscripción
+                        label: Botón de inscripción (Squai One)
                         type: string
                         required: true
                   - name: skip
@@ -1500,7 +1500,7 @@ content:
                       message: Usa una URL que empiece por https:// o deja el campo vacío.
       - name: formularios
         label: Formularios
-        description: Los mismos textos en el formulario de empresas, el de instituciones educativas y la lista de espera.
+        description: Los mismos textos en el formulario de empresas, el de instituciones educativas y el de inscripción.
         type: file
         path: src/content/copies.json
         format: json
@@ -1679,6 +1679,19 @@ content:
                             label: Texto visible
                             type: string
                             required: true
+                      - name: termsConsentPrefix
+                        label: Consentimiento de términos, texto previo
+                        description: Casilla obligatoria del formulario de compra. El enlace lleva a /terminos-de-servicio.
+                        type: string
+                        required: true
+                      - name: termsConsentLink
+                        label: Consentimiento de términos, texto del enlace
+                        type: string
+                        required: true
+                      - name: termsConsentSuffix
+                        label: Consentimiento de términos, texto posterior
+                        type: string
+                        required: true
                   - name: feedback
                     label: Mensajes de respuesta
                     type: object
@@ -1894,6 +1907,20 @@ content:
                             required: true
                           - name: usd
                             label: Opción dólares
+                            type: string
+                            required: true
+                      - name: button
+                        label: Botón de pago
+                        description: El texto inicial del botón es el «Botón de reserva». Estos son los que muestra mientras el modal de Bold está abierto y después de cerrarlo sin pagar.
+                        type: object
+                        required: true
+                        fields:
+                          - name: paying
+                            label: Mientras se paga
+                            type: string
+                            required: true
+                          - name: retry
+                            label: Para retomar el pago
                             type: string
                             required: true
       - name: titulos-compartidos

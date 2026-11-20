@@ -52,9 +52,9 @@
         "open": "Abrir menú",
         "close": "Cerrar menú",
         "servicesSubmenu": "Mostrar submenú de servicios",
-        "waitlist": "Empieza aquí",
+        "program": "Empieza aquí",
         "contactCta": "Agenda tu llamada",
-        "oneCta": "Preinscribirme"
+        "oneCta": "Inscribirme"
       },
       "skip": "Saltar al contenido",
       "footer": {
@@ -127,7 +127,10 @@
             "value": "mas-100",
             "label": "Más de 100"
           }
-        ]
+        ],
+        "termsConsentPrefix": "He leído y acepto los ",
+        "termsConsentLink": "Términos de Servicio",
+        "termsConsentSuffix": " de Squai."
       },
       "feedback": {
         "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
@@ -173,6 +176,10 @@
             "Un solo pago por las cinco semanas del programa.",
             "Cuesta menos que seguir perdiendo horas intentando entender la IA por tu cuenta."
           ]
+        },
+        "button": {
+          "paying": "Completa el pago en la ventana de Bold",
+          "retry": "Continuar con el pago"
         },
         "currency": {
           "label": "Moneda de pago",
@@ -333,7 +340,7 @@
       {
         "q": "Ya me convencieron, ¿cómo empiezo esto?",
         "a": [
-          "Si es para ti, entra a Squai One y asegura tu puesto en la lista de espera antes de que nos toque colgar el letrero de “Agotado”. Si es para tu empresa o institución educativa, pide una llamada desde la página de Squai Grow o Squai Learn. Te prometemos responder en menos de 24 horas hábiles.",
+          "Si es para ti, entra a Squai One y asegura tu cupo antes de que nos toque colgar el letrero de “Agotado”. Si es para tu empresa o institución educativa, pide una llamada desde la página de Squai Grow o Squai Learn. Te prometemos responder en menos de 24 horas hábiles.",
           "Te responde un humano de carne y hueso."
         ]
       },
@@ -376,7 +383,7 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Al inscribirte en la lista de espera, participar en el programa \"Fundamentos de Inteligencia Artificial Generativa\" o solicitar nuestros servicios para empresas, aceptas las reglas de juego descritas en este documento. Si alguna parte no te convence, te sugerimos no usar nuestros servicios."
+                    "text": "Al inscribirte o participar en el programa \"Fundamentos de Inteligencia Artificial Generativa\" o solicitar nuestros servicios para empresas, aceptas las reglas de juego descritas en este documento. Si alguna parte no te convence, te sugerimos no usar nuestros servicios."
                   }
                 ]
               }
@@ -389,7 +396,7 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Squai ofrece programas educativos en vivo sobre inteligencia artificial. No vendemos fórmulas mágicas para volverse millonario overnight, ni licencias de software milagroso. El acceso a los programas se gestiona mediante lista de espera debido al límite de cupos por grupo."
+                    "text": "Squai ofrece programas educativos en vivo sobre inteligencia artificial. No vendemos fórmulas mágicas para volverse millonario overnight, ni licencias de software milagroso. Cada grupo tiene cupos limitados, que se asignan en el orden en que se aprueba el pago."
                   }
                 ]
               }
@@ -402,7 +409,7 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Al llenar los formularios de contacto o lista de espera, declaras que los datos ingresados son tuyos y correctos. Dejar el correo de tu jefe para gastarle una broma no es una buena idea."
+                    "text": "Al llenar los formularios de contacto o de inscripción, declaras que los datos ingresados son tuyos y correctos. Dejar el correo de tu jefe para gastarle una broma no es una buena idea."
                   }
                 ]
               }
@@ -560,7 +567,7 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "text": "Esta política aplica a la información personal que compartes con Squai a través de nuestra página web, formularios de lista de espera y solicitudes de contacto."
+                    "text": "Esta política aplica a la información personal que compartes con Squai a través de nuestra página web, formularios de inscripción y solicitudes de contacto."
                   }
                 ]
               }

@@ -1,19 +1,59 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { checkout } from '../../src/config/checkout';
 import { siteSchema } from '../../src/content/schema';
 
 /**
- * El selector de moneda del checkout no tiene textos propios: salen del
- * contenido (Pages CMS), validado por el mismo esquema que usa el build.
+ * Todos los textos del flujo de compra se editan desde el CMS. La configuracion
+ * de runtime (src/config) solo guarda rutas y codigos, nunca textos visibles.
  */
-const read = (file: string) => readFile(path.join(import.meta.dirname, '../..', file), 'utf8');
+const root = path.join(import.meta.dirname, '../..');
+
+const loadSite = async () => {
+  const source = await readFile(path.join(root, 'src/content/copies.json'), 'utf8');
+  return siteSchema.parse((JSON.parse(source) as { site: unknown }).site);
+};
+
+describe('navegacion', () => {
+  it('lleva el boton de fuera de Squai One en una clave de programa', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.navigation.program).toBe('Empieza aquí');
+  });
+});
+
+describe('textos del boton de pago', () => {
+  it('vienen del contenido validado por el esquema', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.checkout.button).toEqual({
+      paying: 'Completa el pago en la ventana de Bold',
+      retry: 'Continuar con el pago',
+    });
+  });
+
+  it('no viven en la configuracion de runtime del checkout', () => {
+    expect(Object.keys(checkout).filter((key) => /label/i.test(key))).toEqual([]);
+  });
+});
+
+describe('casillas de consentimiento', () => {
+  it('la de terminos tiene sus textos en el contenido, aparte de la de privacidad', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.forms).toMatchObject({
+      termsConsentPrefix: 'He leído y acepto los ',
+      termsConsentLink: 'Términos de Servicio',
+      termsConsentSuffix: ' de Squai.',
+      privacyConsentLink: 'Política de Privacidad',
+    });
+  });
+});
 
 describe('textos del selector de moneda', () => {
   it('vienen del contenido y cumplen el esquema', async () => {
-    const copies = JSON.parse(await read('src/content/copies.json')) as { site: unknown };
-
-    const site = siteSchema.parse(copies.site);
+    const site = await loadSite();
 
     expect(site.ui.checkout.currency).toEqual({
       label: expect.any(String),
@@ -23,7 +63,7 @@ describe('textos del selector de moneda', () => {
   });
 
   it('se pueden editar en Pages CMS, sin el precio de referencia fijo en USD', async () => {
-    const pages = await read('.pages.yml');
+    const pages = await readFile(path.join(root, '.pages.yml'), 'utf8');
     const checkoutNode = pages.slice(pages.indexOf('label: Sección de inscripción'));
     const currencyNode = checkoutNode.slice(checkoutNode.indexOf('- name: currency'));
 

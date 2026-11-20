@@ -2,7 +2,7 @@
 
 El pago de Squai One usa la **integración personalizada de Bold** en modo
 embebido (`renderMode: 'embedded'`): el botón es del sitio (clases `.btn
-.btn-dark`, texto en `src/config/checkout.ts`) y la librería de Bold solo abre el
+.btn-dark`, textos en `ui.checkout.button` del contenido) y la librería de Bold solo abre el
 formulario de pago en un modal sobre `/servicios/squai-one`, sin sacar al
 comprador del sitio. No se usa el botón con diseño de Bold (`<script
 data-bold-button>`) porque no admite el estilo de la página.
@@ -370,8 +370,5 @@ al lado de `BOLD` en la integración y se vuelve a construir sin la variable.
   verificar en el ambiente de pruebas si la página padre llega de verdad a
   `/gracias`. Si no llegara, el webhook sigue registrando la venta, pero el
   comprador se quedaría sin confirmación en el sitio.
-- **La tabla `waitlist_signups` sigue existiendo** con los registros de la lista
-  de espera, aunque `/api/waitlist` ya no exista. No se borra para no perder esos
-  datos.
 - **No se envía correo al comprador** desde el sitio. Bold notifica el pago;
   el correo con los datos del programa es manual por ahora.
