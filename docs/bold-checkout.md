@@ -26,7 +26,7 @@ navegador                         Worker                         Bold
 formulario de inscripción
 POST /api/checkout/session         -> Turnstile, valida campos,
                                       lee el precio de payment_plans,
-                                      INSERT enrollments (pending),
+                                      UPSERT customers, INSERT orders (pending),
                                       firma con BOLD_SECRET_KEY
                                    <- { apiKey, orderId, amount, firma }
 new BoldCheckout({...}).open() ------------------------------->  modal de pago
@@ -35,10 +35,10 @@ new BoldCheckout({...}).open() ------------------------------->  modal de pago
 GET /api/checkout/status           -> GET payments.api.bold.co
                                       /v2/payment-voucher/{orderId}
                                    <- payment_status
-                                   -> enrollments.status
+                                   -> orders.status
    (y en paralelo, pase lo que pase con el navegador)
 POST /api/checkout/webhook        <- SALE_APPROVED / SALE_REJECTED / VOID_*
-                                   -> bold_transactions + enrollments.status
+                                   -> bold_transactions + orders.status
 ```
 
 Cuatro reglas que no se pueden relajar:
@@ -49,24 +49,29 @@ Cuatro reglas que no se pueden relajar:
 2. **El monto sale de la base, no del navegador.** `POST /api/checkout/session`
    ignora cualquier `amount` que llegue en el cuerpo. El precio que se pinta en
    la tarjeta es el mismo que se firma.
-3. **La inscripción se guarda antes de pagar.** El `order-id` es lo único que
-   liga un pago con una persona. Además deja rastro de quien empieza y no
+3. **La orden se guarda antes de pagar.** El `order-id` es lo único que
+   liga un pago con un cliente. Además deja rastro de quien empieza y no
    termina.
 4. **La URL de retorno no decide nada.** Bold añade `bold-tx-status`, pero
    cualquiera puede escribirlo a mano y el propio Bold advierte de que ese
    estado puede no ser el definitivo. `/gracias` solo muestra lo que responde
    `GET /api/checkout/status`, que pregunta a Bold desde el servidor.
 
-### Las dos tablas
+### Las tablas
 
-`enrollments` es el estado de negocio: una fila por intento, con los datos de la
-persona, el `order_id` y el estado del pago. `bold_transactions` es el registro
-crudo de lo que mandó el webhook, para auditar un cobro disputado.
+`customers` guarda a cada cliente una sola vez, por su correo normalizado
+(minúsculas y sin espacios); sus datos de contacto son los del último
+formulario que envió. `orders` es el estado de negocio: una fila por intento,
+con el `customer_id`, el `order_id`, el estado del pago y el contexto del
+intento. `bold_transactions` es el registro crudo de lo que mandó el webhook,
+para auditar un cobro disputado.
 
 Los dos caminos de confirmación —la consulta de `/gracias` y el webhook—
-escriben la misma fila con `applyEnrollmentPayment`, que es idempotente y no
-degrada: una inscripción ya aprobada solo cambia si llega una anulación. Da
-igual quién llegue primero.
+escriben la misma fila con `applyOrderPayment`, que es idempotente y no
+degrada: una orden ya aprobada solo cambia si llega una anulación. Da igual
+quién llegue primero. `GET /api/checkout/status` responde
+`{ ok, order: { status, programCode, amount, currency, fullName } }`, o 404
+`order_not_found`.
 
 ### La consulta de estado
 
@@ -261,19 +266,19 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
 
 1. La tarjeta de inversión muestra el precio que tiene `payment_plans`.
 2. Hay **un solo botón** de acción. Al enviar el formulario debe quedar una fila
-   en `enrollments` con `status = 'pending'`, y el modal de Bold se abre **solo**,
+   en `orders` con `status = 'pending'`, y el modal de Bold se abre **solo**,
    centrado sobre la página y con los datos de la persona prellenados (en
    `http://localhost` Bold responde `BTN-001` porque exige una URL de retorno
    `https`: probar en una preview):
 
    ```bash
-   wrangler d1 execute squai --local --command "SELECT order_id, status, email FROM enrollments"
+   wrangler d1 execute squai --local --command "SELECT o.order_id, o.status, c.email FROM orders o JOIN customers c ON c.id = o.customer_id"
    ```
 3. Con el modal abierto, el botón dice «Completa el pago en la ventana de Bold» y
    está deshabilitado. Al cerrar el modal sin pagar cambia de estilo (oscuro) y
    de texto a «Continuar con el pago»; al pulsarlo se reabre **la misma sesión**
-   (mismo `order_id`, sin otra fila en `enrollments`). Si el comprador edita el
-   formulario, vuelve a «Reservar» y el siguiente envío crea una inscripción
+   (mismo `order_id`, sin otra fila en `orders`). Si el comprador edita el
+   formulario, vuelve a «Reservar» y el siguiente envío crea una orden
    nueva. Si la compra ya figura `approved`, el botón lleva a `/gracias` en vez
    de abrir otro pago.
 4. El modal lleva la etiqueta amarilla **Modo de pruebas**.

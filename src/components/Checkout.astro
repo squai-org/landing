@@ -265,8 +265,8 @@ const { program, ui, labels } = await getSiteContent();
           headers: { Accept: 'application/json' },
         });
         if (res.ok) {
-          const { enrollment } = (await res.json()) as { enrollment: { status: string } };
-          if (!canReopen(enrollment.status)) {
+          const { order } = (await res.json()) as { order: { status: string } };
+          if (!canReopen(order.status)) {
             window.location.assign(returnUrl(current.session.orderId));
             return;
           }
