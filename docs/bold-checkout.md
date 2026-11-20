@@ -178,6 +178,77 @@ COP, mayor que 0 en USD (la base lo exige). En USD, Bold muestra dólares pero
 procesa la venta en COP a la TRM del día, así que el webhook puede reportar el
 total en pesos.
 
+## Correo de confirmación (Brevo)
+
+Cuando una orden pasa a `approved`, por el webhook o por `/status`, el cliente
+queda inscrito y recibe **un solo** correo de confirmación: el acuse de recibo
+de la Ley 1480 art. 50. `applyOrderPayment` detecta la transición (una orden ya
+aprobada no vuelve a cambiar) y la ruta programa el envío con `waitUntil`
+(`src/server/lib/background.ts`), así que el webhook responde a Bold sin
+esperar a Brevo.
+
+Antes de enviar, `sendConfirmation` (`src/server/services/email.service.ts`)
+reclama la fila en `email_messages` con `INSERT ... ON CONFLICT DO NOTHING`
+sobre `UNIQUE (order_id, kind)`: solo envía quien la creó, aunque el webhook y
+`/status` lleguen juntos o se repitan. Después anota en esa fila `status`
+(`sent` o `failed`), `attempts`, `provider_message_id` (el `messageId` de
+Brevo), `last_error` y `sent_at`. D1 es la prueba de qué se envió, con qué
+plantilla (`template_id`) y cuándo (ADR 0001). Un fallo de Brevo queda en
+`failed` y no rompe la respuesta; el reintento es del cron (#56).
+
+Sin `BREVO_API_KEY` o sin id de plantilla no se envía ni se crea la fila: la
+orden queda aprobada y sin confirmación, y el cron la toma cuando esté
+configurado.
+
+### Llave y remitente
+
+La API key es el secret **`BREVO_API_KEY`** del Worker (Brevo → SMTP & API →
+API Keys). Igual que las llaves de Bold: en local va en `.dev.vars`
+(`BREVO_API_KEY=...`) y en producción en Settings → **Variables and Secrets**
+como tipo **Secret**, o por CLI:
+
+```bash
+wrangler secret put BREVO_API_KEY
+```
+
+Remitente `Squai <comunicaciones@squai.io>` (debe estar verificado en Brevo) y
+respuesta a `team@squai.io`, en `src/config/email.ts`. El cliente
+(`src/server/lib/brevo.ts`) es `fetch` contra `POST /v3/smtp/email` con
+`templateId` y `params`, sin SDK.
+
+### Plantilla
+
+El HTML versionado es `src/emails/confirmation.html` (fuera de `public/`, no se
+publica). Se construyó con `squai-org/brand-book` y `squai-org/landing-design`:
+tablas de 600 px, estilos en línea, logo PNG absoluto y texto Midnight sobre
+Periwinkle. Usa el New Template Language de Brevo: cada dato es
+`{{ params.NOMBRE }}` y `test/build/email-templates.test.ts` comprueba que los
+placeholders son exactamente `CONFIRMATION_PARAMS`.
+
+Para publicarla: Brevo → Campaigns → Templates → New template → pegar el HTML,
+guardar y poner su id en `email.templates.confirmation`
+(`src/config/email.ts`). Mientras sea `null` el Worker no envía. Si el diseño
+se ajusta en el editor de Brevo, devolver el HTML al repo para que el test lo
+vigile.
+
+Montos: el IVA del 19 % va incluido. `base = round(total / 1.19)` e
+`IVA = total − base`, en enteros, así base + IVA siempre suma lo cobrado
+(440.000 → 369.748 + 70.252). Las órdenes sin `tax` (anteriores a 0007) van
+completas como base. Fechas y horario salen de `programs.starts_on`,
+`ends_on` y `schedule`; si están vacíos el correo dice "Por confirmar".
+
+### Pendientes del equipo
+
+- Subir la plantilla a Brevo y poner su id en `src/config/email.ts`.
+- **Dirección y teléfono de Squai**: en `email.company` quedan
+  `[DIRECCION PENDIENTE]` y `[TELEFONO PENDIENTE]`, y así salen en el correo
+  hasta que se reemplacen. Razón social y NIT son los de los Términos de
+  Servicio.
+- Llenar `starts_on`, `ends_on` y `schedule` del programa en D1.
+- Probar la plantilla en clientes de correo reales (Gmail web y app, Outlook
+  escritorio y web, Apple Mail/iOS), por ejemplo con el envío de prueba de
+  Brevo. No está hecho: los tests solo validan los placeholders.
+
 ## Límites y estado del programa
 
 Las ventas abren y cierran solas. Los límites viven en `program_limits` (una
@@ -306,6 +377,8 @@ Lo que cubre el gate:
 | `test/server/checkout.test.ts` | el monto sale de la base y no del navegador, la llave secreta nunca viaja en la respuesta, sin llaves responde 503 |
 | `test/server/bold-webhook.test.ts` | una notificación forjada no entra a la base, un reenvío no duplica filas, una anulación queda como evento aparte |
 | `test/build/csp-headers.test.ts` | la CSP de `dist/_headers` permite `checkout.bold.co` en `script-src` y `frame-src` |
+| `test/server/confirmation-email.test.ts` | webhook y `/status` en cualquier orden y repetidos envían una sola confirmación, sin esperar a Brevo; un fallo de Brevo queda registrado; una orden rechazada no envía nada |
+| `test/build/email-templates.test.ts` | los placeholders de la plantilla coinciden con los parámetros que envía el Worker |
 
 Las ramas que no son la de producción obtienen una URL de preview con el mismo
 gate, así que el checkout se puede probar con llaves de pruebas antes de

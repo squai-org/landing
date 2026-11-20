@@ -7,5 +7,6 @@ declare namespace Cloudflare {
     TURNSTILE_SECRET_KEY?: string;
     BOLD_IDENTITY_KEY?: string;
     BOLD_SECRET_KEY?: string;
+    BREVO_API_KEY?: string;
   }
 }
