@@ -91,7 +91,7 @@ aparecer y solo queda consultable **24 horas**. Por eso `/gracias` reintenta
 unos dos minutos y, si para entonces no hay veredicto, muestra "en proceso" y
 deja que el webhook termine el trabajo.
 
-Si la inscripción ya tiene un estado final, el Worker responde desde D1 sin
+Si la orden ya tiene un estado final, el Worker responde desde D1 sin
 volver a llamar a Bold.
 
 ## Dónde se configuran las llaves
@@ -288,6 +288,139 @@ wrangler d1 execute squai --remote \
   --command "UPDATE program_limits SET capacity = 35 WHERE program_code = 'squai-one'"
 ```
 
+## Cambiar precio, fechas y cupos sin desplegar
+
+Precio, fechas, cupo y cierre manual viven en D1, no en el código ni en
+`copies.json`: un cambio rige en la siguiente petición, sin build ni deploy. Se
+corre en el panel de Cloudflare (Storage & Databases → D1 SQL Database →
+`squai` → **Console**, que acepta el SQL tal cual) o con
+`wrangler d1 execute squai --remote --command "<SQL>"`. `--remote` es
+**producción**; `--local` es la base de `pnpm preview:worker`.
+
+Las fechas van siempre en ISO-8601 UTC con milisegundos y `Z`
+(`2027-01-23T05:00:00.000Z`): el Worker compara textos, y un `2027-01-23` a
+secas queda antes de cualquier instante de ese día. Las 00:00 de Colombia son
+las 05:00 UTC.
+
+```sql
+-- Precio: se agrega una fila, no se edita la vigente. Rige desde valid_from.
+INSERT INTO program_prices (program_code, currency, amount, valid_from)
+VALUES ('squai-one', 'USD', 199, '2027-06-01T05:00:00.000Z');
+
+-- Corregir un precio programado que aún no rige (valid_from futuro).
+UPDATE program_prices SET amount = 590000
+WHERE program_code = 'squai-one' AND currency = 'COP' AND valid_from = '2027-01-01T05:00:00.000Z';
+
+-- Ver el precio vigente en cada moneda.
+SELECT currency, amount, valid_from FROM program_prices p
+WHERE program_code = 'squai-one'
+  AND valid_from = (SELECT max(valid_from) FROM program_prices q
+                    WHERE q.program_code = p.program_code AND q.currency = p.currency
+                      AND q.valid_from <= strftime('%Y-%m-%dT%H:%M:%fZ', 'now'));
+
+-- Fechas de venta (closes_at es exclusivo: vende hasta el 29 de enero inclusive).
+UPDATE program_limits
+SET opens_at = '2026-12-01T05:00:00.000Z', closes_at = '2027-01-30T05:00:00.000Z'
+WHERE program_code = 'squai-one';
+
+-- Cupo.
+UPDATE program_limits SET capacity = 35 WHERE program_code = 'squai-one';
+
+-- Cerrar (1) o reabrir (0) las ventas a mano.
+UPDATE programs SET closed_manually = 1 WHERE code = 'squai-one';
+
+-- Fechas (YYYY-MM-DD) y horario del programa que salen en el correo de
+-- confirmación. Valores entre <> a reemplazar por los confirmados.
+UPDATE programs
+SET starts_on = '<AAAA-MM-DD>', ends_on = '<AAAA-MM-DD>', schedule = '<días y horario, hora de Colombia>',
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE code = 'squai-one';
+```
+
+Lo que la base rechaza sola: montos con decimales, menos de 1000 COP o 0 USD,
+dos precios con la misma moneda y `valid_from`, un `closes_at` que no sea
+posterior a `opens_at` y un cupo menor que 1. Las órdenes ya creadas no cambian:
+congelan monto, moneda e impuesto. Para comprobar el efecto, `SELECT * FROM
+v_program_seats` (abajo) o `GET /api/checkout/program/squai-one`.
+
+## Seguimiento en D1
+
+El embudo se consulta en D1, sin Brevo (ADR 0001). Tres vistas
+(`migrations/0010_tracking_views.sql`, probadas en
+`test/server/tracking-views.test.ts`) se calculan al consultarlas, así que
+siempre están al día:
+
+| Vista | Una fila por | Columnas |
+| --- | --- | --- |
+| `v_customers_without_enrollment` | cliente y programa con órdenes y **sin** orden aprobada | `customer_id`, `email`, `full_name`, `phone_e164`, `program_code`, `attempts`, `last_status`, `last_attempt_at` |
+| `v_enrollments_by_program` | cliente inscrito por programa (aunque haya pagado dos veces) | `program_code`, `customer_id`, `email`, `full_name`, `phone_e164`, `order_id` y `enrolled_at` de su primera orden aprobada |
+| `v_program_seats` | programa | `program_code`, `capacity`, `approved_orders`, `seats_left` (nunca menor que 0), `opens_at`, `closes_at`, `closed_manually` |
+
+Una venta anulada (`voided`) deja de ser inscripción y libera su cupo, igual que
+en el estado del programa. Un programa sin fila en `program_limits` sale con
+`capacity` y `seats_left` en `NULL`: no se vende. `v_program_seats` no dice si
+el programa está abierto por fechas, porque eso depende del instante; para eso
+están `opens_at`, `closes_at` y `closed_manually`, o el `status` del API.
+
+Consultas de uso, para pegar en la Console del panel:
+
+```sql
+-- Quién mostró intención de compra y no pagó, lo más reciente primero.
+SELECT email, full_name, phone_e164, attempts, last_status, last_attempt_at
+FROM v_customers_without_enrollment
+WHERE program_code = 'squai-one'
+ORDER BY last_attempt_at DESC;
+
+-- Inscritos de Squai One, en orden de inscripción.
+SELECT full_name, email, phone_e164, enrolled_at, order_id
+FROM v_enrollments_by_program
+WHERE program_code = 'squai-one'
+ORDER BY enrolled_at;
+
+-- Cuántos inscritos tiene cada programa.
+SELECT program_code, count(*) AS inscritos
+FROM v_enrollments_by_program
+GROUP BY program_code;
+
+-- Cupos que quedan.
+SELECT program_code, capacity, approved_orders, seats_left, closed_manually
+FROM v_program_seats;
+```
+
+Las mismas, por CLI (`--remote` lee producción; `--json` sirve para exportar):
+
+```bash
+wrangler d1 execute squai --remote \
+  --command "SELECT email, full_name, phone_e164, attempts, last_status, last_attempt_at FROM v_customers_without_enrollment WHERE program_code = 'squai-one' ORDER BY last_attempt_at DESC"
+wrangler d1 execute squai --remote \
+  --command "SELECT full_name, email, phone_e164, enrolled_at FROM v_enrollments_by_program WHERE program_code = 'squai-one' ORDER BY enrolled_at"
+wrangler d1 execute squai --remote \
+  --command "SELECT * FROM v_program_seats"
+```
+
+## Correos, cron y retomar (resumen)
+
+Resumen del diseño de #49; cada ticket detalla su parte.
+
+- **Correo de confirmación (#55).** Un único correo por orden aprobada,
+  registrado en `email_messages`; ver "Correo de confirmación (Brevo)".
+- **Cron (#56).** Un `scheduled` del Worker reintenta las confirmaciones
+  fallidas o colgadas, y envía la recuperación.
+- **Recuperación (#58).** A las 2 horas de una orden sin pago, un único correo
+  por cliente y programa con el enlace para retomar.
+- **Retomar (#57).** `/retomar?order_id=<orderId>` (también el `origin-url`
+  de Bold) abre otra orden del mismo cliente con el precio vigente, sin volver a
+  llenar el formulario. Lleva a `/gracias` si ya está inscrito, y avisa si el
+  programa cerró o si el enlace tiene más de 7 días.
+
+Para ver qué se envió a quién:
+
+```sql
+SELECT m.kind, m.status, m.attempts, m.sent_at, c.email, m.order_id
+FROM email_messages m JOIN customers c ON c.id = m.customer_id
+ORDER BY m.created_at DESC;
+```
+
 ## CI/CD en Cloudflare (sin GitHub Actions)
 
 El repositorio está conectado a **Workers Builds**, así que el gate va en la
@@ -377,6 +510,7 @@ Lo que cubre el gate:
 | `test/server/checkout.test.ts` | el monto sale de la base y no del navegador, la llave secreta nunca viaja en la respuesta, sin llaves responde 503 |
 | `test/server/bold-webhook.test.ts` | una notificación forjada no entra a la base, un reenvío no duplica filas, una anulación queda como evento aparte |
 | `test/build/csp-headers.test.ts` | la CSP de `dist/_headers` permite `checkout.bold.co` en `script-src` y `frame-src` |
+| `test/server/tracking-views.test.ts` | las vistas de seguimiento cuentan clientes sin inscripción, inscritos y cupos como el estado del programa |
 | `test/server/confirmation-email.test.ts` | webhook y `/status` en cualquier orden y repetidos envían una sola confirmación, sin esperar a Brevo; un fallo de Brevo queda registrado; una orden rechazada no envía nada |
 | `test/build/email-templates.test.ts` | los placeholders de la plantilla coinciden con los parámetros que envía el Worker |
 
