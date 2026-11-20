@@ -1,10 +1,20 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
+import { defer } from '../lib/background';
 import { badRequest, ok } from '../lib/http';
 import { parseBody } from '../lib/validate';
 import { checkoutSessionSchema } from '../schemas/checkout.schema';
 import { confirmOrder, createCheckoutSession, handleBoldWebhook } from '../services/checkout.service';
+import { sendConfirmation } from '../services/email.service';
 import { loadProgram } from '../services/program.service';
 import type { AppBindings } from '../types';
+
+/**
+ * Cuando una orden pasa a aprobada, el correo de confirmacion sale con
+ * waitUntil: la respuesta (y el 200 que Bold espera en menos de 2 s) no
+ * espera a Brevo.
+ */
+const confirmInBackground = (c: Context<AppBindings>) => (orderId: string) =>
+  defer(c)(sendConfirmation(c.env, orderId, new Date()));
 
 export const checkoutRoute = new Hono<AppBindings>()
   /**
@@ -25,7 +35,7 @@ export const checkoutRoute = new Hono<AppBindings>()
 
     if (!orderId) throw badRequest('order_id_missing', 'Falta el identificador de la compra.');
 
-    return ok(c, { order: await confirmOrder(c.env, orderId) });
+    return ok(c, { order: await confirmOrder(c.env, orderId, confirmInBackground(c)) });
   })
   .post('/session', async (c) => {
     const raw = await c.req.json().catch(() => {
@@ -48,7 +58,12 @@ export const checkoutRoute = new Hono<AppBindings>()
    */
   .post('/webhook', async (c) => {
     const rawBody = await c.req.text();
-    const event = await handleBoldWebhook(c.env, rawBody, c.req.header('x-bold-signature'));
+    const event = await handleBoldWebhook(
+      c.env,
+      rawBody,
+      c.req.header('x-bold-signature'),
+      confirmInBackground(c)
+    );
 
     return ok(c, event);
   });
