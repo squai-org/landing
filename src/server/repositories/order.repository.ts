@@ -96,15 +96,23 @@ const APPLY_SQL = `
     AND (status <> 'approved' OR ?2 = 'voided')
 `;
 
+/**
+ * `becameApproved` dice si esta llamada fue la que aprobo la orden: una orden
+ * ya aprobada no vuelve a cumplir el WHERE con 'approved', asi que solo la
+ * transicion escribe una fila con ese estado. pending -> pending tambien
+ * escribe, por eso se mira el estado y no solo el conteo.
+ */
 export const applyOrderPayment = async (
   db: D1Database,
   orderId: string,
   payment: { status: OrderStatus; transactionId?: string | null; paymentMethod?: string | null }
-): Promise<void> => {
-  await db
+): Promise<{ becameApproved: boolean }> => {
+  const { meta } = await db
     .prepare(APPLY_SQL)
     .bind(orderId, payment.status, payment.transactionId ?? null, payment.paymentMethod ?? null)
     .run();
+
+  return { becameApproved: payment.status === 'approved' && meta.changes > 0 };
 };
 
 /**

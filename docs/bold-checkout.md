@@ -91,7 +91,7 @@ aparecer y solo queda consultable **24 horas**. Por eso `/gracias` reintenta
 unos dos minutos y, si para entonces no hay veredicto, muestra "en proceso" y
 deja que el webhook termine el trabajo.
 
-Si la inscripción ya tiene un estado final, el Worker responde desde D1 sin
+Si la orden ya tiene un estado final, el Worker responde desde D1 sin
 volver a llamar a Bold.
 
 ## Dónde se configuran las llaves
@@ -178,6 +178,107 @@ COP, mayor que 0 en USD (la base lo exige). En USD, Bold muestra dólares pero
 procesa la venta en COP a la TRM del día, así que el webhook puede reportar el
 total en pesos.
 
+## Correo de confirmación (Brevo)
+
+Cuando una orden pasa a `approved`, por el webhook o por `/status`, el cliente
+queda inscrito y recibe **un solo** correo de confirmación: el acuse de recibo
+de la Ley 1480 art. 50. `applyOrderPayment` detecta la transición (una orden ya
+aprobada no vuelve a cambiar) y la ruta programa el envío con `waitUntil`
+(`src/server/lib/background.ts`), así que el webhook responde a Bold sin
+esperar a Brevo.
+
+Antes de enviar, `sendConfirmation` (`src/server/services/email.service.ts`)
+reclama la fila en `email_messages` con `INSERT ... ON CONFLICT DO NOTHING`
+sobre `UNIQUE (order_id, kind)`: solo envía quien la creó, aunque el webhook y
+`/status` lleguen juntos o se repitan. Después anota en esa fila `status`
+(`sent` o `failed`), `attempts`, `provider_message_id` (el `messageId` de
+Brevo), `last_error` y `sent_at`. D1 es la prueba de qué se envió, con qué
+plantilla (`template_id`) y cuándo (ADR 0001). Un fallo de Brevo queda en
+`failed` y no rompe la respuesta; el cron la reintenta (ver abajo).
+
+Sin `BREVO_API_KEY` o sin id de plantilla no se envía ni se crea la fila: la
+orden queda aprobada y sin confirmación, y el cron la toma cuando esté
+configurado.
+
+### Reintento por cron
+
+Un **Cron Trigger** del Worker (`triggers.crons` en `wrangler.jsonc`) corre
+cada 5 minutos (`*/5 * * * *`; Cloudflare interpreta los crons en UTC). El
+handler es `scheduled` en `src/server/scheduled.ts`, exportado junto a `fetch`
+desde `src/server/index.ts`, y usa como "ahora" la hora programada de la
+ejecución (`controller.scheduledTime`). `retryConfirmations`
+(`email.service.ts`) toma, de a 50 por ejecución, las órdenes `approved` cuya
+confirmación:
+
+- no tiene fila (no se reclamó: faltaba la llave o la plantilla),
+- está `failed`, o
+- está `pending` sin cambios hace más de 10 minutos
+  (`PENDING_GRACE_MINUTES`): un envío de `waitUntil` en curso la deja
+  pendiente unos segundos, así que el cron no lo pisa.
+
+Cada una se reclama antes de enviar (`INSERT ... ON CONFLICT DO NOTHING` si no
+hay fila; si la hay, un `UPDATE` que solo cambia una fila todavía fallida o
+atascada), así que dos ejecuciones seguidas o cruzadas no duplican el correo.
+Cada intento suma `attempts` y deja `last_error`; un envío exitoso limpia el
+error y anota `sent_at`. No hay tope de intentos: una confirmación que sigue
+fallando se reintenta cada 5 minutos hasta que salga, y `last_error` dice por
+qué. Igual que el envío inmediato, sin `BREVO_API_KEY` o con
+`email.templates.confirmation` en `null` el cron no envía ni toca nada.
+
+Los cambios de crons tardan hasta 15 minutos en propagarse tras desplegar. En
+local: `pnpm preview:worker` y luego
+`curl "http://localhost:8787/cdn-cgi/local/scheduled?cron=*/5+*+*+*+*"`.
+https://developers.cloudflare.com/workers/configuration/cron-triggers/
+
+### Llave y remitente
+
+La API key es el secret **`BREVO_API_KEY`** del Worker (Brevo → SMTP & API →
+API Keys). Igual que las llaves de Bold: en local va en `.dev.vars`
+(`BREVO_API_KEY=...`) y en producción en Settings → **Variables and Secrets**
+como tipo **Secret**, o por CLI:
+
+```bash
+wrangler secret put BREVO_API_KEY
+```
+
+Remitente `Squai <comunicaciones@squai.io>` (debe estar verificado en Brevo) y
+respuesta a `team@squai.io`, en `src/config/email.ts`. El cliente
+(`src/server/lib/brevo.ts`) es `fetch` contra `POST /v3/smtp/email` con
+`templateId` y `params`, sin SDK.
+
+### Plantilla
+
+El HTML versionado es `src/emails/confirmation.html` (fuera de `public/`, no se
+publica). Se construyó con `squai-org/brand-book` y `squai-org/landing-design`:
+tablas de 600 px, estilos en línea, logo PNG absoluto y texto Midnight sobre
+Periwinkle. Usa el New Template Language de Brevo: cada dato es
+`{{ params.NOMBRE }}` y `test/build/email-templates.test.ts` comprueba que los
+placeholders son exactamente `CONFIRMATION_PARAMS`.
+
+Para publicarla: Brevo → Campaigns → Templates → New template → pegar el HTML,
+guardar y poner su id en `email.templates.confirmation`
+(`src/config/email.ts`). Mientras sea `null` el Worker no envía. Si el diseño
+se ajusta en el editor de Brevo, devolver el HTML al repo para que el test lo
+vigile.
+
+Montos: el IVA del 19 % va incluido. `base = round(total / 1.19)` e
+`IVA = total − base`, en enteros, así base + IVA siempre suma lo cobrado
+(440.000 → 369.748 + 70.252). Las órdenes sin `tax` (anteriores a 0007) van
+completas como base. Fechas y horario salen de `programs.starts_on`,
+`ends_on` y `schedule`; si están vacíos el correo dice "Por confirmar".
+
+### Pendientes del equipo
+
+- Subir la plantilla a Brevo y poner su id en `src/config/email.ts`.
+- **Dirección y teléfono de Squai**: en `email.company` quedan
+  `[DIRECCION PENDIENTE]` y `[TELEFONO PENDIENTE]`, y así salen en el correo
+  hasta que se reemplacen. Razón social y NIT son los de los Términos de
+  Servicio.
+- Llenar `starts_on`, `ends_on` y `schedule` del programa en D1.
+- Probar la plantilla en clientes de correo reales (Gmail web y app, Outlook
+  escritorio y web, Apple Mail/iOS), por ejemplo con el envío de prueba de
+  Brevo. No está hecho: los tests solo validan los placeholders.
+
 ## Límites y estado del programa
 
 Las ventas abren y cierran solas. Los límites viven en `program_limits` (una
@@ -239,7 +340,8 @@ lo protegen el mismo origen y el límite por IP. El Worker:
    `applyOrderPayment`. Bold solo responde por una orden durante unas 24 horas:
    si no contesta, o contesta `NO_TRANSACTION_FOUND`, vale el estado guardado
    en D1 y la orden cuenta como no pagada (nunca como aprobada). Si Bold dice
-   `APPROVED`: `200 { enrolled: true, orderId }`.
+   `APPROVED`: `200 { enrolled: true, orderId }`, y sale el correo de
+   confirmación igual que desde `/gracias` o el webhook.
 4. Verifica que el programa siga `open` (`409 program_not_open`) y que el
    cliente no tenga otra orden aprobada en el programa (`409 already_enrolled`;
    la página lleva a `/gracias?estado=inscrito`).
@@ -253,6 +355,140 @@ La respuesta nunca lleva datos de contacto: el enlace se puede reenviar. Por la
 misma razón el modal de Bold no sale prellenado desde `/retomar`. Los avisos de
 expirado, cerrado, no encontrado y error son textos de `ui.checkout.resume`,
 con un enlace al programa.
+
+## Cambiar precio, fechas y cupos sin desplegar
+
+Precio, fechas, cupo y cierre manual viven en D1, no en el código ni en
+`copies.json`: un cambio rige en la siguiente petición, sin build ni deploy. Se
+corre en el panel de Cloudflare (Storage & Databases → D1 SQL Database →
+`squai` → **Console**, que acepta el SQL tal cual) o con
+`wrangler d1 execute squai --remote --command "<SQL>"`. `--remote` es
+**producción**; `--local` es la base de `pnpm preview:worker`.
+
+Las fechas van siempre en ISO-8601 UTC con milisegundos y `Z`
+(`2027-01-23T05:00:00.000Z`): el Worker compara textos, y un `2027-01-23` a
+secas queda antes de cualquier instante de ese día. Las 00:00 de Colombia son
+las 05:00 UTC.
+
+```sql
+-- Precio: se agrega una fila, no se edita la vigente. Rige desde valid_from.
+INSERT INTO program_prices (program_code, currency, amount, valid_from)
+VALUES ('squai-one', 'USD', 199, '2027-06-01T05:00:00.000Z');
+
+-- Corregir un precio programado que aún no rige (valid_from futuro).
+UPDATE program_prices SET amount = 590000
+WHERE program_code = 'squai-one' AND currency = 'COP' AND valid_from = '2027-01-01T05:00:00.000Z';
+
+-- Ver el precio vigente en cada moneda.
+SELECT currency, amount, valid_from FROM program_prices p
+WHERE program_code = 'squai-one'
+  AND valid_from = (SELECT max(valid_from) FROM program_prices q
+                    WHERE q.program_code = p.program_code AND q.currency = p.currency
+                      AND q.valid_from <= strftime('%Y-%m-%dT%H:%M:%fZ', 'now'));
+
+-- Fechas de venta (closes_at es exclusivo: vende hasta el 29 de enero inclusive).
+UPDATE program_limits
+SET opens_at = '2026-12-01T05:00:00.000Z', closes_at = '2027-01-30T05:00:00.000Z'
+WHERE program_code = 'squai-one';
+
+-- Cupo.
+UPDATE program_limits SET capacity = 35 WHERE program_code = 'squai-one';
+
+-- Cerrar (1) o reabrir (0) las ventas a mano.
+UPDATE programs SET closed_manually = 1 WHERE code = 'squai-one';
+
+-- Fechas (YYYY-MM-DD) y horario del programa que salen en el correo de
+-- confirmación. Valores entre <> a reemplazar por los confirmados.
+UPDATE programs
+SET starts_on = '<AAAA-MM-DD>', ends_on = '<AAAA-MM-DD>', schedule = '<días y horario, hora de Colombia>',
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE code = 'squai-one';
+```
+
+Lo que la base rechaza sola: montos con decimales, menos de 1000 COP o 0 USD,
+dos precios con la misma moneda y `valid_from`, un `closes_at` que no sea
+posterior a `opens_at` y un cupo menor que 1. Las órdenes ya creadas no cambian:
+congelan monto, moneda e impuesto. Para comprobar el efecto, `SELECT * FROM
+v_program_seats` (abajo) o `GET /api/checkout/program/squai-one`.
+
+## Seguimiento en D1
+
+El embudo se consulta en D1, sin Brevo (ADR 0001). Tres vistas
+(`migrations/0010_tracking_views.sql`, probadas en
+`test/server/tracking-views.test.ts`) se calculan al consultarlas, así que
+siempre están al día:
+
+| Vista | Una fila por | Columnas |
+| --- | --- | --- |
+| `v_customers_without_enrollment` | cliente y programa con órdenes y **sin** orden aprobada | `customer_id`, `email`, `full_name`, `phone_e164`, `program_code`, `attempts`, `last_status`, `last_attempt_at` |
+| `v_enrollments_by_program` | cliente inscrito por programa (aunque haya pagado dos veces) | `program_code`, `customer_id`, `email`, `full_name`, `phone_e164`, `order_id` y `enrolled_at` de su primera orden aprobada |
+| `v_program_seats` | programa | `program_code`, `capacity`, `approved_orders`, `seats_left` (nunca menor que 0), `opens_at`, `closes_at`, `closed_manually` |
+
+Una venta anulada (`voided`) deja de ser inscripción y libera su cupo, igual que
+en el estado del programa. Un programa sin fila en `program_limits` sale con
+`capacity` y `seats_left` en `NULL`: no se vende. `v_program_seats` no dice si
+el programa está abierto por fechas, porque eso depende del instante; para eso
+están `opens_at`, `closes_at` y `closed_manually`, o el `status` del API.
+
+Consultas de uso, para pegar en la Console del panel:
+
+```sql
+-- Quién mostró intención de compra y no pagó, lo más reciente primero.
+SELECT email, full_name, phone_e164, attempts, last_status, last_attempt_at
+FROM v_customers_without_enrollment
+WHERE program_code = 'squai-one'
+ORDER BY last_attempt_at DESC;
+
+-- Inscritos de Squai One, en orden de inscripción.
+SELECT full_name, email, phone_e164, enrolled_at, order_id
+FROM v_enrollments_by_program
+WHERE program_code = 'squai-one'
+ORDER BY enrolled_at;
+
+-- Cuántos inscritos tiene cada programa.
+SELECT program_code, count(*) AS inscritos
+FROM v_enrollments_by_program
+GROUP BY program_code;
+
+-- Cupos que quedan.
+SELECT program_code, capacity, approved_orders, seats_left, closed_manually
+FROM v_program_seats;
+```
+
+Las mismas, por CLI (`--remote` lee producción; `--json` sirve para exportar):
+
+```bash
+wrangler d1 execute squai --remote \
+  --command "SELECT email, full_name, phone_e164, attempts, last_status, last_attempt_at FROM v_customers_without_enrollment WHERE program_code = 'squai-one' ORDER BY last_attempt_at DESC"
+wrangler d1 execute squai --remote \
+  --command "SELECT full_name, email, phone_e164, enrolled_at FROM v_enrollments_by_program WHERE program_code = 'squai-one' ORDER BY enrolled_at"
+wrangler d1 execute squai --remote \
+  --command "SELECT * FROM v_program_seats"
+```
+
+## Correos, cron y retomar (resumen)
+
+Resumen del diseño de #49; cada ticket detalla su parte.
+
+- **Correo de confirmación (#55).** Un único correo por orden aprobada,
+  registrado en `email_messages`; ver "Correo de confirmación (Brevo)".
+- **Cron (#56).** Un `scheduled` del Worker, cada 5 minutos, reintenta las
+  confirmaciones fallidas o colgadas (ver "Reintento por cron"); #58 le agrega
+  el envío de la recuperación.
+- **Recuperación (#58).** A las 2 horas de una orden sin pago, un único correo
+  por cliente y programa con el enlace para retomar.
+- **Retomar (#57).** `/retomar?order_id=<orderId>` (también el `origin-url`
+  de Bold) abre otra orden del mismo cliente con el precio vigente, sin volver a
+  llenar el formulario. Lleva a `/gracias` si ya está inscrito, y avisa si el
+  programa cerró o si el enlace tiene más de 7 días.
+
+Para ver qué se envió a quién:
+
+```sql
+SELECT m.kind, m.status, m.attempts, m.sent_at, c.email, m.order_id
+FROM email_messages m JOIN customers c ON c.id = m.customer_id
+ORDER BY m.created_at DESC;
+```
 
 ## CI/CD en Cloudflare (sin GitHub Actions)
 
@@ -343,6 +579,11 @@ Lo que cubre el gate:
 | `test/server/checkout.test.ts` | el monto sale de la base y no del navegador, la llave secreta nunca viaja en la respuesta, sin llaves responde 503 |
 | `test/server/bold-webhook.test.ts` | una notificación forjada no entra a la base, un reenvío no duplica filas, una anulación queda como evento aparte |
 | `test/build/csp-headers.test.ts` | la CSP de `dist/_headers` permite `checkout.bold.co` en `script-src` y `frame-src` |
+| `test/server/tracking-views.test.ts` | las vistas de seguimiento cuentan clientes sin inscripción, inscritos y cupos como el estado del programa |
+| `test/server/confirmation-email.test.ts` | webhook y `/status` en cualquier orden y repetidos envían una sola confirmación, sin esperar a Brevo; un fallo de Brevo queda registrado; una orden rechazada no envía nada |
+| `test/build/email-templates.test.ts` | los placeholders de la plantilla coinciden con los parámetros que envía el Worker |
+| `test/server/confirmation-retry.test.ts` | el cron reintenta confirmaciones fallidas, atascadas o nunca reclamadas; no reenvía las enviadas ni pisa un envío en curso; dos ejecuciones seguidas o a la vez no duplican correos |
+| `test/build/wrangler-config.test.ts` | `wrangler.jsonc` conserva el bloque `previews` y declara el Cron Trigger |
 
 Las ramas que no son la de producción obtienen una URL de preview con el mismo
 gate, así que el checkout se puede probar con llaves de pruebas antes de

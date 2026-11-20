@@ -1,5 +1,6 @@
-import { env } from 'cloudflare:test';
+import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:test';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { email } from '../../src/config/email';
 import app from '../../src/server/index';
 import { TEST_IDENTITY_KEY, TEST_SECRET_KEY } from '../fixtures/bold';
 
@@ -63,6 +64,7 @@ const seedOrder = async ({
 };
 
 beforeEach(async () => {
+  await env.DB.exec('DELETE FROM email_messages');
   await env.DB.exec('DELETE FROM orders');
   await env.DB.exec('DELETE FROM customers');
   const customer = await env.DB.prepare(
@@ -174,6 +176,43 @@ describe('POST /api/checkout/resume', () => {
     expect(await orders()).toEqual([expect.objectContaining({ order_id: PREVIOUS, status: 'approved' })]);
     const row = await env.DB.prepare('SELECT bold_transaction_id FROM orders').first();
     expect(row).toEqual({ bold_transaction_id: 'TXN-RETOMAR' });
+  });
+
+  it('si Bold aprobo la orden anterior al retomar, sale el correo de confirmacion', async () => {
+    await seedOrder();
+    const placeholderTemplate = email.templates.confirmation;
+    email.templates.confirmation = 4242;
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = input instanceof Request ? input.url : String(input);
+      return url.startsWith('https://api.brevo.com')
+        ? new Response(JSON.stringify({ messageId: '<retomar@smtp-relay.mailin.fr>' }), { status: 201 })
+        : new Response(JSON.stringify({ payment_status: 'APPROVED', transaction_id: 'TXN-RETOMAR' }), { status: 200 });
+    });
+
+    try {
+      const ctx = createExecutionContext();
+      const res = await app.request(
+        'https://squai.io/api/checkout/resume',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Origin: 'https://squai.io', 'CF-Connecting-IP': nextIp() },
+          body: JSON.stringify({ order_id: PREVIOUS }),
+        },
+        { ...withKeys, BREVO_API_KEY: 'test_brevo_key' },
+        ctx
+      );
+      await waitOnExecutionContext(ctx);
+
+      expect(res.status).toBe(200);
+      const brevoCalls = fetchMock.mock.calls.filter(([input]) =>
+        (input instanceof Request ? input.url : String(input)).startsWith('https://api.brevo.com')
+      );
+      expect(brevoCalls).toHaveLength(1);
+      const rows = await env.DB.prepare('SELECT order_id, kind, status FROM email_messages').all();
+      expect(rows.results).toEqual([{ order_id: PREVIOUS, kind: 'confirmation', status: 'sent' }]);
+    } finally {
+      email.templates.confirmation = placeholderTemplate;
+    }
   });
 
   it('no pregunta a Bold si la orden anterior ya estaba aprobada', async () => {

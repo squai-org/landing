@@ -149,6 +149,12 @@ export const createCheckoutSession = async (
 };
 
 /**
+ * Aviso de que una orden acaba de pasar a aprobada (solo en la transicion).
+ * La ruta lo usa para programar el correo de confirmacion sin esperar a Brevo.
+ */
+export type OnApproved = (orderId: string) => void;
+
+/**
  * Tipos de evento del webhook traducidos a estado de orden.
  * VOID_REJECTED (una anulacion que fallo) no cambia nada: el pago sigue como
  * estaba. https://developers.bold.co/webhook
@@ -166,7 +172,12 @@ const WEBHOOK_STATUS: Record<string, OrderStatus | undefined> = {
  * se verifica antes de mirar el contenido: sin firma valida el cuerpo no es
  * informacion, es una peticion anonima de internet.
  */
-export const handleBoldWebhook = async (env: Env, rawBody: string, signature: string | undefined) => {
+export const handleBoldWebhook = async (
+  env: Env,
+  rawBody: string,
+  signature: string | undefined,
+  onApproved: OnApproved = () => {}
+) => {
   const secretKey = env.BOLD_SECRET_KEY;
 
   if (!secretKey) {
@@ -211,11 +222,13 @@ export const handleBoldWebhook = async (env: Env, rawBody: string, signature: st
   const reference = data.metadata?.reference;
 
   if (status && reference) {
-    await applyOrderPayment(env.DB, reference, {
+    const { becameApproved } = await applyOrderPayment(env.DB, reference, {
       status,
       transactionId: data.payment_id,
       paymentMethod: data.payment_method,
     });
+
+    if (becameApproved) onApproved(reference);
   }
 
   return { type: parsed.type, paymentId: data.payment_id };
@@ -253,7 +266,11 @@ export interface OrderStatusView {
  * Si la orden ya tiene un estado final no se vuelve a llamar a Bold: ahorra
  * la llamada saliente y hace inofensivo que la pagina reintente.
  */
-export const confirmOrder = async (env: Env, orderId: string): Promise<OrderStatusView> => {
+export const confirmOrder = async (
+  env: Env,
+  orderId: string,
+  onApproved: OnApproved = () => {}
+): Promise<OrderStatusView> => {
   const order = await findOrderByOrderId(env.DB, orderId);
 
   if (!order) throw notFound('order_not_found', 'No encontramos esa orden.');
@@ -278,18 +295,20 @@ export const confirmOrder = async (env: Env, orderId: string): Promise<OrderStat
   const voucher = await fetchBoldPaymentStatus(identityKey, orderId);
   const status = ORDER_STATUS[voucher.status];
 
-  await applyOrderPayment(env.DB, orderId, {
+  const { becameApproved } = await applyOrderPayment(env.DB, orderId, {
     status,
     transactionId: voucher.transactionId,
     paymentMethod: voucher.paymentMethod,
   });
+
+  if (becameApproved) onApproved(orderId);
 
   return { ...view, status };
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-export type ResumeResult ={ session: CheckoutSession } | { enrolled: true; orderId: string };
+export type ResumeResult = { session: CheckoutSession } | { enrolled: true; orderId: string };
 
 /**
  * Retomar una orden sin pagar desde el enlace de /retomar (y el origin-url de
@@ -299,7 +318,8 @@ export const resumeOrder = async (
   env: Env,
   input: CheckoutResumeInput,
   meta: RequestMeta,
-  now: Date = new Date()
+  now: Date = new Date(),
+  onApproved: OnApproved = () => {}
 ): Promise<ResumeResult> => {
   const previous = await findOrderByOrderId(env.DB, input.order_id);
 
@@ -316,7 +336,7 @@ export const resumeOrder = async (
     throw new ApiError(410, 'resume_expired', 'El enlace para retomar la compra expiro.');
   }
 
-  const status = await refreshResumedStatus(env, keys.apiKey, previous);
+  const status = await refreshResumedStatus(env, keys.apiKey, previous, onApproved);
 
   if (status === 'approved') return { enrolled: true, orderId: previous.orderId };
 
@@ -352,7 +372,8 @@ export const resumeOrder = async (
 const refreshResumedStatus = async (
   env: Env,
   identityKey: string,
-  order: { orderId: string; status: OrderStatus }
+  order: { orderId: string; status: OrderStatus },
+  onApproved: OnApproved
 ): Promise<OrderStatus> => {
   if (FINAL_STATUSES.includes(order.status)) return order.status;
 
@@ -367,11 +388,13 @@ const refreshResumedStatus = async (
   if (voucher.status === 'NO_TRANSACTION_FOUND') return order.status;
 
   const status = ORDER_STATUS[voucher.status];
-  await applyOrderPayment(env.DB, order.orderId, {
+  const { becameApproved } = await applyOrderPayment(env.DB, order.orderId, {
     status,
     transactionId: voucher.transactionId,
     paymentMethod: voucher.paymentMethod,
   });
+
+  if (becameApproved) onApproved(order.orderId);
 
   return status;
 };
