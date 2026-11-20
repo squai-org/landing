@@ -3,7 +3,7 @@ import { badRequest, ok } from '../lib/http';
 import { parseBody } from '../lib/validate';
 import { checkoutSessionSchema } from '../schemas/checkout.schema';
 import {
-  confirmEnrollment,
+  confirmOrder,
   createCheckoutSession,
   handleBoldWebhook,
   loadPaymentPlan,
@@ -26,7 +26,7 @@ export const checkoutRoute = new Hono<AppBindings>()
 
     if (!orderId) throw badRequest('order_id_missing', 'Falta el identificador de la compra.');
 
-    return ok(c, { enrollment: await confirmEnrollment(c.env, orderId) });
+    return ok(c, { order: await confirmOrder(c.env, orderId) });
   })
   .post('/session', async (c) => {
     const raw = await c.req.json().catch(() => {

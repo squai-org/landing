@@ -115,14 +115,14 @@ const { thanks } = ui.checkout;
             return;
           }
 
-          const { enrollment } = (await res.json()) as { enrollment: { status: string } };
+          const { order } = (await res.json()) as { order: { status: string } };
 
-          if (enrollment.status === 'approved') {
+          if (order.status === 'approved') {
             show('approved');
             return;
           }
 
-          if (['rejected', 'failed', 'voided'].includes(enrollment.status)) {
+          if (['rejected', 'failed', 'voided'].includes(order.status)) {
             show('rejected');
             return;
           }
