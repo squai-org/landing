@@ -1,15 +1,21 @@
+import { checkout } from '../../config/checkout';
 import { email } from '../../config/email';
+import { resumeUrl } from '../../lib/bold-checkout';
 import { SITE_URL } from '../../lib/seo';
 import { sendBrevoTemplateEmail } from '../lib/brevo';
 import {
   claimEmailMessage,
   findConfirmationData,
   findConfirmationsToRetry,
+  findRecoveriesToRetry,
+  findRecoveriesToSend,
   reclaimEmailMessage,
   recordEmailResult,
   type ConfirmationData,
+  type RecoveryData,
 } from '../repositories/email-message.repository';
 import type { Env } from '../types';
+import { programStatus, type ProgramStatus } from './program.service';
 
 /**
  * Parametros que el Worker envia a la plantilla de confirmacion. Cada uno es
@@ -39,6 +45,17 @@ export const CONFIRMATION_PARAMS = [
 ] as const;
 
 type ConfirmationParams = Record<(typeof CONFIRMATION_PARAMS)[number], string>;
+
+/**
+ * Parametros de la plantilla de recuperacion (src/emails/recovery.html); el
+ * mismo test de build comprueba que coinciden.
+ */
+export const RECOVERY_PARAMS = ['FIRST_NAME', 'PROGRAM_NAME', 'RESUME_URL'] as const;
+
+type RecoveryParams = Record<(typeof RECOVERY_PARAMS)[number], string>;
+
+/** Primer nombre de lo que escribio el cliente en el formulario. */
+const firstName = (fullName: string) => fullName.trim().split(/\s+/)[0] || fullName;
 
 /** Tasa de cada impuesto que se declara a Bold, incluido en el monto. */
 const TAX_RATES: Record<string, number> = { 'vat-19': 0.19 };
@@ -95,7 +112,7 @@ export const confirmationParams = (data: ConfirmationData): ConfirmationParams =
   const start = longDate(data.startsOn);
 
   return {
-    FIRST_NAME: data.fullName.trim().split(/\s+/)[0] ?? data.fullName,
+    FIRST_NAME: firstName(data.fullName),
     PROGRAM_NAME: data.programName,
     ORDER_ID: data.orderId,
     AMOUNT_TOTAL: money(data.amount),
@@ -230,5 +247,107 @@ export const retryConfirmations = async (env: Env, now: Date): Promise<void> => 
       // Un error de D1 con una orden no detiene las demas; la proxima ejecucion la retoma.
       console.error(`El cron no pudo reintentar la confirmacion de ${orderId}:`, error);
     }
+  }
+};
+
+export const recoveryParams = (data: RecoveryData): RecoveryParams => ({
+  FIRST_NAME: firstName(data.fullName),
+  PROGRAM_NAME: data.programName,
+  RESUME_URL: resumeUrl(SITE_URL, data.orderId),
+});
+
+/** Recuperaciones por ejecucion del cron, para acotar su duracion. */
+const RECOVERY_BATCH = 50;
+
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
+/**
+ * Envia el correo de recuperacion: uno solo por cliente y programa, a quien
+ * dejo su ultima orden sin pagar hace mas de checkout.recoveryDelayHours, no
+ * esta inscrito y el programa sigue abierto. El enlace retoma esa orden, asi
+ * que tampoco se envia si ya paso checkout.resumeExpiryDays desde que se creo.
+ *
+ * Cada envio se reclama antes en email_messages; el indice unico de
+ * recuperacion por cliente y programa hace que dos ejecuciones seguidas o
+ * cruzadas no dupliquen el correo. Las fallidas y las pendientes atascadas se
+ * reintentan con la misma orden mientras sigan valiendo. Con el programa no
+ * abierto no se reclama nada: si reabre a tiempo, el cliente la recibe. Sin
+ * BREVO_API_KEY o sin plantilla no envia ni reclama nada.
+ */
+export const sendRecoveries = async (env: Env, now: Date): Promise<void> => {
+  const apiKey = env.BREVO_API_KEY;
+  const templateId = email.templates.recovery;
+
+  if (!apiKey || !templateId) {
+    console.error('BREVO_API_KEY o la plantilla de recuperacion no configurados: el cron no envia recuperaciones.');
+    return;
+  }
+
+  const createdBefore = new Date(now.getTime() - checkout.recoveryDelayHours * HOUR_MS);
+  const expiredBefore = new Date(now.getTime() - checkout.resumeExpiryDays * DAY_MS);
+  const staleBefore = new Date(now.getTime() - PENDING_GRACE_MINUTES * 60_000);
+
+  const retries = await findRecoveriesToRetry(env.DB, { staleBefore, expiredBefore }, RECOVERY_BATCH);
+  const fresh = await findRecoveriesToSend(env.DB, { createdBefore, expiredBefore }, RECOVERY_BATCH);
+
+  // Un estado por programa y ejecucion.
+  const statuses = new Map<string, Promise<ProgramStatus>>();
+  const isOpen = async (code: string) => {
+    if (!statuses.has(code)) statuses.set(code, programStatus(env, code, now));
+    return (await statuses.get(code)) === 'open';
+  };
+
+  const attempts = [
+    ...retries.map((data) => ({ data, retry: true })),
+    ...fresh.map((data) => ({ data, retry: false })),
+  ];
+
+  for (const { data, retry } of attempts) {
+    try {
+      if (!(await isOpen(data.programCode))) continue;
+
+      const key = { orderId: data.orderId, kind: 'recovery' as const };
+      const claimed = retry
+        ? await reclaimEmailMessage(env.DB, key, templateId, staleBefore, now)
+        : await claimEmailMessage(
+            env.DB,
+            { ...key, customerId: data.customerId, programCode: data.programCode, templateId },
+            now
+          );
+
+      if (claimed) await deliverRecovery(env.DB, apiKey, templateId, data, now);
+    } catch (error) {
+      // Un error de D1 con un cliente no detiene a los demas; la proxima ejecucion lo retoma.
+      console.error(`El cron no pudo enviar la recuperacion de ${data.orderId}:`, error);
+    }
+  }
+};
+
+/** Envia por Brevo una recuperacion ya reclamada y anota el resultado. */
+const deliverRecovery = async (
+  db: D1Database,
+  apiKey: string,
+  templateId: number,
+  data: RecoveryData,
+  now: Date
+): Promise<void> => {
+  const key = { orderId: data.orderId, kind: 'recovery' as const };
+
+  try {
+    const { messageId } = await sendBrevoTemplateEmail(apiKey, {
+      templateId,
+      to: [{ email: data.email, name: data.fullName }],
+      sender: email.sender,
+      replyTo: email.replyTo,
+      params: recoveryParams(data),
+      tags: ['recovery'],
+    });
+
+    await recordEmailResult(db, key, { status: 'sent', providerMessageId: messageId }, now);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Brevo no envio la recuperacion de ${data.orderId}: ${message}`);
+    await recordEmailResult(db, key, { status: 'failed', error: message.slice(0, 500) }, now);
   }
 };

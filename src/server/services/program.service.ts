@@ -57,6 +57,16 @@ const computeStatus = async (env: Env, program: Program, now: Date): Promise<Pro
 };
 
 /**
+ * Estado de ventas de un programa por su codigo, sin precios. Un programa que
+ * no existe cuenta como cerrado. Lo usa el cron para no enviar recuperaciones
+ * de un programa que ya no vende.
+ */
+export const programStatus = async (env: Env, code: string, now: Date): Promise<ProgramStatus> => {
+  const program = await findProgram(env.DB, code);
+  return program ? computeStatus(env, program, now) : 'closed';
+};
+
+/**
  * El programa con sus precios vigentes en `now`. Sin ningun precio vigente no
  * se puede vender, y se responde igual que si no existiera.
  */

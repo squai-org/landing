@@ -5,7 +5,7 @@
 export const email: {
   sender: { name: string; email: string };
   replyTo: { name: string; email: string };
-  templates: { confirmation: number | null };
+  templates: { confirmation: number | null; recovery: number | null };
   company: { name: string; nit: string; address: string; phone: string; contact: string };
   termsPath: string;
 } = {
@@ -18,10 +18,12 @@ export const email: {
    * id lo da Brevo al subirlo (Campanas > Plantillas). Mientras sea null el
    * Worker no envia ni reclama el correo, para no mandar una plantilla
    * equivocada: el cron lo envia cuando el id exista.
-   * TODO(equipo): subir src/emails/confirmation.html y poner su id.
+   * TODO(equipo): subir src/emails/confirmation.html y src/emails/recovery.html
+   * y poner sus ids.
    */
   templates: {
     confirmation: null,
+    recovery: null,
   },
   /**
    * Datos de Squai que exige el acuse de recibo (Ley 1480 art. 50). Razon
