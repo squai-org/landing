@@ -8,12 +8,13 @@ import { assertHuman } from '../lib/human';
 import { normalizePhone } from '../lib/phone';
 import { badRequest, notFound, serviceUnavailable, unauthorized } from '../lib/http';
 import { recordBoldTransaction } from '../repositories/bold-transaction.repository';
+import { upsertCustomer } from '../repositories/customer.repository';
 import {
-  applyEnrollmentPayment,
-  findEnrollmentByOrderId,
-  insertEnrollment,
-  type EnrollmentStatus,
-} from '../repositories/enrollment.repository';
+  applyOrderPayment,
+  findOrderByOrderId,
+  insertOrder,
+  type OrderStatus,
+} from '../repositories/order.repository';
 import { findActivePaymentPlan, type PaymentPlan } from '../repositories/payment-plan.repository';
 import { boldWebhookEventSchema } from '../schemas/bold-webhook.schema';
 import type { CheckoutSessionInput } from '../schemas/checkout.schema';
@@ -72,16 +73,21 @@ export const createCheckoutSession = async (
   const plan = await loadPaymentPlan(env, input.plan);
   const orderId = newOrderId(plan.code);
 
-  // La inscripcion se guarda antes de abrir el pago: es lo que liga el
-  // order-id con la persona, y deja rastro de quien empieza y no termina.
-  await insertEnrollment(env.DB, {
-    orderId,
-    planCode: plan.code,
-    fullName: input.full_name,
+  // La orden se guarda antes de abrir el pago: es lo que liga el order-id con
+  // el cliente, y deja rastro de quien empieza y no termina. El cliente se
+  // reutiliza por correo y queda con los datos de este formulario.
+  const customerId = await upsertCustomer(env.DB, {
     email: input.email,
+    fullName: input.full_name,
     countryCode: phone.countryCode,
     phone: phone.nationalNumber,
     phoneE164: phone.e164,
+  });
+
+  await insertOrder(env.DB, {
+    orderId,
+    customerId,
+    programCode: plan.code,
     referralSource: input.referral_source,
     amount: plan.amount,
     currency: plan.currency,
@@ -106,11 +112,11 @@ export const createCheckoutSession = async (
 };
 
 /**
- * Tipos de evento del webhook traducidos a estado de inscripcion.
+ * Tipos de evento del webhook traducidos a estado de orden.
  * VOID_REJECTED (una anulacion que fallo) no cambia nada: el pago sigue como
  * estaba. https://developers.bold.co/webhook
  */
-const WEBHOOK_STATUS: Record<string, EnrollmentStatus | undefined> = {
+const WEBHOOK_STATUS: Record<string, OrderStatus | undefined> = {
   SALE_APPROVED: 'approved',
   SALE_REJECTED: 'rejected',
   VOID_APPROVED: 'voided',
@@ -162,13 +168,13 @@ export const handleBoldWebhook = async (env: Env, rawBody: string, signature: st
   });
 
   // Red de seguridad: si el comprador cerro la pestana y nunca volvio a la
-  // pagina de gracias, la venta queda registrada igual. applyEnrollmentPayment
-  // es idempotente, asi que no importa quien llegue primero.
+  // pagina de gracias, la venta queda registrada igual. applyOrderPayment es
+  // idempotente, asi que no importa quien llegue primero.
   const status = WEBHOOK_STATUS[parsed.type];
   const reference = data.metadata?.reference;
 
   if (status && reference) {
-    await applyEnrollmentPayment(env.DB, reference, {
+    await applyOrderPayment(env.DB, reference, {
       status,
       transactionId: data.payment_id,
       paymentMethod: data.payment_method,
@@ -179,10 +185,10 @@ export const handleBoldWebhook = async (env: Env, rawBody: string, signature: st
 };
 
 /**
- * Estados de Bold traducidos a los de una inscripcion. NO_TRANSACTION_FOUND y
+ * Estados de Bold traducidos a los de una orden. NO_TRANSACTION_FOUND y
  * PENDING (que solo usa PSE) son "todavia no hay veredicto", no un rechazo.
  */
-const ENROLLMENT_STATUS: Record<BoldPaymentStatus, EnrollmentStatus> = {
+const ORDER_STATUS: Record<BoldPaymentStatus, OrderStatus> = {
   NO_TRANSACTION_FOUND: 'pending',
   PENDING: 'pending',
   PROCESSING: 'processing',
@@ -192,11 +198,11 @@ const ENROLLMENT_STATUS: Record<BoldPaymentStatus, EnrollmentStatus> = {
   VOIDED: 'voided',
 };
 
-const FINAL_STATUSES: EnrollmentStatus[] = ['approved', 'rejected', 'failed', 'voided'];
+const FINAL_STATUSES: OrderStatus[] = ['approved', 'rejected', 'failed', 'voided'];
 
-export interface EnrollmentStatusView {
-  status: EnrollmentStatus;
-  planCode: string;
+export interface OrderStatusView {
+  status: OrderStatus;
+  programCode: string;
   amount: number;
   currency: string;
   fullName: string;
@@ -207,23 +213,23 @@ export interface EnrollmentStatusView {
  * Worker le pregunta a Bold. Los parametros que Bold anade a la URL
  * (bold-tx-status) no entran aqui: cualquiera puede escribirlos a mano.
  *
- * Si la inscripcion ya tiene un estado final no se vuelve a llamar a Bold:
- * ahorra la llamada saliente y hace inofensivo que la pagina reintente.
+ * Si la orden ya tiene un estado final no se vuelve a llamar a Bold: ahorra
+ * la llamada saliente y hace inofensivo que la pagina reintente.
  */
-export const confirmEnrollment = async (env: Env, orderId: string): Promise<EnrollmentStatusView> => {
-  const enrollment = await findEnrollmentByOrderId(env.DB, orderId);
+export const confirmOrder = async (env: Env, orderId: string): Promise<OrderStatusView> => {
+  const order = await findOrderByOrderId(env.DB, orderId);
 
-  if (!enrollment) throw notFound('enrollment_not_found', 'No encontramos esa inscripcion.');
+  if (!order) throw notFound('order_not_found', 'No encontramos esa orden.');
 
-  const view: EnrollmentStatusView = {
-    status: enrollment.status,
-    planCode: enrollment.planCode,
-    amount: enrollment.amount,
-    currency: enrollment.currency,
-    fullName: enrollment.fullName,
+  const view: OrderStatusView = {
+    status: order.status,
+    programCode: order.programCode,
+    amount: order.amount,
+    currency: order.currency,
+    fullName: order.fullName,
   };
 
-  if (FINAL_STATUSES.includes(enrollment.status)) return view;
+  if (FINAL_STATUSES.includes(order.status)) return view;
 
   const identityKey = env.BOLD_IDENTITY_KEY;
 
@@ -233,9 +239,9 @@ export const confirmEnrollment = async (env: Env, orderId: string): Promise<Enro
   }
 
   const voucher = await fetchBoldPaymentStatus(identityKey, orderId);
-  const status = ENROLLMENT_STATUS[voucher.status];
+  const status = ORDER_STATUS[voucher.status];
 
-  await applyEnrollmentPayment(env.DB, orderId, {
+  await applyOrderPayment(env.DB, orderId, {
     status,
     transactionId: voucher.transactionId,
     paymentMethod: voucher.paymentMethod,

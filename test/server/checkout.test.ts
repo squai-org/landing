@@ -13,7 +13,7 @@ const get = (path: string) =>
   app.request(`https://squai.io${path}`, { headers: { Origin: 'https://squai.io' } }, withKeys);
 
 /** Datos de la persona que se inscribe: sin ellos no se abre el pago. */
-const enrollmentPayload = {
+const orderPayload = {
   plan: 'squai-one',
   full_name: 'Ana  Rios',
   email: ' ANA@Empresa.CO ',
@@ -36,6 +36,12 @@ const postSession = (body: unknown, bindings: typeof withKeys = withKeys) =>
     },
     bindings
   );
+
+/** Las ordenes apuntan a su cliente: se borran antes que los clientes. */
+const clearOrders = async () => {
+  await env.DB.exec('DELETE FROM orders');
+  await env.DB.exec('DELETE FROM customers');
+};
 
 /**
  * SHA-256 hexadecimal calculado con crypto.subtle directamente, sin pasar por
@@ -79,7 +85,7 @@ describe('GET /api/checkout/plan/:code', () => {
 
 describe('POST /api/checkout/session', () => {
   it('firma el monto del plan y nunca devuelve la llave secreta', async () => {
-    const res = await postSession(enrollmentPayload);
+    const res = await postSession(orderPayload);
 
     expect(res.status).toBe(201);
     const body = (await res.json()) as {
@@ -106,7 +112,7 @@ describe('POST /api/checkout/session', () => {
       .run();
 
     try {
-      const res = await postSession(enrollmentPayload);
+      const res = await postSession(orderPayload);
 
       expect(res.status).toBe(201);
       const { session } = (await res.json()) as { session: { description: string } };
@@ -119,7 +125,7 @@ describe('POST /api/checkout/session', () => {
   });
 
   it('ignora el monto que mande el navegador y cobra el de la base', async () => {
-    const res = await postSession({ ...enrollmentPayload, amount: 1000, currency: 'USD' });
+    const res = await postSession({ ...orderPayload, amount: 1000, currency: 'USD' });
 
     expect(res.status).toBe(201);
     const { session } = (await res.json()) as { session: { amount: number; currency: string } };
@@ -128,8 +134,8 @@ describe('POST /api/checkout/session', () => {
 
   it('da un orderId distinto a cada sesion', async () => {
     const [first, second] = await Promise.all([
-      postSession(enrollmentPayload),
-      postSession(enrollmentPayload),
+      postSession(orderPayload),
+      postSession(orderPayload),
     ]);
     const ids = await Promise.all(
       [first, second].map(async (res) => ((await res.json()) as { session: { orderId: string } }).session.orderId)
@@ -139,26 +145,29 @@ describe('POST /api/checkout/session', () => {
   });
 
   it('responde 404 si el plan no existe', async () => {
-    const res = await postSession({ ...enrollmentPayload, plan: 'no-existe' });
+    const res = await postSession({ ...orderPayload, plan: 'no-existe' });
     expect(res.status).toBe(404);
   });
 
   it('responde 400 si falta el plan', async () => {
-    const res = await postSession({ ...enrollmentPayload, plan: undefined });
+    const res = await postSession({ ...orderPayload, plan: undefined });
     expect(res.status).toBe(400);
   });
 
-  it('guarda la inscripcion como pendiente, ligada al orderId firmado', async () => {
-    await env.DB.exec('DELETE FROM enrollments');
-    const res = await postSession(enrollmentPayload);
+  it('guarda la orden como pendiente, ligada al orderId firmado y a su cliente', async () => {
+    await clearOrders();
+    const res = await postSession(orderPayload);
 
     expect(res.status).toBe(201);
     const { session } = (await res.json()) as { session: { orderId: string } };
 
-    const row = await env.DB.prepare('SELECT * FROM enrollments').first<Record<string, unknown>>();
+    const row = await env.DB.prepare(
+      `SELECT o.*, c.full_name, c.email, c.phone_e164
+       FROM orders o JOIN customers c ON c.id = o.customer_id`
+    ).first<Record<string, unknown>>();
     expect(row).toMatchObject({
       order_id: session.orderId,
-      plan_code: 'squai-one',
+      program_code: 'squai-one',
       status: 'pending',
       full_name: 'Ana Rios',
       email: 'ana@empresa.co',
@@ -169,21 +178,54 @@ describe('POST /api/checkout/session', () => {
     });
   });
 
+  it('reutiliza al cliente con el mismo correo en otro formato y actualiza su contacto', async () => {
+    await clearOrders();
+    await postSession(orderPayload);
+    const res = await postSession({
+      ...orderPayload,
+      full_name: 'Ana Maria Rios',
+      email: 'ana@empresa.co',
+      country_code: '+1',
+      phone: '202 555 0100',
+      referral_source: 'linkedin',
+    });
+
+    expect(res.status).toBe(201);
+
+    const { results: customers } = await env.DB.prepare(
+      'SELECT email, full_name, country_code, phone, phone_e164 FROM customers'
+    ).all();
+    expect(customers).toEqual([
+      {
+        email: 'ana@empresa.co',
+        full_name: 'Ana Maria Rios',
+        country_code: '+1',
+        phone: '2025550100',
+        phone_e164: '+12025550100',
+      },
+    ]);
+
+    const { results: orders } = await env.DB.prepare(
+      'SELECT o.referral_source FROM orders o JOIN customers c ON c.id = o.customer_id ORDER BY o.id'
+    ).all();
+    expect(orders).toEqual([{ referral_source: 'instagram' }, { referral_source: 'linkedin' }]);
+  });
+
   it('rechaza un correo invalido senalando el campo y no deja fila', async () => {
-    await env.DB.exec('DELETE FROM enrollments');
-    const res = await postSession({ ...enrollmentPayload, email: 'ana(at)empresa.co' });
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, email: 'ana(at)empresa.co' });
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toMatchObject({
       error: { code: 'validation_failed', fields: { email: expect.any(String) } },
     });
 
-    const { results } = await env.DB.prepare('SELECT order_id FROM enrollments').all();
+    const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
     expect(results).toEqual([]);
   });
 
   it('exige el token de Turnstile cuando hay secret configurado', async () => {
-    const res = await postSession(enrollmentPayload, {
+    const res = await postSession(orderPayload, {
       ...withKeys,
       TURNSTILE_SECRET_KEY: 'test-secret',
     } as typeof withKeys);
@@ -193,7 +235,7 @@ describe('POST /api/checkout/session', () => {
   });
 
   it('responde 503 cuando las llaves de Bold no estan configuradas', async () => {
-    const res = await postSession(enrollmentPayload, {
+    const res = await postSession(orderPayload, {
       ...env,
       BOLD_IDENTITY_KEY: undefined,
       BOLD_SECRET_KEY: undefined,
