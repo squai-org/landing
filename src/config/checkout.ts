@@ -17,4 +17,12 @@ export const checkout = {
   /** A donde vuelve el comprador. Bold le anade bold-order-id y bold-tx-status,
    * pero ese estado es provisional: /gracias lo confirma contra el Worker. */
   returnPath: '/gracias',
+  /**
+   * Pagina para retomar una orden sin pagar: /retomar?order_id=<orderId>. Es
+   * el origin-url que se manda a Bold (a donde vuelve quien abandona el modal)
+   * y el enlace del correo de recuperacion.
+   */
+  resumePath: '/retomar',
+  /** Dias, contados desde que se creo la orden, durante los que sirve el enlace. */
+  resumeExpiryDays: 7,
 };

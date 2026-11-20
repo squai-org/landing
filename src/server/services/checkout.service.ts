@@ -3,10 +3,11 @@ import {
   fetchBoldPaymentStatus,
   verifyBoldWebhookSignature,
   type BoldPaymentStatus,
+  type BoldVoucher,
 } from '../lib/bold';
 import { assertHuman } from '../lib/human';
 import { normalizePhone } from '../lib/phone';
-import { badRequest, notFound, serviceUnavailable, unauthorized } from '../lib/http';
+import { ApiError, badRequest, notFound, serviceUnavailable, unauthorized } from '../lib/http';
 import { recordBoldTransaction } from '../repositories/bold-transaction.repository';
 import { upsertCustomer } from '../repositories/customer.repository';
 import {
@@ -16,10 +17,16 @@ import {
   type OrderStatus,
 } from '../repositories/order.repository';
 import { boldWebhookEventSchema } from '../schemas/bold-webhook.schema';
-import type { CheckoutSessionInput } from '../schemas/checkout.schema';
+import type { CheckoutResumeInput, CheckoutSessionInput } from '../schemas/checkout.schema';
 import { parseBody } from '../lib/validate';
 import { checkout } from '../../config/checkout';
-import { assertOpenAndNotEnrolled, loadProgram, priceIn } from './program.service';
+import {
+  assertOpenAndNotEnrolled,
+  loadProgram,
+  priceIn,
+  type Currency,
+  type ProgramView,
+} from './program.service';
 import type { Env, RequestMeta } from '../types';
 
 export interface CheckoutSession {
@@ -44,21 +51,68 @@ const newOrderId = (code: string) => `${code}-${crypto.randomUUID().replaceAll('
  * `now` decide que precio rige; la ruta pasa el reloj del Worker y los tests
  * un instante fijo.
  */
+/**
+ * Sin llaves no se puede cobrar. Se responde 503 y no 500 porque el codigo
+ * esta bien: lo que falta es la configuracion del entorno.
+ */
+const boldKeys = (env: Env) => {
+  const apiKey = env.BOLD_IDENTITY_KEY;
+  const secretKey = env.BOLD_SECRET_KEY;
+
+  if (!apiKey || !secretKey) {
+    console.error('BOLD_IDENTITY_KEY o BOLD_SECRET_KEY no configurados: no se puede abrir el checkout.');
+    throw serviceUnavailable('bold_not_configured', 'Los pagos no estan disponibles en este momento.');
+  }
+
+  return { apiKey, secretKey };
+};
+
+/**
+ * Guarda una orden pendiente y la firma para Bold. La orden congela monto,
+ * moneda e impuesto: un cambio de precio posterior no la toca.
+ */
+const openOrder = async (
+  env: Env,
+  keys: ReturnType<typeof boldKeys>,
+  order: { program: ProgramView; currency: Currency; customerId: number; referralSource: string | null },
+  meta: RequestMeta
+): Promise<CheckoutSession> => {
+  const { program, currency } = order;
+  const amount = priceIn(program, currency);
+  const tax = checkout.tax;
+  const orderId = newOrderId(program.code);
+
+  await insertOrder(env.DB, {
+    orderId,
+    customerId: order.customerId,
+    programCode: program.code,
+    referralSource: order.referralSource,
+    amount,
+    currency,
+    tax,
+    sourcePage: meta.sourcePage,
+    ipCountry: meta.ipCountry,
+    userAgent: meta.userAgent,
+  });
+
+  return {
+    apiKey: keys.apiKey,
+    orderId,
+    amount,
+    currency,
+    description: program.description,
+    tax,
+    integritySignature: await boldIntegritySignature({ orderId, amount, currency, secretKey: keys.secretKey }),
+  };
+};
+
 export const createCheckoutSession = async (
   env: Env,
   input: CheckoutSessionInput,
   meta: RequestMeta,
   now: Date = new Date()
 ): Promise<CheckoutSession> => {
-  const apiKey = env.BOLD_IDENTITY_KEY;
-  const secretKey = env.BOLD_SECRET_KEY;
-
-  // Sin llaves no se puede cobrar. Se responde 503 y no 500 porque el codigo
-  // esta bien: lo que falta es la configuracion del entorno.
-  if (!apiKey || !secretKey) {
-    console.error('BOLD_IDENTITY_KEY o BOLD_SECRET_KEY no configurados: no se puede abrir el checkout.');
-    throw serviceUnavailable('bold_not_configured', 'Los pagos no estan disponibles en este momento.');
-  }
+  const keys = boldKeys(env);
 
   await assertHuman(env, input['cf-turnstile-response'], 'checkout', meta);
 
@@ -72,15 +126,12 @@ export const createCheckoutSession = async (
 
   const program = await loadProgram(env, input.program, now, meta.ipCountry);
   await assertOpenAndNotEnrolled(env, program, input.email);
-  const currency = input.currency;
-  const amount = priceIn(program, currency);
-  const tax = checkout.tax;
-  const orderId = newOrderId(program.code);
+  // Antes de tocar la base: una moneda sin precio no deja cliente ni orden.
+  priceIn(program, input.currency);
 
   // La orden se guarda antes de abrir el pago: es lo que liga el order-id con
   // el cliente, y deja rastro de quien empieza y no termina. El cliente se
-  // reutiliza por correo y queda con los datos de este formulario. La orden
-  // congela monto, moneda e impuesto: un cambio de precio posterior no la toca.
+  // reutiliza por correo y queda con los datos de este formulario.
   const customerId = await upsertCustomer(env.DB, {
     email: input.email,
     fullName: input.full_name,
@@ -89,28 +140,12 @@ export const createCheckoutSession = async (
     phoneE164: phone.e164,
   });
 
-  await insertOrder(env.DB, {
-    orderId,
-    customerId,
-    programCode: program.code,
-    referralSource: input.referral_source,
-    amount,
-    currency,
-    tax,
-    sourcePage: meta.sourcePage,
-    ipCountry: meta.ipCountry,
-    userAgent: meta.userAgent,
-  });
-
-  return {
-    apiKey,
-    orderId,
-    amount,
-    currency,
-    description: program.description,
-    tax,
-    integritySignature: await boldIntegritySignature({ orderId, amount, currency, secretKey }),
-  };
+  return openOrder(
+    env,
+    keys,
+    { program, currency: input.currency, customerId, referralSource: input.referral_source },
+    meta
+  );
 };
 
 /**
@@ -269,4 +304,97 @@ export const confirmOrder = async (
   if (becameApproved) onApproved(orderId);
 
   return { ...view, status };
+};
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export type ResumeResult = { session: CheckoutSession } | { enrolled: true; orderId: string };
+
+/**
+ * Retomar una orden sin pagar desde el enlace de /retomar (y el origin-url de
+ * Bold). Ver docs/bold-checkout.md.
+ */
+export const resumeOrder = async (
+  env: Env,
+  input: CheckoutResumeInput,
+  meta: RequestMeta,
+  now: Date = new Date(),
+  onApproved: OnApproved = () => {}
+): Promise<ResumeResult> => {
+  const previous = await findOrderByOrderId(env.DB, input.order_id);
+
+  if (!previous) throw notFound('order_not_found', 'No encontramos esa orden.');
+
+  const keys = boldKeys(env);
+
+  // Quien ya pago y abre un enlace viejo va a /gracias, no a "expirado".
+  if (previous.status === 'approved') return { enrolled: true, orderId: previous.orderId };
+
+  // created_at es ISO-8601 UTC (Date#toISOString), igual que `now`.
+  const expiresAt = Date.parse(previous.createdAt) + checkout.resumeExpiryDays * DAY_MS;
+  if (now.getTime() > expiresAt) {
+    throw new ApiError(410, 'resume_expired', 'El enlace para retomar la compra expiro.');
+  }
+
+  const status = await refreshResumedStatus(env, keys.apiKey, previous, onApproved);
+
+  if (status === 'approved') return { enrolled: true, orderId: previous.orderId };
+
+  // Orden nueva y no la misma: Bold pide un order-id unico por venta, y la
+  // anterior pudo quedar a medias en su modal. Mismo cliente, sin volver a
+  // pedir sus datos, y el precio vigente hoy en la moneda que eligio.
+  const program = await loadProgram(env, previous.programCode, now, meta.ipCountry);
+  await assertOpenAndNotEnrolled(env, program, previous.email);
+
+  return {
+    session: await openOrder(
+      env,
+      keys,
+      {
+        program,
+        currency: previous.currency as Currency,
+        customerId: previous.customerId,
+        referralSource: previous.referralSource,
+      },
+      meta
+    ),
+  };
+};
+
+/**
+ * Estado de la orden anterior segun Bold, aplicado con applyOrderPayment.
+ *
+ * Bold solo responde por una orden durante unas 24 horas, y el enlace vive 7
+ * dias: si no contesta, o contesta NO_TRANSACTION_FOUND, vale lo guardado en
+ * D1 y la orden cuenta como no pagada. NO_TRANSACTION_FOUND no se aplica para
+ * no devolver a pendiente una orden ya rechazada.
+ */
+const refreshResumedStatus = async (
+  env: Env,
+  identityKey: string,
+  order: { orderId: string; status: OrderStatus },
+  onApproved: OnApproved
+): Promise<OrderStatus> => {
+  if (FINAL_STATUSES.includes(order.status)) return order.status;
+
+  let voucher: BoldVoucher;
+  try {
+    voucher = await fetchBoldPaymentStatus(identityKey, order.orderId);
+  } catch (error) {
+    console.warn('Bold no respondio por la orden a retomar; se usa el estado guardado.', error);
+    return order.status;
+  }
+
+  if (voucher.status === 'NO_TRANSACTION_FOUND') return order.status;
+
+  const status = ORDER_STATUS[voucher.status];
+  const { becameApproved } = await applyOrderPayment(env.DB, order.orderId, {
+    status,
+    transactionId: voucher.transactionId,
+    paymentMethod: voucher.paymentMethod,
+  });
+
+  if (becameApproved) onApproved(order.orderId);
+
+  return status;
 };

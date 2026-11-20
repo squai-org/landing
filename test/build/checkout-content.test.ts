@@ -107,3 +107,36 @@ describe('textos del estado de ventas', () => {
     for (const field of ['enrolledTitle', 'enrolledBody']) expect(thanksNode).toContain(`- name: ${field}`);
   });
 });
+
+const RESUME_FIELDS = [
+  'checking',
+  'expiredTitle',
+  'expiredBody',
+  'closedTitle',
+  'closedBody',
+  'notFoundTitle',
+  'notFoundBody',
+  'backCta',
+  'errorTitle',
+  'errorBody',
+];
+
+describe('textos de la pagina para retomar', () => {
+  it('los avisos de expirado, cerrado y no encontrado vienen del contenido', async () => {
+    const site = await loadSite();
+
+    expect(Object.keys(site.ui.checkout.resume).sort()).toEqual([...RESUME_FIELDS].sort());
+    for (const field of RESUME_FIELDS) {
+      expect(site.ui.checkout.resume[field as keyof typeof site.ui.checkout.resume]).toEqual(expect.any(String));
+    }
+  });
+
+  it('se pueden editar en Pages CMS', async () => {
+    const pages = await readFile(path.join(root, '.pages.yml'), 'utf8');
+    const checkoutNode = pages.slice(pages.indexOf('label: Sección de inscripción'));
+    const resumeNode = checkoutNode.slice(checkoutNode.indexOf('- name: resume'));
+
+    expect(checkoutNode).toContain('- name: resume');
+    for (const field of RESUME_FIELDS) expect(resumeNode).toContain(`- name: ${field}`);
+  });
+});

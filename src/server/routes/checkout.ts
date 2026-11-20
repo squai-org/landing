@@ -2,8 +2,8 @@ import { Hono, type Context } from 'hono';
 import { defer } from '../lib/background';
 import { badRequest, ok } from '../lib/http';
 import { parseBody } from '../lib/validate';
-import { checkoutSessionSchema } from '../schemas/checkout.schema';
-import { confirmOrder, createCheckoutSession, handleBoldWebhook } from '../services/checkout.service';
+import { checkoutResumeSchema, checkoutSessionSchema } from '../schemas/checkout.schema';
+import { confirmOrder, createCheckoutSession, handleBoldWebhook, resumeOrder } from '../services/checkout.service';
 import { sendConfirmation } from '../services/email.service';
 import { loadProgram } from '../services/program.service';
 import type { AppBindings } from '../types';
@@ -50,6 +50,26 @@ export const checkoutRoute = new Hono<AppBindings>()
     );
 
     return ok(c, { session }, 201);
+  })
+  /**
+   * Retomar una orden sin pagar desde el enlace de /retomar. No pide Turnstile:
+   * quien llega ya lleno el formulario y trae un order_id; lo frenan el mismo
+   * origen y el limite por IP.
+   */
+  .post('/resume', async (c) => {
+    const raw = await c.req.json().catch(() => {
+      throw badRequest('invalid_json', 'El cuerpo de la peticion no es JSON valido.');
+    });
+
+    const result = await resumeOrder(
+      c.env,
+      parseBody(checkoutResumeSchema, raw),
+      c.get('requestMeta'),
+      new Date(),
+      confirmInBackground(c)
+    );
+
+    return 'session' in result ? ok(c, result, 201) : ok(c, result);
   })
   /**
    * Notificaciones de Bold. No pasa por jsonRequest ni por rateLimit: Bold no

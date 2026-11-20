@@ -318,6 +318,44 @@ wrangler d1 execute squai --remote \
   --command "UPDATE program_limits SET capacity = 35 WHERE program_code = 'squai-one'"
 ```
 
+## Retomar una orden sin pagar
+
+Quien llenó el formulario y no pagó vuelve con un enlace,
+`https://squai.io/retomar?order_id=<orderId>`, sin llenar nada otra vez. El
+enlace solo lleva el `order_id`, que es opaco (programa + UUID) y no tiene
+datos personales. Es el `originUrl` que el checkout manda a Bold en cada pago
+(a donde vuelve quien abandona o cancela el modal) y el enlace del correo de
+recuperación. Lo arma `resumeUrl()` en `src/lib/bold-checkout.ts`; la ruta y
+el plazo viven en `src/config/checkout.ts` (`resumePath`, `resumeExpiryDays`).
+
+`src/pages/retomar.astro` (con `noindex` y fuera del sitemap) llama a
+`POST /api/checkout/resume` con `{ order_id }`. El endpoint no pide Turnstile:
+lo protegen el mismo origen y el límite por IP. El Worker:
+
+1. Busca la orden (`404 order_not_found`). Si ya estaba aprobada responde
+   `200 { enrolled: true, orderId }` y la página lleva a
+   `/gracias?bold-order-id=<orderId>`.
+2. Si la orden se creó hace más de 7 días: `410 resume_expired`.
+3. Si la orden no tiene estado final, pregunta a Bold y aplica el veredicto con
+   `applyOrderPayment`. Bold solo responde por una orden durante unas 24 horas:
+   si no contesta, o contesta `NO_TRANSACTION_FOUND`, vale el estado guardado
+   en D1 y la orden cuenta como no pagada (nunca como aprobada). Si Bold dice
+   `APPROVED`: `200 { enrolled: true, orderId }`, y sale el correo de
+   confirmación igual que desde `/gracias` o el webhook.
+4. Verifica que el programa siga `open` (`409 program_not_open`) y que el
+   cliente no tenga otra orden aprobada en el programa (`409 already_enrolled`;
+   la página lleva a `/gracias?estado=inscrito`).
+5. Crea una **orden nueva** del mismo cliente (sin tocar `customers`), con el
+   precio vigente hoy en la moneda de la orden anterior, y responde
+   `201 { session }`. La página abre Bold directo con esa sesión. Si el
+   comprador cierra el modal, un botón «Continuar con el pago» reabre la misma
+   sesión.
+
+La respuesta nunca lleva datos de contacto: el enlace se puede reenviar. Por la
+misma razón el modal de Bold no sale prellenado desde `/retomar`. Los avisos de
+expirado, cerrado, no encontrado y error son textos de `ui.checkout.resume`,
+con un enlace al programa.
+
 ## Cambiar precio, fechas y cupos sin desplegar
 
 Precio, fechas, cupo y cierre manual viven en D1, no en el código ni en
@@ -611,6 +649,10 @@ pnpm preview:worker              # http://localhost:8787/servicios/squai-one
    ```bash
    wrangler d1 execute squai --local --command "SELECT payment_id, type, amount FROM bold_transactions"
    ```
+7. Cerrar el modal sin pagar y abrir `/retomar?order_id=<ese order_id>`: debe
+   abrir Bold directo con una orden nueva (otra fila en `orders`, mismo
+   `customer_id`). Comprobar también a qué página lleva Bold al cancelar dentro
+   del modal (`originUrl`).
 
 ### Un solo botón: fases
 
