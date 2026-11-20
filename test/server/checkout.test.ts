@@ -14,11 +14,15 @@ const get = (path: string, headers: Record<string, string> = {}) =>
 
 /**
  * Programas propios del test, con precios vigentes desde 2020 y sin cambios
- * futuros: asi los montos no dependen del dia en que corra la suite. El cambio
- * de precio en una fecha se prueba en program-prices.test.ts con `now` fijo.
+ * futuros, y ventas abiertas de 2020 a 2100: asi los montos y el estado no
+ * dependen del dia en que corra la suite. El cambio de precio y los limites
+ * en una fecha se prueban con `now` fijo en program-prices.test.ts y
+ * program-limits.test.ts.
  */
 const PROGRAM = 'programa-prueba';
 const COP_ONLY = 'programa-solo-cop';
+/** Programa que abre en 2099: siempre proximamente. */
+const UPCOMING = 'programa-proximo';
 
 beforeAll(async () => {
   await env.DB.batch([
@@ -33,6 +37,21 @@ beforeAll(async () => {
          (?2, 'COP', 300000, '2020-01-01T05:00:00.000Z')
        ON CONFLICT DO NOTHING`
     ).bind(PROGRAM, COP_ONLY),
+    env.DB.prepare(
+      `INSERT INTO programs (code, description) VALUES (?, 'Programa que abre en el futuro')
+       ON CONFLICT (code) DO NOTHING`
+    ).bind(UPCOMING),
+    env.DB.prepare(
+      `INSERT INTO program_prices (program_code, currency, amount, valid_from)
+       VALUES (?, 'COP', 250000, '2020-01-01T05:00:00.000Z') ON CONFLICT DO NOTHING`
+    ).bind(UPCOMING),
+    env.DB.prepare(
+      `INSERT INTO program_limits (program_code, opens_at, closes_at, capacity) VALUES
+         (?1, '2020-01-01T05:00:00.000Z', '2100-01-01T05:00:00.000Z', 1000),
+         (?2, '2020-01-01T05:00:00.000Z', '2100-01-01T05:00:00.000Z', 1000),
+         (?3, '2099-01-01T05:00:00.000Z', '2100-01-01T05:00:00.000Z', 30)
+       ON CONFLICT DO NOTHING`
+    ).bind(PROGRAM, COP_ONLY, UPCOMING),
   ]);
 });
 
@@ -90,8 +109,16 @@ describe('GET /api/checkout/program/:code', () => {
         description: 'Programa de prueba',
         prices: { COP: 250000, USD: 80 },
         defaultCurrency: 'COP',
+        status: 'open',
       },
     });
+  });
+
+  it('expone el estado calculado: proximamente antes de la apertura', async () => {
+    const res = await get(`/api/checkout/program/${UPCOMING}`);
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({ program: { code: UPCOMING, status: 'upcoming' } });
   });
 
   it('propone USD fuera de Colombia', async () => {
@@ -317,6 +344,64 @@ describe('POST /api/checkout/session', () => {
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toMatchObject({ error: { code: 'turnstile_missing' } });
+  });
+
+  it('responde 409 program_not_open si el programa no esta abierto y no deja orden', async () => {
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, program: UPCOMING });
+
+    expect(res.status).toBe(409);
+    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'program_not_open' } });
+
+    const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
+    expect(results).toEqual([]);
+  });
+
+  describe('cliente ya inscrito', () => {
+    const ENROLLED_ORDER = `${PROGRAM}-ya-inscrito`;
+
+    /** Inscripcion = una orden aprobada del cliente en el programa. */
+    const enroll = async (status = 'approved') => {
+      await clearOrders();
+      const customer = await env.DB.prepare(
+        `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+         VALUES ('ana@empresa.co', 'Ana Rios', '+57', '3205551234', '+573205551234') RETURNING id`
+      ).first<{ id: number }>();
+      await env.DB.prepare(
+        `INSERT INTO orders (order_id, customer_id, program_code, status, amount, currency)
+         VALUES (?, ?, ?, ?, 250000, 'COP')`
+      )
+        .bind(ENROLLED_ORDER, customer!.id, PROGRAM, status)
+        .run();
+    };
+
+    it('responde 409 already_enrolled, distinto de programa cerrado, sin revelar su orden', async () => {
+      await enroll();
+      // El mismo correo en otro formato es el mismo cliente.
+      const res = await postSession(orderPayload);
+
+      expect(res.status).toBe(409);
+      const text = await res.text();
+      expect(JSON.parse(text)).toMatchObject({ ok: false, error: { code: 'already_enrolled' } });
+      expect(text).not.toContain(ENROLLED_ORDER);
+
+      const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
+      expect(results).toEqual([{ order_id: ENROLLED_ORDER }]);
+    });
+
+    it('deja pagar a quien solo tiene ordenes no aprobadas en el programa', async () => {
+      await enroll('rejected');
+      const res = await postSession(orderPayload);
+
+      expect(res.status).toBe(201);
+    });
+
+    it('deja pagar a quien esta inscrito en otro programa', async () => {
+      await enroll();
+      const res = await postSession({ ...orderPayload, program: COP_ONLY });
+
+      expect(res.status).toBe(201);
+    });
   });
 
   it('responde 503 cuando las llaves de Bold no estan configuradas', async () => {

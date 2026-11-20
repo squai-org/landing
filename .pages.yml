@@ -1875,6 +1875,14 @@ content:
                             label: Botón de volver
                             type: string
                             required: true
+                          - name: enrolledTitle
+                            label: Título de cliente ya inscrito
+                            type: string
+                            required: true
+                          - name: enrolledBody
+                            label: Texto de cliente ya inscrito
+                            type: string
+                            required: true
                       - name: investment
                         label: Inversión
                         type: object
@@ -1921,6 +1929,28 @@ content:
                             required: true
                           - name: retry
                             label: Para retomar el pago
+                            type: string
+                            required: true
+                      - name: status
+                        label: Aviso de inscripciones
+                        description: Reemplaza al botón de pago antes de la apertura o cuando las inscripciones cierran. Las fechas y el cupo viven en D1 (program_limits), no aquí.
+                        type: object
+                        required: true
+                        fields:
+                          - name: upcomingTitle
+                            label: Título antes de la apertura
+                            type: string
+                            required: true
+                          - name: upcomingBody
+                            label: Texto antes de la apertura
+                            type: string
+                            required: true
+                          - name: closedTitle
+                            label: Título de inscripciones cerradas
+                            type: string
+                            required: true
+                          - name: closedBody
+                            label: Texto de inscripciones cerradas
                             type: string
                             required: true
       - name: titulos-compartidos
