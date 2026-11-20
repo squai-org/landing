@@ -37,3 +37,16 @@ describe('textos del boton de pago', () => {
     expect(Object.keys(checkout).filter((key) => /label/i.test(key))).toEqual([]);
   });
 });
+
+describe('casillas de consentimiento', () => {
+  it('la de terminos tiene sus textos en el contenido, aparte de la de privacidad', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.forms).toMatchObject({
+      termsConsentPrefix: 'He leído y acepto los ',
+      termsConsentLink: 'Términos de Servicio',
+      termsConsentSuffix: ' de Squai.',
+      privacyConsentLink: 'Política de Privacidad',
+    });
+  });
+});

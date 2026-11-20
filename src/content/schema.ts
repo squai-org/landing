@@ -131,6 +131,7 @@ export const siteSchema = z.object({
       privacyConsentPrefix: text, privacyConsentLink: text, privacyConsentSuffix: text,
       referralSources: z.array(z.object({ value: z.enum(['instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras']), label: text })).length(6),
       teamSizes: z.array(z.object({ value: z.enum(['menos-10', '10-30', '30-100', 'mas-100']), label: text })).length(4),
+      termsConsentPrefix: text, termsConsentLink: text, termsConsentSuffix: text,
     }),
     contact: z.object({ title: text, close: text, bookingFallback: text, bookingFallbackLink: text }),
     modal: z.object({ grow: modal, learn: modal }),

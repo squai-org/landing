@@ -127,7 +127,10 @@
             "value": "mas-100",
             "label": "Más de 100"
           }
-        ]
+        ],
+        "termsConsentPrefix": "He leído y acepto los ",
+        "termsConsentLink": "Términos de Servicio",
+        "termsConsentSuffix": " de Squai."
       },
       "feedback": {
         "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",

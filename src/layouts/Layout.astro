@@ -472,10 +472,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     setStatus(form, text, 'error');
   };
 
+  // Casillas obligatorias: privacidad en todos los formularios y, en el de
+  // compra, tambien terminos (src/components/Checkout.astro).
+  const consentSelector = 'input[name="privacy_consent"], input[name="terms_consent"]';
+
   const syncFormAvailability = (form: HTMLFormElement) => {
     const widget = form.querySelector<HTMLElement>('[data-turnstile-widget]');
     const token = form.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
-    const consent = form.querySelector<HTMLInputElement>('input[name="privacy_consent"]');
+    const consents = form.querySelectorAll<HTMLInputElement>(consentSelector);
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (!submit) return;
     // Mientras el flujo de pago gobierna el boton (src/components/Checkout.astro),
@@ -483,7 +487,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (form.dataset.checkoutPhase && form.dataset.checkoutPhase !== 'idle') return;
 
     const turnstileOk = !widget || Boolean(token?.value);
-    const consentOk = !consent || consent.checked;
+    const consentOk = Array.from(consents).every((consent) => consent.checked);
     const submitting = submit.getAttribute('aria-busy') === 'true';
     submit.disabled = submitting || !turnstileOk || !consentOk;
   };
@@ -548,7 +552,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
   document.addEventListener('change', (event) => {
     const target = event.target;
-    if (target instanceof HTMLInputElement && target.name === 'privacy_consent') {
+    if (target instanceof HTMLInputElement && target.matches(consentSelector)) {
       syncFormAvailability(target.form!);
     }
   });

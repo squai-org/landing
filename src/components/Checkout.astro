@@ -93,6 +93,16 @@ const { program, ui, labels } = await getSiteContent();
 
               <Turnstile action="checkout" />
 
+              <label class="field-group consent-field" for="checkout-terms-consent">
+                <span class="consent-row">
+                  <input id="checkout-terms-consent" type="checkbox" name="terms_consent" required class="consent-checkbox" aria-describedby="checkout-terms-consent-error" />
+                  <span class="consent-label">
+                    {ui.forms.termsConsentPrefix}<a href="/terminos-de-servicio" target="_blank" rel="noopener">{ui.forms.termsConsentLink}</a>{ui.forms.termsConsentSuffix}
+                  </span>
+                </span>
+                <span id="checkout-terms-consent-error" class="field-error" data-field-error="terms_consent"></span>
+              </label>
+
               <label class="field-group consent-field" for="checkout-privacy-consent">
                 <span class="consent-row">
                   <input id="checkout-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="checkout-privacy-consent-error" />
@@ -197,9 +207,14 @@ const { program, ui, labels } = await getSiteContent();
     let phase: Phase = 'idle';
     let current: { session: CheckoutSession; customer: CustomerData } | null = null;
 
+    const consentBox = (name: string) => form?.querySelector<HTMLInputElement>(`input[name="${name}"]`) ?? null;
+    const termsBox = consentBox('terms_consent');
+    const privacyBox = consentBox('privacy_consent');
+    const isConsentBox = (target: EventTarget | null) => target === termsBox || target === privacyBox;
+
     const render = () => {
       if (!submit || !form) return;
-      const view = buttonView(phase);
+      const view = buttonView(phase, { terms: Boolean(termsBox?.checked), privacy: Boolean(privacyBox?.checked) });
       submit.classList.toggle('btn-primary', view.variant === 'primary');
       submit.classList.toggle('btn-dark', view.variant === 'dark');
       if (labelNode) labelNode.textContent = labels[view.text];
@@ -292,7 +307,13 @@ const { program, ui, labels } = await getSiteContent();
 
     // Si cambia sus datos, la inscripcion ya firmada deja de corresponderle: se
     // vuelve a "Reservar" y el siguiente envio creara una nueva.
-    const edited = () => {
+    // Las casillas de consentimiento no son datos de la inscripcion: marcarlas o
+    // desmarcarlas solo habilita o deshabilita el boton, sin descartar la sesion.
+    const edited = (event: Event) => {
+      if (isConsentBox(event.target)) {
+        render();
+        return;
+      }
       if (phase !== 'retry') return;
       current = null;
       showError('');
