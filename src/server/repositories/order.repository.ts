@@ -6,7 +6,8 @@ export interface NewOrder {
   orderId: string;
   customerId: number;
   programCode: string;
-  referralSource: string;
+  /** NULL solo en ordenes anteriores al formulario con ese campo. */
+  referralSource: string | null;
   amount: number;
   currency: string;
   /** Impuesto declarado a Bold (p. ej. vat-19); se congela con el monto. */
@@ -52,12 +53,17 @@ export const insertOrder = async (db: D1Database, record: NewOrder): Promise<voi
     .run();
 };
 
-/** La orden con el nombre de su cliente, que es lo que muestra la pagina de gracias. */
+/**
+ * La orden con el nombre de su cliente, que es lo que muestra la pagina de
+ * gracias. El correo sirve para saber si el cliente ya esta inscrito al
+ * retomar; ninguna respuesta de la API lo devuelve.
+ */
 const SELECT_SQL = `
   SELECT o.id, o.order_id AS orderId, o.customer_id AS customerId, o.program_code AS programCode,
          o.status, o.amount, o.currency, o.bold_transaction_id AS boldTransactionId,
          o.payment_method AS paymentMethod, o.created_at AS createdAt, o.confirmed_at AS confirmedAt,
-         c.full_name AS fullName
+         o.referral_source AS referralSource,
+         c.full_name AS fullName, c.email
   FROM orders o
   JOIN customers c ON c.id = o.customer_id
   WHERE o.order_id = ?
@@ -66,8 +72,8 @@ const SELECT_SQL = `
 export const findOrderByOrderId = async (db: D1Database, orderId: string) =>
   db.prepare(SELECT_SQL).bind(orderId).first<Pick<Order,
     'id' | 'orderId' | 'customerId' | 'programCode' | 'status' | 'amount' | 'currency' |
-    'boldTransactionId' | 'paymentMethod' | 'createdAt' | 'confirmedAt'
-  > & { fullName: string }>();
+    'boldTransactionId' | 'paymentMethod' | 'createdAt' | 'confirmedAt' | 'referralSource'
+  > & { fullName: string; email: string }>();
 
 /**
  * Aplica el veredicto de Bold sobre una orden.

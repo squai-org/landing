@@ -193,6 +193,18 @@
           "upcomingBody": "Las inscripciones abren el 1 de diciembre. Vuelve ese día para reservar tu cupo.",
           "closedTitle": "Inscripciones cerradas",
           "closedBody": "Las inscripciones de esta cohorte están cerradas. Escríbenos a team@squai.io si quieres saber cuándo abre la próxima."
+        },
+        "resume": {
+          "checking": "Estamos preparando tu pago…",
+          "expiredTitle": "Este enlace ya expiró",
+          "expiredBody": "El enlace para retomar tu compra dura 7 días. Puedes inscribirte de nuevo desde la página del programa: no te cobramos nada por el intento anterior.",
+          "closedTitle": "Inscripciones cerradas",
+          "closedBody": "Las inscripciones de esta cohorte se cerraron, así que no podemos abrir el pago. Escríbenos a team@squai.io si quieres saber cuándo abre la próxima.",
+          "notFoundTitle": "No encontramos tu compra",
+          "notFoundBody": "Revisa que el enlace esté completo. Si el problema sigue, inscríbete desde la página del programa o escríbenos a team@squai.io.",
+          "backCta": "Ir al programa",
+          "errorTitle": "No pudimos abrir el pago",
+          "errorBody": "Algo falló de nuestro lado. Intenta de nuevo en unos minutos o escríbenos a team@squai.io."
         }
       },
       "services": {

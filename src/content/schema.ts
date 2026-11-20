@@ -132,6 +132,18 @@ export const siteSchema = z.object({
        * calcula el Worker con los limites de D1 (program_limits).
        */
       status: z.object({ upcomingTitle: text, upcomingBody: text, closedTitle: text, closedBody: text }),
+      /**
+       * Pagina /retomar: abre de nuevo el pago de una orden sin pagar desde el
+       * enlace del correo o al abandonar el modal de Bold.
+       */
+      resume: z.object({
+        checking: text,
+        expiredTitle: text, expiredBody: text,
+        closedTitle: text, closedBody: text,
+        notFoundTitle: text, notFoundBody: text,
+        backCta: text,
+        errorTitle: text, errorBody: text,
+      }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,

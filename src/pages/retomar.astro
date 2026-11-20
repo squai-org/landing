@@ -1,0 +1,215 @@
+---
+/**
+ * Retomar una orden sin pagar: /retomar?order_id=<orderId>.
+ *
+ * Llegan aqui el enlace del correo de recuperacion y quien abandona el modal
+ * de Bold (es el origin-url de cada pago). El enlace solo lleva el order-id,
+ * que es opaco: la pagina no muestra ni pide datos personales. El Worker
+ * (POST /api/checkout/resume) decide: si la orden anterior ya se pago lleva a
+ * /gracias; si no, abre una orden nueva del mismo cliente y aqui se abre Bold
+ * directo. Expirado, cerrado o no encontrado se muestran con textos del CMS y
+ * un enlace al programa. Ver docs/bold-checkout.md.
+ */
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+import { endpoints } from '../config/endpoints';
+import { checkout } from '../config/checkout';
+import { getSiteContent } from '../lib/content';
+
+const { ui } = await getSiteContent();
+const { resume } = ui.checkout;
+const programPath = `/servicios/${checkout.program}`;
+---
+
+<Layout title={ui.checkout.button.retry} description={resume.checking} noindex>
+  <div class="page-frame">
+    <Header />
+
+    <main id="contenido">
+      <section class="section">
+        <div class="shell">
+          <div
+            class="resume-card card-pad-lg"
+            data-resume
+            data-resume-endpoint={endpoints.checkoutResume}
+            data-library-url={checkout.libraryUrl}
+            data-return-path={checkout.returnPath}
+          >
+            <p class="resume-state" data-resume-state="checking">
+              <span class="resume-spinner" aria-hidden="true"></span>{resume.checking}
+            </p>
+
+            {/* Quien cierra el modal sin pagar puede reabrir el mismo pago. */}
+            <div class="resume-state" data-resume-state="retry" hidden>
+              <Button variant="dark" type="button" data-resume-retry>{ui.checkout.button.retry}</Button>
+            </div>
+
+            <div class="resume-state" data-resume-state="expired" hidden>
+              <h1 class="display d-h2 resume-title">{resume.expiredTitle}</h1>
+              <p class="lead resume-body">{resume.expiredBody}</p>
+            </div>
+
+            <div class="resume-state" data-resume-state="closed" hidden>
+              <h1 class="display d-h2 resume-title">{resume.closedTitle}</h1>
+              <p class="lead resume-body">{resume.closedBody}</p>
+            </div>
+
+            <div class="resume-state" data-resume-state="notFound" hidden>
+              <h1 class="display d-h2 resume-title">{resume.notFoundTitle}</h1>
+              <p class="lead resume-body">{resume.notFoundBody}</p>
+            </div>
+
+            <div class="resume-state" data-resume-state="error" hidden>
+              <h1 class="display d-h2 resume-title">{resume.errorTitle}</h1>
+              <p class="lead resume-body">{resume.errorBody}</p>
+            </div>
+
+            <div class="resume-cta" data-resume-back hidden>
+              <Button variant="dark" href={programPath}>{resume.backCta}</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<script>
+  import { boldCheckoutConfig, type CheckoutSession } from '../lib/bold-checkout';
+  import { resumeOrderId, resumeOutcome } from '../lib/resume-flow';
+
+  declare global {
+    interface Window {
+      BoldCheckout: new (config: ReturnType<typeof boldCheckoutConfig>) => { open(): void };
+    }
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-resume]');
+
+  if (root) {
+    const back = root.querySelector<HTMLElement>('[data-resume-back]');
+    const libraryUrl = root.dataset.libraryUrl ?? '';
+    const boldOrigin = new URL(libraryUrl, window.location.origin).origin;
+    let session: CheckoutSession | null = null;
+
+    const show = (state: string) => {
+      root.querySelectorAll<HTMLElement>('[data-resume-state]').forEach((block) => {
+        block.hidden = block.dataset.resumeState !== state;
+      });
+      // El enlace al programa acompana a los avisos, no a la carga ni al reintento.
+      if (back) back.hidden = state === 'checking' || state === 'retry';
+    };
+
+    let library: Promise<void> | null = null;
+    const loadLibrary = () => {
+      library ??= new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = libraryUrl;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('bold_library'));
+        document.head.appendChild(script);
+      });
+      library.catch(() => {
+        library = null;
+      });
+      return library;
+    };
+
+    /** Abre el modal de Bold con la sesion firmada; reabrir usa la misma orden. */
+    const openPayment = async () => {
+      if (!session) return;
+      try {
+        await loadLibrary();
+        const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
+        new window.BoldCheckout(boldCheckoutConfig(session, redirectionUrl)).open();
+      } catch {
+        show('error');
+      }
+    };
+
+    // Bold avisa por postMessage cuando el comprador cierra el modal.
+    window.addEventListener('message', (event) => {
+      if (!session || event.origin !== boldOrigin || event.data?.type !== 'BOLD_CHECKOUT_EVENT') return;
+      show('retry');
+    });
+
+    root.querySelector('[data-resume-retry]')?.addEventListener('click', () => {
+      show('checking');
+      void openPayment();
+    });
+
+    const start = async () => {
+      const orderId = resumeOrderId(window.location.search);
+      if (!orderId) {
+        show('notFound');
+        return;
+      }
+
+      try {
+        const res = await fetch(root.dataset.resumeEndpoint ?? '', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ order_id: orderId }),
+        });
+        const outcome = resumeOutcome(res.status, await res.json().catch(() => null));
+
+        if (outcome.kind === 'redirect') {
+          window.location.replace(outcome.url);
+        } else if (outcome.kind === 'show') {
+          show(outcome.state);
+        } else {
+          session = outcome.session;
+          await openPayment();
+        }
+      } catch {
+        show('error');
+      }
+    };
+
+    void start();
+  }
+</script>
+
+<style>
+  .page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .resume-card {
+    max-width: 62ch;
+    margin: clamp(40px, 6vw, 96px) auto;
+    padding: clamp(28px, 3.2vw, 48px);
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    background: var(--surface);
+    text-align: left;
+  }
+  .resume-title { margin: 0 0 12px; color: var(--ink); }
+  .resume-body { margin: 0; color: var(--ink-body); }
+  .resume-state[data-resume-state='checking'] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: var(--ink-body);
+  }
+  .resume-state[hidden] { display: none; }
+  .resume-spinner {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--line);
+    border-top-color: var(--periwinkle-ink);
+    border-radius: 50%;
+    animation: resume-spin 900ms linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .resume-spinner { animation: none; }
+  }
+  @keyframes resume-spin {
+    to { transform: rotate(360deg); }
+  }
+  .resume-cta { margin-top: clamp(24px, 2.6vw, 36px); }
+</style>

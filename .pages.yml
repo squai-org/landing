@@ -1953,6 +1953,52 @@ content:
                             label: Texto de inscripciones cerradas
                             type: string
                             required: true
+                      - name: resume
+                        label: Página para retomar el pago
+                        description: Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace (7 días) vive en src/config/checkout.ts.
+                        type: object
+                        required: true
+                        fields:
+                          - name: checking
+                            label: Mientras prepara el pago
+                            type: string
+                            required: true
+                          - name: expiredTitle
+                            label: Título de enlace expirado
+                            type: string
+                            required: true
+                          - name: expiredBody
+                            label: Texto de enlace expirado
+                            type: string
+                            required: true
+                          - name: closedTitle
+                            label: Título de inscripciones cerradas
+                            type: string
+                            required: true
+                          - name: closedBody
+                            label: Texto de inscripciones cerradas
+                            type: string
+                            required: true
+                          - name: notFoundTitle
+                            label: Título de compra no encontrada
+                            type: string
+                            required: true
+                          - name: notFoundBody
+                            label: Texto de compra no encontrada
+                            type: string
+                            required: true
+                          - name: backCta
+                            label: Botón para ir al programa
+                            type: string
+                            required: true
+                          - name: errorTitle
+                            label: Título de error
+                            type: string
+                            required: true
+                          - name: errorBody
+                            label: Texto de error
+                            type: string
+                            required: true
       - name: titulos-compartidos
         label: Títulos compartidos
         description: Títulos que se repiten igual en las tres páginas de servicio y en las legales.

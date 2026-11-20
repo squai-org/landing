@@ -34,3 +34,16 @@ export const checkoutSessionSchema = z.object({
 });
 
 export type CheckoutSessionInput = z.infer<typeof checkoutSessionSchema>;
+
+/**
+ * Retomar una orden: el enlace solo lleva el order_id, que es opaco y no tiene
+ * datos personales. Mismo alfabeto que acepta Bold en data-order-id.
+ */
+export const checkoutResumeSchema = z.object({
+  order_id: z
+    .string('Falta el identificador de la compra.')
+    .trim()
+    .regex(/^[A-Za-z0-9_-]{1,60}$/, 'El identificador de la compra no es valido.'),
+});
+
+export type CheckoutResumeInput = z.infer<typeof checkoutResumeSchema>;
