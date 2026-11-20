@@ -230,6 +230,47 @@ local: `pnpm preview:worker` y luego
 `curl "http://localhost:8787/cdn-cgi/local/scheduled?cron=*/5+*+*+*+*"`.
 https://developers.cloudflare.com/workers/configuration/cron-triggers/
 
+### Correo de recuperación
+
+Después de los reintentos, el mismo cron envía la **recuperación**:
+`sendRecoveries` (`email.service.ts`) manda un solo correo por **cliente y
+programa**, nunca por orden, con el enlace para retomar. Para cada cliente
+mira su orden **más reciente** en el programa, y envía si:
+
+- esa orden está `pending`, `rejected` o `failed` (una `processing` o
+  `voided` no cuenta),
+- se creó hace más de 2 horas (`checkout.recoveryDelayHours` en
+  `src/config/checkout.ts`). Las horas cuentan desde el último intento: quien
+  abrió otra orden hace 30 minutos todavía puede estar pagando, y espera,
+- se creó hace menos de 7 días (`checkout.resumeExpiryDays`): después el
+  enlace ya diría «expirado», así que no se envía. Por eso las órdenes viejas
+  no reciben nada al desplegar,
+- el cliente no tiene una orden `approved` en el programa (no está inscrito),
+- el programa está `open` (mismo estado calculado de "Límites y estado del
+  programa"), y
+- no existe ya una recuperación para ese cliente y programa.
+
+El enlace es `https://squai.io/retomar?order_id=<orderId>` de esa orden más
+reciente (`resumeUrl()`), así los 7 días cuentan desde el último intento. La
+fila en `email_messages` (`kind = 'recovery'`) guarda ese `order_id`, el
+`template_id` y el resultado. El índice único parcial
+`ux_email_messages_recovery (customer_id, program_code) WHERE kind = 'recovery'`
+(migración 0009) es lo que garantiza uno por cliente y programa: el envío se
+reclama con `INSERT ... ON CONFLICT DO NOTHING` y solo envía quien creó la
+fila, así que una segunda ejecución, o dos a la vez, no reenvían, aunque el
+cliente abra otra orden después.
+
+Una recuperación `failed` (o `pending` sin cambios hace más de 10 minutos) se
+reintenta en la siguiente ejecución, con la misma orden y el mismo enlace,
+mientras esa orden siga sin pagar, su enlace no haya expirado, el cliente no se
+haya inscrito y el programa siga abierto. Con el programa cerrado o próximo no
+se reclama nada: si reabre a tiempo, el cliente la recibe. Sin `BREVO_API_KEY`
+o con `email.templates.recovery` en `null` el cron no envía ni toca nada. Se
+procesan hasta 50 recuperaciones nuevas y 50 reintentos por ejecución.
+
+Parámetros de la plantilla (`RECOVERY_PARAMS`): `FIRST_NAME` (primera palabra
+del nombre), `PROGRAM_NAME` (`programs.description`) y `RESUME_URL`.
+
 ### Llave y remitente
 
 La API key es el secret **`BREVO_API_KEY`** del Worker (Brevo → SMTP & API →
@@ -249,15 +290,18 @@ respuesta a `team@squai.io`, en `src/config/email.ts`. El cliente
 ### Plantilla
 
 El HTML versionado es `src/emails/confirmation.html` (fuera de `public/`, no se
-publica). Se construyó con `squai-org/brand-book` y `squai-org/landing-design`:
+publica); el de la recuperación es `src/emails/recovery.html`, con la misma
+maquetación y un botón «Retomar mi inscripción» hacia `RESUME_URL`. Se construyó con `squai-org/brand-book` y `squai-org/landing-design`:
 tablas de 600 px, estilos en línea, logo PNG absoluto y texto Midnight sobre
 Periwinkle. Usa el New Template Language de Brevo: cada dato es
 `{{ params.NOMBRE }}` y `test/build/email-templates.test.ts` comprueba que los
-placeholders son exactamente `CONFIRMATION_PARAMS`.
+placeholders son exactamente `CONFIRMATION_PARAMS` (y los de la recuperación,
+`RECOVERY_PARAMS`).
 
 Para publicarla: Brevo → Campaigns → Templates → New template → pegar el HTML,
-guardar y poner su id en `email.templates.confirmation`
-(`src/config/email.ts`). Mientras sea `null` el Worker no envía. Si el diseño
+guardar y poner su id en `email.templates.confirmation` (la recuperación, en
+`email.templates.recovery`) de `src/config/email.ts`. Mientras sea `null` el
+Worker no envía ese correo. Si el diseño
 se ajusta en el editor de Brevo, devolver el HTML al repo para que el test lo
 vigile.
 
@@ -269,7 +313,8 @@ completas como base. Fechas y horario salen de `programs.starts_on`,
 
 ### Pendientes del equipo
 
-- Subir la plantilla a Brevo y poner su id en `src/config/email.ts`.
+- Subir las dos plantillas (confirmación y recuperación) a Brevo y poner sus
+  ids en `src/config/email.ts`.
 - **Dirección y teléfono de Squai**: en `email.company` quedan
   `[DIRECCION PENDIENTE]` y `[TELEFONO PENDIENTE]`, y así salen en el correo
   hasta que se reemplacen. Razón social y NIT son los de los Términos de
@@ -473,10 +518,11 @@ Resumen del diseño de #49; cada ticket detalla su parte.
 - **Correo de confirmación (#55).** Un único correo por orden aprobada,
   registrado en `email_messages`; ver "Correo de confirmación (Brevo)".
 - **Cron (#56).** Un `scheduled` del Worker, cada 5 minutos, reintenta las
-  confirmaciones fallidas o colgadas (ver "Reintento por cron"); #58 le agrega
-  el envío de la recuperación.
-- **Recuperación (#58).** A las 2 horas de una orden sin pago, un único correo
-  por cliente y programa con el enlace para retomar.
+  confirmaciones fallidas o colgadas (ver "Reintento por cron") y después envía
+  la recuperación.
+- **Recuperación (#58).** A las 2 horas de la última orden sin pago, un único
+  correo por cliente y programa con el enlace para retomar; ver "Correo de
+  recuperación".
 - **Retomar (#57).** `/retomar?order_id=<orderId>` (también el `origin-url`
   de Bold) abre otra orden del mismo cliente con el precio vigente, sin volver a
   llenar el formulario. Lleva a `/gracias` si ya está inscrito, y avisa si el
@@ -583,6 +629,7 @@ Lo que cubre el gate:
 | `test/server/confirmation-email.test.ts` | webhook y `/status` en cualquier orden y repetidos envían una sola confirmación, sin esperar a Brevo; un fallo de Brevo queda registrado; una orden rechazada no envía nada |
 | `test/build/email-templates.test.ts` | los placeholders de la plantilla coinciden con los parámetros que envía el Worker |
 | `test/server/confirmation-retry.test.ts` | el cron reintenta confirmaciones fallidas, atascadas o nunca reclamadas; no reenvía las enviadas ni pisa un envío en curso; dos ejecuciones seguidas o a la vez no duplican correos |
+| `test/server/recovery-email.test.ts` | la recuperación sale una sola vez por cliente y programa (con tres órdenes, una; la siguiente ejecución no reenvía), no antes de 2 horas, no a inscritos, no con el programa cerrado ni con el enlace expirado; un fallo de Brevo se registra y se reintenta |
 | `test/build/wrangler-config.test.ts` | `wrangler.jsonc` conserva el bloque `previews` y declara el Cron Trigger |
 
 Las ramas que no son la de producción obtienen una URL de preview con el mismo

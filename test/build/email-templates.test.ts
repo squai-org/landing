@@ -1,14 +1,17 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CONFIRMATION_PARAMS } from '../../src/server/services/email.service';
+import { CONFIRMATION_PARAMS, RECOVERY_PARAMS } from '../../src/server/services/email.service';
 
 /**
  * Las plantillas viven versionadas en src/emails/ y se suben a Brevo. Si el
  * HTML pide un {{ params.X }} que el Worker no manda, el cliente ve un hueco;
  * si el Worker manda uno que el HTML no usa, sobra o se renombro a medias.
  */
-const TEMPLATES = [{ file: 'src/emails/confirmation.html', params: CONFIRMATION_PARAMS }];
+const TEMPLATES = [
+  { file: 'src/emails/confirmation.html', params: CONFIRMATION_PARAMS },
+  { file: 'src/emails/recovery.html', params: RECOVERY_PARAMS },
+];
 
 const readTemplate = (file: string) => readFile(path.join(import.meta.dirname, '../..', file), 'utf8');
 
@@ -34,5 +37,13 @@ describe.each(TEMPLATES)('plantilla $file', ({ file, params }) => {
 
     expect(html).toContain('lang="es"');
     expect(html).not.toMatch(/<svg|<script|\.svg["')]/i);
+  });
+});
+
+describe('plantilla de recuperacion', () => {
+  it('lleva el enlace para retomar en el boton', async () => {
+    const html = await readTemplate('src/emails/recovery.html');
+
+    expect(html).toMatch(/<a href="\{\{ params\.RESUME_URL \}\}"/);
   });
 });

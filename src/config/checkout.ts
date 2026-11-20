@@ -25,4 +25,9 @@ export const checkout = {
   resumePath: '/retomar',
   /** Dias, contados desde que se creo la orden, durante los que sirve el enlace. */
   resumeExpiryDays: 7,
+  /**
+   * Horas sin pagar, contadas desde la ultima orden del cliente en el
+   * programa, antes de que el cron envie el unico correo de recuperacion.
+   */
+  recoveryDelayHours: 2,
 };
