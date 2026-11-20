@@ -19,7 +19,7 @@ import { boldWebhookEventSchema } from '../schemas/bold-webhook.schema';
 import type { CheckoutSessionInput } from '../schemas/checkout.schema';
 import { parseBody } from '../lib/validate';
 import { checkout } from '../../config/checkout';
-import { loadProgram, priceIn } from './program.service';
+import { assertOpenAndNotEnrolled, loadProgram, priceIn } from './program.service';
 import type { Env, RequestMeta } from '../types';
 
 export interface CheckoutSession {
@@ -71,6 +71,7 @@ export const createCheckoutSession = async (
   }
 
   const program = await loadProgram(env, input.program, now, meta.ipCountry);
+  await assertOpenAndNotEnrolled(env, program, input.email);
   const currency = input.currency;
   const amount = priceIn(program, currency);
   const tax = checkout.tax;

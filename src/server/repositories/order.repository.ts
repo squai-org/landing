@@ -1,3 +1,5 @@
+import { normalizeEmail } from '../lib/email';
+
 export type OrderStatus = 'pending' | 'processing' | 'approved' | 'rejected' | 'failed' | 'voided';
 
 export interface NewOrder {
@@ -106,3 +108,18 @@ export const applyOrderPayment = async (
 
   return { becameApproved: payment.status === 'approved' && meta.changes > 0 };
 };
+
+/**
+ * Inscripcion (ver GLOSSARY.md): el cliente con ese correo tiene una orden
+ * aprobada en el programa. No hay tabla propia; una anulada deja de contar.
+ */
+const ENROLLED_SQL = `
+  SELECT 1 AS enrolled
+  FROM orders o
+  JOIN customers c ON c.id = o.customer_id
+  WHERE c.email = ? AND o.program_code = ? AND o.status = 'approved'
+  LIMIT 1
+`;
+
+export const isEnrolled = async (db: D1Database, email: string, programCode: string): Promise<boolean> =>
+  (await db.prepare(ENROLLED_SQL).bind(normalizeEmail(email), programCode).first()) !== null;

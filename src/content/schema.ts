@@ -120,11 +120,18 @@ export const siteSchema = z.object({
         rejectedTitle: text, rejectedBody: text,
         errorTitle: text, errorBody: text,
         orderLabel: text, backCta: text,
+        /** /gracias?estado=inscrito: el correo ya tiene una orden aprobada en el programa. */
+        enrolledTitle: text, enrolledBody: text,
       }),
       investment: z.object({ eyebrow: text, copy: paragraphs }),
       button: z.object({ paying: text, retry: text }),
       /** Selector de moneda de la tarjeta de inversion. */
       currency: z.object({ label: text, cop: text, usd: text }),
+      /**
+       * Aviso que reemplaza al boton fuera del periodo de venta. El estado lo
+       * calcula el Worker con los limites de D1 (program_limits).
+       */
+      status: z.object({ upcomingTitle: text, upcomingBody: text, closedTitle: text, closedBody: text }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,

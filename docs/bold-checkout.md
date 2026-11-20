@@ -153,7 +153,7 @@ cohorte de Squai One cobra 440.000 COP / 147 USD y el
 550.000 COP / 185 USD.
 
 `GET /api/checkout/program/:code` responde
-`{ ok, program: { code, description, prices: { COP?, USD? }, defaultCurrency } }`.
+`{ ok, program: { code, description, prices: { COP?, USD? }, defaultCurrency, status } }`.
 La moneda por defecto es COP si `CF-IPCountry` es `CO` y USD en cualquier otro
 caso; si esa moneda no tiene precio vigente se propone la otra. La página
 muestra ese precio y un selector de moneda (textos en `ui.checkout.currency`).
@@ -248,6 +248,45 @@ completas como base. Fechas y horario salen de `programs.starts_on`,
 - Probar la plantilla en clientes de correo reales (Gmail web y app, Outlook
   escritorio y web, Apple Mail/iOS), por ejemplo con el envío de prueba de
   Brevo. No está hecho: los tests solo validan los placeholders.
+
+## Límites y estado del programa
+
+Las ventas abren y cierran solas. Los límites viven en `program_limits` (una
+fila por programa: `opens_at`, `closes_at` exclusivo, ambos ISO-8601 UTC, y
+`capacity`) y el cierre manual en `programs.closed_manually` (0 o 1). Squai One
+vende del `2026-12-01T05:00:00.000Z` al `2027-01-23T05:00:00.000Z` (1 de
+diciembre a 22 de enero inclusive, hora de Colombia) con 30 cupos.
+
+El estado no se guarda: el Worker lo calcula en cada consulta y lo expone en
+`program.status`:
+
+| `status` | Cuándo |
+| --- | --- |
+| `upcoming` | antes de `opens_at` |
+| `open` | dentro de las fechas, con cupo y sin cierre manual |
+| `closed` | desde `closes_at`, con tantas órdenes aprobadas como `capacity`, con `closed_manually = 1`, o sin fila en `program_limits` |
+
+Solo cuentan las órdenes `approved`: una venta anulada (`voided`) libera su
+cupo sola. Fuera de `open` la página cambia el botón por un aviso con textos de
+`ui.checkout.status`.
+
+`POST /api/checkout/session` no abre un pago si:
+
+- el correo ya tiene una **inscripción** (una orden aprobada) en el programa:
+  `409 already_enrolled`. La respuesta no lleva el order-id de esa orden; la
+  página lleva a `/gracias?estado=inscrito` (textos
+  `ui.checkout.thanks.enrolledTitle/enrolledBody`).
+- el programa no está `open`: `409 program_not_open`. La página muestra el
+  aviso de cerrado.
+
+Para cerrar o reabrir las ventas a mano, o mover fechas y cupo, sin build:
+
+```bash
+wrangler d1 execute squai --remote \
+  --command "UPDATE programs SET closed_manually = 1 WHERE code = 'squai-one'"
+wrangler d1 execute squai --remote \
+  --command "UPDATE program_limits SET capacity = 35 WHERE program_code = 'squai-one'"
+```
 
 ## CI/CD en Cloudflare (sin GitHub Actions)
 

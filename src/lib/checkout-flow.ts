@@ -56,3 +56,47 @@ export const buttonView = (phase: Phase, consents: Consents): ButtonView => {
  * segundo pago seria un doble cobro.
  */
 export const canReopen = (enrollmentStatus: string): boolean => enrollmentStatus !== 'approved';
+
+/**
+ * Estado de ventas del programa segun GET /api/checkout/program (calculado en
+ * el Worker): upcoming antes de la apertura, closed por fecha, cupo o cierre
+ * manual. Fuera de `open` la pagina muestra un aviso en lugar del boton.
+ */
+export type SalesPanel = 'form' | 'upcoming' | 'closed';
+
+export const salesPanel = (status: string | undefined): SalesPanel => {
+  if (status === 'upcoming' || status === 'closed') return status;
+  // Si no se pudo leer el estado se deja el formulario: el Worker rechaza
+  // igual un pago en un programa que no esta abierto.
+  return 'form';
+};
+
+/**
+ * Que hace la pagina cuando POST /api/checkout/session responde con error:
+ * al inscrito se lo lleva a /gracias; si el programa cerro mientras llenaba el
+ * formulario, se cambia el boton por el aviso. El resto queda en el formulario.
+ */
+export const rejectionAction = (code: string | undefined): 'enrolled' | 'closed' | null => {
+  if (code === 'already_enrolled') return 'enrolled';
+  if (code === 'program_not_open') return 'closed';
+  return null;
+};
+
+/**
+ * Variante "ya estas inscrito" de la pagina de gracias. No lleva order-id: la
+ * respuesta de /session no lo revela a quien solo trae un correo.
+ */
+const ENROLLED_PARAM = 'estado';
+const ENROLLED_VALUE = 'inscrito';
+
+export const enrolledUrl = (returnPath: string): string => `${returnPath}?${ENROLLED_PARAM}=${ENROLLED_VALUE}`;
+
+export type ThanksStart = { state: 'enrolled' } | { state: 'error' } | { state: 'checking'; orderId: string };
+
+/** Primer estado de /gracias segun su URL. Bold solo documenta `bold-order-id`. */
+export const thanksStart = (search: string): ThanksStart => {
+  const params = new URLSearchParams(search);
+  if (params.get(ENROLLED_PARAM) === ENROLLED_VALUE) return { state: 'enrolled' };
+  const orderId = params.get('bold-order-id');
+  return orderId ? { state: 'checking', orderId } : { state: 'error' };
+};
