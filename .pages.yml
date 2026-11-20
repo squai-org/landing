@@ -1679,6 +1679,19 @@ content:
                             label: Texto visible
                             type: string
                             required: true
+                      - name: termsConsentPrefix
+                        label: Consentimiento de términos, texto previo
+                        description: Casilla obligatoria del formulario de compra. El enlace lleva a /terminos-de-servicio.
+                        type: string
+                        required: true
+                      - name: termsConsentLink
+                        label: Consentimiento de términos, texto del enlace
+                        type: string
+                        required: true
+                      - name: termsConsentSuffix
+                        label: Consentimiento de términos, texto posterior
+                        type: string
+                        required: true
                   - name: feedback
                     label: Mensajes de respuesta
                     type: object

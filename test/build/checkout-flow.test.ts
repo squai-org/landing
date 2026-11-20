@@ -31,25 +31,53 @@ describe('nextPhase', () => {
 });
 
 describe('buttonView', () => {
+  const both = { terms: true, privacy: true };
+
   it('muestra la accion de reservar con el estilo primario y deja que el formulario la habilite', () => {
-    expect(buttonView('idle')).toMatchObject({ variant: 'primary', text: 'reserve', locked: false });
+    expect(buttonView('idle', both)).toMatchObject({ variant: 'primary', text: 'reserve', locked: false });
   });
 
   it('bloquea el boton mientras el modal de pago esta abierto', () => {
-    expect(buttonView('paying')).toMatchObject({ variant: 'dark', text: 'paying', locked: true, disabled: true });
+    expect(buttonView('paying', both)).toMatchObject({ variant: 'dark', text: 'paying', locked: true, disabled: true });
   });
 
   it('cambia de estilo y de texto para invitar a reintentar el pago', () => {
-    const retry = buttonView('retry');
+    const retry = buttonView('retry', both);
 
     expect(retry.variant).toBe('dark');
-    expect(retry.variant).not.toBe(buttonView('idle').variant);
+    expect(retry.variant).not.toBe(buttonView('idle', both).variant);
     expect(retry.text).toBe('retry');
     expect(retry.locked).toBe(true);
   });
 
   it('deja pulsable el boton de reintento', () => {
-    expect(buttonView('retry').disabled).toBe(false);
+    expect(buttonView('retry', both).disabled).toBe(false);
+  });
+});
+
+/**
+ * El comprador acepta por separado los Terminos de Servicio y la Politica de
+ * Privacidad. Sin las dos casillas el boton no avanza, ni al registrarse ni al
+ * continuar un pago que dejo a medias.
+ */
+describe('buttonView con las dos casillas de consentimiento', () => {
+  const combos = [
+    { terms: false, privacy: false, disabled: true },
+    { terms: true, privacy: false, disabled: true },
+    { terms: false, privacy: true, disabled: true },
+    { terms: true, privacy: true, disabled: false },
+  ];
+
+  it.each(combos)('registro con terminos=$terms y privacidad=$privacy: deshabilitado=$disabled', ({ terms, privacy, disabled }) => {
+    expect(buttonView('idle', { terms, privacy }).disabled).toBe(disabled);
+  });
+
+  it.each(combos)('continuar con terminos=$terms y privacidad=$privacy: deshabilitado=$disabled', ({ terms, privacy, disabled }) => {
+    expect(buttonView('retry', { terms, privacy }).disabled).toBe(disabled);
+  });
+
+  it.each(combos)('con el modal abierto sigue bloqueado con terminos=$terms y privacidad=$privacy', ({ terms, privacy }) => {
+    expect(buttonView('paying', { terms, privacy }).disabled).toBe(true);
   });
 });
 

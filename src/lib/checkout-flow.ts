@@ -2,10 +2,13 @@
  * Fases del boton unico de registro y pago (docs/bold-checkout.md).
  *
  * idle    formulario sin enviar: el boton dice "Reservar" y lo habilita el
- *         formulario (consentimiento + Turnstile).
+ *         formulario (las dos casillas de consentimiento + Turnstile).
  * paying  la inscripcion quedo guardada y firmada, y el modal de Bold esta abierto.
  * retry   el comprador cerro el modal sin pagar: el mismo boton cambia de estilo
  *         y de texto para retomar la MISMA sesion, sin crear otra inscripcion.
+ *
+ * En registro y en reintento el boton solo se habilita con las dos casillas
+ * marcadas: Terminos de Servicio y Politica de Privacidad, aceptadas por separado.
  */
 export type Phase = 'idle' | 'paying' | 'retry';
 export type FlowEvent = 'session' | 'closed' | 'retry' | 'edited';
@@ -22,19 +25,31 @@ export interface ButtonView {
   variant: 'primary' | 'dark';
   /** Clave del texto. Todos vienen del contenido: `labels.reserve` y `ui.checkout.button`. */
   text: 'reserve' | 'paying' | 'retry';
-  /** `true`: el flujo decide si el boton esta habilitado. `false`: lo decide el formulario. */
+  /**
+   * `true`: el flujo decide si el boton esta habilitado. `false`: el formulario
+   * ademas lo condiciona (Turnstile, envio en curso).
+   */
   locked: boolean;
-  /** Solo se lee cuando `locked` es `true`. */
+  /** `true` si el flujo no deja pulsar el boton en esta fase con estas casillas. */
   disabled: boolean;
 }
 
-const views: Record<Phase, ButtonView> = {
-  idle: { variant: 'primary', text: 'reserve', locked: false, disabled: false },
-  paying: { variant: 'dark', text: 'paying', locked: true, disabled: true },
-  retry: { variant: 'dark', text: 'retry', locked: true, disabled: false },
+/** Casillas obligatorias del formulario de compra. */
+export interface Consents {
+  terms: boolean;
+  privacy: boolean;
+}
+
+const views: Record<Phase, Omit<ButtonView, 'disabled'> & { open: boolean }> = {
+  idle: { variant: 'primary', text: 'reserve', locked: false, open: true },
+  paying: { variant: 'dark', text: 'paying', locked: true, open: false },
+  retry: { variant: 'dark', text: 'retry', locked: true, open: true },
 };
 
-export const buttonView = (phase: Phase): ButtonView => views[phase];
+export const buttonView = (phase: Phase, consents: Consents): ButtonView => {
+  const { open, ...view } = views[phase];
+  return { ...view, disabled: !(open && consents.terms && consents.privacy) };
+};
 
 /**
  * Antes de reabrir el pago se consulta la inscripcion: si Bold ya la aprobo, un
