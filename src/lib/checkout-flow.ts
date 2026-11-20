@@ -20,7 +20,7 @@ export const nextPhase = (phase: Phase, event: FlowEvent): Phase => transitions[
 
 export interface ButtonView {
   variant: 'primary' | 'dark';
-  /** Clave del texto: el de `idle` viene del contenido; los otros, de src/config/checkout.ts. */
+  /** Clave del texto. Todos vienen del contenido: `labels.reserve` y `ui.checkout.button`. */
   text: 'reserve' | 'paying' | 'retry';
   /** `true`: el flujo decide si el boton esta habilitado. `false`: lo decide el formulario. */
   locked: boolean;
