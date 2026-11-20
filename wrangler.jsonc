@@ -12,6 +12,11 @@
   // les asigne una base de pruebas, /api/* no funciona en una preview.
   // https://developers.cloudflare.com/workers/previews/configuration/
   "previews": {},
+  // Cron Trigger (UTC): reintenta las confirmaciones de inscripcion que Brevo
+  // no envio. Handler: src/server/scheduled.ts. Ver docs/bold-checkout.md.
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
   "assets": {
     "directory": "./dist",
     "run_worker_first": ["/api/*"]

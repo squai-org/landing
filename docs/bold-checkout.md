@@ -194,11 +194,41 @@ sobre `UNIQUE (order_id, kind)`: solo envía quien la creó, aunque el webhook y
 (`sent` o `failed`), `attempts`, `provider_message_id` (el `messageId` de
 Brevo), `last_error` y `sent_at`. D1 es la prueba de qué se envió, con qué
 plantilla (`template_id`) y cuándo (ADR 0001). Un fallo de Brevo queda en
-`failed` y no rompe la respuesta; el reintento es del cron (#56).
+`failed` y no rompe la respuesta; el cron la reintenta (ver abajo).
 
 Sin `BREVO_API_KEY` o sin id de plantilla no se envía ni se crea la fila: la
 orden queda aprobada y sin confirmación, y el cron la toma cuando esté
 configurado.
+
+### Reintento por cron
+
+Un **Cron Trigger** del Worker (`triggers.crons` en `wrangler.jsonc`) corre
+cada 5 minutos (`*/5 * * * *`; Cloudflare interpreta los crons en UTC). El
+handler es `scheduled` en `src/server/scheduled.ts`, exportado junto a `fetch`
+desde `src/server/index.ts`, y usa como "ahora" la hora programada de la
+ejecución (`controller.scheduledTime`). `retryConfirmations`
+(`email.service.ts`) toma, de a 50 por ejecución, las órdenes `approved` cuya
+confirmación:
+
+- no tiene fila (no se reclamó: faltaba la llave o la plantilla),
+- está `failed`, o
+- está `pending` sin cambios hace más de 10 minutos
+  (`PENDING_GRACE_MINUTES`): un envío de `waitUntil` en curso la deja
+  pendiente unos segundos, así que el cron no lo pisa.
+
+Cada una se reclama antes de enviar (`INSERT ... ON CONFLICT DO NOTHING` si no
+hay fila; si la hay, un `UPDATE` que solo cambia una fila todavía fallida o
+atascada), así que dos ejecuciones seguidas o cruzadas no duplican el correo.
+Cada intento suma `attempts` y deja `last_error`; un envío exitoso limpia el
+error y anota `sent_at`. No hay tope de intentos: una confirmación que sigue
+fallando se reintenta cada 5 minutos hasta que salga, y `last_error` dice por
+qué. Igual que el envío inmediato, sin `BREVO_API_KEY` o con
+`email.templates.confirmation` en `null` el cron no envía ni toca nada.
+
+Los cambios de crons tardan hasta 15 minutos en propagarse tras desplegar. En
+local: `pnpm preview:worker` y luego
+`curl "http://localhost:8787/cdn-cgi/local/scheduled?cron=*/5+*+*+*+*"`.
+https://developers.cloudflare.com/workers/configuration/cron-triggers/
 
 ### Llave y remitente
 
@@ -379,6 +409,8 @@ Lo que cubre el gate:
 | `test/build/csp-headers.test.ts` | la CSP de `dist/_headers` permite `checkout.bold.co` en `script-src` y `frame-src` |
 | `test/server/confirmation-email.test.ts` | webhook y `/status` en cualquier orden y repetidos envían una sola confirmación, sin esperar a Brevo; un fallo de Brevo queda registrado; una orden rechazada no envía nada |
 | `test/build/email-templates.test.ts` | los placeholders de la plantilla coinciden con los parámetros que envía el Worker |
+| `test/server/confirmation-retry.test.ts` | el cron reintenta confirmaciones fallidas, atascadas o nunca reclamadas; no reenvía las enviadas ni pisa un envío en curso; dos ejecuciones seguidas o a la vez no duplican correos |
+| `test/build/wrangler-config.test.ts` | `wrangler.jsonc` conserva el bloque `previews` y declara el Cron Trigger |
 
 Las ramas que no son la de producción obtienen una URL de preview con el mismo
 gate, así que el checkout se puede probar con llaves de pruebas antes de

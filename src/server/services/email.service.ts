@@ -4,6 +4,8 @@ import { sendBrevoTemplateEmail } from '../lib/brevo';
 import {
   claimEmailMessage,
   findConfirmationData,
+  findConfirmationsToRetry,
+  reclaimEmailMessage,
   recordEmailResult,
   type ConfirmationData,
 } from '../repositories/email-message.repository';
@@ -146,7 +148,21 @@ export const sendConfirmation = async (env: Env, orderId: string, now: Date): Pr
 
   if (!claimed) return;
 
-  const key = { orderId, kind: 'confirmation' as const };
+  await deliverConfirmation(env.DB, apiKey, templateId, data, now);
+};
+
+/**
+ * Envia por Brevo una confirmacion ya reclamada y anota el resultado (enviado
+ * o fallido, con el error) en su fila de email_messages.
+ */
+const deliverConfirmation = async (
+  db: D1Database,
+  apiKey: string,
+  templateId: number,
+  data: ConfirmationData,
+  now: Date
+): Promise<void> => {
+  const key = { orderId: data.orderId, kind: 'confirmation' as const };
 
   try {
     const { messageId } = await sendBrevoTemplateEmail(apiKey, {
@@ -158,10 +174,61 @@ export const sendConfirmation = async (env: Env, orderId: string, now: Date): Pr
       tags: ['confirmation'],
     });
 
-    await recordEmailResult(env.DB, key, { status: 'sent', providerMessageId: messageId }, now);
+    await recordEmailResult(db, key, { status: 'sent', providerMessageId: messageId }, now);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error(`Brevo no envio la confirmacion de ${orderId}: ${message}`);
-    await recordEmailResult(env.DB, key, { status: 'failed', error: message.slice(0, 500) }, now);
+    console.error(`Brevo no envio la confirmacion de ${data.orderId}: ${message}`);
+    await recordEmailResult(db, key, { status: 'failed', error: message.slice(0, 500) }, now);
+  }
+};
+
+/**
+ * Margen antes de dar por perdida una confirmacion pendiente: el envio de
+ * waitUntil tarda segundos, asi que una fila pendiente mas vieja que esto no
+ * tiene a nadie enviandola.
+ */
+export const PENDING_GRACE_MINUTES = 10;
+
+/** Confirmaciones por ejecucion del cron, para acotar su duracion. */
+const RETRY_BATCH = 50;
+
+/**
+ * Reintenta las confirmaciones de ordenes aprobadas sin envio exitoso: las
+ * fallidas, las pendientes atascadas y las aprobadas que nunca se reclamaron
+ * (por ejemplo, sin BREVO_API_KEY o sin plantilla en su momento). Cada una se
+ * reclama antes de enviar, asi que dos ejecuciones seguidas o cruzadas no
+ * duplican el correo. Sin BREVO_API_KEY o sin plantilla no hace nada, igual
+ * que sendConfirmation.
+ */
+export const retryConfirmations = async (env: Env, now: Date): Promise<void> => {
+  const apiKey = env.BREVO_API_KEY;
+  const templateId = email.templates.confirmation;
+
+  if (!apiKey || !templateId) {
+    console.error('BREVO_API_KEY o la plantilla de confirmacion no configurados: el cron no reintenta confirmaciones.');
+    return;
+  }
+
+  const staleBefore = new Date(now.getTime() - PENDING_GRACE_MINUTES * 60_000);
+  const candidates = await findConfirmationsToRetry(env.DB, staleBefore, RETRY_BATCH);
+
+  for (const { orderId, hasMessage } of candidates) {
+    try {
+      const data = await findConfirmationData(env.DB, orderId);
+      if (!data || data.status !== 'approved') continue;
+
+      const claimed = hasMessage
+        ? await reclaimEmailMessage(env.DB, { orderId, kind: 'confirmation' }, templateId, staleBefore, now)
+        : await claimEmailMessage(
+            env.DB,
+            { orderId, customerId: data.customerId, programCode: data.programCode, kind: 'confirmation', templateId },
+            now
+          );
+
+      if (claimed) await deliverConfirmation(env.DB, apiKey, templateId, data, now);
+    } catch (error) {
+      // Un error de D1 con una orden no detiene las demas; la proxima ejecucion la retoma.
+      console.error(`El cron no pudo reintentar la confirmacion de ${orderId}:`, error);
+    }
   }
 };

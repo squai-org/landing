@@ -59,6 +59,59 @@ export const claimEmailMessage = async (
   return meta.changes > 0;
 };
 
+/**
+ * Confirmaciones que el cron debe reintentar: ordenes aprobadas sin fila de
+ * confirmacion, con la fila fallida, o con la fila pendiente sin cambios desde
+ * antes de `staleBefore` (un envio en curso de waitUntil la deja pendiente
+ * unos segundos; pasado el margen se da por perdido).
+ */
+const RETRY_CANDIDATES_SQL = `
+  SELECT o.order_id AS orderId, m.id IS NOT NULL AS hasMessage
+  FROM orders o
+  LEFT JOIN email_messages m ON m.order_id = o.order_id AND m.kind = 'confirmation'
+  WHERE o.status = 'approved'
+    AND (m.id IS NULL OR m.status = 'failed' OR (m.status = 'pending' AND m.updated_at < ?1))
+  ORDER BY o.id
+  LIMIT ?2
+`;
+
+export const findConfirmationsToRetry = async (db: D1Database, staleBefore: Date, limit: number) => {
+  const { results } = await db
+    .prepare(RETRY_CANDIDATES_SQL)
+    .bind(staleBefore.toISOString(), limit)
+    .all<{ orderId: string; hasMessage: number }>();
+
+  return results.map((row) => ({ orderId: row.orderId, hasMessage: row.hasMessage === 1 }));
+};
+
+/**
+ * Reclama de nuevo una confirmacion fallida o atascada: la vuelve a dejar
+ * pendiente con la plantilla actual. Igual que claimEmailMessage, devuelve
+ * true solo a quien la cambio, asi dos ejecuciones del cron que se crucen no
+ * envian dos veces.
+ */
+const RECLAIM_SQL = `
+  UPDATE email_messages
+  SET status = 'pending', template_id = ?3, updated_at = ?4
+  WHERE order_id = ?1 AND kind = ?2
+    AND (status = 'failed' OR (status = 'pending' AND updated_at < ?5))
+`;
+
+export const reclaimEmailMessage = async (
+  db: D1Database,
+  key: { orderId: string; kind: EmailKind },
+  templateId: number,
+  staleBefore: Date,
+  now: Date
+): Promise<boolean> => {
+  const { meta } = await db
+    .prepare(RECLAIM_SQL)
+    .bind(key.orderId, key.kind, templateId, now.toISOString(), staleBefore.toISOString())
+    .run();
+
+  return meta.changes > 0;
+};
+
 /** Anota el resultado de un intento de envio. */
 const RESULT_SQL = `
   UPDATE email_messages
