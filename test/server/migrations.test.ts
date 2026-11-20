@@ -12,6 +12,13 @@ const db = () => env.MIGRATIONS_DB;
 
 /** Deja la base vacia, incluida la tabla que registra migraciones aplicadas. */
 const wipe = async () => {
+  // Las vistas primero: no bloquean el DROP de sus tablas, pero sobreviven a
+  // el y la migracion que las crea fallaria al volver a aplicarse.
+  const { results: views } = await db()
+    .prepare(`SELECT name FROM sqlite_master WHERE type = 'view'`)
+    .all<{ name: string }>();
+  for (const { name } of views) await db().exec(`DROP VIEW IF EXISTS "${name}"`);
+
   const { results } = await db()
     .prepare(
       `SELECT name FROM sqlite_master
@@ -301,5 +308,56 @@ describe('0008_program_limits', () => {
     await expect(insert('otro', '2030-01-01T05:00:00.000Z', '2030-02-01T05:00:00.000Z', 0)).rejects.toThrow();
     await expect(insert('otro', '2030-02-01T05:00:00.000Z', '2030-01-01T05:00:00.000Z', 10)).rejects.toThrow();
     await expect(insert('otro', '2030-01-01T05:00:00.000Z', '2030-02-01T05:00:00.000Z', 10)).resolves.toBeDefined();
+  });
+});
+
+describe('0010_tracking_views', () => {
+  it('ve las ventas migradas: quien no pago, quien esta inscrito y cuantos cupos quedan', async () => {
+    const enrollment = (id: number, status: string, email: string, createdAt: string) =>
+      db()
+        .prepare(
+          `INSERT INTO enrollments
+            (id, order_id, plan_code, status, full_name, email, country_code, phone, phone_e164,
+             amount, currency, created_at, confirmed_at)
+           VALUES (?, ?, 'squai-one', ?, 'Cliente', ?, '+57', '3001112222', '+573001112222',
+             399000, 'COP', ?, ?)`
+        )
+        .bind(id, `squai-one-${id}`, status, email, createdAt, status === 'pending' ? null : createdAt);
+
+    await db().batch([
+      // Dos intentos del mismo correo, escrito distinto, sin pago.
+      enrollment(1, 'rejected', 'Ana@X.co ', '2026-10-01T10:00:00.000Z'),
+      enrollment(2, 'pending', 'ana@x.co', '2026-10-02T10:00:00.000Z'),
+      // Una venta aprobada.
+      enrollment(3, 'approved', 'beto@x.co', '2026-10-03T10:00:00.000Z'),
+    ]);
+
+    await applyAll();
+
+    const { results: pending } = await db()
+      .prepare('SELECT email, program_code, attempts, last_status, last_attempt_at FROM v_customers_without_enrollment')
+      .all();
+    expect(pending).toEqual([
+      {
+        email: 'ana@x.co',
+        program_code: 'squai-one',
+        attempts: 2,
+        last_status: 'pending',
+        last_attempt_at: '2026-10-02T10:00:00.000Z',
+      },
+    ]);
+
+    const { results: enrolled } = await db()
+      .prepare('SELECT email, program_code, order_id, enrolled_at FROM v_enrollments_by_program')
+      .all();
+    expect(enrolled).toEqual([
+      { email: 'beto@x.co', program_code: 'squai-one', order_id: 'squai-one-3', enrolled_at: '2026-10-03T10:00:00.000Z' },
+    ]);
+
+    const seats = await db()
+      .prepare('SELECT capacity, approved_orders, seats_left FROM v_program_seats WHERE program_code = ?')
+      .bind('squai-one')
+      .first();
+    expect(seats).toEqual({ capacity: 30, approved_orders: 1, seats_left: 29 });
   });
 });
