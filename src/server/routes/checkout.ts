@@ -1,21 +1,30 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
+import { defer } from '../lib/background';
 import { badRequest, ok } from '../lib/http';
 import { parseBody } from '../lib/validate';
 import { checkoutSessionSchema } from '../schemas/checkout.schema';
-import {
-  confirmEnrollment,
-  createCheckoutSession,
-  handleBoldWebhook,
-  loadPaymentPlan,
-} from '../services/checkout.service';
+import { confirmOrder, createCheckoutSession, handleBoldWebhook } from '../services/checkout.service';
+import { sendConfirmation } from '../services/email.service';
+import { loadProgram } from '../services/program.service';
 import type { AppBindings } from '../types';
 
-export const checkoutRoute = new Hono<AppBindings>()
-  /** Precio vigente para pintarlo en la pagina: es el mismo que se firma. */
-  .get('/plan/:code', async (c) => {
-    const plan = await loadPaymentPlan(c.env, c.req.param('code'));
+/**
+ * Cuando una orden pasa a aprobada, el correo de confirmacion sale con
+ * waitUntil: la respuesta (y el 200 que Bold espera en menos de 2 s) no
+ * espera a Brevo.
+ */
+const confirmInBackground = (c: Context<AppBindings>) => (orderId: string) =>
+  defer(c)(sendConfirmation(c.env, orderId, new Date()));
 
-    return ok(c, { plan });
+export const checkoutRoute = new Hono<AppBindings>()
+  /**
+   * Precios vigentes por moneda para pintarlos en la pagina: son los mismos que
+   * se firman. La moneda por defecto sale del pais que informa Cloudflare.
+   */
+  .get('/program/:code', async (c) => {
+    const program = await loadProgram(c.env, c.req.param('code'), new Date(), c.get('requestMeta').ipCountry);
+
+    return ok(c, { program });
   })
   /**
    * Verificacion de retorno. La pagina de gracias llega con el order-id en la
@@ -26,14 +35,19 @@ export const checkoutRoute = new Hono<AppBindings>()
 
     if (!orderId) throw badRequest('order_id_missing', 'Falta el identificador de la compra.');
 
-    return ok(c, { enrollment: await confirmEnrollment(c.env, orderId) });
+    return ok(c, { order: await confirmOrder(c.env, orderId, confirmInBackground(c)) });
   })
   .post('/session', async (c) => {
     const raw = await c.req.json().catch(() => {
       throw badRequest('invalid_json', 'El cuerpo de la peticion no es JSON valido.');
     });
 
-    const session = await createCheckoutSession(c.env, parseBody(checkoutSessionSchema, raw), c.get('requestMeta'));
+    const session = await createCheckoutSession(
+      c.env,
+      parseBody(checkoutSessionSchema, raw),
+      c.get('requestMeta'),
+      new Date()
+    );
 
     return ok(c, { session }, 201);
   })
@@ -44,7 +58,12 @@ export const checkoutRoute = new Hono<AppBindings>()
    */
   .post('/webhook', async (c) => {
     const rawBody = await c.req.text();
-    const event = await handleBoldWebhook(c.env, rawBody, c.req.header('x-bold-signature'));
+    const event = await handleBoldWebhook(
+      c.env,
+      rawBody,
+      c.req.header('x-bold-signature'),
+      confirmInBackground(c)
+    );
 
     return ok(c, event);
   });

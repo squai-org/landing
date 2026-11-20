@@ -7,6 +7,7 @@ import { sameOrigin } from './middleware/same-origin';
 import { securityHeaders } from './middleware/security-headers';
 import { checkoutRoute } from './routes/checkout';
 import { contactRoute } from './routes/contact';
+import { scheduled } from './scheduled';
 import type { AppBindings } from './types';
 
 const app = new Hono<AppBindings>();
@@ -30,4 +31,6 @@ api.route('/contact', contactRoute);
 
 app.route('/api', api);
 
-export default app;
+// Workers usa `fetch` (propiedad propia de Hono) y `scheduled` (Cron Trigger);
+// los tests siguen usando app.request sobre el mismo objeto.
+export default Object.assign(app, { scheduled });

@@ -36,4 +36,11 @@ describe('wrangler.jsonc', () => {
 
     expect(config.name).toBe('landing-page');
   });
+
+  it('declara el Cron Trigger que reintenta las confirmaciones cada 5 minutos', async () => {
+    const config = await readJsonc('wrangler.jsonc');
+
+    // Cloudflare interpreta los crons en UTC; cada 5 minutos no depende de la zona.
+    expect(config.triggers).toEqual({ crons: ['*/5 * * * *'] });
+  });
 });

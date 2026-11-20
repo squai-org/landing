@@ -13,6 +13,7 @@ const session = {
   amount: 399000,
   currency: 'COP',
   description: 'Squai One',
+  tax: 'vat-19',
   integritySignature: 'abc123',
 };
 
@@ -29,6 +30,16 @@ describe('boldCheckoutConfig', () => {
       currency: 'COP',
       description: 'Squai One',
       integritySignature: 'abc123',
+    });
+  });
+
+  it('declara a Bold el impuesto que firmo el Worker y cobra en la moneda elegida', () => {
+    const usd = { ...session, amount: 147, currency: 'USD' };
+
+    expect(boldCheckoutConfig(usd, 'https://squai.io/x')).toMatchObject({
+      amount: '147',
+      currency: 'USD',
+      tax: 'vat-19',
     });
   });
 

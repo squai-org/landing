@@ -23,35 +23,45 @@ const getStatus = (orderId: string) =>
     withKeys
   );
 
-const seedEnrollment = () =>
-  env.DB.prepare(
-    `INSERT INTO enrollments
-      (order_id, plan_code, full_name, email, country_code, phone, phone_e164, referral_source, amount, currency)
-     VALUES (?, 'squai-one', 'Ana Rios', 'ana@empresa.co', '+57', '3205551234', '+573205551234', 'instagram', 399000, 'COP')`
+const seedOrder = async () => {
+  const customer = await env.DB.prepare(
+    `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+     VALUES ('ana@empresa.co', 'Ana Rios', '+57', '3205551234', '+573205551234')
+     ON CONFLICT (email) DO UPDATE SET full_name = excluded.full_name
+     RETURNING id`
+  ).first<{ id: number }>();
+
+  await env.DB.prepare(
+    `INSERT INTO orders (order_id, customer_id, program_code, referral_source, amount, currency)
+     VALUES (?, ?, 'squai-one', 'instagram', 399000, 'COP')`
   )
-    .bind(ORDER_ID)
+    .bind(ORDER_ID, customer?.id)
     .run();
+};
 
 beforeEach(async () => {
-  await env.DB.exec('DELETE FROM enrollments');
-  await seedEnrollment();
+  await env.DB.exec('DELETE FROM orders');
+  await env.DB.exec('DELETE FROM customers');
+  await seedOrder();
 });
 
 afterEach(() => vi.restoreAllMocks());
 
 describe('GET /api/checkout/status', () => {
-  it('confirma la inscripcion cuando Bold responde APPROVED', async () => {
+  it('confirma la orden cuando Bold responde APPROVED', async () => {
     mockVoucher('APPROVED', { transaction_id: 'TXN123', payment_method: 'CREDIT_CARD' });
 
     const res = await getStatus(ORDER_ID);
 
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toMatchObject({
+    const body = await res.json();
+    expect(body).toMatchObject({
       ok: true,
-      enrollment: { status: 'approved', fullName: 'Ana Rios', amount: 399000, currency: 'COP' },
+      order: { status: 'approved', programCode: 'squai-one', fullName: 'Ana Rios', amount: 399000, currency: 'COP' },
     });
+    expect(body).not.toHaveProperty('enrollment');
 
-    const row = await env.DB.prepare('SELECT status, bold_transaction_id, confirmed_at FROM enrollments').first<
+    const row = await env.DB.prepare('SELECT status, bold_transaction_id, confirmed_at FROM orders').first<
       Record<string, unknown>
     >();
     expect(row).toMatchObject({ status: 'approved', bold_transaction_id: 'TXN123' });
@@ -68,17 +78,17 @@ describe('GET /api/checkout/status', () => {
     );
 
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toMatchObject({ enrollment: { status: 'rejected' } });
+    await expect(res.json()).resolves.toMatchObject({ order: { status: 'rejected' } });
 
-    const row = await env.DB.prepare('SELECT status FROM enrollments').first();
+    const row = await env.DB.prepare('SELECT status FROM orders').first();
     expect(row).toMatchObject({ status: 'rejected' });
   });
 
-  it('deja la inscripcion pendiente mientras Bold no ve el intento', async () => {
+  it('deja la orden pendiente mientras Bold no ve el intento', async () => {
     mockVoucher('NO_TRANSACTION_FOUND');
 
     await expect((await getStatus(ORDER_ID)).json()).resolves.toMatchObject({
-      enrollment: { status: 'pending' },
+      order: { status: 'pending' },
     });
   });
 
@@ -86,7 +96,7 @@ describe('GET /api/checkout/status', () => {
     mockVoucher('PROCESSING');
 
     await expect((await getStatus(ORDER_ID)).json()).resolves.toMatchObject({
-      enrollment: { status: 'processing' },
+      order: { status: 'processing' },
     });
   });
 
@@ -101,7 +111,7 @@ describe('GET /api/checkout/status', () => {
     const res = await getStatus(ORDER_ID);
 
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toMatchObject({ enrollment: { status: 'approved' } });
+    await expect(res.json()).resolves.toMatchObject({ order: { status: 'approved' } });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -109,7 +119,7 @@ describe('GET /api/checkout/status', () => {
     const res = await getStatus('squai-one-noexiste');
 
     expect(res.status).toBe(404);
-    await expect(res.json()).resolves.toMatchObject({ error: { code: 'enrollment_not_found' } });
+    await expect(res.json()).resolves.toMatchObject({ error: { code: 'order_not_found' } });
   });
 
   it('responde 400 si no llega order_id', async () => {

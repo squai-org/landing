@@ -3,12 +3,12 @@
   "audience": "Para Personas",
   "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
   "cta": {
-    "target": "lista",
+    "target": "inscripcion",
     "label": "Potencia tus habilidades"
   },
   "menuAudience": "Personas",
   "cardCopy": "Un programa en vivo para entender la IA, en lugar de seguir guardando tutoriales que nunca vas a ver.",
-  "discoverLabel": "Únete a la lista de espera",
+  "discoverLabel": "Inscríbete al programa",
   "accent": "#8A8EF9",
   "span": "span-3 row-2",
   "tone": "peri",
@@ -70,13 +70,13 @@
     {
       "q": "¿Hay cupos limitados?",
       "a": [
-        "Sí. Cada programa tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que llega la lista de espera."
+        "Sí. Cada programa tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que se aprueba el pago."
       ]
     },
     {
       "q": "¿Cuándo son las clases y cuánto duran?",
       "a": [
-        "Horarios a definir. Te lo hacemos saber en el correo que enviamos si te apuntas en la lista de espera. Son 4 horas semanales durante 5 semanas, suficiente para avanzar sin abrumarte y sin perder el ritmo."
+        "Las fechas y el horario te llegan en el correo de confirmación de tu inscripción. Son 4 horas semanales durante 5 semanas, suficiente para avanzar sin abrumarte y sin perder el ritmo."
       ]
     },
     {
@@ -92,15 +92,15 @@
       ]
     },
     {
-      "q": "¿Cómo entro al próximo programa?",
+      "q": "¿Cómo me inscribo?",
       "a": [
-        "Te unes a la lista de espera. Cuando abramos inscripciones, te escribimos con las fechas confirmadas y la información de pago. Fácil."
+        "Llenas el formulario de inscripción de esta página y pagas en línea. Cuando el pago se aprueba, tu cupo queda reservado y te llega la confirmación al correo. Fácil."
       ]
     },
     {
-      "q": "¿Anotarme en la lista de espera me obliga a algo?",
+      "q": "¿Llenar el formulario me obliga a pagar?",
       "a": [
-        "No. Solo nos da tu permiso para avisarte primero y mandarte la información completa antes de abrir al público general. Tú decides si te inscribes o pasas, sin presiones."
+        "No. El formulario solo prepara tu pago: quedas inscrito cuando el pago se aprueba. Si cierras la ventana de pago sin terminar, no se te cobra nada. Tú decides, sin presiones."
       ]
     }
   ],

@@ -96,7 +96,7 @@ export const siteSchema = z.object({
   seo: z.object({ title: text, description: text, imageAlt: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
-    navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, contactCta: text, oneCta: text, servicesSubmenu: text }),
+    navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
     services: z.object({ payback: text, capabilitiesFallback: text }),
     program: z.object({ duration: text, schedule: text, modality: text }),
@@ -105,9 +105,9 @@ export const siteSchema = z.object({
     follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
     /**
-     * El precio no esta aqui: vive en la tabla payment_plans de D1 para poder
-     * cambiarlo sin desplegar, y es el mismo monto que se firma para Bold.
-     * Ver docs/bold-checkout.md.
+     * El precio no esta aqui: vive en la tabla program_prices de D1, por moneda
+     * y fecha de vigencia, para poder cambiarlo sin desplegar, y es el mismo
+     * monto que se firma para Bold. Ver docs/bold-checkout.md.
      */
     checkout: z.object({
       title: text,
@@ -120,8 +120,18 @@ export const siteSchema = z.object({
         rejectedTitle: text, rejectedBody: text,
         errorTitle: text, errorBody: text,
         orderLabel: text, backCta: text,
+        /** /gracias?estado=inscrito: el correo ya tiene una orden aprobada en el programa. */
+        enrolledTitle: text, enrolledBody: text,
       }),
-      investment: z.object({ eyebrow: text, copy: paragraphs, referencePrice: text }),
+      investment: z.object({ eyebrow: text, copy: paragraphs }),
+      button: z.object({ paying: text, retry: text }),
+      /** Selector de moneda de la tarjeta de inversion. */
+      currency: z.object({ label: text, cop: text, usd: text }),
+      /**
+       * Aviso que reemplaza al boton fuera del periodo de venta. El estado lo
+       * calcula el Worker con los limites de D1 (program_limits).
+       */
+      status: z.object({ upcomingTitle: text, upcomingBody: text, closedTitle: text, closedBody: text }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,
@@ -130,6 +140,7 @@ export const siteSchema = z.object({
       privacyConsentPrefix: text, privacyConsentLink: text, privacyConsentSuffix: text,
       referralSources: z.array(z.object({ value: z.enum(['instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras']), label: text })).length(6),
       teamSizes: z.array(z.object({ value: z.enum(['menos-10', '10-30', '30-100', 'mas-100']), label: text })).length(4),
+      termsConsentPrefix: text, termsConsentLink: text, termsConsentSuffix: text,
     }),
     contact: z.object({ title: text, close: text, bookingFallback: text, bookingFallbackLink: text }),
     modal: z.object({ grow: modal, learn: modal }),
