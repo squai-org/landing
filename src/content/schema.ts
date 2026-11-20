@@ -96,7 +96,7 @@ export const siteSchema = z.object({
   seo: z.object({ title: text, description: text, imageAlt: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
-    navigation: z.object({ home: text, open: text, close: text, main: text, waitlist: text, contactCta: text, oneCta: text, servicesSubmenu: text }),
+    navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
     services: z.object({ payback: text, capabilitiesFallback: text }),
     program: z.object({ duration: text, schedule: text, modality: text }),
@@ -122,6 +122,7 @@ export const siteSchema = z.object({
         orderLabel: text, backCta: text,
       }),
       investment: z.object({ eyebrow: text, copy: paragraphs, referencePrice: text }),
+      button: z.object({ paying: text, retry: text }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,

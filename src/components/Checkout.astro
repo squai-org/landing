@@ -26,7 +26,7 @@ const { program, ui, labels } = await getSiteContent();
 ---
 
 <section class="section tint">
-  <div id="lista" class="shell">
+  <div id="inscripcion" class="shell">
     <div class="bento checkout-grid">
       <div class="checkout-column span-4 row-5">
         <div class="checkout-sticky">
@@ -47,8 +47,8 @@ const { program, ui, labels } = await getSiteContent();
             data-library-url={checkout.libraryUrl}
             data-return-path={checkout.returnPath}
             data-status-endpoint={endpoints.checkoutStatus}
-            data-paying-label={checkout.payingLabel}
-            data-retry-label={checkout.retryLabel}
+            data-paying-label={ui.checkout.button.paying}
+            data-retry-label={ui.checkout.button.retry}
           >
             <div class="checkout-card-heading">
               <h3 class="display checkout-card-title">{ui.checkout.formTitle}</h3>

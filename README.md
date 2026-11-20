@@ -74,7 +74,7 @@ por su campo `order` y con el slug tomado del nombre del archivo.
   componentes no cambian.
 - Los campos de texto largo (`statement.body`, `whatWeDo.body`, `impact.body`,
   `originStory`, `faqs[].a`, `ui.team.intro`, `ui.finalCta.body`, `ui.follow.copy`,
-  `ui.waitlist.copy`, `ui.waitlist.investment.copy`) aceptan una lista de párrafos o un string donde una línea
+  `ui.checkout.copy`, `ui.checkout.investment.copy`) aceptan una lista de párrafos o un string donde una línea
   en blanco separa párrafos. Cada párrafo se renderiza como su propio `<p>`.
 - Rutas de la API y otra configuración de runtime van en `src/config/`, no en el
   contenido.
@@ -145,17 +145,21 @@ SQL fuera de `repositories/`.
 
 ### Endpoints
 
-| Método | Ruta            | Origen                                    |
-| :----- | :-------------- | :---------------------------------------- |
-| `POST` | `/api/waitlist` | `Waitlist.astro` — lista del programa     |
-| `POST` | `/api/contact`  | `ContactModal.astro` — Grow y Learn        |
-| `GET`  | `/api/health`   | Sonda de salud                             |
+| Método | Ruta                        | Origen                                    |
+| :----- | :-------------------------- | :---------------------------------------- |
+| `GET`  | `/api/checkout/plan/:code`  | `Checkout.astro` — precio del programa     |
+| `POST` | `/api/checkout/session`     | `Checkout.astro` — inscripción y pago      |
+| `GET`  | `/api/checkout/status`      | `gracias.astro` — estado del pago          |
+| `POST` | `/api/checkout/webhook`     | Webhook de Bold                            |
+| `POST` | `/api/contact`              | `ContactModal.astro` — Grow y Learn        |
+| `GET`  | `/api/health`               | Sonda de salud                             |
 
-Respuesta de éxito: `{ "ok": true, "id": 1, "created": true }`.
+El flujo de `/api/checkout/*` está en `docs/bold-checkout.md`.
+
+Respuesta de éxito de `/api/contact`: `{ "ok": true, "id": 1, "created": true }`.
 Respuesta de error: `{ "ok": false, "error": { "code", "message", "fields"? } }`,
 donde `fields` mapea campo → mensaje para pintarlo en el formulario.
 
-`/api/waitlist` hace upsert por correo (un correo = un lugar en la lista);
 `/api/contact` guarda cada solicitud como una fila nueva.
 
 ### Seguridad

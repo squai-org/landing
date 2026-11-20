@@ -172,8 +172,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       const teamMembers = Array.from(section.querySelectorAll<HTMLElement>('.team-member'));
       teamMembers.forEach((member, index) => addReveal(member, 'card', (index % 2) * 70));
 
-      const waitlistColumn = section.querySelector<HTMLElement>('.checkout-column');
-      if (waitlistColumn) addReveal(waitlistColumn, 'copy');
+      const checkoutColumn = section.querySelector<HTMLElement>('.checkout-column');
+      if (checkoutColumn) addReveal(checkoutColumn, 'copy');
 
       const teamHeading = section.querySelector<HTMLElement>('.team-heading');
       if (teamHeading) {
