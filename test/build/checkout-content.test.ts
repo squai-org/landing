@@ -72,3 +72,38 @@ describe('textos del selector de moneda', () => {
     expect(pages).not.toContain('referencePrice');
   });
 });
+
+describe('textos del estado de ventas', () => {
+  it('"Proximamente" e "Inscripciones cerradas" vienen del contenido', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.checkout.status).toEqual({
+      upcomingTitle: 'Próximamente',
+      upcomingBody: expect.any(String),
+      closedTitle: 'Inscripciones cerradas',
+      closedBody: expect.any(String),
+    });
+  });
+
+  it('la pagina de gracias tiene la variante de cliente ya inscrito', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.checkout.thanks).toMatchObject({
+      enrolledTitle: expect.any(String),
+      enrolledBody: expect.any(String),
+    });
+  });
+
+  it('se pueden editar en Pages CMS', async () => {
+    const pages = await readFile(path.join(root, '.pages.yml'), 'utf8');
+    const checkoutNode = pages.slice(pages.indexOf('label: Sección de inscripción'));
+    const thanksNode = checkoutNode.slice(checkoutNode.indexOf('- name: thanks'));
+    const statusNode = checkoutNode.slice(checkoutNode.indexOf('- name: status'));
+
+    expect(checkoutNode).toContain('- name: status');
+    for (const field of ['upcomingTitle', 'upcomingBody', 'closedTitle', 'closedBody']) {
+      expect(statusNode).toContain(`- name: ${field}`);
+    }
+    for (const field of ['enrolledTitle', 'enrolledBody']) expect(thanksNode).toContain(`- name: ${field}`);
+  });
+});

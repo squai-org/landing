@@ -255,3 +255,51 @@ describe('0007_programs_prices', () => {
     expect(order).toEqual({ amount: 399000, currency: 'COP', tax: null });
   });
 });
+
+describe('0008_program_limits', () => {
+  it('siembra las ventas de Squai One del 1 dic 2026 al 22 ene 2027 (hora de Colombia) con 30 cupos', async () => {
+    await applyAll();
+
+    const limits = await db().prepare('SELECT * FROM program_limits').all();
+    // Las 00:00 de Colombia son las 05:00 UTC; el cierre es exclusivo, asi que
+    // el 22 de enero se vende completo.
+    expect(limits.results).toEqual([
+      {
+        program_code: 'squai-one',
+        opens_at: '2026-12-01T05:00:00.000Z',
+        closes_at: '2027-01-23T05:00:00.000Z',
+        capacity: 30,
+      },
+    ]);
+  });
+
+  it('deja el programa sin cierre manual y solo acepta 0 o 1', async () => {
+    await applyAll();
+
+    const program = await db().prepare(`SELECT closed_manually FROM programs WHERE code = 'squai-one'`).first();
+    expect(program).toEqual({ closed_manually: 0 });
+
+    await expect(
+      db().prepare(`UPDATE programs SET closed_manually = 2 WHERE code = 'squai-one'`).run()
+    ).rejects.toThrow();
+    await expect(
+      db().prepare(`UPDATE programs SET closed_manually = 1 WHERE code = 'squai-one'`).run()
+    ).resolves.toBeDefined();
+  });
+
+  it('exige un programa existente, un cupo positivo y un cierre posterior a la apertura', async () => {
+    await applyAll();
+    await db().prepare(`INSERT INTO programs (code, description) VALUES ('otro', 'Otro programa')`).run();
+
+    const insert = (code: string, opensAt: string, closesAt: string, capacity: number) =>
+      db()
+        .prepare(`INSERT INTO program_limits (program_code, opens_at, closes_at, capacity) VALUES (?, ?, ?, ?)`)
+        .bind(code, opensAt, closesAt, capacity)
+        .run();
+
+    await expect(insert('no-existe', '2030-01-01T05:00:00.000Z', '2030-02-01T05:00:00.000Z', 10)).rejects.toThrow();
+    await expect(insert('otro', '2030-01-01T05:00:00.000Z', '2030-02-01T05:00:00.000Z', 0)).rejects.toThrow();
+    await expect(insert('otro', '2030-02-01T05:00:00.000Z', '2030-01-01T05:00:00.000Z', 10)).rejects.toThrow();
+    await expect(insert('otro', '2030-01-01T05:00:00.000Z', '2030-02-01T05:00:00.000Z', 10)).resolves.toBeDefined();
+  });
+});

@@ -673,6 +673,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           const fieldMessage = data?.error?.fields ? Object.values(data.error.fields)[0] : undefined;
           setStatus(form, fieldMessage ?? data?.error?.message ?? fallbackError, 'error');
           form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+          // El checkout decide que hacer con un inscrito o un programa cerrado
+          // (src/components/Checkout.astro).
+          if (kind === 'checkout') {
+            document.dispatchEvent(new CustomEvent('squai:checkout-rejected', { detail: data?.error?.code }));
+          }
           return;
         }
 

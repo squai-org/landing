@@ -45,6 +45,12 @@ beforeAll(async () => {
          (?1, 'USD', 185, '2027-01-01T05:00:00.000Z')
        ON CONFLICT DO NOTHING`
     ).bind(PROGRAM),
+    // Ventas abiertas a ambos lados del cambio de precio.
+    env.DB.prepare(
+      `INSERT INTO program_limits (program_code, opens_at, closes_at, capacity)
+       VALUES (?, '2026-11-01T05:00:00.000Z', '2027-02-01T05:00:00.000Z', 30)
+       ON CONFLICT DO NOTHING`
+    ).bind(PROGRAM),
   ]);
 });
 

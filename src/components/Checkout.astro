@@ -113,8 +113,19 @@ const { program, ui, labels } = await getSiteContent();
                 <span id="checkout-privacy-consent-error" class="field-error" data-field-error="privacy_consent"></span>
               </label>
 
-              <div class="form-submit">
+              <div class="form-submit" data-sales-panel="form">
                 <Button variant="primary" type="submit" block>{labels.reserve}</Button>
+              </div>
+
+              {/* Fuera del periodo de venta el boton se cambia por un aviso. El
+                  estado lo calcula el Worker (GET /api/checkout/program). */}
+              <div class="sales-notice" data-sales-panel="upcoming" hidden>
+                <p class="sales-notice-title">{ui.checkout.status.upcomingTitle}</p>
+                <p class="body">{ui.checkout.status.upcomingBody}</p>
+              </div>
+              <div class="sales-notice" data-sales-panel="closed" hidden>
+                <p class="sales-notice-title">{ui.checkout.status.closedTitle}</p>
+                <p class="body">{ui.checkout.status.closedBody}</p>
               </div>
 
               <div class="form-status" data-form-status role="status" aria-live="polite"></div>
@@ -167,7 +178,17 @@ const { program, ui, labels } = await getSiteContent();
 
 <script>
   import { boldCheckoutConfig, type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
-  import { buttonView, canReopen, nextPhase, type FlowEvent, type Phase } from '../lib/checkout-flow';
+  import {
+    buttonView,
+    canReopen,
+    enrolledUrl,
+    nextPhase,
+    rejectionAction,
+    salesPanel,
+    type FlowEvent,
+    type Phase,
+    type SalesPanel,
+  } from '../lib/checkout-flow';
   import type { ClientCopy } from '../lib/content';
 
   // Las cadenas llegan por data-client-copy, como el resto del JS de cliente.
@@ -214,8 +235,9 @@ const { program, ui, labels } = await getSiteContent();
         });
         if (!res.ok) return;
         const { program } = (await res.json()) as {
-          program: { prices: Partial<Record<string, number>>; defaultCurrency: string };
+          program: { prices: Partial<Record<string, number>>; defaultCurrency: string; status?: string };
         };
+        showSalesPanel(salesPanel(program.status));
         prices = program.prices;
         // Una moneda sin precio vigente no se ofrece.
         currencyInputs.forEach((input) => {
@@ -244,6 +266,7 @@ const { program, ui, labels } = await getSiteContent();
     };
     let phase: Phase = 'idle';
     let current: { session: CheckoutSession; customer: CustomerData } | null = null;
+    let panel: SalesPanel = 'form';
 
     const consentBox = (name: string) => form?.querySelector<HTMLInputElement>(`input[name="${name}"]`) ?? null;
     const termsBox = consentBox('terms_consent');
@@ -252,6 +275,13 @@ const { program, ui, labels } = await getSiteContent();
 
     const render = () => {
       if (!submit || !form) return;
+      // Programa proximo o cerrado: el boton queda oculto y deshabilitado, y el
+      // Layout no lo vuelve a habilitar (solo lo gobierna en fase idle).
+      if (panel !== 'form') {
+        form.dataset.checkoutPhase = panel;
+        submit.disabled = true;
+        return;
+      }
       const view = buttonView(phase, { terms: Boolean(termsBox?.checked), privacy: Boolean(privacyBox?.checked) });
       submit.classList.toggle('btn-primary', view.variant === 'primary');
       submit.classList.toggle('btn-dark', view.variant === 'dark');
@@ -260,6 +290,14 @@ const { program, ui, labels } = await getSiteContent();
       form.dataset.checkoutPhase = phase;
       if (view.locked) submit.disabled = view.disabled;
       else document.dispatchEvent(new Event('squai:form-sync'));
+    };
+
+    const showSalesPanel = (next: SalesPanel) => {
+      panel = next;
+      document.querySelectorAll<HTMLElement>('[data-sales-panel]').forEach((block) => {
+        block.hidden = block.dataset.salesPanel !== panel;
+      });
+      render();
     };
 
     const step = (event: FlowEvent) => {
@@ -367,6 +405,19 @@ const { program, ui, labels } = await getSiteContent();
         edited(event);
       })
     );
+
+    // El Layout envia este evento cuando /api/checkout/session responde con
+    // error. Al inscrito se lo lleva a /gracias; si el programa cerro mientras
+    // llenaba el formulario, el boton se cambia por el aviso.
+    document.addEventListener('squai:checkout-rejected', (event) => {
+      const action = rejectionAction((event as CustomEvent<string | undefined>).detail);
+      if (action === 'enrolled') {
+        window.location.assign(enrolledUrl(root.dataset.returnPath ?? '/'));
+      } else if (action === 'closed') {
+        showError('');
+        showSalesPanel('closed');
+      }
+    });
 
     // El Layout envia este evento cuando /api/checkout/session responde bien.
     document.addEventListener('squai:checkout-session', (event) => {
@@ -508,6 +559,19 @@ const { program, ui, labels } = await getSiteContent();
   .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
   .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
   .consent-label a:hover { color: var(--periwinkle-ink); }
+  .sales-notice {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--canvas);
+    color: var(--ink-body);
+  }
+  .sales-notice[hidden] { display: none; }
+  .sales-notice-title { margin: 0; color: var(--ink); font-weight: 700; }
+  .sales-notice .body { margin: 0; }
   @media (max-width: 1100px) {
     .checkout-column { order: -1; }
     .row-5, .investment-card { grid-row: auto; }

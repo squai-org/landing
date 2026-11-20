@@ -56,6 +56,11 @@ const { thanks } = ui.checkout;
               <p class="lead thanks-body">{thanks.rejectedBody}</p>
             </div>
 
+            <div class="thanks-state" data-thanks-state="enrolled" hidden>
+              <h1 class="display d-h2 thanks-title">{thanks.enrolledTitle}</h1>
+              <p class="lead thanks-body">{thanks.enrolledBody}</p>
+            </div>
+
             <div class="thanks-state" data-thanks-state="error" hidden>
               <h1 class="display d-h2 thanks-title">{thanks.errorTitle}</h1>
               <p class="lead thanks-body">{thanks.errorBody}</p>
@@ -78,6 +83,8 @@ const { thanks } = ui.checkout;
 </Layout>
 
 <script>
+  import { thanksStart } from '../lib/checkout-flow';
+
   const root = document.querySelector<HTMLElement>('[data-thanks]');
 
   if (root) {
@@ -87,12 +94,14 @@ const { thanks } = ui.checkout;
       });
     };
 
-    /** Bold solo documenta `bold-order-id` como parametro de la vuelta. */
-    const orderId = new URLSearchParams(window.location.search).get('bold-order-id');
+    // Bold solo documenta `bold-order-id` como parametro de la vuelta. El
+    // checkout trae aqui, sin order-id, a quien ya estaba inscrito.
+    const start = thanksStart(window.location.search);
 
-    if (!orderId) {
-      show('error');
+    if (start.state !== 'checking') {
+      show(start.state);
     } else {
+      const { orderId } = start;
       const orderSlot = root.querySelector<HTMLElement>('[data-thanks-order-id]');
       const orderBox = root.querySelector<HTMLElement>('[data-thanks-order]');
       if (orderSlot) orderSlot.textContent = orderId;
