@@ -9,18 +9,22 @@ import {
 } from './common';
 
 /**
- * Datos de quien se inscribe mas el plan que paga. El monto y la divisa NO
- * estan aqui a proposito: salen de la base. Si llegaran en el cuerpo, quien
- * paga podria firmar su propio precio.
+ * Datos de quien se inscribe mas el programa que paga y la moneda en que
+ * quiere pagar. El monto NO esta aqui a proposito: sale de la base para esa
+ * moneda. Si llegara en el cuerpo, quien paga podria firmar su propio precio.
  *
  * `privacy_consent` lo exige el formulario en el navegador, igual que en
  * /api/contact; el servidor no lo revalida para no duplicar el contrato.
  */
 export const checkoutSessionSchema = z.object({
-  plan: z
-    .string('Falta el plan a pagar.')
+  program: z
+    .string('Falta el programa a pagar.')
     .transform((value) => value.trim().toLowerCase())
-    .pipe(z.string().regex(/^[a-z0-9-]{2,60}$/, 'El plan no es valido.')),
+    .pipe(z.string().regex(/^[a-z0-9-]{2,60}$/, 'El programa no es valido.')),
+  currency: z
+    .string('Falta la moneda.')
+    .transform((value) => value.trim().toUpperCase())
+    .pipe(z.enum(['COP', 'USD'], 'La moneda no es valida.')),
   full_name: nameField,
   email: emailField,
   country_code: countryCodeField,

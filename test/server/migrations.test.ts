@@ -100,6 +100,8 @@ describe('0006_customers_orders', () => {
         user_agent: 'UA-1',
         created_at: '2026-10-01T10:00:00.000Z',
         confirmed_at: '2026-10-01T10:05:00.000Z',
+        // 0007: las ordenes historicas no declaran impuesto.
+        tax: null,
       },
       {
         id: 9,
@@ -117,6 +119,7 @@ describe('0006_customers_orders', () => {
         user_agent: 'UA-2',
         created_at: '2026-10-02T10:00:00.000Z',
         confirmed_at: '2026-10-02T10:07:00.000Z',
+        tax: null,
       },
     ]);
 
@@ -146,5 +149,109 @@ describe('0006_customers_orders', () => {
       .bind(customer?.id)
       .first<{ id: number }>();
     expect(inserted?.id).toBeGreaterThan(41);
+  });
+});
+
+describe('0007_programs_prices', () => {
+  const COHORT_SWITCH = '2027-01-01T05:00:00.000Z';
+
+  it('pasa el plan a programa y conserva su precio como historico', async () => {
+    await db()
+      .prepare(`UPDATE payment_plans SET updated_at = '2026-10-05 14:30:00' WHERE code = 'squai-one'`)
+      .run();
+
+    await applyAll();
+
+    const program = await db().prepare('SELECT code, description FROM programs').all();
+    expect(program.results).toEqual([
+      { code: 'squai-one', description: 'Fundamentos de Inteligencia Artificial Generativa' },
+    ]);
+
+    const { results: prices } = await db()
+      .prepare(
+        `SELECT program_code, currency, amount, valid_from FROM program_prices
+         ORDER BY currency, valid_from`
+      )
+      .all<{ program_code: string; currency: string; amount: number; valid_from: string }>();
+
+    // 399.000 COP es historia; 440.000 / 147 rigen desde la migracion; el
+    // 1 de enero de 2027 a las 00:00 de Colombia (05:00 UTC) suben solos.
+    expect(prices.map(({ currency, amount }) => [currency, amount])).toEqual([
+      ['COP', 399000],
+      ['COP', 440000],
+      ['COP', 550000],
+      ['USD', 147],
+      ['USD', 185],
+    ]);
+    expect(prices[0]?.valid_from).toBe('2026-10-05T14:30:00.000Z');
+    expect(prices[2]?.valid_from).toBe(COHORT_SWITCH);
+    expect(prices[4]?.valid_from).toBe(COHORT_SWITCH);
+    expect(prices[1]!.valid_from > prices[0]!.valid_from).toBe(true);
+    expect(prices[1]!.valid_from < COHORT_SWITCH).toBe(true);
+    expect(prices[3]!.valid_from).toBe(prices[1]!.valid_from);
+
+    const legacy = await db()
+      .prepare(`SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'payment_plans'`)
+      .first();
+    expect(legacy).toBeNull();
+  });
+
+  it('deja el historico antes del precio nuevo aunque el plan se haya tocado en el mismo segundo', async () => {
+    await db().prepare(`UPDATE payment_plans SET updated_at = datetime('now') WHERE code = 'squai-one'`).run();
+
+    await applyAll();
+
+    const { results } = await db()
+      .prepare(`SELECT amount, valid_from FROM program_prices WHERE currency = 'COP' ORDER BY valid_from`)
+      .all<{ amount: number }>();
+    expect(results.map((r) => r.amount)).toEqual([399000, 440000, 550000]);
+  });
+
+  it('exige montos enteros con minimo de 1000 en COP y mayor que 0 en USD', async () => {
+    await applyAll();
+
+    const insert = (currency: string, amount: number) =>
+      db()
+        .prepare(
+          `INSERT INTO program_prices (program_code, currency, amount, valid_from)
+           VALUES ('squai-one', ?, ?, '2030-01-01T05:00:00.000Z')`
+        )
+        .bind(currency, amount)
+        .run();
+
+    await expect(insert('COP', 999)).rejects.toThrow();
+    await expect(insert('USD', 0)).rejects.toThrow();
+    await expect(insert('USD', 12.5)).rejects.toThrow();
+    await expect(insert('EUR', 100)).rejects.toThrow();
+    await expect(insert('COP', 1000)).resolves.toBeDefined();
+    await expect(insert('USD', 1)).resolves.toBeDefined();
+  });
+
+  it('no acepta precios de un programa que no existe', async () => {
+    await applyAll();
+
+    await expect(
+      db()
+        .prepare(
+          `INSERT INTO program_prices (program_code, currency, amount, valid_from)
+           VALUES ('no-existe', 'COP', 1000, '2030-01-01T05:00:00.000Z')`
+        )
+        .run()
+    ).rejects.toThrow();
+  });
+
+  it('agrega a la orden el impuesto, vacio en las ordenes historicas', async () => {
+    await db()
+      .prepare(
+        `INSERT INTO enrollments
+          (id, order_id, plan_code, full_name, email, country_code, phone, phone_e164, amount, currency)
+         VALUES (3, 'squai-one-eee', 'squai-one', 'Ana Rios', 'ana@x.co', '+57', '3001112222', '+573001112222', 399000, 'COP')`
+      )
+      .run();
+
+    await applyAll();
+
+    const order = await db().prepare(`SELECT amount, currency, tax FROM orders WHERE id = 3`).first();
+    expect(order).toEqual({ amount: 399000, currency: 'COP', tax: null });
   });
 });

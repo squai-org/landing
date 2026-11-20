@@ -25,7 +25,8 @@ navegador                         Worker                         Bold
 ---------                         ------                         ----
 formulario de inscripción
 POST /api/checkout/session         -> Turnstile, valida campos,
-                                      lee el precio de payment_plans,
+                                      lee el precio vigente en la moneda
+                                      elegida (program_prices),
                                       UPSERT customers, INSERT orders (pending),
                                       firma con BOLD_SECRET_KEY
                                    <- { apiKey, orderId, amount, firma }
@@ -137,26 +138,45 @@ Worker verifica antes de leer el cuerpo y responde `401 invalid_signature` si no
 cuadra. La llave que firma es la de `Botón de pagos`, la misma de
 `BOLD_SECRET_KEY`.
 
-## Cambiar el precio sin desplegar
+## Programa, precios y moneda
 
-El precio vive en la tabla `payment_plans` de D1, no en `copies.json`. Dos
-caminos, ninguno pasa por un build:
+El programa vive en la tabla `programs` de D1 (`code`, `description` que ve el
+comprador en Bold) y sus precios en `program_prices`, no en `copies.json`. Cada
+precio es una fila por programa, moneda (`COP` o `USD`) y `valid_from`; no hay
+fecha de fin: rige el de mayor `valid_from` que ya llegó, hasta que empieza el
+siguiente.
 
-1. **Panel de Cloudflare:** Workers & Pages → D1 → `squai` → `payment_plans` →
-   editar `amount`.
-2. **CLI:**
+`valid_from` es ISO-8601 UTC con milisegundos y `Z`. Colombia es UTC−5 sin
+horario de verano, así que las 00:00 de Colombia son las 05:00 UTC. La
+cohorte de Squai One cobra 440.000 COP / 147 USD y el
+`2027-01-01T05:00:00.000Z` (1 de enero de 2027, 00:00 en Colombia) pasa sola a
+550.000 COP / 185 USD.
 
-   ```bash
-   wrangler d1 execute squai --remote \
-     --command "UPDATE payment_plans SET amount = 450000, updated_at = datetime('now') WHERE code = 'squai-one'"
-   ```
+`GET /api/checkout/program/:code` responde
+`{ ok, program: { code, description, prices: { COP?, USD? }, defaultCurrency } }`.
+La moneda por defecto es COP si `CF-IPCountry` es `CO` y USD en cualquier otro
+caso; si esa moneda no tiene precio vigente se propone la otra. La página
+muestra ese precio y un selector de moneda (textos en `ui.checkout.currency`).
+`POST /api/checkout/session` recibe `program` y `currency`; el monto sale de la
+base para esa moneda, y una moneda sin precio vigente responde
+`400 currency_not_available`.
 
-`amount` es un entero en pesos, sin decimales, con impuestos incluidos, y el
-mínimo que acepta Bold son 1000 COP. El siguiente visitante ve el precio nuevo y
-firma con él.
+Todo cobro declara a Bold `tax: 'vat-19'` (`src/config/checkout.ts`): el IVA
+del 19 % va **incluido** en el monto, Bold no lo suma, y no entra en la firma.
+La orden congela `amount`, `currency` y `tax`; un cambio de precio posterior no
+la toca.
 
-Para dejar de vender el plan: `UPDATE payment_plans SET active = 0 WHERE code =
-'squai-one'`. La página pasa a mostrar el error en vez del botón.
+Para programar un precio nuevo, sin build:
+
+```bash
+wrangler d1 execute squai --remote \
+  --command "INSERT INTO program_prices (program_code, currency, amount, valid_from) VALUES ('squai-one', 'COP', 600000, '2027-06-01T05:00:00.000Z')"
+```
+
+`amount` es un entero sin decimales, con impuestos incluidos: mínimo 1000 en
+COP, mayor que 0 en USD (la base lo exige). En USD, Bold muestra dólares pero
+procesa la venta en COP a la TRM del día, así que el webhook puede reportar el
+total en pesos.
 
 ## CI/CD en Cloudflare (sin GitHub Actions)
 
@@ -264,7 +284,10 @@ pnpm db:migrate:local
 pnpm preview:worker              # http://localhost:8787/servicios/squai-one
 ```
 
-1. La tarjeta de inversión muestra el precio que tiene `payment_plans`.
+1. La tarjeta de inversión muestra el precio vigente de `program_prices` en la
+   moneda por defecto, y el selector cambia entre COP y USD. Con
+   `currency: USD`, monto entero y `tax: vat-19`, el modal de Bold debe abrir
+   (verificar en el ambiente de pruebas de Bold).
 2. Hay **un solo botón** de acción. Al enviar el formulario debe quedar una fila
    en `orders` con `status = 'pending'`, y el modal de Bold se abre **solo**,
    centrado sobre la página y con los datos de la persona prellenados (en

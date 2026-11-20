@@ -172,8 +172,12 @@
           "copy": [
             "Un solo pago por las cinco semanas del programa.",
             "Cuesta menos que seguir perdiendo horas intentando entender la IA por tu cuenta."
-          ],
-          "referencePrice": "/ $129 USD"
+          ]
+        },
+        "currency": {
+          "label": "Moneda de pago",
+          "cop": "Pesos colombianos (COP)",
+          "usd": "Dólares (USD)"
         }
       },
       "services": {

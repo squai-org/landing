@@ -105,9 +105,9 @@ export const siteSchema = z.object({
     follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
     /**
-     * El precio no esta aqui: vive en la tabla payment_plans de D1 para poder
-     * cambiarlo sin desplegar, y es el mismo monto que se firma para Bold.
-     * Ver docs/bold-checkout.md.
+     * El precio no esta aqui: vive en la tabla program_prices de D1, por moneda
+     * y fecha de vigencia, para poder cambiarlo sin desplegar, y es el mismo
+     * monto que se firma para Bold. Ver docs/bold-checkout.md.
      */
     checkout: z.object({
       title: text,
@@ -121,7 +121,9 @@ export const siteSchema = z.object({
         errorTitle: text, errorBody: text,
         orderLabel: text, backCta: text,
       }),
-      investment: z.object({ eyebrow: text, copy: paragraphs, referencePrice: text }),
+      investment: z.object({ eyebrow: text, copy: paragraphs }),
+      /** Selector de moneda de la tarjeta de inversion. */
+      currency: z.object({ label: text, cop: text, usd: text }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,

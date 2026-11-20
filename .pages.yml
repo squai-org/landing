@@ -1878,8 +1878,22 @@ content:
                             list:
                               min: 1
                               collapsible: true
-                          - name: referencePrice
-                            label: Precio de referencia
+                      - name: currency
+                        label: Selector de moneda
+                        description: El precio de cada moneda vive en D1 (program_prices), no aquí.
+                        type: object
+                        required: true
+                        fields:
+                          - name: label
+                            label: Etiqueta del selector
+                            type: string
+                            required: true
+                          - name: cop
+                            label: Opción pesos colombianos
+                            type: string
+                            required: true
+                          - name: usd
+                            label: Opción dólares
                             type: string
                             required: true
       - name: titulos-compartidos

@@ -1,7 +1,7 @@
 export const endpoints = {
   grow: '/api/contact',
   learn: '/api/contact',
-  checkoutPlan: '/api/checkout/plan',
+  checkoutProgram: '/api/checkout/program',
   checkoutSession: '/api/checkout/session',
   checkoutStatus: '/api/checkout/status',
 };
