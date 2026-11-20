@@ -42,8 +42,8 @@ const { program, ui, labels } = await getSiteContent();
           <div
             class="checkout-card card-pad-lg"
             data-bold-checkout
-            data-plan={checkout.plan}
-            data-plan-endpoint={endpoints.checkoutPlan}
+            data-program={checkout.program}
+            data-program-endpoint={endpoints.checkoutProgram}
             data-library-url={checkout.libraryUrl}
             data-return-path={checkout.returnPath}
             data-status-endpoint={endpoints.checkoutStatus}
@@ -55,8 +55,8 @@ const { program, ui, labels } = await getSiteContent();
               <p class="body checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
             </div>
 
-            <form data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
-              <input type="hidden" name="plan" value={checkout.plan} />
+            <form id="checkout-form" data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
+              <input type="hidden" name="program" value={checkout.program} />
               <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
 
               <div class="field-grid-2">
@@ -133,7 +133,20 @@ const { program, ui, labels } = await getSiteContent();
           <h3 class="display">
             <span data-bold-price>&nbsp;</span> <span data-bold-currency>&nbsp;</span>
           </h3>
-          <p class="body">{ui.checkout.investment.referencePrice}</p>
+          {/* Los radios pertenecen al formulario (atributo form): la moneda viaja
+              en el cuerpo de /api/checkout/session. COP marcado en el HTML para
+              que haya moneda aunque falle la carga de precios. */}
+          <fieldset class="currency-picker" data-currency-picker>
+            <legend class="currency-legend">{ui.checkout.currency.label}</legend>
+            <label class="currency-option" data-currency-option="COP">
+              <input type="radio" name="currency" value="COP" form="checkout-form" checked />
+              <span>{ui.checkout.currency.cop}</span>
+            </label>
+            <label class="currency-option" data-currency-option="USD">
+              <input type="radio" name="currency" value="USD" form="checkout-form" />
+              <span>{ui.checkout.currency.usd}</span>
+            </label>
+          </fieldset>
         </div>
       </div>
       <div class="bento-card span-2 peri program-detail-card">
@@ -179,14 +192,39 @@ const { program, ui, labels } = await getSiteContent();
       if (currencySlot) currencySlot.textContent = currency;
     };
 
+    // Precios vigentes por moneda segun el Worker; la moneda marcada es la que
+    // se manda a /api/checkout/session y, por tanto, la que se firma.
+    const currencyInputs = Array.from(
+      document.querySelectorAll<HTMLInputElement>('[data-currency-picker] input[name="currency"]')
+    );
+    let prices: Partial<Record<string, number>> = {};
+
+    const selectedCurrency = () => currencyInputs.find((input) => input.checked)?.value ?? '';
+
+    const showSelectedPrice = () => {
+      const currency = selectedCurrency();
+      const amount = prices[currency];
+      if (amount !== undefined) showPrice(amount, currency);
+    };
+
     const loadPrice = async () => {
       try {
-        const res = await fetch(`${root.dataset.planEndpoint}/${root.dataset.plan}`, {
+        const res = await fetch(`${root.dataset.programEndpoint}/${root.dataset.program}`, {
           headers: { Accept: 'application/json' },
         });
         if (!res.ok) return;
-        const { plan } = (await res.json()) as { plan: { amount: number; currency: string } };
-        showPrice(plan.amount, plan.currency);
+        const { program } = (await res.json()) as {
+          program: { prices: Partial<Record<string, number>>; defaultCurrency: string };
+        };
+        prices = program.prices;
+        // Una moneda sin precio vigente no se ofrece.
+        currencyInputs.forEach((input) => {
+          const available = prices[input.value] !== undefined;
+          input.disabled = !available;
+          input.closest<HTMLElement>('[data-currency-option]')!.hidden = !available;
+          input.checked = input.value === program.defaultCurrency;
+        });
+        showSelectedPrice();
       } catch {
         // El precio tambien viaja en la sesion: si esto falla, se pinta al pagar.
       }
@@ -321,10 +359,20 @@ const { program, ui, labels } = await getSiteContent();
     };
     form?.addEventListener('input', edited);
     form?.addEventListener('change', edited);
+    // El selector de moneda esta fuera del <form> en el DOM: sus eventos no
+    // llegan al formulario. Cambiar de moneda tambien invalida la sesion firmada.
+    currencyInputs.forEach((input) =>
+      input.addEventListener('change', (event) => {
+        showSelectedPrice();
+        edited(event);
+      })
+    );
 
     // El Layout envia este evento cuando /api/checkout/session responde bien.
     document.addEventListener('squai:checkout-session', (event) => {
       const session = (event as CustomEvent<CheckoutSession>).detail;
+      // Lo que queda a la vista es exactamente lo firmado, aunque el precio
+      // hubiera cambiado entre la carga de la pagina y el envio.
       showPrice(session.amount, session.currency);
 
       // Prellena el formulario de Bold con lo que la persona ya escribio.
@@ -410,6 +458,31 @@ const { program, ui, labels } = await getSiteContent();
   .investment-card .investment-price p,
   .investment-copy { color: var(--canvas); }
   .investment-copy { max-width: 32ch; }
+  .currency-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .currency-legend {
+    width: 100%;
+    margin-bottom: 4px;
+    padding: 0;
+    color: var(--canvas);
+    font-size: 14px;
+  }
+  .currency-option { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+  .currency-option[hidden] { display: none; }
+  .currency-option span {
+    padding: 6px 14px;
+    border: 1px solid var(--canvas);
+    border-radius: var(--radius-pill);
+    color: var(--canvas);
+    font-size: 14px;
+  }
+  .currency-option input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+  .currency-option input:checked + span { background: var(--canvas); color: var(--midnight); }
+  .currency-option input:focus-visible + span { outline: 2px solid var(--periwinkle); outline-offset: 2px; }
   .checkout-card {
     padding: 32px;
     border: 1px solid var(--line);

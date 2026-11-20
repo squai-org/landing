@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:test';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import app from '../../src/server/index';
 import { TEST_IDENTITY_KEY, TEST_SECRET_KEY } from '../fixtures/bold';
 
@@ -9,12 +9,37 @@ const withKeys = { ...env, BOLD_IDENTITY_KEY: TEST_IDENTITY_KEY, BOLD_SECRET_KEY
 let ipCounter = 0;
 const nextIp = () => `203.0.113.${++ipCounter % 250}`;
 
-const get = (path: string) =>
-  app.request(`https://squai.io${path}`, { headers: { Origin: 'https://squai.io' } }, withKeys);
+const get = (path: string, headers: Record<string, string> = {}) =>
+  app.request(`https://squai.io${path}`, { headers: { Origin: 'https://squai.io', ...headers } }, withKeys);
+
+/**
+ * Programas propios del test, con precios vigentes desde 2020 y sin cambios
+ * futuros: asi los montos no dependen del dia en que corra la suite. El cambio
+ * de precio en una fecha se prueba en program-prices.test.ts con `now` fijo.
+ */
+const PROGRAM = 'programa-prueba';
+const COP_ONLY = 'programa-solo-cop';
+
+beforeAll(async () => {
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO programs (code, description) VALUES (?, 'Programa de prueba'), (?, 'Programa solo en pesos')
+       ON CONFLICT (code) DO NOTHING`
+    ).bind(PROGRAM, COP_ONLY),
+    env.DB.prepare(
+      `INSERT INTO program_prices (program_code, currency, amount, valid_from) VALUES
+         (?1, 'COP', 250000, '2020-01-01T05:00:00.000Z'),
+         (?1, 'USD', 80, '2020-01-01T05:00:00.000Z'),
+         (?2, 'COP', 300000, '2020-01-01T05:00:00.000Z')
+       ON CONFLICT DO NOTHING`
+    ).bind(PROGRAM, COP_ONLY),
+  ]);
+});
 
 /** Datos de la persona que se inscribe: sin ellos no se abre el pago. */
 const orderPayload = {
-  plan: 'squai-one',
+  program: PROGRAM,
+  currency: 'COP',
   full_name: 'Ana  Rios',
   email: ' ANA@Empresa.CO ',
   country_code: '+57',
@@ -53,38 +78,58 @@ const sha256Hex = async (text: string) => {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
-describe('GET /api/checkout/plan/:code', () => {
-  it('devuelve el precio vigente del plan desde la base', async () => {
-    const res = await get('/api/checkout/plan/squai-one');
+describe('GET /api/checkout/program/:code', () => {
+  it('devuelve los precios vigentes por moneda y COP por defecto en Colombia', async () => {
+    const res = await get(`/api/checkout/program/${PROGRAM}`, { 'CF-IPCountry': 'CO' });
 
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toMatchObject({
+    await expect(res.json()).resolves.toEqual({
       ok: true,
-      plan: { code: 'squai-one', amount: 399000, currency: 'COP' },
+      program: {
+        code: PROGRAM,
+        description: 'Programa de prueba',
+        prices: { COP: 250000, USD: 80 },
+        defaultCurrency: 'COP',
+      },
     });
   });
 
-  it('responde 404 cuando el plan no existe', async () => {
-    const res = await get('/api/checkout/plan/no-existe');
+  it('propone USD fuera de Colombia', async () => {
+    const res = await get(`/api/checkout/program/${PROGRAM}`, { 'CF-IPCountry': 'MX' });
 
-    expect(res.status).toBe(404);
-    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'plan_not_found' } });
+    await expect(res.json()).resolves.toMatchObject({ program: { defaultCurrency: 'USD' } });
   });
 
-  it('responde 404 cuando el plan esta desactivado', async () => {
-    await env.DB.prepare('UPDATE payment_plans SET active = 0 WHERE code = ?').bind('squai-one').run();
+  it('propone USD si no se conoce el pais', async () => {
+    const res = await get(`/api/checkout/program/${PROGRAM}`);
 
-    try {
-      const res = await get('/api/checkout/plan/squai-one');
-      expect(res.status).toBe(404);
-    } finally {
-      await env.DB.prepare('UPDATE payment_plans SET active = 1 WHERE code = ?').bind('squai-one').run();
-    }
+    await expect(res.json()).resolves.toMatchObject({ program: { defaultCurrency: 'USD' } });
+  });
+
+  it('propone la moneda que tenga precio si la del pais no lo tiene', async () => {
+    const res = await get(`/api/checkout/program/${COP_ONLY}`, { 'CF-IPCountry': 'US' });
+
+    await expect(res.json()).resolves.toMatchObject({
+      program: { prices: { COP: 300000 }, defaultCurrency: 'COP' },
+    });
+  });
+
+  it('responde 404 cuando el programa no existe', async () => {
+    const res = await get('/api/checkout/program/no-existe');
+
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'program_not_found' } });
+  });
+
+  it('ya no expone la ruta del plan', async () => {
+    const res = await get(`/api/checkout/plan/${PROGRAM}`);
+
+    expect(res.status).toBe(404);
   });
 });
 
 describe('POST /api/checkout/session', () => {
-  it('firma el monto del plan y nunca devuelve la llave secreta', async () => {
+  it('firma el monto del programa y nunca devuelve la llave secreta', async () => {
     const res = await postSession(orderPayload);
 
     expect(res.status).toBe(201);
@@ -94,7 +139,7 @@ describe('POST /api/checkout/session', () => {
     const { session } = body;
 
     expect(session.apiKey).toBe(TEST_IDENTITY_KEY);
-    expect(session.amount).toBe(399000);
+    expect(session.amount).toBe(250000);
     expect(session.currency).toBe('COP');
     // Bold acepta letras, digitos, _ y - hasta 60 caracteres en data-order-id.
     expect(session.orderId).toMatch(/^[A-Za-z0-9_-]{1,60}$/);
@@ -104,11 +149,49 @@ describe('POST /api/checkout/session', () => {
     expect(JSON.stringify(body)).not.toContain(TEST_SECRET_KEY);
   });
 
-  it('usa como descripcion de la venta el nombre del plan que hay en D1', async () => {
+  it('firma en la moneda elegida y declara el IVA del 19% a Bold', async () => {
+    const res = await postSession({ ...orderPayload, currency: 'USD' });
+
+    expect(res.status).toBe(201);
+    const { session } = (await res.json()) as {
+      session: { orderId: string; amount: number; currency: string; tax: string; integritySignature: string };
+    };
+
+    expect(session).toMatchObject({ amount: 80, currency: 'USD', tax: 'vat-19' });
+    // El impuesto no entra en la firma: Bold firma solo orden, monto y moneda.
+    expect(session.integritySignature).toBe(await sha256Hex(`${session.orderId}80USD${TEST_SECRET_KEY}`));
+  });
+
+  it('responde 400 si la moneda elegida no tiene precio vigente', async () => {
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, program: COP_ONLY, currency: 'USD' });
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'currency_not_available' } });
+
+    const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
+    expect(results).toEqual([]);
+  });
+
+  it('rechaza una moneda que no se cobra, senalando el campo', async () => {
+    const res = await postSession({ ...orderPayload, currency: 'EUR' });
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: { code: 'validation_failed', fields: { currency: expect.any(String) } },
+    });
+  });
+
+  it('responde 400 si falta la moneda', async () => {
+    const res = await postSession({ ...orderPayload, currency: undefined });
+    expect(res.status).toBe(400);
+  });
+
+  it('usa como descripcion de la venta la del programa que hay en D1', async () => {
     // Bold muestra esta descripcion al comprador: tiene que salir de la tabla y
     // no de un texto fijo en el codigo, para poder cambiarla sin desplegar.
-    await env.DB.prepare('UPDATE payment_plans SET description = ? WHERE code = ?')
-      .bind('Plan de prueba desde D1', 'squai-one')
+    await env.DB.prepare('UPDATE programs SET description = ? WHERE code = ?')
+      .bind('Programa de prueba desde D1', PROGRAM)
       .run();
 
     try {
@@ -116,10 +199,10 @@ describe('POST /api/checkout/session', () => {
 
       expect(res.status).toBe(201);
       const { session } = (await res.json()) as { session: { description: string } };
-      expect(session.description).toBe('Plan de prueba desde D1');
+      expect(session.description).toBe('Programa de prueba desde D1');
     } finally {
-      await env.DB.prepare('UPDATE payment_plans SET description = ? WHERE code = ?')
-        .bind('Fundamentos de Inteligencia Artificial Generativa', 'squai-one')
+      await env.DB.prepare('UPDATE programs SET description = ? WHERE code = ?')
+        .bind('Programa de prueba', PROGRAM)
         .run();
     }
   });
@@ -129,7 +212,7 @@ describe('POST /api/checkout/session', () => {
 
     expect(res.status).toBe(201);
     const { session } = (await res.json()) as { session: { amount: number; currency: string } };
-    expect(session).toMatchObject({ amount: 399000, currency: 'COP' });
+    expect(session).toMatchObject({ amount: 80, currency: 'USD' });
   });
 
   it('da un orderId distinto a cada sesion', async () => {
@@ -144,13 +227,14 @@ describe('POST /api/checkout/session', () => {
     expect(ids[0]).not.toBe(ids[1]);
   });
 
-  it('responde 404 si el plan no existe', async () => {
-    const res = await postSession({ ...orderPayload, plan: 'no-existe' });
+  it('responde 404 si el programa no existe', async () => {
+    const res = await postSession({ ...orderPayload, program: 'no-existe' });
     expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toMatchObject({ error: { code: 'program_not_found' } });
   });
 
-  it('responde 400 si falta el plan', async () => {
-    const res = await postSession({ ...orderPayload, plan: undefined });
+  it('responde 400 si falta el programa', async () => {
+    const res = await postSession({ ...orderPayload, program: undefined });
     expect(res.status).toBe(400);
   });
 
@@ -167,14 +251,15 @@ describe('POST /api/checkout/session', () => {
     ).first<Record<string, unknown>>();
     expect(row).toMatchObject({
       order_id: session.orderId,
-      program_code: 'squai-one',
+      program_code: PROGRAM,
       status: 'pending',
       full_name: 'Ana Rios',
       email: 'ana@empresa.co',
       phone_e164: '+573205551234',
       referral_source: 'instagram',
-      amount: 399000,
+      amount: 250000,
       currency: 'COP',
+      tax: 'vat-19',
     });
   });
 

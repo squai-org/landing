@@ -2,20 +2,19 @@ import { Hono } from 'hono';
 import { badRequest, ok } from '../lib/http';
 import { parseBody } from '../lib/validate';
 import { checkoutSessionSchema } from '../schemas/checkout.schema';
-import {
-  confirmOrder,
-  createCheckoutSession,
-  handleBoldWebhook,
-  loadPaymentPlan,
-} from '../services/checkout.service';
+import { confirmOrder, createCheckoutSession, handleBoldWebhook } from '../services/checkout.service';
+import { loadProgram } from '../services/program.service';
 import type { AppBindings } from '../types';
 
 export const checkoutRoute = new Hono<AppBindings>()
-  /** Precio vigente para pintarlo en la pagina: es el mismo que se firma. */
-  .get('/plan/:code', async (c) => {
-    const plan = await loadPaymentPlan(c.env, c.req.param('code'));
+  /**
+   * Precios vigentes por moneda para pintarlos en la pagina: son los mismos que
+   * se firman. La moneda por defecto sale del pais que informa Cloudflare.
+   */
+  .get('/program/:code', async (c) => {
+    const program = await loadProgram(c.env, c.req.param('code'), new Date(), c.get('requestMeta').ipCountry);
 
-    return ok(c, { plan });
+    return ok(c, { program });
   })
   /**
    * Verificacion de retorno. La pagina de gracias llega con el order-id en la
@@ -33,7 +32,12 @@ export const checkoutRoute = new Hono<AppBindings>()
       throw badRequest('invalid_json', 'El cuerpo de la peticion no es JSON valido.');
     });
 
-    const session = await createCheckoutSession(c.env, parseBody(checkoutSessionSchema, raw), c.get('requestMeta'));
+    const session = await createCheckoutSession(
+      c.env,
+      parseBody(checkoutSessionSchema, raw),
+      c.get('requestMeta'),
+      new Date()
+    );
 
     return ok(c, { session }, 201);
   })

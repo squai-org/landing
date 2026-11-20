@@ -15,10 +15,11 @@ import {
   insertOrder,
   type OrderStatus,
 } from '../repositories/order.repository';
-import { findActivePaymentPlan, type PaymentPlan } from '../repositories/payment-plan.repository';
 import { boldWebhookEventSchema } from '../schemas/bold-webhook.schema';
 import type { CheckoutSessionInput } from '../schemas/checkout.schema';
 import { parseBody } from '../lib/validate';
+import { checkout } from '../../config/checkout';
+import { loadProgram, priceIn } from './program.service';
 import type { Env, RequestMeta } from '../types';
 
 export interface CheckoutSession {
@@ -27,28 +28,27 @@ export interface CheckoutSession {
   amount: number;
   currency: string;
   description: string;
+  /** Impuesto incluido en el monto que se declara a Bold (data-tax). No entra en la firma. */
+  tax: string;
   integritySignature: string;
 }
 
 /**
  * Bold acepta en data-order-id letras, digitos, `_` y `-` hasta 60 caracteres,
- * y pide que sea unico por venta. Se antepone el plan para poder leer en el
- * panel de Bold que se vendio sin cruzar tablas.
+ * y pide que sea unico por venta. Se antepone el programa para poder leer en
+ * el panel de Bold que se vendio sin cruzar tablas.
  */
 const newOrderId = (code: string) => `${code}-${crypto.randomUUID().replaceAll('-', '')}`.slice(0, 60);
 
-export const loadPaymentPlan = async (env: Env, code: string): Promise<PaymentPlan> => {
-  const plan = await findActivePaymentPlan(env.DB, code);
-
-  if (!plan) throw notFound('plan_not_found', 'El plan solicitado no esta disponible.');
-
-  return plan;
-};
-
+/**
+ * `now` decide que precio rige; la ruta pasa el reloj del Worker y los tests
+ * un instante fijo.
+ */
 export const createCheckoutSession = async (
   env: Env,
   input: CheckoutSessionInput,
-  meta: RequestMeta
+  meta: RequestMeta,
+  now: Date = new Date()
 ): Promise<CheckoutSession> => {
   const apiKey = env.BOLD_IDENTITY_KEY;
   const secretKey = env.BOLD_SECRET_KEY;
@@ -70,12 +70,16 @@ export const createCheckoutSession = async (
     });
   }
 
-  const plan = await loadPaymentPlan(env, input.plan);
-  const orderId = newOrderId(plan.code);
+  const program = await loadProgram(env, input.program, now, meta.ipCountry);
+  const currency = input.currency;
+  const amount = priceIn(program, currency);
+  const tax = checkout.tax;
+  const orderId = newOrderId(program.code);
 
   // La orden se guarda antes de abrir el pago: es lo que liga el order-id con
   // el cliente, y deja rastro de quien empieza y no termina. El cliente se
-  // reutiliza por correo y queda con los datos de este formulario.
+  // reutiliza por correo y queda con los datos de este formulario. La orden
+  // congela monto, moneda e impuesto: un cambio de precio posterior no la toca.
   const customerId = await upsertCustomer(env.DB, {
     email: input.email,
     fullName: input.full_name,
@@ -87,10 +91,11 @@ export const createCheckoutSession = async (
   await insertOrder(env.DB, {
     orderId,
     customerId,
-    programCode: plan.code,
+    programCode: program.code,
     referralSource: input.referral_source,
-    amount: plan.amount,
-    currency: plan.currency,
+    amount,
+    currency,
+    tax,
     sourcePage: meta.sourcePage,
     ipCountry: meta.ipCountry,
     userAgent: meta.userAgent,
@@ -99,15 +104,11 @@ export const createCheckoutSession = async (
   return {
     apiKey,
     orderId,
-    amount: plan.amount,
-    currency: plan.currency,
-    description: plan.description,
-    integritySignature: await boldIntegritySignature({
-      orderId,
-      amount: plan.amount,
-      currency: plan.currency,
-      secretKey,
-    }),
+    amount,
+    currency,
+    description: program.description,
+    tax,
+    integritySignature: await boldIntegritySignature({ orderId, amount, currency, secretKey }),
   };
 };
 

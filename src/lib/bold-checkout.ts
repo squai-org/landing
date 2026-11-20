@@ -8,6 +8,8 @@ export interface CheckoutSession {
   amount: number;
   currency: string;
   description: string;
+  /** Impuesto incluido en el monto (p. ej. vat-19). No entra en la firma. */
+  tax: string;
   integritySignature: string;
 }
 
@@ -31,6 +33,7 @@ export const boldCheckoutConfig = (session: CheckoutSession, redirectionUrl: str
   amount: String(session.amount),
   currency: session.currency,
   description: session.description,
+  tax: session.tax,
   integritySignature: session.integritySignature,
   redirectionUrl,
   renderMode: 'embedded',

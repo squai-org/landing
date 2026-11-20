@@ -35,7 +35,7 @@ const { thanks } = ui.checkout;
             class="thanks-card card-pad-lg"
             data-thanks
             data-status-endpoint={endpoints.checkoutStatus}
-            data-back-path={`/servicios/${checkout.plan}`}
+            data-back-path={`/servicios/${checkout.program}`}
           >
             <p class="thanks-state" data-thanks-state="checking">
               <span class="thanks-spinner" aria-hidden="true"></span>{thanks.checking}
@@ -66,7 +66,7 @@ const { thanks } = ui.checkout;
             </p>
 
             <div class="thanks-cta">
-              <Button variant="dark" href={`/servicios/${checkout.plan}`}>{thanks.backCta}</Button>
+              <Button variant="dark" href={`/servicios/${checkout.program}`}>{thanks.backCta}</Button>
             </div>
           </div>
         </div>

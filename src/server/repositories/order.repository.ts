@@ -7,12 +7,16 @@ export interface NewOrder {
   referralSource: string;
   amount: number;
   currency: string;
+  /** Impuesto declarado a Bold (p. ej. vat-19); se congela con el monto. */
+  tax: string;
   sourcePage: string | null;
   ipCountry: string | null;
   userAgent: string | null;
 }
 
-export interface Order extends NewOrder {
+export interface Order extends Omit<NewOrder, 'tax'> {
+  /** NULL en las ordenes anteriores a 0007. */
+  tax: string | null;
   id: number;
   status: OrderStatus;
   boldTransactionId: string | null;
@@ -23,9 +27,9 @@ export interface Order extends NewOrder {
 
 const INSERT_SQL = `
   INSERT INTO orders
-    (order_id, customer_id, program_code, referral_source, amount, currency,
+    (order_id, customer_id, program_code, referral_source, amount, currency, tax,
       source_page, ip_country, user_agent)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
 export const insertOrder = async (db: D1Database, record: NewOrder): Promise<void> => {
@@ -38,6 +42,7 @@ export const insertOrder = async (db: D1Database, record: NewOrder): Promise<voi
       record.referralSource,
       record.amount,
       record.currency,
+      record.tax,
       record.sourcePage,
       record.ipCountry,
       record.userAgent
