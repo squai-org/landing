@@ -63,7 +63,12 @@ export const claimEmailMessage = async (
  * Confirmaciones que el cron debe reintentar: ordenes aprobadas sin fila de
  * confirmacion, con la fila fallida, o con la fila pendiente sin cambios desde
  * antes de `staleBefore` (un envio en curso de waitUntil la deja pendiente
- * unos segundos; pasado el margen se da por perdido).
+ * unos segundos; pasado el margen se da por perdido). Las omitidas (skipped,
+ * ventas anteriores a 0009) nunca entran.
+ *
+ * Van primero las que llevan mas tiempo sin intento (las nunca reclamadas,
+ * sin fila, antes que todas): cada intento renueva updated_at, asi que las
+ * que fallan siempre rotan al final y no tapan a las demas con el limite.
  */
 const RETRY_CANDIDATES_SQL = `
   SELECT o.order_id AS orderId, m.id IS NOT NULL AS hasMessage
@@ -71,7 +76,7 @@ const RETRY_CANDIDATES_SQL = `
   LEFT JOIN email_messages m ON m.order_id = o.order_id AND m.kind = 'confirmation'
   WHERE o.status = 'approved'
     AND (m.id IS NULL OR m.status = 'failed' OR (m.status = 'pending' AND m.updated_at < ?1))
-  ORDER BY o.id
+  ORDER BY m.updated_at IS NOT NULL, m.updated_at, o.id
   LIMIT ?2
 `;
 
@@ -193,7 +198,7 @@ const RECOVERY_RETRY_SQL = `
       SELECT 1 FROM orders a
       WHERE a.customer_id = o.customer_id AND a.program_code = o.program_code AND a.status = 'approved'
     )
-  ORDER BY m.id
+  ORDER BY m.updated_at, m.id
   LIMIT ?3
 `;
 

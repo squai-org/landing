@@ -24,11 +24,12 @@ CREATE TABLE email_messages (
   customer_id         INTEGER NOT NULL REFERENCES customers (id),
   program_code        TEXT NOT NULL,
   kind                TEXT NOT NULL CHECK (kind IN ('confirmation', 'recovery')),
-  -- Plantilla de Brevo usada (src/config/email.ts).
+  -- Plantilla de Brevo usada (src/config/email.ts); 0 si nunca se envio.
   template_id         INTEGER NOT NULL,
   -- messageId que devuelve Brevo al aceptar el envio.
   provider_message_id TEXT,
-  status              TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'failed')),
+  -- skipped: no se envia ni se reintenta (ver el relleno al final).
+  status              TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'failed', 'skipped')),
   attempts            INTEGER NOT NULL DEFAULT 0,
   last_error          TEXT,
   sent_at             TEXT,
@@ -43,3 +44,15 @@ CREATE UNIQUE INDEX ux_email_messages_recovery
 
 -- El cron reintenta las confirmaciones fallidas o atascadas.
 CREATE INDEX idx_email_messages_status ON email_messages (status, kind, updated_at);
+
+-- Las ventas aprobadas antes de esta migracion no reciben confirmacion: el
+-- cron la tomaria como "aprobada sin correo" y mandaria hoy un acuse de recibo
+-- con IVA 0 (no declaraban impuesto) y los datos actuales del programa. Quedan
+-- con una fila omitida, sin plantilla ni intentos, que el cron nunca toca.
+-- Para enviarle la confirmacion a alguna, el equipo pasa su fila a 'failed'
+-- (ver docs/bold-checkout.md).
+INSERT INTO email_messages (order_id, customer_id, program_code, kind, template_id, status, last_error)
+SELECT order_id, customer_id, program_code, 'confirmation', 0, 'skipped',
+  'Venta aprobada antes de 0009: no se envia confirmacion retroactiva. Pasar a failed para enviarla.'
+FROM orders
+WHERE status = 'approved';
