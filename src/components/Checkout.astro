@@ -418,9 +418,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     color: var(--ink-body);
   }
   .checkout-copy p + p { margin-top: 12px; }
-  /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1; WCAG 2.2 AA exige 4.5:1
-     para texto normal. --periwinkle-ink da 5.65:1. */
-  .checkout-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle-ink); }
+  .checkout-promise { font-family: var(--font-hand); font-weight: 100; color: var(--accent-ink); }
   .program-detail-card { gap: 8px; padding: clamp(20px, 1.8vw, 30px); }
   .program-detail-card h3 { font-size: clamp(19px, 1.55vw, 27px); }
   .program-detail-card p { font-size: clamp(16px, .95vw, 18px); }
@@ -445,7 +443,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: var(--periwinkle);
+    background: var(--accent);
   }
   .service-eyebrow-text {
     color: var(--midnight);
@@ -494,7 +492,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     height: 1px;
   }
   .currency-option input:checked + span { background: var(--canvas); color: var(--midnight); }
-  .currency-option input:focus-visible + span { outline: 2px solid var(--periwinkle); outline-offset: 2px; }
+  .currency-option input:focus-visible + span { outline: 3px solid var(--focus-ink); outline-offset: 3px; box-shadow: 0 0 0 3px var(--focus-halo); }
   .checkout-card {
     padding: 32px;
     border: 1px solid var(--line);
@@ -513,13 +511,13 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     width: 18px;
     height: 18px;
     margin-top: 2px;
-    accent-color: var(--periwinkle);
+    accent-color: var(--accent);
     border: 1px solid var(--line);
     border-radius: 4px;
   }
   .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
   .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
-  .consent-label a:hover { color: var(--periwinkle-ink); }
+  .consent-label a:hover { color: var(--accent-ink); }
   .sales-notice {
     display: flex;
     flex-direction: column;

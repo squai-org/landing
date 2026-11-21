@@ -12,16 +12,17 @@ interface Props {
   type?: 'website' | 'article';
   noindex?: boolean;
   schemas?: Record<string, unknown>[];
+  service?: string;
 }
 
-const { title, description, image, imageAlt, type, noindex, schemas } = Astro.props;
+const { title, description, image, imageAlt, type, noindex, schemas, service } = Astro.props;
 const { ui } = await getSiteContent();
 
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <!doctype html>
-<html lang={SITE_LANG}>
+<html lang={SITE_LANG} data-service={service}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -64,7 +65,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       )
     }
   </head>
-  <body data-client-copy={JSON.stringify({ navigation: ui.navigation, modal: ui.modal, feedback: ui.feedback })}>
+  <body data-client-copy={JSON.stringify({ modal: ui.modal, feedback: ui.feedback })}>
     <a class="skip-link" href="#contenido">{ui.skip}</a>
     <slot />
   </body>
@@ -78,7 +79,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const navOffset = () => {
-    const bar = document.querySelector<HTMLElement>('.nav-bar');
+    const bar = document.querySelector<HTMLElement>('[data-header-row]');
     return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
   };
 
@@ -127,20 +128,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     });
   });
 
-  const header = document.querySelector<HTMLElement>('[data-header]');
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-
-  if (header) {
-    const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
-    if (hero) {
-      new IntersectionObserver(
-        ([entry]) => header.classList.toggle('over-hero', entry.isIntersecting),
-        { rootMargin: '-96px 0px 0px 0px', threshold: 0 }
-      ).observe(hero);
-    } else {
-      header.classList.remove('over-hero');
-    }
-
+  const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
+  if (scrollCue) {
     let ticking = false;
     window.addEventListener(
       'scroll',
@@ -207,8 +196,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     document.querySelectorAll<HTMLElement>('.footer-grid > *').forEach((column, index) =>
       addReveal(column, 'copy', index * 60)
     );
-    const footerBottom = document.querySelector<HTMLElement>('.footer-bottom');
-    if (footerBottom) addReveal(footerBottom, 'copy', 120);
 
     targets.forEach((el) => el.classList.add('reveal'));
 
@@ -293,41 +280,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
     targets.forEach((el) => io.observe(el));
   }
-
-  const navToggle = document.querySelector<HTMLElement>('[data-nav-toggle]');
-  const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
-
-  const setNavOpen = (open: boolean) => {
-    navMenu?.classList.toggle('nav-open', open);
-    navToggle?.setAttribute('aria-expanded', String(open));
-    navToggle?.setAttribute('aria-label', open ? clientCopy.navigation.close : clientCopy.navigation.open);
-  };
-
-  navToggle?.addEventListener('click', () => {
-    setNavOpen(!navMenu?.classList.contains('nav-open'));
-  });
-
-  navMenu?.querySelectorAll('a').forEach((el) => {
-    el.addEventListener('click', () => setNavOpen(false));
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!navMenu?.classList.contains('nav-open')) return;
-    const target = event.target as Node;
-    if (navMenu.contains(target) || navToggle?.contains(target)) return;
-    setNavOpen(false);
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !navMenu?.classList.contains('nav-open')) return;
-    setNavOpen(false);
-    navToggle?.focus();
-  });
-
-  const desktopNav = window.matchMedia('(min-width: 1024px)');
-  desktopNav.addEventListener('change', (event) => {
-    if (event.matches) setNavOpen(false);
-  });
 
   const navSectionLinks = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-section]'));
   if (location.pathname === '/' && navSectionLinks.length && 'IntersectionObserver' in window) {

@@ -54,9 +54,9 @@ const schemas = [
 ];
 ---
 
-<Layout title={seo.title} description={seo.description} schemas={schemas}>
+<Layout title={seo.title} description={seo.description} schemas={schemas} service={service.slug}>
   <div class="page-frame">
-  <Header />
+  <Header tone="dark" />
 
   <main id="contenido">
   <ServiceHero service={service} />
@@ -100,14 +100,14 @@ const schemas = [
 </Layout>
 
 <style>
-  .page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .page-frame { background: var(--canvas); }
   .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
   .service-contact-shell { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(20px, 2.4vw, 36px); }
   .service-contact-title { max-width: 22ch; color: var(--ink); }
   .service-contact-aside {
     max-width: 38ch;
     margin: 0;
-    color: var(--periwinkle-ink);
+    color: var(--accent-ink);
     font-family: var(--font-hand);
     font-size: clamp(18px, 1.5vw, 24px);
     font-weight: 100;
