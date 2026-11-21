@@ -22,7 +22,7 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm preview`            | Sirve localmente el resultado de `pnpm build`                  |
 | `pnpm preview:worker`     | Build + `wrangler dev`: front y `/api/*` con D1 local          |
 | `pnpm test`               | Tests del backend en workerd (vitest)                          |
-| `pnpm typecheck`          | `tsc` sobre el código del Worker                               |
+| `pnpm typecheck`          | `tsc` sobre el código del Worker y sus tests                   |
 | `pnpm cf-typegen`         | Regenera `worker-configuration.d.ts` desde `wrangler.jsonc`     |
 | `pnpm db:create`          | Crea la base de datos D1 `squai`                         |
 | `pnpm db:migrate:local`   | Aplica `migrations/` en el D1 local                            |

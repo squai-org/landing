@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { resumeOrderId, resumeOutcome } from '../../src/lib/resume-flow';
 
-/**
- * Que hace /retomar con la respuesta de POST /api/checkout/resume: abrir Bold,
- * llevar a /gracias o mostrar un aviso con textos del CMS.
- */
 const session = {
   apiKey: 'identity-key',
   orderId: 'squai-one-nueva',

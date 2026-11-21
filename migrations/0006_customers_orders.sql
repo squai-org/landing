@@ -1,15 +1,3 @@
--- Cliente y Orden normalizados (ver GLOSSARY.md).
---
--- Un cliente aparece una sola vez, identificado por su correo normalizado
--- (trim + minusculas, igual que normalizeEmail en src/server/lib/email.ts).
--- Sus datos de contacto son los del ultimo formulario que envio.
---
--- `enrollments` pasa a `orders`: cada orden apunta a su cliente en vez de
--- repetir sus datos, y conserva el order_id firmado, el estado del pago y el
--- contexto del intento. Se reconstruye la tabla (crear, copiar, borrar) en
--- vez de ALTER TABLE DROP COLUMN, que falla sobre columnas indexadas.
---
--- Sin BEGIN/COMMIT: D1 aplica cada migracion como un solo lote atomico.
 
 CREATE TABLE customers (
   id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,8 +10,6 @@ CREATE TABLE customers (
   updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
--- Una fila por correo normalizado, con el contacto del intento mas reciente.
--- created_at es el del primer intento; updated_at, el del ultimo.
 INSERT INTO customers (email, full_name, country_code, phone, phone_e164, created_at, updated_at)
 SELECT
   lower(trim(e.email)),
@@ -50,7 +36,6 @@ CREATE TABLE orders (
                         CHECK (status IN ('pending', 'processing', 'approved', 'rejected', 'failed', 'voided')),
   referral_source     TEXT CHECK (referral_source IN ('instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras')),
   amount              INTEGER NOT NULL,
-  -- Las mismas monedas de payment_plans (0003) y de CURRENCIES en src/config/checkout.ts.
   currency            TEXT NOT NULL CHECK (currency IN ('COP', 'USD')),
   bold_transaction_id TEXT,
   payment_method      TEXT,
@@ -61,8 +46,6 @@ CREATE TABLE orders (
   confirmed_at        TEXT
 );
 
--- Se conservan los id: insertarlos explicitos tambien avanza el contador de
--- AUTOINCREMENT, asi que las ordenes nuevas no los reutilizan.
 INSERT INTO orders
   (id, order_id, customer_id, program_code, status, referral_source, amount, currency,
     bold_transaction_id, payment_method, source_page, ip_country, user_agent, created_at, confirmed_at)

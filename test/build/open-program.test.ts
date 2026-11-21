@@ -2,12 +2,6 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-/**
- * Squai One tiene inscripciones abiertas: el sitio ya no habla de una lista de
- * espera ni de preinscribirse. Se revisa codigo, contenido, CMS y documentacion.
- * Quedan fuera las migraciones (0001, 0002 y la que borra la tabla tienen que
- * nombrarla) y estas pruebas.
- */
 const root = path.join(import.meta.dirname, '../..');
 const scanned = ['src', 'public', 'docs', 'README.md', 'GLOSSARY.md', 'AGENTS.md', '.pages.yml', 'astro.config.mjs'];
 const forbidden = [/waitlist/i, /lista de espera/i, /preinscri/i, /#lista\b/, /["']lista["']/];

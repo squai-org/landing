@@ -33,7 +33,6 @@ const postWebhook = (body: string, signature?: string) =>
     withKeys
   );
 
-/** Las notificaciones de prueba referencian esta orden. */
 const seedOrder = async (orderId: string) => {
   const customer = await env.DB.prepare(
     `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)

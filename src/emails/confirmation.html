@@ -9,17 +9,6 @@
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
   <title>Tu inscripción en Squai One está confirmada</title>
-  <!--
-    Correo de confirmacion de inscripcion (acuse de recibo, Ley 1480 art. 50).
-    Fuente versionada: se sube a Brevo como plantilla (New Template Language)
-    y su id va en src/config/email.ts. Cada placeholder de params lo llena el Worker
-    (CONFIRMATION_PARAMS en src/server/services/email.service.ts); un test de
-    build comprueba que coinciden.
-    Marca: squai-org/brand-book (Periwinkle #8A8EF9, Midnight #0A0C1A, Canvas
-    #F4F6FF, texto oscuro sobre color) y squai-org/landing-design (tokens y voz:
-    tuteo, sin emojis). Maquetacion con tablas y estilos en linea para Gmail,
-    Outlook y Apple Mail; las fuentes web solo cargan donde se soportan.
-  -->
   <!--[if mso]>
   <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
   <style>td, th, div, p, a, h1, h2 { font-family: Arial, sans-serif !important; }</style>
@@ -39,7 +28,6 @@
   </style>
 </head>
 <body style="margin:0; padding:0; background-color:#F4F6FF;">
-  <!-- Texto de vista previa (oculto). -->
   <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#F4F6FF;">
     Tu pago fue aprobado. Aquí están tu orden {{ params.ORDER_ID }} y los datos del programa.
   </div>
@@ -50,7 +38,6 @@
         <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
         <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px;">
 
-          <!-- Logo sobre Canvas: el PNG ya trae ese fondo. -->
           <tr>
             <td align="left" class="px" style="padding:0 32px 20px 32px;">
               <a href="https://squai.io" target="_blank" style="text-decoration:none;">
@@ -59,7 +46,6 @@
             </td>
           </tr>
 
-          <!-- Banda Periwinkle con texto Midnight (regla de marca: tinta oscura sobre color). -->
           <tr>
             <td class="px" style="background-color:#8A8EF9; border-radius:16px 16px 0 0; padding:32px 32px 28px 32px;">
               <p style="margin:0 0 8px 0; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:#0A0C1A;">
@@ -71,7 +57,6 @@
             </td>
           </tr>
 
-          <!-- Cuerpo -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:28px 32px 8px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:16px; line-height:26px; color:#4B5167;">
               <p style="margin:0 0 16px 0;">
@@ -80,7 +65,6 @@
             </td>
           </tr>
 
-          <!-- Resumen de la compra -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:8px 32px 8px 32px;">
               <h2 style="margin:0 0 12px 0; font-family:'Familjen Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:20px; line-height:26px; font-weight:700; color:#0A0C1A;">
@@ -115,7 +99,6 @@
             </td>
           </tr>
 
-          <!-- Fechas del programa -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:24px 32px 8px 32px;">
               <h2 style="margin:0 0 12px 0; font-family:'Familjen Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:20px; line-height:26px; font-weight:700; color:#0A0C1A;">
@@ -142,7 +125,6 @@
             </td>
           </tr>
 
-          <!-- Que sigue -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:24px 32px 8px 32px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -155,7 +137,6 @@
             </td>
           </tr>
 
-          <!-- Dudas y retracto -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:24px 32px 32px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:16px; line-height:26px; color:#4B5167;">
               <p style="margin:0 0 20px 0;">
@@ -174,7 +155,6 @@
             </td>
           </tr>
 
-          <!-- Pie con datos de Squai (Ley 1480 art. 50) -->
           <tr>
             <td class="px" style="background-color:#0A0C1A; border-radius:0 0 16px 16px; padding:24px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:13px; line-height:20px; color:#DCE1F0;">
               <p style="margin:0 0 4px 0; color:#FFFFFF; font-weight:700;">{{ params.COMPANY_NAME }}</p>

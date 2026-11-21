@@ -9,14 +9,6 @@ import {
   turnstileTokenField,
 } from './common';
 
-/**
- * Datos de quien se inscribe mas el programa que paga y la moneda en que
- * quiere pagar. El monto NO esta aqui a proposito: sale de la base para esa
- * moneda. Si llegara en el cuerpo, quien paga podria firmar su propio precio.
- *
- * `privacy_consent` lo exige el formulario en el navegador, igual que en
- * /api/contact; el servidor no lo revalida para no duplicar el contrato.
- */
 export const checkoutSessionSchema = z.object({
   program: z
     .string('Falta el programa a pagar.')
@@ -36,10 +28,6 @@ export const checkoutSessionSchema = z.object({
 
 export type CheckoutSessionInput = z.infer<typeof checkoutSessionSchema>;
 
-/**
- * Retomar una orden: el enlace solo lleva el order_id, que es opaco y no tiene
- * datos personales. Mismo alfabeto que acepta Bold en data-order-id.
- */
 export const checkoutResumeSchema = z.object({
   order_id: z
     .string('Falta el identificador de la compra.')

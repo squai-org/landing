@@ -5,10 +5,6 @@ import { checkout } from '../../src/config/checkout';
 import { siteSchema } from '../../src/content/schema';
 import { company, confirmationEmailCopy } from '../../src/server/lib/copy';
 
-/**
- * Todos los textos del flujo de compra se editan desde el CMS. La configuracion
- * de runtime (src/config) solo guarda rutas y codigos, nunca textos visibles.
- */
 const root = path.join(import.meta.dirname, '../..');
 
 const loadSite = async () => {

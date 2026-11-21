@@ -25,8 +25,6 @@ api.get('/health', (c) => c.json({ ok: true }));
 
 api.use('/contact', rateLimit(), jsonRequest());
 api.use('/checkout/session', jsonRequest());
-// Retomar no pide Turnstile (el enlace llega por correo): el limite por IP
-// frena a quien pruebe order_id al azar.
 api.use('/checkout/resume', rateLimit(), jsonRequest());
 
 api.route('/checkout', checkoutRoute);
@@ -34,6 +32,4 @@ api.route('/contact', contactRoute);
 
 app.route('/api', api);
 
-// Workers usa `fetch` (propiedad propia de Hono) y `scheduled` (Cron Trigger);
-// los tests siguen usando app.request sobre el mismo objeto.
 export default Object.assign(app, { scheduled });

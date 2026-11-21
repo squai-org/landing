@@ -23,7 +23,6 @@ const withKeys = {
   BREVO_API_KEY: 'test_brevo_key',
 };
 
-/** El id real de la plantilla se pone al subirla a Brevo; aqui uno de prueba. */
 const placeholderTemplate = email.templates.confirmation;
 beforeAll(() => {
   email.templates.confirmation = TEMPLATE_ID;
@@ -44,10 +43,6 @@ const boldVoucher = (payment_status: string) =>
     { status: 200, headers: { 'Content-Type': 'application/json' } }
   );
 
-/**
- * Bold y Brevo comparten el fetch global: se responde segun la URL. Devuelve
- * las llamadas a Brevo para revisar que se envio.
- */
 const mockOutbound = (brevo: () => Promise<Response> | Response = brevoOk, boldStatus = 'APPROVED') => {
   const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
     const url = input instanceof Request ? input.url : String(input);
@@ -125,7 +120,7 @@ describe('correo de confirmacion de inscripcion', () => {
     expect(res.status).toBe(200);
     expect(brevoCalls()).toHaveLength(1);
 
-    const [, init] = brevoCalls()[0];
+    const [, init] = brevoCalls()[0] ?? [];
     const headers = new Headers(init?.headers);
     expect(init?.method).toBe('POST');
     expect(headers.get('api-key')).toBe('test_brevo_key');
@@ -141,7 +136,6 @@ describe('correo de confirmacion de inscripcion', () => {
         FIRST_NAME: 'Ana',
         PROGRAM_NAME: 'Fundamentos de Inteligencia Artificial Generativa',
         ORDER_ID,
-        // 440.000 con IVA del 19% incluido: base 440000 / 1.19 = 369747,9 -> 369.748.
         AMOUNT_TOTAL: '$440.000',
         AMOUNT_BASE: '$369.748',
         AMOUNT_VAT: '$70.252',
@@ -179,7 +173,7 @@ describe('correo de confirmacion de inscripcion', () => {
       attempts: 1,
       last_error: null,
     });
-    expect(rows[0].sent_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    expect(rows[0]?.sent_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
   });
 
   it('el webhook responde sin esperar a Brevo', async () => {
@@ -188,7 +182,6 @@ describe('correo de confirmacion de inscripcion', () => {
 
     const { res, ctx } = await postWebhook(APPROVED_SALE_BODY, APPROVED_SALE_SIGNATURE);
 
-    // Brevo sigue sin contestar y Bold ya tiene su 200.
     expect(res.status).toBe(200);
     await vi.waitFor(() => expect(brevoCalls()).toHaveLength(1));
 
@@ -249,8 +242,8 @@ describe('correo de confirmacion de inscripcion', () => {
     const rows = await emailRows();
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({ status: 'failed', attempts: 1, sent_at: null, provider_message_id: null });
-    expect(rows[0].last_error).toContain('400');
-    expect(rows[0].last_error).toContain('invalid_parameter');
+    expect(rows[0]?.last_error).toContain('400');
+    expect(rows[0]?.last_error).toContain('invalid_parameter');
   });
 
   it('un error de red con Brevo queda registrado y no rompe la respuesta', async () => {
@@ -291,7 +284,6 @@ describe('correo de confirmacion de inscripcion', () => {
 
     expect(res.status).toBe(200);
     expect(brevoCalls()).toHaveLength(0);
-    // Sin fila, el cron (#56) la encuentra como aprobada sin confirmacion.
     expect(await emailRows()).toEqual([]);
     const order = await env.DB.prepare('SELECT status FROM orders').first();
     expect(order).toMatchObject({ status: 'approved' });

@@ -9,18 +9,6 @@
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
   <title>Tu cupo en Squai One te está esperando</title>
-  <!--
-    Correo de recuperacion: uno solo por cliente y programa, a quien dejo una
-    orden sin pagar hace mas de 2 horas. Lo envia el cron del Worker.
-    Fuente versionada: se sube a Brevo como plantilla (New Template Language)
-    y su id va en src/config/email.ts. Cada placeholder de params lo llena el
-    Worker (RECOVERY_PARAMS en src/server/services/email.service.ts); un test
-    de build comprueba que coinciden.
-    Misma maquetacion y marca que confirmation.html: Periwinkle #8A8EF9,
-    Midnight #0A0C1A, Canvas #F4F6FF, texto oscuro sobre color, tuteo, sin
-    emojis. El enlace solo lleva el order-id, sin datos personales, y vence a
-    los checkout.resumeExpiryDays dias de creada la orden (RESUME_EXPIRY_DAYS).
-  -->
   <!--[if mso]>
   <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
   <style>td, th, div, p, a, h1, h2 { font-family: Arial, sans-serif !important; }</style>
@@ -38,7 +26,6 @@
   </style>
 </head>
 <body style="margin:0; padding:0; background-color:#F4F6FF;">
-  <!-- Texto de vista previa (oculto). -->
   <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#F4F6FF;">
     Tu inscripción quedó a medias. Retómala en un clic, sin volver a llenar el formulario.
   </div>
@@ -49,7 +36,6 @@
         <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
         <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px;">
 
-          <!-- Logo sobre Canvas: el PNG ya trae ese fondo. -->
           <tr>
             <td align="left" class="px" style="padding:0 32px 20px 32px;">
               <a href="https://squai.io" target="_blank" style="text-decoration:none;">
@@ -58,7 +44,6 @@
             </td>
           </tr>
 
-          <!-- Banda Periwinkle con texto Midnight (regla de marca: tinta oscura sobre color). -->
           <tr>
             <td class="px" style="background-color:#8A8EF9; border-radius:16px 16px 0 0; padding:32px 32px 28px 32px;">
               <p style="margin:0 0 8px 0; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:14px; line-height:20px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:#0A0C1A;">
@@ -70,7 +55,6 @@
             </td>
           </tr>
 
-          <!-- Cuerpo y boton para retomar -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:28px 32px 8px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:16px; line-height:26px; color:#4B5167;">
               <p style="margin:0 0 16px 0;">
@@ -93,7 +77,6 @@
             </td>
           </tr>
 
-          <!-- Aviso de vencimiento -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:24px 32px 8px 32px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -106,7 +89,6 @@
             </td>
           </tr>
 
-          <!-- Dudas -->
           <tr>
             <td class="px" style="background-color:#FFFFFF; padding:24px 32px 32px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:16px; line-height:26px; color:#4B5167;">
               <p style="margin:0;">
@@ -115,7 +97,6 @@
             </td>
           </tr>
 
-          <!-- Pie -->
           <tr>
             <td class="px" style="background-color:#0A0C1A; border-radius:0 0 16px 16px; padding:24px 32px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:13px; line-height:20px; color:#DCE1F0;">
               <p style="margin:0 0 4px 0; color:#FFFFFF; font-weight:700;">Squai</p>

@@ -3,16 +3,8 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import worker from '../../src/server/index';
 import { email } from '../../src/config/email';
 
-/**
- * Correo de recuperacion (#58): el cron envia uno solo por cliente y programa
- * a quien dejo una orden sin pagar hace mas de 2 horas, no esta inscrito y el
- * programa sigue abierto. Se invoca el handler scheduled directo, con D1 real
- * y el fetch saliente a Brevo simulado.
- */
-
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 const RECOVERY_TEMPLATE_ID = 5151;
-// Squai One vende del 1 de diciembre al 22 de enero (hora de Colombia): abierto.
 const NOW = new Date('2027-01-10T15:00:00.000Z');
 const minutesAgo = (minutes: number) => new Date(NOW.getTime() - minutes * 60_000).toISOString();
 const hoursAgo = (hours: number) => minutesAgo(hours * 60);
@@ -21,8 +13,6 @@ const withKeys = { ...env, BREVO_API_KEY: 'test_brevo_key' };
 
 const placeholderTemplates = { ...email.templates };
 beforeAll(() => {
-  // Sin plantilla de confirmacion el paso de reintento no hace nada y no
-  // ensucia las llamadas a Brevo de estos tests.
   email.templates.confirmation = null;
   email.templates.recovery = RECOVERY_TEMPLATE_ID;
 });
@@ -42,7 +32,6 @@ const brevoDown = () =>
     headers: { 'Content-Type': 'application/json' },
   });
 
-/** Devuelve los cuerpos enviados a Brevo; cualquier otra URL es un error del test. */
 const mockBrevo = (brevo: () => Response = brevoOk) => {
   const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
     const url = input instanceof Request ? input.url : String(input);
@@ -264,7 +253,7 @@ describe('cron: correo de recuperacion', () => {
 
     const [failed] = await recoveryRows();
     expect(failed).toMatchObject({ order_id: 'SQUAI-ONE-ANA-1', status: 'failed', attempts: 1, sent_at: null });
-    expect(failed.last_error).toContain('503');
+    expect(failed?.last_error).toContain('503');
 
     vi.restoreAllMocks();
     const sent = mockBrevo();

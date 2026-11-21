@@ -7,12 +7,9 @@ export interface NewOrder {
   orderId: string;
   customerId: number;
   programCode: string;
-  /** NULL solo en ordenes anteriores al formulario con ese campo. */
   referralSource: string | null;
   amount: number;
-  /** El CHECK de orders (0006) solo admite estas monedas. */
   currency: Currency;
-  /** Impuesto declarado a Bold (checkout.tax); se congela con el monto. */
   tax: Tax;
   sourcePage: string | null;
   ipCountry: string | null;
@@ -20,7 +17,6 @@ export interface NewOrder {
 }
 
 export interface Order extends Omit<NewOrder, 'tax'> {
-  /** NULL en las ordenes anteriores a 0007. */
   tax: Tax | null;
   id: number;
   status: OrderStatus;
@@ -55,11 +51,6 @@ export const insertOrder = async (db: D1Database, record: NewOrder): Promise<voi
     .run();
 };
 
-/**
- * La orden con el nombre de su cliente, que es lo que muestra la pagina de
- * gracias. El correo sirve para saber si el cliente ya esta inscrito al
- * retomar; ninguna respuesta de la API lo devuelve.
- */
 const SELECT_SQL = `
   SELECT o.id, o.order_id AS orderId, o.customer_id AS customerId, o.program_code AS programCode,
          o.status, o.amount, o.currency, o.bold_transaction_id AS boldTransactionId,
@@ -77,13 +68,6 @@ export const findOrderByOrderId = async (db: D1Database, orderId: string) =>
     'boldTransactionId' | 'paymentMethod' | 'createdAt' | 'confirmedAt' | 'referralSource'
   > & { fullName: string; email: string }>();
 
-/**
- * Aplica el veredicto de Bold sobre una orden.
- *
- * Es idempotente y no degrada: una orden ya aprobada solo cambia si llega una
- * anulacion. Asi la consulta sincrona y el webhook pueden llegar en cualquier
- * orden sin pisarse. Es la unica escritura del estado de pago.
- */
 const APPLY_SQL = `
   UPDATE orders
   SET status = ?2,
@@ -98,12 +82,6 @@ const APPLY_SQL = `
     AND (status <> 'approved' OR ?2 = 'voided')
 `;
 
-/**
- * `becameApproved` dice si esta llamada fue la que aprobo la orden: una orden
- * ya aprobada no vuelve a cumplir el WHERE con 'approved', asi que solo la
- * transicion escribe una fila con ese estado. pending -> pending tambien
- * escribe, por eso se mira el estado y no solo el conteo.
- */
 export const applyOrderPayment = async (
   db: D1Database,
   orderId: string,
@@ -117,10 +95,6 @@ export const applyOrderPayment = async (
   return { becameApproved: payment.status === 'approved' && meta.changes > 0 };
 };
 
-/**
- * Inscripcion (ver GLOSSARY.md): el cliente con ese correo tiene una orden
- * aprobada en el programa. No hay tabla propia; una anulada deja de contar.
- */
 const ENROLLED_SQL = `
   SELECT 1 AS enrolled
   FROM orders o

@@ -19,14 +19,15 @@ Squai's marketing site (https://squai.io): a static Astro site plus a lead-captu
 * Content lives in `src/content/copies.json` and `src/content/services/<slug>.json`. Components never read the JSON directly; they use `getSiteContent()` from `src/lib/content.ts`.
 * The filename of each service JSON is its public URL slug. Renaming it changes the published URL.
 * `src/content/schema.ts` (Zod) is the editorial contract and is validated at build; a bad field fails the build. `.pages.yml` (Pages CMS forms) mirrors it, so change both in the same commit.
-* The canonical domain exists in two places that must match: `site` in `astro.config.mjs` and `SITE_URL` in `src/lib/seo.ts`.
+* The canonical domain exists in two places that must match: `site` in `astro.config.mjs` and `SITE_URL` in `src/config/site.ts` (re-exported by `src/lib/seo.ts`).
 * Runtime config (API paths, booking URL) goes in `src/config/`, not in content.
 * No unverified facts in JSON-LD (prices, dates, addresses). `sameAs` is emitted only when `socials[].href` is non-empty.
 * The CSP is not written by hand: `src/integrations/csp-headers.mjs` injects it into `dist/_headers` at build, replacing the `# @csp@` marker in `public/_headers`. `/api/*` takes its headers from `src/server/middleware/security-headers.ts`.
 * `wrangler.jsonc` is the source of the Worker types: after editing it, run `pnpm cf-typegen`.
 * After changing the logo, run `pnpm og` to regenerate `public/og/*` and `apple-touch-icon.png`.
 * The API stores the visitor's country (`CF-IPCountry`), never the IP.
-* Repo prose (copy, comments, README) is mostly Spanish; keep that when editing existing text.
+* Repo prose (copy, README) is mostly Spanish; keep that when editing existing text.
+* Do not write code comments in any language (`//`, `/* */`, JSDoc, SQL `--`, HTML `<!-- -->`, YAML `#`). Make names and structure carry the intent; the why goes in the commit message, `docs/` or an ADR. Only functional directives stay (`@ts-*`, `@vitest-environment`, `<!--[if mso]>` in `src/emails/`).
 
 ## Boundaries
 
@@ -42,7 +43,7 @@ Squai's marketing site (https://squai.io): a static Astro site plus a lead-captu
 ## Known pitfalls
 
 * `pnpm dev` does not serve `/api`, so forms fail there. Use `pnpm preview:worker` to test them.
-* `pnpm typecheck` covers only `src/server`; the root `tsconfig.json` excludes it, and Astro files are not checked by it. `pnpm build` is what catches content and Astro errors.
+* `pnpm typecheck` covers `src/server` and `test/`; the root `tsconfig.json` excludes it, and Astro files are not checked by it. `pnpm build` is what catches content and Astro errors.
 * `README.md` links to `docs/pages-cms.md`, `docs/pages-cms-inventario.md` and `docs/cloudflare-setup.md`, which do not exist, and says team photos are in `public/images/` when they are in `src/assets/`. Do not rely on those references.
 * To check the built site with production routing and headers, use `pnpm build && node docs/scripts/serve-dist.mjs`; a generic static server returns 404 on internal routes.
 * Production builds run on Cloudflare Workers Builds, not GitHub Actions. The image pins pnpm `9.10.0`, takes Node from `.node-version`, and already runs `pnpm install --frozen-lockfile` before the build command — do not repeat the install there. Never state what that image does from memory; check `developers.cloudflare.com/workers/ci-cd/builds/`.

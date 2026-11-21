@@ -1,15 +1,4 @@
 ---
-/**
- * Retomar una orden sin pagar: /retomar?order_id=<orderId>.
- *
- * Llegan aqui el enlace del correo de recuperacion y quien abandona el modal
- * de Bold (es el origin-url de cada pago). El enlace solo lleva el order-id,
- * que es opaco: la pagina no muestra ni pide datos personales. El Worker
- * (POST /api/checkout/resume) decide: si la orden anterior ya se pago lleva a
- * /gracias; si no, abre una orden nueva del mismo cliente y aqui se abre Bold
- * directo. Expirado, cerrado o no encontrado se muestran con textos del CMS y
- * un enlace al programa. Ver docs/bold-checkout.md.
- */
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -41,7 +30,6 @@ const programPath = `/servicios/${checkout.program}`;
               <span class="resume-spinner" aria-hidden="true"></span>{resume.checking}
             </p>
 
-            {/* Quien cierra el modal sin pagar puede reabrir el mismo pago. */}
             <div class="resume-state" data-resume-state="retry" hidden>
               <Button variant="dark" type="button" data-resume-retry>{ui.checkout.button.retry}</Button>
             </div>
@@ -79,7 +67,8 @@ const programPath = `/servicios/${checkout.program}`;
 </Layout>
 
 <script>
-  import { openBoldCheckout, type CheckoutSession } from '../lib/bold-checkout';
+  import { openBoldCheckout } from '../lib/bold-library';
+  import { type CheckoutSession } from '../lib/bold-checkout';
   import { resumeOrderId, resumeOutcome } from '../lib/resume-flow';
 
   const root = document.querySelector<HTMLElement>('[data-resume]');
@@ -94,11 +83,9 @@ const programPath = `/servicios/${checkout.program}`;
       root.querySelectorAll<HTMLElement>('[data-resume-state]').forEach((block) => {
         block.hidden = block.dataset.resumeState !== state;
       });
-      // El enlace al programa acompana a los avisos, no a la carga ni al reintento.
       if (back) back.hidden = state === 'checking' || state === 'retry';
     };
 
-    /** Abre el modal de Bold con la sesion firmada; reabrir usa la misma orden. */
     const openPayment = async () => {
       if (!session) return;
       try {
@@ -109,7 +96,6 @@ const programPath = `/servicios/${checkout.program}`;
       }
     };
 
-    // Bold avisa por postMessage cuando el comprador cierra el modal.
     window.addEventListener('message', (event) => {
       if (!session || event.origin !== boldOrigin || event.data?.type !== 'BOLD_CHECKOUT_EVENT') return;
       show('retry');

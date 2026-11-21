@@ -1,13 +1,6 @@
 import { env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-/**
- * Vistas de seguimiento del embudo (0010_tracking_views.sql). El equipo las
- * consulta desde el panel de D1 o con `wrangler d1 execute`, asi que el test
- * las lee igual: un SELECT sobre la vista, con datos sembrados a mano.
- *
- * Programas propios para no cruzarse con los datos de otros tests.
- */
 const PROGRAM = 'programa-seguimiento';
 const OTHER_PROGRAM = 'programa-seguimiento-dos';
 const PROGRAMS = [PROGRAM, OTHER_PROGRAM];
@@ -86,18 +79,13 @@ const fromView = async <T>(view: string, orderBy: string) =>
 describe('v_customers_without_enrollment', () => {
   it('lista una vez por programa a cada cliente con ordenes y sin orden aprobada, con su ultimo intento', async () => {
     await seedOrders([
-      // Ana intenta dos veces y no paga: aparece una sola vez, con el ultimo intento.
       { customer: 'ana', status: 'pending', createdAt: '2026-12-02T10:00:00.000Z' },
       { customer: 'ana', status: 'rejected', createdAt: '2026-12-03T10:00:00.000Z' },
-      // Bruno falla y luego paga: ya esta inscrito.
       { customer: 'bruno', status: 'failed', createdAt: '2026-12-02T11:00:00.000Z' },
       { customer: 'bruno', status: 'approved', createdAt: '2026-12-02T12:00:00.000Z' },
-      // Carla esta inscrita en un programa y deja el otro a medias.
       { customer: 'carla', status: 'approved', createdAt: '2026-12-04T09:00:00.000Z' },
       { customer: 'carla', program: OTHER_PROGRAM, status: 'pending', createdAt: '2026-12-05T09:00:00.000Z' },
-      // Diego pago y le anularon la venta: ya no tiene inscripcion.
       { customer: 'diego', status: 'voided', createdAt: '2026-12-06T09:00:00.000Z' },
-      // Elena no tiene ordenes.
     ]);
 
     const rows = await fromView<Record<string, unknown>>(
@@ -143,15 +131,11 @@ describe('v_customers_without_enrollment', () => {
 describe('v_enrollments_by_program', () => {
   it('lista una vez por programa a cada cliente con una orden aprobada, con su primera aprobacion', async () => {
     await seedOrders([
-      // Ana falla y luego paga.
       { customer: 'ana', status: 'failed', createdAt: '2026-12-02T10:00:00.000Z', confirmedAt: '2026-12-02T10:05:00.000Z' },
       { customer: 'ana', status: 'approved', createdAt: '2026-12-02T11:00:00.000Z', confirmedAt: '2026-12-02T11:03:00.000Z' },
-      // Bruno paga dos veces el mismo programa: sigue siendo una inscripcion.
       { customer: 'bruno', status: 'approved', createdAt: '2026-12-03T09:00:00.000Z', confirmedAt: '2026-12-03T09:02:00.000Z' },
       { customer: 'bruno', status: 'approved', createdAt: '2026-12-03T10:00:00.000Z', confirmedAt: '2026-12-03T10:02:00.000Z' },
-      // Carla esta inscrita en el otro programa.
       { customer: 'carla', program: OTHER_PROGRAM, status: 'approved', createdAt: '2026-12-04T09:00:00.000Z', confirmedAt: '2026-12-04T09:01:00.000Z' },
-      // Diego tiene la venta anulada y Elena solo una orden pendiente: no estan inscritos.
       { customer: 'diego', status: 'voided', createdAt: '2026-12-05T09:00:00.000Z', confirmedAt: '2026-12-05T12:00:00.000Z' },
       { customer: 'elena', status: 'pending', createdAt: '2026-12-06T09:00:00.000Z' },
     ]);
@@ -229,7 +213,6 @@ describe('v_program_seats', () => {
       { customer: 'diego', status: 'voided', createdAt: '2026-12-04T09:00:00.000Z' },
       { customer: 'elena', status: 'pending', createdAt: '2026-12-05T09:00:00.000Z' },
       { customer: 'elena', status: 'rejected', createdAt: '2026-12-05T10:00:00.000Z' },
-      // La del otro programa no ocupa cupo en este.
       { customer: 'elena', program: OTHER_PROGRAM, status: 'approved', createdAt: '2026-12-06T09:00:00.000Z' },
     ]);
 

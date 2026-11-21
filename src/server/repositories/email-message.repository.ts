@@ -3,7 +3,6 @@ import type { OrderStatus } from './order.repository';
 
 export type EmailKind = 'confirmation' | 'recovery';
 
-/** Lo que necesita el correo de confirmacion: orden, cliente y programa. */
 export interface ConfirmationData {
   orderId: string;
   customerId: number;
@@ -35,12 +34,6 @@ const CONFIRMATION_DATA_SQL = `
 export const findConfirmationData = async (db: D1Database, orderId: string) =>
   db.prepare(CONFIRMATION_DATA_SQL).bind(orderId).first<ConfirmationData>();
 
-/**
- * Reclama el envio: crea la fila pendiente si no existe. Devuelve true solo a
- * quien la creo; ese es el unico que envia. La unicidad (order_id, kind) y la
- * de recuperacion por cliente y programa hacen que un segundo intento, aunque
- * sea concurrente, no cambie nada.
- */
 const CLAIM_SQL = `
   INSERT INTO email_messages (order_id, customer_id, program_code, kind, template_id, created_at, updated_at)
   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)
@@ -60,17 +53,6 @@ export const claimEmailMessage = async (
   return meta.changes > 0;
 };
 
-/**
- * Confirmaciones que el cron debe reintentar: ordenes aprobadas sin fila de
- * confirmacion, con la fila fallida, o con la fila pendiente sin cambios desde
- * antes de `staleBefore` (un envio en curso de waitUntil la deja pendiente
- * unos segundos; pasado el margen se da por perdido). Las omitidas (skipped,
- * ventas anteriores a 0009) nunca entran.
- *
- * Van primero las que llevan mas tiempo sin intento (las nunca reclamadas,
- * sin fila, antes que todas): cada intento renueva updated_at, asi que las
- * que fallan siempre rotan al final y no tapan a las demas con el limite.
- */
 const RETRY_CANDIDATES_SQL = `
   SELECT o.order_id AS orderId, m.id IS NOT NULL AS hasMessage
   FROM orders o
@@ -90,12 +72,6 @@ export const findConfirmationsToRetry = async (db: D1Database, staleBefore: Date
   return results.map((row) => ({ orderId: row.orderId, hasMessage: row.hasMessage === 1 }));
 };
 
-/**
- * Reclama de nuevo una confirmacion fallida o atascada: la vuelve a dejar
- * pendiente con la plantilla actual. Igual que claimEmailMessage, devuelve
- * true solo a quien la cambio, asi dos ejecuciones del cron que se crucen no
- * envian dos veces.
- */
 const RECLAIM_SQL = `
   UPDATE email_messages
   SET status = 'pending', template_id = ?3, updated_at = ?4
@@ -118,7 +94,6 @@ export const reclaimEmailMessage = async (
   return meta.changes > 0;
 };
 
-/** Lo que necesita el correo de recuperacion: la orden a retomar y su cliente. */
 export interface RecoveryData {
   orderId: string;
   customerId: number;
@@ -128,16 +103,6 @@ export interface RecoveryData {
   programName: string;
 }
 
-/**
- * Recuperaciones por enviar, una por cliente y programa. Se mira la orden mas
- * reciente del cliente en el programa: debe estar sin pagar (pending,
- * rejected o failed) y haberse creado entre `expiredBefore` y `createdBefore`,
- * es decir, hace mas de las horas de espera (cuentan desde el ultimo intento,
- * no desde el primero) y antes de que expire su enlace para retomar. Quedan
- * fuera los clientes ya inscritos en el programa y los que ya tienen una
- * recuperacion en el (enviada, fallida o en curso: los fallidos los toma
- * RECOVERY_RETRY_SQL). El estado del programa lo decide el servicio.
- */
 const RECOVERY_CANDIDATES_SQL = `
   WITH latest AS (
     SELECT o.order_id, o.customer_id, o.program_code, o.status, o.created_at,
@@ -178,12 +143,6 @@ export const findRecoveriesToSend = async (
   return results;
 };
 
-/**
- * Recuperaciones que el cron debe reintentar: fallidas, o pendientes sin
- * cambios desde antes de `staleBefore`. Se reenvian con la misma orden (y el
- * mismo enlace) mientras esa orden siga sin pagar, su enlace no haya expirado
- * y el cliente no se haya inscrito en el programa.
- */
 const RECOVERY_RETRY_SQL = `
   SELECT o.order_id AS orderId, o.customer_id AS customerId, o.program_code AS programCode,
          c.email, c.full_name AS fullName, p.description AS programName
@@ -216,7 +175,6 @@ export const findRecoveriesToRetry = async (
   return results;
 };
 
-/** Anota el resultado de un intento de envio. */
 const RESULT_SQL = `
   UPDATE email_messages
   SET status = ?3,

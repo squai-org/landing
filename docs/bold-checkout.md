@@ -331,9 +331,9 @@ placeholders son exactamente `CONFIRMATION_PARAMS` (y los de la recuperación,
 `RECOVERY_PARAMS`).
 
 Para publicarla: Brevo → Campaigns → Templates → New template → pegar el HTML,
-guardar y poner su id en `email.templates.confirmation` (la recuperación, en
-`email.templates.recovery`) de `src/config/email.ts`. Mientras sea `null` el
-Worker no envía ese correo. Si el diseño
+guardar y poner su id (el número de la URL de edición, `.../templates/email/edit/<id>`)
+en `email.templates.confirmation` (la recuperación, en `email.templates.recovery`)
+de `src/config/email.ts`. Hoy son 1 (confirmación) y 4 (recuperación). Si el diseño
 se ajusta en el editor de Brevo, devolver el HTML al repo para que el test lo
 vigile.
 
@@ -354,8 +354,6 @@ son los de los Términos de Servicio. Los meses los escribe `Intl` (es-CO).
 
 ### Pendientes del equipo
 
-- Subir las dos plantillas (confirmación y recuperación) a Brevo y poner sus
-  ids en `src/config/email.ts`.
 - **Dirección y teléfono de Squai**: en `company` (contenido) quedan
   `[DIRECCION PENDIENTE]` y `[TELEFONO PENDIENTE]`, y así salen en el correo
   hasta que se reemplacen. Razón social y NIT son los de los Términos de

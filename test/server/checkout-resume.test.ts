@@ -4,17 +4,11 @@ import { email } from '../../src/config/email';
 import app from '../../src/server/index';
 import { TEST_IDENTITY_KEY, TEST_SECRET_KEY } from '../fixtures/bold';
 
-/**
- * Retomar una orden sin pagar (POST /api/checkout/resume). El enlace solo
- * lleva el order_id; el Worker consulta a Bold por la orden anterior y, si no
- * se pago, abre una orden nueva del mismo cliente con el precio vigente.
- */
 const withKeys = { ...env, BOLD_IDENTITY_KEY: TEST_IDENTITY_KEY, BOLD_SECRET_KEY: TEST_SECRET_KEY };
 
 let ipCounter = 0;
 const nextIp = () => `198.51.100.${++ipCounter % 250}`;
 
-/** Programas propios: abiertos de 2020 a 2100, y uno cerrado a mano. */
 const PROGRAM = 'programa-retomar';
 const CLOSED = 'programa-retomar-cerrado';
 const PREVIOUS = `${PROGRAM}-orden-anterior`;
@@ -26,7 +20,6 @@ beforeAll(async () => {
       `INSERT INTO programs (code, description, closed_manually) VALUES (?1, 'Programa para retomar', 0), (?2, 'Programa cerrado', 1)
        ON CONFLICT (code) DO NOTHING`
     ).bind(PROGRAM, CLOSED),
-    // El precio de USD cambio despues de la orden anterior: la nueva cobra el vigente.
     env.DB.prepare(
       `INSERT INTO program_prices (program_code, currency, amount, valid_from) VALUES
          (?1, 'COP', 250000, '2020-01-01T05:00:00.000Z'),
@@ -46,7 +39,6 @@ beforeAll(async () => {
 
 let customerId = 0;
 
-/** Una orden anterior del cliente; por defecto pendiente, en USD y de hace 2 horas. */
 const seedOrder = async ({
   orderId = PREVIOUS,
   program = PROGRAM,
@@ -76,7 +68,6 @@ beforeEach(async () => {
 
 afterEach(() => vi.restoreAllMocks());
 
-/** Respuesta del voucher de Bold para la orden anterior. */
 const mockVoucher = (payment_status: string, extra: Record<string, unknown> = {}) =>
   vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
     new Response(JSON.stringify({ payment_status, reference_id: PREVIOUS, ...extra }), {
@@ -128,13 +119,11 @@ describe('POST /api/checkout/resume', () => {
       session: { apiKey: string; orderId: string; amount: number; currency: string; tax: string; integritySignature: string };
     };
 
-    // Se pregunto a Bold por la orden anterior, con la llave de identidad.
     expect(String(fetchMock.mock.calls[0]?.[0])).toBe(`https://payments.api.bold.co/v2/payment-voucher/${PREVIOUS}`);
 
     expect(session).toMatchObject({ apiKey: TEST_IDENTITY_KEY, amount: 95, currency: 'USD', tax: 'vat-19' });
     expect(session.orderId).not.toBe(PREVIOUS);
     expect(session.orderId).toMatch(/^programa-retomar-[a-f0-9]+$/);
-    // SHA-256 de `${orderId}95USD${secreto}`, calculado aparte de src/server/lib/bold.ts.
     const digest = await crypto.subtle.digest(
       'SHA-256',
       new TextEncoder().encode(`${session.orderId}95USD${TEST_SECRET_KEY}`)
@@ -143,7 +132,6 @@ describe('POST /api/checkout/resume', () => {
       [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
     );
     expect(body).not.toContain(TEST_SECRET_KEY);
-    // La respuesta no expone los datos de contacto: el enlace puede reenviarse.
     expect(body).not.toContain('ana@empresa.co');
     expect(body).not.toContain('3205551234');
 

@@ -2,8 +2,16 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import cspHeaders from './src/integrations/csp-headers.mjs';
 
+const PRODUCTION_BRANCH = 'main';
+const branch = process.env.WORKERS_CI_BRANCH;
+const testSiteKey = process.env.PUBLIC_TURNSTILE_SITE_KEY_TEST;
+const useTestSiteKey = Boolean(branch && branch !== PRODUCTION_BRANCH && testSiteKey);
+
 export default defineConfig({
   site: 'https://squai.io',
+  vite: useTestSiteKey
+    ? { define: { 'import.meta.env.PUBLIC_TURNSTILE_SITE_KEY': JSON.stringify(testSiteKey) } }
+    : {},
   trailingSlash: 'never',
   build: {
     format: 'file',
@@ -26,9 +34,6 @@ export default defineConfig({
   },
 
   integrations: [
-    // /gracias es la vuelta del checkout y /retomar reabre un pago desde un
-    // enlace: van con noindex y no describen nada, asi que tampoco tienen por
-    // que aparecer en el sitemap.
     sitemap({ filter: (page) => !page.endsWith('/gracias') && !page.endsWith('/retomar') }),
 
     // Escribe la Content-Security-Policy en dist/_headers con los hashes de

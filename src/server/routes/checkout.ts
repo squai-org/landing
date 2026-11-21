@@ -8,19 +8,10 @@ import { sendConfirmation } from '../services/email.service';
 import { loadProgram } from '../services/program.service';
 import type { AppBindings } from '../types';
 
-/**
- * Cuando una orden pasa a aprobada, el correo de confirmacion sale con
- * waitUntil: la respuesta (y el 200 que Bold espera en menos de 2 s) no
- * espera a Brevo.
- */
 const confirmInBackground = (c: Context<AppBindings>) => (orderId: string) =>
   defer(c)(sendConfirmation(c.env, orderId, new Date()));
 
 export const checkoutRoute = new Hono<AppBindings>()
-  /**
-   * Precios vigentes por moneda para pintarlos en la pagina: son los mismos que
-   * se firman. La moneda por defecto sale del pais que informa Cloudflare.
-   */
   .get('/program/:code', async (c) => {
     const program = await loadProgram(c.env, c.req.param('code'), new Date(), c.get('requestMeta').ipCountry);
 
@@ -51,11 +42,6 @@ export const checkoutRoute = new Hono<AppBindings>()
 
     return ok(c, { session }, 201);
   })
-  /**
-   * Retomar una orden sin pagar desde el enlace de /retomar. No pide Turnstile:
-   * quien llega ya lleno el formulario y trae un order_id; lo frenan el mismo
-   * origen y el limite por IP.
-   */
   .post('/resume', async (c) => {
     const raw = await c.req.json().catch(() => {
       throw badRequest('invalid_json', 'El cuerpo de la peticion no es JSON valido.');

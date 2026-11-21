@@ -472,8 +472,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     setStatus(form, text, 'error');
   };
 
-  // Casillas obligatorias: privacidad en todos los formularios y, en el de
-  // compra, tambien terminos (src/components/Checkout.astro).
   const consentSelector = 'input[name="privacy_consent"], input[name="terms_consent"]';
 
   const syncFormAvailability = (form: HTMLFormElement) => {
@@ -673,8 +671,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           const fieldMessage = data?.error?.fields ? Object.values(data.error.fields)[0] : undefined;
           setStatus(form, fieldMessage ?? data?.error?.message ?? fallbackError, 'error');
           form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
-          // El checkout decide que hacer con un inscrito o un programa cerrado
-          // (src/components/Checkout.astro).
           if (kind === 'checkout') {
             document.dispatchEvent(new CustomEvent('squai:checkout-rejected', { detail: data?.error?.code }));
           }

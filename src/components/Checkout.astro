@@ -24,7 +24,6 @@ import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
 
 const { program, ui, labels } = await getSiteContent();
-/** Un texto del CMS por cada moneda de CURRENCIES; una moneda nueva sin texto no compila. */
 const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop, USD: ui.checkout.currency.usd };
 ---
 
@@ -120,8 +119,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
                 <Button variant="primary" type="submit" block>{labels.reserve}</Button>
               </div>
 
-              {/* Fuera del periodo de venta el boton se cambia por un aviso. El
-                  estado lo calcula el Worker (GET /api/checkout/program). */}
               <div class="sales-notice" data-sales-panel="upcoming" hidden>
                 <p class="sales-notice-title">{ui.checkout.status.upcomingTitle}</p>
                 <p class="body">{ui.checkout.status.upcomingBody}</p>
@@ -147,9 +144,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
           <h3 class="display">
             <span data-bold-price>&nbsp;</span> <span data-bold-currency>&nbsp;</span>
           </h3>
-          {/* Los radios pertenecen al formulario (atributo form): la moneda viaja
-              en el cuerpo de /api/checkout/session. COP marcado en el HTML para
-              que haya moneda aunque falle la carga de precios. */}
           <fieldset class="currency-picker" data-currency-picker>
             <legend class="currency-legend">{ui.checkout.currency.label}</legend>
             {
@@ -180,7 +174,8 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 </section>
 
 <script>
-  import { openBoldCheckout, type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
+  import { openBoldCheckout } from '../lib/bold-library';
+  import { type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
   import {
     buttonView,
     canReopen,
@@ -210,8 +205,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
       if (currencySlot) currencySlot.textContent = currency;
     };
 
-    // Precios vigentes por moneda segun el Worker; la moneda marcada es la que
-    // se manda a /api/checkout/session y, por tanto, la que se firma.
     const currencyInputs = Array.from(
       document.querySelectorAll<HTMLInputElement>('[data-currency-picker] input[name="currency"]')
     );
@@ -236,7 +229,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
         };
         showSalesPanel(salesPanel(program.status));
         prices = program.prices;
-        // Una moneda sin precio vigente no se ofrece.
         currencyInputs.forEach((input) => {
           const available = prices[input.value] !== undefined;
           input.disabled = !available;
@@ -272,8 +264,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
     const render = () => {
       if (!submit || !form) return;
-      // Programa proximo o cerrado: el boton queda oculto y deshabilitado, y el
-      // Layout no lo vuelve a habilitar (solo lo gobierna en fase idle).
       if (panel !== 'form') {
         form.dataset.checkoutPhase = panel;
         submit.disabled = true;
@@ -363,8 +353,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
     // Si cambia sus datos, la inscripcion ya firmada deja de corresponderle: se
     // vuelve a "Reservar" y el siguiente envio creara una nueva.
-    // Las casillas de consentimiento no son datos de la inscripcion: marcarlas o
-    // desmarcarlas solo habilita o deshabilita el boton, sin descartar la sesion.
     const edited = (event: Event) => {
       if (isConsentBox(event.target)) {
         render();
@@ -377,8 +365,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     };
     form?.addEventListener('input', edited);
     form?.addEventListener('change', edited);
-    // El selector de moneda esta fuera del <form> en el DOM: sus eventos no
-    // llegan al formulario. Cambiar de moneda tambien invalida la sesion firmada.
     currencyInputs.forEach((input) =>
       input.addEventListener('change', (event) => {
         showSelectedPrice();
@@ -386,9 +372,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
       })
     );
 
-    // El Layout envia este evento cuando /api/checkout/session responde con
-    // error. Al inscrito se lo lleva a /gracias; si el programa cerro mientras
-    // llenaba el formulario, el boton se cambia por el aviso.
     document.addEventListener('squai:checkout-rejected', (event) => {
       const action = rejectionAction((event as CustomEvent<string | undefined>).detail);
       if (action === 'enrolled') {
@@ -402,8 +385,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     // El Layout envia este evento cuando /api/checkout/session responde bien.
     document.addEventListener('squai:checkout-session', (event) => {
       const session = (event as CustomEvent<CheckoutSession>).detail;
-      // Lo que queda a la vista es exactamente lo firmado, aunque el precio
-      // hubiera cambiado entre la carga de la pagina y el envio.
       showPrice(session.amount, session.currency);
 
       // Prellena el formulario de Bold con lo que la persona ya escribio.

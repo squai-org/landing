@@ -8,11 +8,6 @@ export interface CustomerContact {
   phoneE164: string;
 }
 
-/**
- * Un cliente por correo normalizado. Si ya existe, gana el ultimo formulario:
- * se actualizan sus datos de contacto y se conserva el id, para que todas sus
- * ordenes sigan apuntando al mismo cliente.
- */
 const UPSERT_SQL = `
   INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
   VALUES (?, ?, ?, ?, ?)

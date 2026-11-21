@@ -94,11 +94,6 @@ export const siteSchema = z.object({
       .refine((item) => Boolean(item.target || item.href), 'Provide a target or href')),
   }).refine((item) => Boolean(item.h) !== Boolean(item.headingKey), 'Provide h or headingKey')),
   seo: z.object({ title: text, description: text, imageAlt: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
-  /**
-   * Datos de Squai que exige el acuse de recibo (Ley 1480 art. 50) en el correo
-   * de confirmacion. Razon social y NIT deben ser los de los Terminos de
-   * Servicio; un test de build lo comprueba.
-   */
   company: z.object({ legalName: text, nit: text, address: text, phone: text, contact: text }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
@@ -110,11 +105,6 @@ export const siteSchema = z.object({
     finalCta: z.object({ title: text, body: paragraphs, cta: text }),
     follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
-    /**
-     * El precio no esta aqui: vive en la tabla program_prices de D1, por moneda
-     * y fecha de vigencia, para poder cambiarlo sin desplegar, y es el mismo
-     * monto que se firma para Bold. Ver docs/bold-checkout.md.
-     */
     checkout: z.object({
       title: text,
       copy: paragraphs,
@@ -126,22 +116,12 @@ export const siteSchema = z.object({
         rejectedTitle: text, rejectedBody: text,
         errorTitle: text, errorBody: text,
         orderLabel: text, backCta: text,
-        /** /gracias?estado=inscrito: el correo ya tiene una orden aprobada en el programa. */
         enrolledTitle: text, enrolledBody: text,
       }),
       investment: z.object({ eyebrow: text, copy: paragraphs }),
       button: z.object({ paying: text, retry: text }),
-      /** Selector de moneda de la tarjeta de inversion. */
       currency: z.object({ label: text, cop: text, usd: text }),
-      /**
-       * Aviso que reemplaza al boton fuera del periodo de venta. El estado lo
-       * calcula el Worker con los limites de D1 (program_limits).
-       */
       status: z.object({ upcomingTitle: text, upcomingBody: text, closedTitle: text, closedBody: text }),
-      /**
-       * Pagina /retomar: abre de nuevo el pago de una orden sin pagar desde el
-       * enlace del correo o al abandonar el modal de Bold.
-       */
       resume: z.object({
         checking: text,
         expiredTitle: text, expiredBody: text,
@@ -150,12 +130,6 @@ export const siteSchema = z.object({
         backCta: text,
         errorTitle: text, errorBody: text,
       }),
-      /**
-       * Textos del correo de confirmacion que arma el Worker
-       * (src/server/services/email.service.ts); el resto esta en la plantilla
-       * de Brevo (src/emails/confirmation.html). Las claves de paymentMethods
-       * son las formas de pago que informa Bold.
-       */
       confirmationEmail: z.object({
         pending: text,
         durationOne: text.refine((value) => value.includes('{weeks}'), 'Include {weeks}'),

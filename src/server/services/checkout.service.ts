@@ -30,22 +30,12 @@ export interface CheckoutSession {
   amount: number;
   currency: Currency;
   description: string;
-  /** Impuesto incluido en el monto que se declara a Bold (data-tax). No entra en la firma. */
   tax: Tax;
   integritySignature: string;
 }
 
-/**
- * Bold acepta en data-order-id letras, digitos, `_` y `-` hasta 60 caracteres,
- * y pide que sea unico por venta. Se antepone el programa para poder leer en
- * el panel de Bold que se vendio sin cruzar tablas.
- */
 const newOrderId = (code: string) => `${code}-${crypto.randomUUID().replaceAll('-', '')}`.slice(0, 60);
 
-/**
- * Sin llaves no se puede cobrar. Se responde 503 y no 500 porque el codigo
- * esta bien: lo que falta es la configuracion del entorno.
- */
 const boldKeys = (env: Env) => {
   const apiKey = env.BOLD_IDENTITY_KEY;
   const secretKey = env.BOLD_SECRET_KEY;
@@ -58,10 +48,6 @@ const boldKeys = (env: Env) => {
   return { apiKey, secretKey };
 };
 
-/**
- * Guarda una orden pendiente y la firma para Bold. La orden congela monto,
- * moneda e impuesto: un cambio de precio posterior no la toca.
- */
 const openOrder = async (
   env: Env,
   keys: ReturnType<typeof boldKeys>,
@@ -97,10 +83,6 @@ const openOrder = async (
   };
 };
 
-/**
- * `now` decide que precio rige; la ruta pasa el reloj del Worker y los tests
- * un instante fijo.
- */
 export const createCheckoutSession = async (
   env: Env,
   input: CheckoutSessionInput,
@@ -121,12 +103,8 @@ export const createCheckoutSession = async (
 
   const program = await loadProgram(env, input.program, now, meta.ipCountry);
   await assertOpenAndNotEnrolled(env, program, input.email);
-  // Antes de tocar la base: una moneda sin precio no deja cliente ni orden.
   priceIn(program, input.currency);
 
-  // La orden se guarda antes de abrir el pago: es lo que liga el order-id con
-  // el cliente, y deja rastro de quien empieza y no termina. El cliente se
-  // reutiliza por correo y queda con los datos de este formulario.
   const customerId = await upsertCustomer(env.DB, {
     email: input.email,
     fullName: input.full_name,
@@ -143,17 +121,8 @@ export const createCheckoutSession = async (
   );
 };
 
-/**
- * Aviso de que una orden acaba de pasar a aprobada (solo en la transicion).
- * La ruta lo usa para programar el correo de confirmacion sin esperar a Brevo.
- */
 export type OnApproved = (orderId: string) => void;
 
-/**
- * Aplica un veredicto de Bold con applyOrderPayment (la unica escritura del
- * estado de pago) y avisa a onApproved solo si esta llamada aprobo la orden.
- * Lo usan el webhook, /status y retomar.
- */
 const applyPayment = async (
   env: Env,
   orderId: string,
@@ -164,11 +133,6 @@ const applyPayment = async (
   if (becameApproved) onApproved(orderId);
 };
 
-/**
- * Tipos de evento del webhook traducidos a estado de orden.
- * VOID_REJECTED (una anulacion que fallo) no cambia nada: el pago sigue como
- * estaba. https://developers.bold.co/webhook
- */
 const WEBHOOK_STATUS: Record<string, OrderStatus | undefined> = {
   SALE_APPROVED: 'approved',
   SALE_REJECTED: 'rejected',
@@ -226,8 +190,6 @@ export const handleBoldWebhook = async (
   });
 
   // Red de seguridad: si el comprador cerro la pestana y nunca volvio a la
-  // pagina de gracias, la venta queda registrada igual. applyOrderPayment es
-  // idempotente, asi que no importa quien llegue primero.
   const status = WEBHOOK_STATUS[parsed.type];
   const reference = data.metadata?.reference;
 
@@ -243,10 +205,6 @@ export const handleBoldWebhook = async (
   return { type: parsed.type, paymentId: data.payment_id };
 };
 
-/**
- * Estados de Bold traducidos a los de una orden. NO_TRANSACTION_FOUND y
- * PENDING (que solo usa PSE) son "todavia no hay veredicto", no un rechazo.
- */
 const ORDER_STATUS: Record<BoldPaymentStatus, OrderStatus> = {
   NO_TRANSACTION_FOUND: 'pending',
   PENDING: 'pending',
@@ -259,7 +217,6 @@ const ORDER_STATUS: Record<BoldPaymentStatus, OrderStatus> = {
 
 const FINAL_STATUSES: OrderStatus[] = ['approved', 'rejected', 'failed', 'voided'];
 
-/** Lo que se escribe en la orden a partir de la consulta de estado a Bold. */
 const voucherPayment = (voucher: BoldVoucher, status: OrderStatus) => ({
   status,
   transactionId: voucher.transactionId,
@@ -274,14 +231,6 @@ export interface OrderStatusView {
   fullName: string;
 }
 
-/**
- * Verificacion de retorno: la pagina de gracias pregunta por un order-id y el
- * Worker le pregunta a Bold. Los parametros que Bold anade a la URL
- * (bold-tx-status) no entran aqui: cualquiera puede escribirlos a mano.
- *
- * Si la orden ya tiene un estado final no se vuelve a llamar a Bold: ahorra
- * la llamada saliente y hace inofensivo que la pagina reintente.
- */
 export const confirmOrder = async (
   env: Env,
   orderId: string,
@@ -318,10 +267,6 @@ export const confirmOrder = async (
 
 export type ResumeResult = { session: CheckoutSession } | { enrolled: true; orderId: string };
 
-/**
- * Retomar una orden sin pagar desde el enlace de /retomar (y el origin-url de
- * Bold). Ver docs/bold-checkout.md.
- */
 export const resumeOrder = async (
   env: Env,
   input: CheckoutResumeInput,
@@ -335,10 +280,8 @@ export const resumeOrder = async (
 
   const keys = boldKeys(env);
 
-  // Quien ya pago y abre un enlace viejo va a /gracias, no a "expirado".
   if (previous.status === 'approved') return { enrolled: true, orderId: previous.orderId };
 
-  // created_at es ISO-8601 UTC (Date#toISOString), igual que `now`.
   const expiresAt = Date.parse(previous.createdAt) + checkout.resumeExpiryDays * DAY_MS;
   if (now.getTime() > expiresAt) {
     throw gone('resume_expired', 'El enlace para retomar la compra expiro.');
@@ -348,9 +291,6 @@ export const resumeOrder = async (
 
   if (status === 'approved') return { enrolled: true, orderId: previous.orderId };
 
-  // Orden nueva y no la misma: Bold pide un order-id unico por venta, y la
-  // anterior pudo quedar a medias en su modal. Mismo cliente, sin volver a
-  // pedir sus datos, y el precio vigente hoy en la moneda que eligio.
   const program = await loadProgram(env, previous.programCode, now, meta.ipCountry);
   await assertOpenAndNotEnrolled(env, program, previous.email);
 
@@ -369,14 +309,6 @@ export const resumeOrder = async (
   };
 };
 
-/**
- * Estado de la orden anterior segun Bold, aplicado con applyOrderPayment.
- *
- * Bold solo responde por una orden durante unas 24 horas, y el enlace vive 7
- * dias: si no contesta, o contesta NO_TRANSACTION_FOUND, vale lo guardado en
- * D1 y la orden cuenta como no pagada. NO_TRANSACTION_FOUND no se aplica para
- * no devolver a pendiente una orden ya rechazada.
- */
 const refreshResumedStatus = async (
   env: Env,
   identityKey: string,
