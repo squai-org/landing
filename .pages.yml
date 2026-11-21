@@ -1421,6 +1421,19 @@ content:
                     label: Enlace "Saltar al contenido"
                     type: string
                     required: true
+                  - name: motion
+                    label: Control de animaciones
+                    type: object
+                    required: true
+                    fields:
+                      - name: pause
+                        label: Texto del botón para pausar las animaciones
+                        type: string
+                        required: true
+                      - name: resume
+                        label: Texto del botón para reanudar las animaciones
+                        type: string
+                        required: true
       - name: footer
         label: Footer
         type: file

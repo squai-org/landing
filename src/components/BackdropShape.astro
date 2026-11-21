@@ -1,0 +1,31 @@
+---
+import { BLOCK_CENTER, BLOCK_PATH, BLOCK_WIDTH, backdropShapes, type BackdropShapeName } from '../lib/backdrop-shapes';
+
+interface Props {
+  shape: BackdropShapeName;
+  align?: `x${'Min' | 'Mid' | 'Max'}Y${'Min' | 'Mid' | 'Max'}`;
+  flip?: 'x' | 'y' | 'xy';
+  still?: boolean;
+  parallax?: number;
+  class?: string;
+}
+
+const { shape, align = 'xMidYMid', flip, still = false, parallax, class: className = '' } = Astro.props;
+const { width, height, blocks } = backdropShapes[shape];
+---
+
+<div class:list={['backdrop', !still && 'ambient', className]} aria-hidden="true" data-flip={flip}>
+  <div class="backdrop-frame" data-parallax={parallax}>
+    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio={`${align} slice`} focusable="false">
+      {
+        blocks.map((block) => (
+          <g transform={`translate(${block.x} ${block.y}) rotate(${block.rotation}) scale(${block.size / BLOCK_WIDTH})`}>
+            <g class="backdrop-block" data-layer={block.layer} style={`--backdrop-delay:${block.delay}s`}>
+              <path d={BLOCK_PATH} transform={`translate(${-BLOCK_CENTER.x} ${-BLOCK_CENTER.y})`}></path>
+            </g>
+          </g>
+        ))
+      }
+    </svg>
+  </div>
+</div>

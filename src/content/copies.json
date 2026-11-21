@@ -59,6 +59,10 @@
         "closeLabel": "Cerrar"
       },
       "skip": "Saltar al contenido",
+      "motion": {
+        "pause": "Pausar animaciones",
+        "resume": "Reanudar animaciones"
+      },
       "footer": {
         "copyright": "© 2026 Squai · Todos los derechos reservados"
       },

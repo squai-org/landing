@@ -1,0 +1,24 @@
+---
+interface Props {
+  items: string[];
+  tone?: 'gold' | 'dark';
+  reverse?: boolean;
+  duration?: number;
+  tilt?: number;
+  label?: string;
+}
+
+const { items, tone = 'gold', reverse = false, duration = 26, tilt = 0, label } = Astro.props;
+const summary = label ?? items.join(', ');
+---
+
+<div
+  class:list={['marquee', `marquee--${tone}`, reverse && 'marquee--reverse']}
+  style={`--marquee-duration:${duration}s;--marquee-tilt:${tilt}deg`}
+>
+  <p class="sr-only">{summary}</p>
+  <div class="marquee-track ambient" aria-hidden="true">
+    <ul class="marquee-group">{items.map((item) => <li>{item}</li>)}</ul>
+    <ul class="marquee-group marquee-group--copy">{items.map((item) => <li>{item}</li>)}</ul>
+  </div>
+</div>
