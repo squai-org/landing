@@ -51,6 +51,17 @@ const firstSessionOf = syllabus.modules.map((_, index) =>
       }
     </ol>
 
+    {
+      syllabus.outcome && (
+        <div class="syllabus-outcome" data-reveal="card">
+          <h3 class="display d-h2">{syllabus.outcome.headline}</h3>
+          <div class="syllabus-outcome-copy">
+            {syllabus.outcome.body.map((paragraph) => <p class="lead">{paragraph}</p>)}
+          </div>
+        </div>
+      )
+    }
+
     <div class="syllabus-cta">
       {
         cta.modal ? (
@@ -131,6 +142,17 @@ const firstSessionOf = syllabus.modules.map((_, index) =>
     background: var(--canvas);
   }
   .syllabus-session-tag { font-family: var(--font-display); font-size: var(--t-label); font-weight: 700; color: var(--ink); }
+  .syllabus-outcome {
+    display: grid;
+    padding: clamp(24px, 3vw, 48px);
+    gap: clamp(14px, 1.6vw, 24px);
+    border-radius: var(--radius-xl);
+    background: var(--accent-soft);
+    color: var(--ink);
+  }
+  .syllabus-outcome h3 { max-width: 28ch; }
+  .syllabus-outcome-copy { display: grid; max-width: 74ch; gap: 14px; }
+  .syllabus-outcome .lead { margin: 0; color: var(--ink-body); }
   .syllabus-cta { display: flex; }
 
   @media (min-width: 768px) {

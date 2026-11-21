@@ -691,32 +691,6 @@ content:
             type: number
             required: true
             readonly: true
-      - name: one-payback
-        label: Qué te llevas
-        type: file
-        path: src/content/services/squai-one.json
-        format: json
-        fields:
-          - name: payback
-            label: false
-            type: object
-            required: true
-            fields:
-              - name: headline
-                label: Titular
-                type: string
-                required: true
-              - name: body
-                label: Párrafos
-                type: text
-                required: true
-                list:
-                  min: 1
-                  collapsible: true
-          - name: ctaSecondary
-            label: Texto del botón en esta sección
-            description: Vacío usa el texto del botón principal.
-            type: string
       - name: one-video
         label: Video de presentación
         description: Con una URL de YouTube se muestra el video, que solo se descarga cuando la persona pulsa reproducir. Vacía, se muestra la ilustración.
@@ -752,82 +726,6 @@ content:
                 label: Descripción de la ilustración
                 type: string
                 required: true
-      - name: one-desafio
-        label: Desafío
-        description: El título de la sección se edita en Transversal → Títulos compartidos.
-        type: file
-        path: src/content/services/squai-one.json
-        format: json
-        fields:
-          - name: challenge
-            label: false
-            type: object
-            required: true
-            fields:
-              - name: cards
-                label: Tarjetas
-                type: object
-                required: true
-                list:
-                  min: 1
-                  collapsible:
-                    summary: '{t}'
-                fields:
-                  - name: t
-                    label: Título
-                    type: string
-                    required: true
-                  - name: d
-                    label: Descripción
-                    type: text
-                    required: true
-      - name: one-programa
-        label: Programa
-        description: El título de la sección se edita en Transversal → Títulos compartidos.
-        type: file
-        path: src/content/services/squai-one.json
-        format: json
-        fields:
-          - name: capabilities
-            label: false
-            type: object
-            required: true
-            fields:
-              - name: groups
-                label: Bloques
-                type: object
-                required: true
-                list:
-                  min: 1
-                  collapsible:
-                    summary: '{t}'
-                fields:
-                  - name: t
-                    label: Título
-                    type: string
-                    required: true
-                  - name: tone
-                    label: Tono visual
-                    type: select
-                    options:
-                      values:
-                        - label: Neutro
-                          value: ''
-                        - label: Periwinkle
-                          value: peri
-                        - label: Oscuro
-                          value: dark
-                        - label: Turquesa
-                          value: teal
-                        - label: Dorado
-                          value: gold
-                  - name: items
-                    label: Puntos
-                    type: string
-                    required: true
-                    list:
-                      min: 1
-                      collapsible: false
       - name: one-para-quien
         label: Para quién es
         description: Perfiles, a quién no le sirve y qué necesita quien se inscribe.
@@ -997,6 +895,22 @@ content:
                 label: Título de la lista de temas
                 type: string
                 required: true
+              - name: outcome
+                label: Qué te llevas
+                description: Cierre del temario, antes del botón de inscripción.
+                type: object
+                fields:
+                  - name: headline
+                    label: Titular
+                    type: string
+                    required: true
+                  - name: body
+                    label: Párrafos
+                    type: text
+                    required: true
+                    list:
+                      min: 1
+                      collapsible: true
               - name: modules
                 label: Módulos
                 type: object
@@ -1156,6 +1070,18 @@ content:
         path: src/content/services/squai-one.json
         format: json
         fields:
+          - name: faqIntro
+            label: Introducción de las preguntas
+            type: object
+            fields:
+              - name: lead
+                label: Texto de apoyo
+                type: string
+                required: true
+              - name: categoriesLabel
+                label: Título de la lista de categorías
+                type: string
+                required: true
           - name: faqs
             label: Preguntas
             type: object
@@ -1169,6 +1095,10 @@ content:
                 label: Pregunta
                 type: string
                 required: true
+              - name: category
+                label: Categoría
+                description: Las preguntas con la misma categoría se agrupan juntas, en el orden en que aparece la primera.
+                type: string
               - name: a
                 label: Respuesta
                 type: text
@@ -2663,11 +2593,6 @@ content:
                     fields:
                       - name: payback
                         label: Título de la sección "Qué te llevas"
-                        type: string
-                        required: true
-                      - name: capabilitiesFallback
-                        label: Título del programa (respaldo)
-                        description: Se usa en Squai Grow y Squai Learn en lugar del título anterior.
                         type: string
                         required: true
                   - name: updated
