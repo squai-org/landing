@@ -581,6 +581,123 @@
                 ]
               }
             ]
+          },
+          {
+            "title": "12. Programas de Squai One",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Este apartado aplica a quienes se inscriben en un programa de Squai One, como \"Fundamentos de Inteligencia Artificial Generativa\". Complementa el resto de estos términos. Las fechas, el horario, el cupo, las fechas de inscripción y el Precio de cada cohorte son los que publicamos en la página del programa; ahí los encuentras siempre actualizados."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Modalidad y grupo. El programa es virtual y en vivo, en grupos reducidos para que cada persona reciba atención. El número de cupos y el calendario de cada cohorte están en la página del programa."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Inscripción y pago. El Precio incluye el IVA y los demás impuestos: pagas lo que ves. Te cobramos el Precio vigente en el momento en que envías el formulario de inscripción, y ese es el monto que confirmas al pagar. Los medios de pago disponibles aparecen en la ventana de pago. Tu cupo queda confirmado cuando se aprueba el pago; mientras el pago no esté aprobado, no hay inscripción."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Qué incluye. Tu inscripción cubre:"
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Las sesiones en vivo del programa.",
+                  "El acceso a las grabaciones.",
+                  "El grupo de WhatsApp de la cohorte.",
+                  "Las guías y el material de trabajo.",
+                  "El certificado, si cumples el requisito de asistencia.",
+                  "El acompañamiento del equipo durante el programa."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Qué necesitas de tu parte. Cada persona se conecta con un computador, una conexión a internet estable y una cuenta gratuita en las herramientas que usaremos. Te enviamos por correo el enlace de acceso una semana antes de empezar. Cada herramienta de inteligencia artificial tiene sus propios términos, límites y cambios, que Squai no controla; es tu responsabilidad revisarlos y cumplirlos."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Grabaciones. Grabamos las sesiones y puedes verlas hasta un mes después de la última sesión del programa. Su uso es personal, conforme a la sección de propiedad del material."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Certificado y asistencia. Recibes el certificado si asistes al menos al 80 % de las sesiones. Una inasistencia que nos avises con anticipación y justifiques no se cuenta en contra de ese porcentaje."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Cesión del cupo. Puedes ceder tu cupo a otra persona escribiéndonos a "
+                  },
+                  {
+                    "text": "team@squai.io",
+                    "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": ". La cesión queda confirmada cuando te respondamos y recibamos los datos de la nueva persona."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Fuerza mayor del participante. Si un accidente o una enfermedad te impide participar, antes o durante el programa, escríbenos a "
+                  },
+                  {
+                    "text": "team@squai.io",
+                    "href": "mailto:team@squai.io"
+                  },
+                  {
+                    "text": " con el soporte correspondiente. Estudiaremos tu caso y te informaremos si procede la devolución del valor pagado y en qué términos. Las cancelaciones por parte de Squai se rigen por la sección de cancelaciones."
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "text": "Tus datos. Tratamos tus datos personales según nuestra "
+                  },
+                  {
+                    "text": "Política de Privacidad",
+                    "href": "/politica-de-privacidad"
+                  },
+                  {
+                    "text": "."
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
