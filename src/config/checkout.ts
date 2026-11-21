@@ -11,7 +11,7 @@ export const checkout = {
    * monto (Bold no lo suma). Lo lee el Worker y queda en la orden.
    * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
    */
-  tax: 'vat-19',
+  tax: 'vat-19' as const,
   /** Libreria del Boton de pagos. Debe estar permitida en la CSP. */
   libraryUrl: 'https://checkout.bold.co/library/boldPaymentButton.js',
   /** A donde vuelve el comprador. Bold le anade bold-order-id y bold-tx-status,
@@ -31,3 +31,23 @@ export const checkout = {
    */
   recoveryDelayHours: 2,
 };
+
+/**
+ * Monedas en que se puede pagar. Las mismas del CHECK de program_prices
+ * (0007); las usan el esquema de /api/checkout/session, el repositorio y el
+ * selector de moneda.
+ */
+export const CURRENCIES = ['COP', 'USD'] as const;
+
+export type Currency = (typeof CURRENCIES)[number];
+
+/** Impuesto que se declara a Bold (checkout.tax). */
+export type Tax = typeof checkout.tax;
+
+/**
+ * Enlace para retomar una orden sin pagar: solo lleva el order-id, que es
+ * opaco y no tiene datos personales. Lo usan el origin-url de Bold y el
+ * correo de recuperacion.
+ */
+export const resumeUrl = (origin: string, orderId: string): string =>
+  `${origin}${checkout.resumePath}?order_id=${encodeURIComponent(orderId)}`;

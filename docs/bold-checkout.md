@@ -299,7 +299,9 @@ o con `email.templates.recovery` en `null` el cron no envía ni toca nada. Se
 procesan hasta 50 recuperaciones nuevas y 50 reintentos por ejecución.
 
 Parámetros de la plantilla (`RECOVERY_PARAMS`): `FIRST_NAME` (primera palabra
-del nombre), `PROGRAM_NAME` (`programs.description`) y `RESUME_URL`.
+del nombre), `PROGRAM_NAME` (`programs.description`), `RESUME_URL` y
+`RESUME_EXPIRY_DAYS` (`checkout.resumeExpiryDays`, el mismo plazo que aplica
+`/api/checkout/resume`; la plantilla no lo escribe a mano).
 
 ### Llave y remitente
 
@@ -339,13 +341,22 @@ Montos: el IVA del 19 % va incluido. `base = round(total / 1.19)` e
 `IVA = total − base`, en enteros, así base + IVA siempre suma lo cobrado
 (440.000 → 369.748 + 70.252). Las órdenes sin `tax` (anteriores a 0007) van
 completas como base. Fechas y horario salen de `programs.starts_on`,
-`ends_on` y `schedule`; si están vacíos el correo dice "Por confirmar".
+`ends_on` y `schedule`; si están vacíos el correo usa
+`ui.checkout.confirmationEmail.pending`.
+
+Los textos que arma el Worker (dato pendiente, duración, cuándo llega el enlace
+de las sesiones, nombre de cada forma de pago) están en
+`ui.checkout.confirmationEmail` y los datos de Squai del acuse de recibo en
+`company`, ambos en `src/content/copies.json` y editables en Pages CMS
+(Inscripción). El Worker los lee con `src/server/lib/copy.ts`; el esquema los
+valida en `astro build` y un test de build comprueba que razón social y NIT
+son los de los Términos de Servicio. Los meses los escribe `Intl` (es-CO).
 
 ### Pendientes del equipo
 
 - Subir las dos plantillas (confirmación y recuperación) a Brevo y poner sus
   ids en `src/config/email.ts`.
-- **Dirección y teléfono de Squai**: en `email.company` quedan
+- **Dirección y teléfono de Squai**: en `company` (contenido) quedan
   `[DIRECCION PENDIENTE]` y `[TELEFONO PENDIENTE]`, y así salen en el correo
   hasta que se reemplacen. Razón social y NIT son los de los Términos de
   Servicio.
@@ -402,7 +413,7 @@ Quien llenó el formulario y no pagó vuelve con un enlace,
 enlace solo lleva el `order_id`, que es opaco (programa + UUID) y no tiene
 datos personales. Es el `originUrl` que el checkout manda a Bold en cada pago
 (a donde vuelve quien abandona o cancela el modal) y el enlace del correo de
-recuperación. Lo arma `resumeUrl()` en `src/lib/bold-checkout.ts`; la ruta y
+recuperación. Lo arma `resumeUrl()` en `src/config/checkout.ts`; la ruta y
 el plazo viven en `src/config/checkout.ts` (`resumePath`, `resumeExpiryDays`).
 
 `src/pages/retomar.astro` (con `noindex` y fuera del sitemap) llama a

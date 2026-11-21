@@ -2,6 +2,7 @@ import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../src/server/index';
 import { email } from '../../src/config/email';
+import { company } from '../../src/server/lib/copy';
 import {
   APPROVED_SALE_BODY,
   APPROVED_SALE_SIGNATURE,
@@ -153,8 +154,8 @@ describe('correo de confirmacion de inscripcion', () => {
         SESSIONS_LINK_INFO: 'antes del 12 de enero de 2027',
         COMPANY_NAME: 'Squai S.A.S.',
         COMPANY_NIT: '902.071.792',
-        COMPANY_ADDRESS: email.company.address,
-        COMPANY_PHONE: email.company.phone,
+        COMPANY_ADDRESS: company.address,
+        COMPANY_PHONE: company.phone,
         COMPANY_CONTACT: 'team@squai.io',
         TERMS_URL: 'https://squai.io/terminos-de-servicio',
       },

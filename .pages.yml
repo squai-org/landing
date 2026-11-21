@@ -1943,6 +1943,7 @@ content:
                             required: true
                           - name: upcomingBody
                             label: Texto antes de la apertura
+                            description: Sin fechas. La apertura vive en D1 (program_limits); una fecha escrita aquí quedaría mal si cambia.
                             type: string
                             required: true
                           - name: closedTitle
@@ -1955,7 +1956,7 @@ content:
                             required: true
                       - name: resume
                         label: Página para retomar el pago
-                        description: Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace (7 días) vive en src/config/checkout.ts.
+                        description: Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace vive en src/config/checkout.ts (resumeExpiryDays): no lo repitas en estos textos.
                         type: object
                         required: true
                         fields:
@@ -1999,6 +2000,92 @@ content:
                             label: Texto de error
                             type: string
                             required: true
+                      - name: confirmationEmail
+                        label: Correo de confirmación
+                        description: Textos que arma el Worker para el correo de confirmación (acuse de recibo). El resto del correo está en la plantilla de Brevo (src/emails/confirmation.html). Fechas y horario salen de D1 (programs).
+                        type: object
+                        required: true
+                        fields:
+                          - name: pending
+                            label: Dato sin confirmar
+                            description: Lo que sale en fechas, horario o duración mientras no estén en D1.
+                            type: string
+                            required: true
+                          - name: durationOne
+                            label: Duración de una semana
+                            description: Debe incluir {weeks}.
+                            type: string
+                            required: true
+                          - name: durationMany
+                            label: Duración de varias semanas
+                            description: Debe incluir {weeks}.
+                            type: string
+                            required: true
+                          - name: sessionsLinkBefore
+                            label: Cuándo llega el enlace de las sesiones
+                            description: Debe incluir {date}, la fecha de inicio.
+                            type: string
+                            required: true
+                          - name: sessionsLinkFallback
+                            label: Cuándo llega el enlace, sin fecha de inicio
+                            type: string
+                            required: true
+                          - name: paymentMethods
+                            label: Formas de pago
+                            description: Nombre de cada forma de pago que informa Bold.
+                            type: object
+                            required: true
+                            fields:
+                              - name: CREDIT_CARD
+                                label: Tarjeta de crédito
+                                type: string
+                                required: true
+                              - name: DEBIT_CARD
+                                label: Tarjeta débito
+                                type: string
+                                required: true
+                              - name: PSE
+                                label: PSE
+                                type: string
+                                required: true
+                              - name: NEQUI
+                                label: Nequi
+                                type: string
+                                required: true
+                              - name: BOTON_BANCOLOMBIA
+                                label: Botón Bancolombia
+                                type: string
+                                required: true
+                          - name: paymentMethodFallback
+                            label: Forma de pago desconocida
+                            type: string
+                            required: true
+              - name: company
+                label: Datos de Squai en el correo
+                description: Salen en el correo de confirmación (acuse de recibo, Ley 1480 art. 50). Razón social y NIT deben ser los mismos de los Términos de Servicio.
+                type: object
+                required: true
+                fields:
+                  - name: legalName
+                    label: Razón social
+                    type: string
+                    required: true
+                  - name: nit
+                    label: NIT
+                    type: string
+                    required: true
+                  - name: address
+                    label: Dirección
+                    type: string
+                    required: true
+                  - name: phone
+                    label: Teléfono
+                    type: string
+                    required: true
+                  - name: contact
+                    label: Correo de contacto
+                    type: string
+                    required: true
       - name: titulos-compartidos
         label: Títulos compartidos
         description: Títulos que se repiten igual en las tres páginas de servicio y en las legales.

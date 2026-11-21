@@ -1,4 +1,4 @@
-import { checkout } from '../config/checkout';
+import { resumeUrl } from '../config/checkout';
 
 /**
  * Datos de una venta firmada por el Worker (POST /api/checkout/session).
@@ -15,13 +15,7 @@ export interface CheckoutSession {
   integritySignature: string;
 }
 
-/**
- * Configuracion para `new BoldCheckout(config)`, la "integracion personalizada"
- * de Bold: el boton lo pinta el sitio con su propio estilo y la libreria solo
- * abre el modal. Las propiedades son las de los atributos data-* del boton, en
- * camelCase.
- * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
- */
+/** Datos del formulario con que se prellena el de Bold. */
 export interface CustomerData {
   fullName: string;
   email: string;
@@ -30,13 +24,12 @@ export interface CustomerData {
 }
 
 /**
- * Enlace para retomar una orden sin pagar: solo lleva el order-id, que es
- * opaco y no tiene datos personales. Lo usan el origin-url de Bold y el
- * correo de recuperacion.
+ * Configuracion para `new BoldCheckout(config)`, la "integracion personalizada"
+ * de Bold: el boton lo pinta el sitio con su propio estilo y la libreria solo
+ * abre el modal. Las propiedades son las de los atributos data-* del boton, en
+ * camelCase.
+ * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
  */
-export const resumeUrl = (origin: string, orderId: string): string =>
-  `${origin}${checkout.resumePath}?order_id=${encodeURIComponent(orderId)}`;
-
 export const boldCheckoutConfig = (session: CheckoutSession, redirectionUrl: string, customer?: CustomerData) => ({
   apiKey: session.apiKey,
   orderId: session.orderId,

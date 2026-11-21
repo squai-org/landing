@@ -1,8 +1,9 @@
-import { checkout } from '../../config/checkout';
+import { checkout, resumeUrl } from '../../config/checkout';
 import { email } from '../../config/email';
-import { resumeUrl } from '../../lib/bold-checkout';
-import { SITE_URL } from '../../lib/seo';
+import { legalPaths } from '../../config/legal';
+import { SITE_URL } from '../../config/site';
 import { sendBrevoTemplateEmail } from '../lib/brevo';
+import { company, confirmationEmailCopy as copy } from '../lib/copy';
 import {
   claimEmailMessage,
   findConfirmationData,
@@ -50,7 +51,7 @@ type ConfirmationParams = Record<(typeof CONFIRMATION_PARAMS)[number], string>;
  * Parametros de la plantilla de recuperacion (src/emails/recovery.html); el
  * mismo test de build comprueba que coinciden.
  */
-export const RECOVERY_PARAMS = ['FIRST_NAME', 'PROGRAM_NAME', 'RESUME_URL'] as const;
+export const RECOVERY_PARAMS = ['FIRST_NAME', 'PROGRAM_NAME', 'RESUME_URL', 'RESUME_EXPIRY_DAYS'] as const;
 
 type RecoveryParams = Record<(typeof RECOVERY_PARAMS)[number], string>;
 
@@ -74,38 +75,31 @@ export const vatBreakdown = (total: number, tax: string | null) => {
 /** $440.000: separador de miles con punto, como se escribe en Colombia. */
 const money = (amount: number) => `$${String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
 
-const MONTHS = [
-  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
-];
+/**
+ * "12 de <mes> de 2027": los nombres de los meses los pone Intl (es-CO), no
+ * este archivo. En UTC porque el dia viene sin hora y no debe correrse.
+ */
+const LONG_DATE = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-const PENDING = 'Por confirmar';
-
-/** YYYY-MM-DD a "12 de enero de 2027"; sin fecha, "Por confirmar". */
-const longDate = (day: string | null) => {
-  const match = day?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) return null;
-  return `${Number(match[3])} de ${MONTHS[Number(match[2]) - 1]} de ${match[1]}`;
-};
+/** YYYY-MM-DD a fecha larga en espanol; sin fecha valida, null. */
+const longDate = (day: string | null) =>
+  day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? LONG_DATE.format(new Date(`${day}T00:00:00Z`)) : null;
 
 /** Semanas entre inicio y fin, contando ambos dias. */
 const duration = (startsOn: string | null, endsOn: string | null) => {
-  if (!longDate(startsOn) || !longDate(endsOn)) return PENDING;
-  const days = (Date.parse(`${endsOn}T00:00:00Z`) - Date.parse(`${startsOn}T00:00:00Z`)) / 86_400_000 + 1;
+  if (!longDate(startsOn) || !longDate(endsOn)) return copy.pending;
+  const days = (Date.parse(`${endsOn}T00:00:00Z`) - Date.parse(`${startsOn}T00:00:00Z`)) / DAY_MS + 1;
   const weeks = Math.ceil(days / 7);
-  return `${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+  return (weeks === 1 ? copy.durationOne : copy.durationMany).replace('{weeks}', String(weeks));
 };
 
-/** Forma de pago que informa Bold, en palabras del cliente. */
-const PAYMENT_METHODS: Record<string, string> = {
-  CREDIT_CARD: 'Tarjeta de crédito',
-  DEBIT_CARD: 'Tarjeta débito',
-  PSE: 'PSE',
-  NEQUI: 'Nequi',
-  BOTON_BANCOLOMBIA: 'Botón Bancolombia',
+/** Forma de pago que informa Bold, en palabras del cliente; una desconocida va tal cual. */
+const paymentMethod = (method: string | null) => {
+  if (!method) return copy.paymentMethodFallback;
+  return Object.hasOwn(copy.paymentMethods, method)
+    ? copy.paymentMethods[method as keyof typeof copy.paymentMethods]
+    : method;
 };
-
-const paymentMethod = (method: string | null) => (method ? (PAYMENT_METHODS[method] ?? method) : 'Pago en línea con Bold');
 
 export const confirmationParams = (data: ConfirmationData): ConfirmationParams => {
   const { base, vat } = vatBreakdown(data.amount, data.tax);
@@ -120,17 +114,17 @@ export const confirmationParams = (data: ConfirmationData): ConfirmationParams =
     AMOUNT_VAT: money(vat),
     CURRENCY: data.currency,
     PAYMENT_METHOD: paymentMethod(data.paymentMethod),
-    START_DATE: start ?? PENDING,
-    END_DATE: longDate(data.endsOn) ?? PENDING,
-    SCHEDULE: data.schedule?.trim() || PENDING,
+    START_DATE: start ?? copy.pending,
+    END_DATE: longDate(data.endsOn) ?? copy.pending,
+    SCHEDULE: data.schedule?.trim() || copy.pending,
     DURATION: duration(data.startsOn, data.endsOn),
-    SESSIONS_LINK_INFO: start ? `antes del ${start}` : 'antes de la primera sesión',
-    COMPANY_NAME: email.company.name,
-    COMPANY_NIT: email.company.nit,
-    COMPANY_ADDRESS: email.company.address,
-    COMPANY_PHONE: email.company.phone,
-    COMPANY_CONTACT: email.company.contact,
-    TERMS_URL: `${SITE_URL}${email.termsPath}`,
+    SESSIONS_LINK_INFO: start ? copy.sessionsLinkBefore.replace('{date}', start) : copy.sessionsLinkFallback,
+    COMPANY_NAME: company.legalName,
+    COMPANY_NIT: company.nit,
+    COMPANY_ADDRESS: company.address,
+    COMPANY_PHONE: company.phone,
+    COMPANY_CONTACT: company.contact,
+    TERMS_URL: `${SITE_URL}${legalPaths.terms}`,
   };
 };
 
@@ -254,6 +248,8 @@ export const recoveryParams = (data: RecoveryData): RecoveryParams => ({
   FIRST_NAME: firstName(data.fullName),
   PROGRAM_NAME: data.programName,
   RESUME_URL: resumeUrl(SITE_URL, data.orderId),
+  // El plazo sale de la configuracion que aplica /api/checkout/resume, no de la plantilla.
+  RESUME_EXPIRY_DAYS: String(checkout.resumeExpiryDays),
 });
 
 /** Recuperaciones por ejecucion del cron, para acotar su duracion. */

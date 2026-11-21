@@ -13,6 +13,8 @@
 
 import type { APIRoute } from 'astro';
 
+import { checkout } from '../config/checkout';
+import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
 import { CONTACT_EMAIL, SITE_URL } from '../lib/seo';
 
@@ -46,9 +48,9 @@ Squai trabaja en español.
 
 ${serviceLines}
 
-## Programa actual, con inscripciones abiertas.
+## Programa actual
 
-**${program.name}** (${program.ecosystem}) — ${program.status}.
+**${program.name}** (${program.ecosystem}). Si las inscripciones están abiertas, el precio y el pago están en [la página del programa](${SITE_URL}/servicios/${checkout.program}#inscripcion).
 
 - ${program.duration}
 - ${program.schedule}
@@ -57,8 +59,8 @@ ${serviceLines}
 ## Páginas
 
 - [Inicio](${SITE_URL}/): qué hace Squai, servicios, equipo y preguntas frecuentes.
-- [${legal.terms.title.split('|')[0].trim()}](${SITE_URL}/terminos-de-servicio)
-- [${legal.privacy.title.split('|')[0].trim()}](${SITE_URL}/politica-de-privacidad)
+- [${legal.terms.title.split('|')[0].trim()}](${SITE_URL}${legalPaths.terms})
+- [${legal.privacy.title.split('|')[0].trim()}](${SITE_URL}${legalPaths.privacy})
 
 ## Preguntas frecuentes
 

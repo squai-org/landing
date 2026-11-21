@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { checkout } from '../../src/config/checkout';
 import { siteSchema } from '../../src/content/schema';
+import { company, confirmationEmailCopy } from '../../src/server/lib/copy';
 
 /**
  * Todos los textos del flujo de compra se editan desde el CMS. La configuracion
@@ -138,5 +139,58 @@ describe('textos de la pagina para retomar', () => {
 
     expect(checkoutNode).toContain('- name: resume');
     for (const field of RESUME_FIELDS) expect(resumeNode).toContain(`- name: ${field}`);
+  });
+
+  it('no repiten el plazo del enlace, que vive en src/config/checkout.ts', async () => {
+    const site = await loadSite();
+    const pages = await readFile(path.join(root, '.pages.yml'), 'utf8');
+    const days = new RegExp(`\\b${checkout.resumeExpiryDays}\\s*d`, 'i');
+
+    expect(JSON.stringify(site.ui.checkout.resume)).not.toMatch(days);
+    expect(pages).not.toMatch(new RegExp(`\\(${checkout.resumeExpiryDays}\\s*d`, 'i'));
+  });
+});
+
+describe('textos y datos del correo de confirmacion', () => {
+  it('el Worker los lee del mismo contenido que valida el esquema', async () => {
+    const site = await loadSite();
+
+    expect(confirmationEmailCopy).toEqual(site.ui.checkout.confirmationEmail);
+    expect(company).toEqual(site.company);
+  });
+
+  it('razon social y NIT son los de los Terminos de Servicio', async () => {
+    const site = await loadSite();
+    const terms = JSON.stringify(site.legal.terms);
+
+    expect(terms).toContain(site.company.legalName);
+    expect(terms).toContain(`NIT ${site.company.nit}`);
+  });
+
+  it('se pueden editar en Pages CMS', async () => {
+    const pages = await readFile(path.join(root, '.pages.yml'), 'utf8');
+    const emailNode = pages.slice(pages.indexOf('- name: confirmationEmail'));
+    const companyNode = pages.slice(pages.indexOf('- name: company'));
+
+    for (const field of ['pending', 'durationOne', 'durationMany', 'sessionsLinkBefore', 'sessionsLinkFallback', 'paymentMethods', 'paymentMethodFallback']) {
+      expect(emailNode).toContain(`- name: ${field}`);
+    }
+    for (const field of ['legalName', 'nit', 'address', 'phone', 'contact']) expect(companyNode).toContain(`- name: ${field}`);
+  });
+
+  it('no quedan textos del correo escritos en el Worker', async () => {
+    const service = await readFile(path.join(root, 'src/server/services/email.service.ts'), 'utf8');
+
+    for (const text of ['Por confirmar', 'antes de la primera', 'Pago en l', 'Tarjeta de cr', 'enero', 'semana']) {
+      expect(service).not.toContain(text);
+    }
+  });
+});
+
+describe('estado de ventas en el contenido', () => {
+  it('"Proximamente" no promete una fecha: la apertura vive en D1 (program_limits)', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.checkout.status.upcomingBody).not.toMatch(/\d/);
   });
 });

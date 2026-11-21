@@ -115,6 +115,7 @@ describe('cron: correo de recuperacion', () => {
           FIRST_NAME: 'Ana',
           PROGRAM_NAME: 'Fundamentos de Inteligencia Artificial Generativa',
           RESUME_URL: 'https://squai.io/retomar?order_id=SQUAI-ONE-ANA-1',
+          RESUME_EXPIRY_DAYS: '7',
         },
         tags: ['recovery'],
       },
