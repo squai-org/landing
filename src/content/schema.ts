@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { youtubeVideoId } from '../lib/youtube';
 
 const text = z.string().min(1);
 const paragraphs = z
@@ -32,6 +33,11 @@ const labels = z.object({
 });
 const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone });
+const youtubeUrl = text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
+const videoSchema = z.object({
+  url: optional(youtubeUrl),
+  title: text, playLabel: text, iframeTitle: text, caption: text, posterAlt: text,
+});
 // Un servicio por archivo en src/content/services/: el nombre del archivo es el
 // slug y `order` fija el orden en la retícula de la pagina principal.
 export const serviceSchema = z.object({
@@ -46,6 +52,7 @@ export const serviceSchema = z.object({
   contactCta: optional(text),
   contactCopy: optional(text),
   contactAside: optional(text),
+  video: videoSchema.optional(),
   seoTitle: optional(text),
   seoDescription: optional(text),
   team: z.object({ title: text, closing: text }).optional(),
@@ -104,6 +111,7 @@ export const siteSchema = z.object({
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text, menuLabel: text, closeLabel: text }),
     motion: z.object({ pause: text, resume: text }),
+    whatsapp: z.object({ label: text, message: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
     services: z.object({ payback: text, capabilitiesFallback: text }),
     program: z.object({ duration: text, schedule: text, modality: text }),

@@ -48,6 +48,17 @@ describe('Content-Security-Policy construida en el build', () => {
     expect(directive(headers, 'frame-src')).toContain('https://challenges.cloudflare.com');
   });
 
+  it('permite marcos solo de YouTube en privacidad mejorada, sin abrir otras directivas', async () => {
+    const headers = await runIntegration('<html><body><p>hola</p></body></html>');
+
+    expect(directive(headers, 'frame-src').split(' ')).toContain('https://www.youtube-nocookie.com');
+    for (const name of ['default-src', 'script-src', 'img-src', 'connect-src', 'style-src', 'font-src']) {
+      expect(directive(headers, name)).not.toMatch(/youtube/);
+    }
+    expect(directive(headers, 'img-src')).toBe("img-src 'self' data:");
+    expect(headers).not.toContain('youtube.com');
+  });
+
   it('sigue poniendo el hash de los scripts en linea que emite Astro', async () => {
     const headers = await runIntegration('<html><body><script>console.log(1)</script></body></html>');
 

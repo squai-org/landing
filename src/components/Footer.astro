@@ -119,7 +119,7 @@ const { footerCols, heroSubtitle, tagline, company, ui, labels } = await getSite
     gap: 12px 24px;
     max-width: 1390px;
     margin: 0 auto;
-    padding: 22px var(--gutter);
+    padding: 22px var(--gutter) calc(22px + var(--float-clearance, 0px));
     font-size: 15px;
   }
   .footer-bottom .footer-link { color: var(--on-deep-muted); text-decoration-color: currentColor; }
