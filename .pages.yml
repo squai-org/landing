@@ -986,6 +986,36 @@ content:
             label: Texto del botón
             description: Vacío usa el texto del botón principal.
             type: string
+      - name: one-inversion
+        label: Inversión
+        description: El Precio de referencia se muestra tachado solo cuando el Precio vigente (D1) es menor. Si lo dejas vacío no se muestra nada. Los textos de la sección se editan en Transversal → Sección de inscripción.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: investment
+            label: false
+            type: object
+            fields:
+              - name: referencePrice
+                label: Precio de referencia
+                description: Precio de lista, con impuestos incluidos, en cada moneda. No lo cobra el sistema.
+                type: object
+                fields:
+                  - name: COP
+                    label: Pesos colombianos (COP)
+                    type: number
+                  - name: USD
+                    label: Dólares (USD)
+                    type: number
+              - name: discountPercent
+                label: Porcentaje de descuento
+                description: Entero entre 1 y 99. Debe corresponder a la diferencia real entre el Precio de referencia y el Precio vigente.
+                type: number
+              - name: discountDeadline
+                label: Fecha límite del descuento
+                description: Texto libre, por ejemplo «15 de diciembre».
+                type: string
       - name: one-faq
         label: Preguntas frecuentes
         type: file
@@ -2246,6 +2276,38 @@ content:
                             list:
                               min: 1
                               collapsible: true
+                          - name: referenceLabel
+                            label: Etiqueta del Precio de referencia
+                            description: La lee el lector de pantalla antes del precio tachado. El valor del precio se edita en Squai One → Inversión.
+                            type: string
+                            required: true
+                          - name: discountLabel
+                            label: Texto del descuento
+                            description: Debe incluir {percent}, que se reemplaza por el porcentaje de descuento.
+                            type: string
+                            required: true
+                          - name: deadlineLabel
+                            label: Texto de la fecha límite
+                            description: Debe incluir {date}, que se reemplaza por la fecha límite del descuento.
+                            type: string
+                            required: true
+                      - name: paymentMethods
+                        label: Medios de pago
+                        description: Solo escribe los que Bold tiene activos. Bre-B no se lista hasta confirmarlo en Bold.
+                        type: object
+                        required: true
+                        fields:
+                          - name: label
+                            label: Título de la lista
+                            type: string
+                            required: true
+                          - name: items
+                            label: Medios
+                            type: string
+                            required: true
+                            list:
+                              min: 1
+                              collapsible: false
                       - name: currency
                         label: Selector de moneda
                         description: El precio de cada moneda vive en D1 (program_prices), no aquí.
