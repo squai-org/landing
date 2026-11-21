@@ -373,6 +373,10 @@ content:
                     pattern:
                       regex: ^$|^https://
                       message: Usa una URL que empiece por https:// o deja el campo vacío.
+                  - name: founder
+                    label: Es fundador
+                    description: Marca a quienes el sitio declara como fundadores (JSON-LD y sección de equipo de Squai One).
+                    type: boolean
                   - name: d
                     label: Descripción
                     type: text
@@ -655,6 +659,60 @@ content:
                     list:
                       min: 1
                       collapsible: false
+      - name: one-equipo
+        label: Equipo
+        description: Quiénes enseñan son las personas marcadas como fundadoras en Inicio → Equipo.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: team
+            label: false
+            type: object
+            fields:
+              - name: title
+                label: Título
+                type: string
+                required: true
+              - name: closing
+                label: Cierre
+                type: string
+                required: true
+      - name: one-testimonios
+        label: Testimonios
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: testimonials
+            label: false
+            type: object
+            fields:
+              - name: title
+                label: Título
+                type: string
+                required: true
+              - name: quotes
+                label: Testimonios
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{name}'
+                fields:
+                  - name: text
+                    label: Cita
+                    type: text
+                    required: true
+                  - name: name
+                    label: Nombre
+                    type: string
+                    required: true
+                  - name: context
+                    label: Contexto
+                    type: string
+                    required: true
       - name: one-contacto
         label: Contacto
         description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la sección de inscripción.

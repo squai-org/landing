@@ -311,14 +311,16 @@
         "name": "Laura Villada",
         "role": "Estratega de Adopción de IA & Co-fundadora",
         "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
-        "d": "Laura diseña la estructura de nuestros programas para que el aprendizaje sea fácil, entretenido y sostenible."
+        "founder": true,
+        "d": "Magíster en ingeniería, con 5 años como docente y directora de operaciones en una empresa de tecnología de EE. UU. Laura diseña la estructura de nuestros programas para que el aprendizaje sea fácil, entretenido y sostenible."
       },
       {
         "img": "/images/team2.webp",
         "name": "Sebastián Rico",
         "role": "Ingeniero de IA & Co-fundador",
         "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
-        "d": "Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet."
+        "founder": true,
+        "d": "Más de 8 años en tecnología y líder de equipos. Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet."
       },
       {
         "img": "/images/team3.webp",

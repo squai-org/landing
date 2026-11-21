@@ -7,6 +7,8 @@ import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
 import Checkout from '../../components/Checkout.astro';
 import Faq from '../../components/Faq.astro';
+import OneTeam from '../../components/OneTeam.astro';
+import OneTestimonials from '../../components/OneTestimonials.astro';
 import Footer from '../../components/Footer.astro';
 import ContactModal from '../../components/ContactModal.astro';
 import Button from '../../components/Button.astro';
@@ -72,6 +74,10 @@ const schemas = [
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 
   <ServiceCapabilities headline={service.capabilities.headline} groups={service.capabilities.groups} />
+
+  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} />}
+
+  {service.testimonials && <OneTestimonials title={service.testimonials.title} quotes={service.testimonials.quotes} />}
 
   {
     service.cta.modal ? (

@@ -1,0 +1,147 @@
+---
+import { getImage } from 'astro:assets';
+import BackdropShape from './BackdropShape.astro';
+import CornerBlocks from './CornerBlocks.astro';
+import { getSiteContent } from '../lib/content';
+import { teamImages } from '../lib/team-photos';
+
+interface Props {
+  title: string;
+  closing: string;
+}
+
+const { title, closing } = Astro.props;
+const { squadGrid, ui } = await getSiteContent();
+
+const mentors = await Promise.all(
+  squadGrid
+    .filter((member) => member.founder)
+    .map(async (member) => {
+      const source = teamImages[member.img];
+      const photo = await getImage({ src: source, width: 360, height: 360, fit: 'cover', position: 'top', format: 'webp', quality: 90 });
+      return { ...member, photo, alt: ui.team.memberAlt.replace('{name}', member.name).replace('{role}', member.role) };
+    }),
+);
+
+const cardStyles = [
+  { surface: 'surface', corners: 'diagonal-a', tilt: '-1.4deg' },
+  { surface: 'soft', corners: 'diagonal-b', tilt: '1.4deg' },
+] as const;
+---
+
+{
+  mentors.length > 0 && (
+    <section id="equipo-one" class="one-team" aria-labelledby="one-team-title">
+      <BackdropShape shape="benefits" class="one-team-backdrop" align="xMidYMid" />
+      <div class="one-team-shell">
+        <h2 id="one-team-title" class="display d-h1 one-team-title" data-reveal="heading">{title}</h2>
+        <ul class="one-team-list">
+          {
+            mentors.map((mentor, index) => {
+              const style = cardStyles[index % cardStyles.length]!;
+              return (
+                <li class="corner-host one-team-item" style={`--tilt:${style.tilt}`} data-reveal="tilt" data-reveal-delay={index * 90}>
+                  <CornerBlocks preset={style.corners} color="var(--gold-8)" hoverOnly />
+                  <article class:list={['one-team-card', `is-${style.surface}`]}>
+                    <img
+                      class="one-team-photo"
+                      src={mentor.photo.src}
+                      width={mentor.photo.attributes.width}
+                      height={mentor.photo.attributes.height}
+                      alt={mentor.alt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="one-team-copy">
+                      <h3 class="one-team-name">{mentor.name}</h3>
+                      <p class="one-team-role">{mentor.role}</p>
+                      <p class="one-team-bio">{mentor.d}</p>
+                      {mentor.linkedin && (
+                        <a class="one-team-link" href={mentor.linkedin} rel="noopener noreferrer" target="_blank">
+                          LinkedIn de {mentor.name}
+                        </a>
+                      )}
+                    </div>
+                  </article>
+                </li>
+              );
+            })
+          }
+        </ul>
+        <p class="one-team-closing display" data-reveal="copy">{closing}</p>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .one-team {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    margin-top: var(--section-gap);
+    padding: calc(var(--section-gap) * 0.7) var(--gutter);
+    border-radius: var(--radius-block);
+    background: var(--gold-9);
+    color: var(--ink);
+    --shape-1: var(--gold-8);
+    --shape-2: var(--gold-7);
+    --shape-1-opacity: 0.8;
+    --shape-2-opacity: 0.8;
+  }
+  .one-team-shell {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 1100px);
+    margin-inline: auto;
+    display: grid;
+    gap: clamp(32px, 4vw, 56px);
+  }
+  .one-team-title { margin: 0; color: var(--ink); text-align: center; text-wrap: balance; }
+  .one-team-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(36px, 4vw, 56px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .one-team-item { rotate: var(--tilt); transition: rotate var(--duration-base) var(--ease-out), translate var(--duration-base) var(--ease-out); }
+  .one-team-item:hover, .one-team-item:focus-within { rotate: 0deg; translate: 0 -6px; }
+  .one-team-card {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+    height: 100%;
+    padding: clamp(22px, 2.6vw, 34px);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-float);
+    color: var(--ink);
+  }
+  .one-team-card.is-surface { background: var(--surface); }
+  .one-team-card.is-soft { background: var(--accent-soft); }
+  .one-team-photo {
+    width: clamp(112px, 12vw, 150px);
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--accent-soft-strong);
+  }
+  .one-team-copy { display: grid; gap: 10px; }
+  .one-team-name { margin: 0; font-family: var(--font-display); font-size: clamp(26px, 2.4vw, 34px); line-height: 1.05; letter-spacing: -0.04em; }
+  .one-team-role { margin: 0; font-weight: 700; color: var(--ink-muted); }
+  .one-team-bio { margin: 0; line-height: 1.5; color: var(--ink); }
+  .one-team-link { justify-self: start; color: var(--ink); font-weight: 600; text-underline-offset: 3px; }
+  .one-team-closing {
+    margin: 0;
+    text-align: center;
+    font-size: clamp(22px, 2.4vw, 32px);
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .one-team-item { transition: none; }
+    .one-team-item:hover, .one-team-item:focus-within { translate: none; }
+  }
+</style>
