@@ -23,3 +23,7 @@ _Evitar_: inscripción, registro, reserva, pedido
 **Inscripción**:
 El derecho de una persona a cursar un programa. Existe solo cuando una de sus órdenes está aprobada; sin pago aprobado no hay inscripción.
 _Evitar_: registro, matrícula
+
+**Precio de referencia**:
+El precio de lista que la página muestra tachado junto al Precio vigente, con el porcentaje de descuento que separa a ambos. Es un texto de la página, editable desde el CMS; no lo cobra el sistema ni crea Órdenes.
+_Evitar_: precio normal, precio anterior, precio tachado
