@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { youtubeVideoId } from '../lib/youtube';
 
 const text = z.string().min(1);
 const paragraphs = z
@@ -32,6 +33,11 @@ const labels = z.object({
 });
 const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone });
+const youtubeUrl = text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
+const videoSchema = z.object({
+  url: optional(youtubeUrl),
+  title: text, playLabel: text, iframeTitle: text, caption: text, posterAlt: text,
+});
 // Un servicio por archivo en src/content/services/: el nombre del archivo es el
 // slug y `order` fija el orden en la retícula de la pagina principal.
 export const serviceSchema = z.object({
@@ -46,6 +52,7 @@ export const serviceSchema = z.object({
   contactCta: optional(text),
   contactCopy: optional(text),
   contactAside: optional(text),
+  video: videoSchema.optional(),
   seoTitle: optional(text),
   seoDescription: optional(text),
   faqs: z.array(faq).min(1),

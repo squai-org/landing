@@ -579,6 +579,41 @@ content:
             label: Texto del botón en esta sección
             description: Vacío usa el texto del botón principal.
             type: string
+      - name: one-video
+        label: Video de presentación
+        description: Con una URL de YouTube se muestra el video, que solo se descarga cuando la persona pulsa reproducir. Vacía, se muestra la ilustración.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: video
+            label: false
+            type: object
+            fields:
+              - name: url
+                label: URL de YouTube
+                description: Acepta enlaces watch?v=, youtu.be/ o embed/. Déjala vacía mientras no haya video.
+                type: string
+              - name: title
+                label: Titular
+                type: string
+                required: true
+              - name: playLabel
+                label: Texto del botón de reproducir
+                type: string
+                required: true
+              - name: iframeTitle
+                label: Título del video para lectores de pantalla
+                type: string
+                required: true
+              - name: caption
+                label: Pie del video
+                type: string
+                required: true
+              - name: posterAlt
+                label: Descripción de la ilustración
+                type: string
+                required: true
       - name: one-desafio
         label: Desafío
         description: El título de la sección se edita en Transversal → Títulos compartidos.

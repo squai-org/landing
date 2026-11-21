@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import ServiceHero from '../../components/ServiceHero.astro';
+import VideoSection from '../../components/VideoSection.astro';
 import ServiceBento from '../../components/ServiceBento.astro';
 import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
@@ -62,6 +63,8 @@ const schemas = [
   <ServiceHero service={service} />
 
   <div class="content-shell content-shell-spaced">
+
+  {service.video && <VideoSection video={service.video} />}
 
   <ServicePayback
     headline={service.payback.headline}
