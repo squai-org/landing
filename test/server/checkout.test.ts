@@ -101,7 +101,25 @@ describe('GET /api/checkout/program/:code', () => {
         prices: { COP: 250000, USD: 80 },
         defaultCurrency: 'COP',
         status: 'open',
+        startsOn: null,
+        endsOn: null,
+        schedule: null,
       },
+    });
+  });
+
+  it('expone las fechas y el horario de la cohorte cuando la base los tiene', async () => {
+    await env.DB.prepare(
+      `UPDATE programs SET starts_on = '2027-01-26', ends_on = '2027-02-18', schedule = 'Martes y jueves, 6:30 a 9:00 p. m.'
+       WHERE code = ?`
+    )
+      .bind(UPCOMING)
+      .run();
+
+    const res = await get(`/api/checkout/program/${UPCOMING}`);
+
+    await expect(res.json()).resolves.toMatchObject({
+      program: { startsOn: '2027-01-26', endsOn: '2027-02-18', schedule: 'Martes y jueves, 6:30 a 9:00 p. m.' },
     });
   });
 

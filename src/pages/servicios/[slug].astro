@@ -2,6 +2,8 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import ServiceHero from '../../components/ServiceHero.astro';
+import OneHero from '../../components/OneHero.astro';
+import OneKeyFacts from '../../components/OneKeyFacts.astro';
 import VideoSection from '../../components/VideoSection.astro';
 import ServiceBento from '../../components/ServiceBento.astro';
 import ServicePayback from '../../components/ServicePayback.astro';
@@ -41,9 +43,10 @@ const { service } = Astro.props;
 const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
 const seo = serviceSeo(service, content.seo.serviceTitle);
 
-const offering = service.slug === 'squai-one'
-  ? courseSchema(content, service, pageUrl)
+const offering = service.keyFacts
+  ? courseSchema(content, service, service.keyFacts.load, pageUrl)
   : serviceSchema(service, pageUrl);
+const headerTone = service.hero ? 'light' : 'dark';
 
 const schemas = [
   organizationSchema(content),
@@ -61,10 +64,11 @@ const schemas = [
 
 <Layout title={seo.title} description={seo.description} schemas={schemas} service={service.slug}>
   <div class="page-frame">
-  <Header tone="dark" />
+  <Header tone={headerTone} />
 
   <main id="contenido">
-  <ServiceHero service={service} />
+  {service.hero ? <OneHero service={service} /> : <ServiceHero service={service} />}
+  {service.keyFacts && <OneKeyFacts service={service} />}
 
   <div class="content-shell content-shell-spaced">
 
@@ -106,7 +110,7 @@ const schemas = [
         </div>
       </section>
     ) : (
-      <Checkout />
+      <Checkout investment={service.investment} />
     )
   }
 

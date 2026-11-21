@@ -26,6 +26,12 @@ const span = text.regex(/^span-[2-6](?: row-[2-5])?$/);
 // foto nueva es un cambio de codigo, no editorial.
 export const teamPhotos = ['/images/team1.webp', '/images/team2.webp', '/images/team3.webp', '/images/team4.webp', '/images/team5.webp', '/images/team6.webp'] as const;
 const faq = z.object({ q: text, a: paragraphs, category: optional(text) });
+const optionalAmount = optional(z.number().int().positive());
+const investment = z.object({
+  referencePrice: z.object({ COP: optionalAmount, USD: optionalAmount }).default({}),
+  discountPercent: optional(z.number().int().min(1).max(99)),
+  discountDeadline: optional(text),
+}).optional();
 const labels = z.object({
   whatWeDo: text, services: text, team: text, faq: text, impact: text,
   origin: text, brand: text, reserve: text, call: text, challenge: text,
@@ -96,6 +102,22 @@ export const serviceSchema = z.object({
   howItWorks: howItWorks.optional(),
   syllabus: syllabus.optional(),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']).default(''), target: z.string().default('') }),
+  investment,
+  hero: z.object({
+    title: text, lead: text, note: text, sticker: text, photoAlt: text,
+    datesPending: text, schedulePending: text,
+  }).optional(),
+  keyFacts: z.object({
+    title: text, lead: text, handwritten: text,
+    load: z.object({
+      weeks: z.number().int().min(1),
+      sessionsPerWeek: z.number().int().min(1),
+      sessionMinutes: z.number().int().min(15),
+    }),
+    labels: z.object({ duration: text, sessions: text, dates: text, schedule: text, modality: text, seats: text }),
+    modality: text, seats: text,
+    includes: z.array(card).length(4),
+  }).optional(),
   ctaSecondary: optional(text),
   contactCta: optional(text),
   contactCopy: optional(text),
@@ -181,7 +203,12 @@ export const siteSchema = z.object({
         orderLabel: text, backCta: text,
         enrolledTitle: text, enrolledBody: text,
       }),
-      investment: z.object({ eyebrow: text, copy: paragraphs }),
+      investment: z.object({
+        eyebrow: text, copy: paragraphs, referenceLabel: text,
+        discountLabel: text.refine((value) => value.includes('{percent}'), 'Include {percent}'),
+        deadlineLabel: text.refine((value) => value.includes('{date}'), 'Include {date}'),
+      }),
+      paymentMethods: z.object({ label: text, items: z.array(text).min(1) }),
       button: z.object({ paying: text, retry: text }),
       currency: z.object({ label: text, cop: text, usd: text }),
       status: z.object({ upcomingTitle: text, upcomingBody: text, closedTitle: text, closedBody: text }),

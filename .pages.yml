@@ -503,6 +503,140 @@ content:
                 label: Texto del botón
                 type: string
                 required: true
+          - name: hero
+            label: Encabezado
+            type: object
+            fields:
+              - name: title
+                label: Título
+                type: string
+                required: true
+              - name: lead
+                label: Subtítulo
+                type: text
+                required: true
+              - name: note
+                label: Apunte a mano
+                description: Etiqueta oscura junto a la foto.
+                type: string
+                required: true
+              - name: sticker
+                label: Segunda etiqueta
+                type: string
+                required: true
+              - name: photoAlt
+                label: Descripción de la foto
+                description: Texto alternativo para lectores de pantalla.
+                type: string
+                required: true
+              - name: datesPending
+                label: Texto mientras no hay fechas
+                description: Se muestra hasta que la base de datos entrega las fechas de la cohorte.
+                type: string
+                required: true
+              - name: schedulePending
+                label: Texto mientras no hay horario
+                description: Se muestra hasta que la base de datos entrega el horario de la cohorte.
+                type: string
+                required: true
+      - name: one-datos-clave
+        label: Datos clave
+        description: Las fechas y el horario de la cohorte no se editan aquí, salen de la base de datos.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: keyFacts
+            label: false
+            type: object
+            fields:
+              - name: title
+                label: Título
+                type: string
+                required: true
+              - name: lead
+                label: Subtítulo
+                type: text
+                required: true
+              - name: handwritten
+                label: Apunte a mano
+                type: string
+                required: true
+              - name: load
+                label: Carga del programa
+                description: De aquí salen la duración, las sesiones y el dato estructurado que leen los buscadores.
+                type: object
+                required: true
+                fields:
+                  - name: weeks
+                    label: Semanas
+                    type: number
+                    required: true
+                  - name: sessionsPerWeek
+                    label: Sesiones por semana
+                    type: number
+                    required: true
+                  - name: sessionMinutes
+                    label: Minutos por sesión
+                    type: number
+                    required: true
+              - name: labels
+                label: Títulos de los datos
+                type: object
+                required: true
+                fields:
+                  - name: duration
+                    label: Duración
+                    type: string
+                    required: true
+                  - name: sessions
+                    label: Sesiones
+                    type: string
+                    required: true
+                  - name: dates
+                    label: Fechas
+                    type: string
+                    required: true
+                  - name: schedule
+                    label: Horario
+                    type: string
+                    required: true
+                  - name: modality
+                    label: Modalidad
+                    type: string
+                    required: true
+                  - name: seats
+                    label: Cupo
+                    type: string
+                    required: true
+              - name: modality
+                label: Texto de modalidad
+                type: string
+                required: true
+              - name: seats
+                label: Texto de cupo
+                description: No lleva cifras: el cupo real vive en la base de datos.
+                type: string
+                required: true
+              - name: includes
+                label: Qué incluye
+                description: Son cuatro tarjetas, una por ilustración.
+                type: object
+                required: true
+                list:
+                  min: 4
+                  max: 4
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: d
+                    label: Descripción
+                    type: text
+                    required: true
       - name: one-tarjeta
         label: Tarjeta en Inicio
         description: Cómo se ve este servicio en la retícula de la página principal y en el menú.
@@ -900,6 +1034,36 @@ content:
             label: Texto del botón
             description: Vacío usa el texto del botón principal.
             type: string
+      - name: one-inversion
+        label: Inversión
+        description: El Precio de referencia se muestra tachado solo cuando el Precio vigente (D1) es menor. Si lo dejas vacío no se muestra nada. Los textos de la sección se editan en Transversal → Sección de inscripción.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: investment
+            label: false
+            type: object
+            fields:
+              - name: referencePrice
+                label: Precio de referencia
+                description: Precio de lista, con impuestos incluidos, en cada moneda. No lo cobra el sistema.
+                type: object
+                fields:
+                  - name: COP
+                    label: Pesos colombianos (COP)
+                    type: number
+                  - name: USD
+                    label: Dólares (USD)
+                    type: number
+              - name: discountPercent
+                label: Porcentaje de descuento
+                description: Entero entre 1 y 99. Debe corresponder a la diferencia real entre el Precio de referencia y el Precio vigente.
+                type: number
+              - name: discountDeadline
+                label: Fecha límite del descuento
+                description: Texto libre, por ejemplo «15 de diciembre».
+                type: string
       - name: one-faq
         label: Preguntas frecuentes
         type: file
@@ -2176,6 +2340,38 @@ content:
                             list:
                               min: 1
                               collapsible: true
+                          - name: referenceLabel
+                            label: Etiqueta del Precio de referencia
+                            description: La lee el lector de pantalla antes del precio tachado. El valor del precio se edita en Squai One → Inversión.
+                            type: string
+                            required: true
+                          - name: discountLabel
+                            label: Texto del descuento
+                            description: Debe incluir {percent}, que se reemplaza por el porcentaje de descuento.
+                            type: string
+                            required: true
+                          - name: deadlineLabel
+                            label: Texto de la fecha límite
+                            description: Debe incluir {date}, que se reemplaza por la fecha límite del descuento.
+                            type: string
+                            required: true
+                      - name: paymentMethods
+                        label: Medios de pago
+                        description: Solo escribe los que Bold tiene activos. Bre-B no se lista hasta confirmarlo en Bold.
+                        type: object
+                        required: true
+                        fields:
+                          - name: label
+                            label: Título de la lista
+                            type: string
+                            required: true
+                          - name: items
+                            label: Medios
+                            type: string
+                            required: true
+                            list:
+                              min: 1
+                              collapsible: false
                       - name: currency
                         label: Selector de moneda
                         description: El precio de cada moneda vive en D1 (program_prices), no aquí.
