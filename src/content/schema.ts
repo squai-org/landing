@@ -32,6 +32,50 @@ const labels = z.object({
 });
 const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone });
+export const stepIllustrations = [
+  '/illustrations/pasos/paso-2.svg',
+  '/illustrations/pasos/paso-3.svg',
+  '/illustrations/pasos/paso-4.svg',
+  '/illustrations/incluye/incluye-4.svg',
+] as const;
+export const moduleIllustrations = [
+  '/illustrations/sesiones/sesion-1.svg',
+  '/illustrations/sesiones/sesion-4.svg',
+  '/illustrations/sesiones/sesion-5.svg',
+  '/illustrations/sesiones/sesion-6.svg',
+  '/illustrations/sesiones/sesion-7.svg',
+  '/illustrations/sesiones/sesion-8.svg',
+] as const;
+const audienceFit = z.object({
+  title: text,
+  handwritten: text,
+  profiles: z.array(card).min(1),
+  closing: text,
+  notFor: z.object({ title: text, body: text }),
+  needs: z.object({ title: text, items: z.array(text).min(1), note: text }),
+});
+const howItWorks = z.object({
+  title: text,
+  handwritten: text,
+  stepLabel: text,
+  steps: z.array(z.object({ t: text, d: text, illustration: z.enum(stepIllustrations), alt: text })).min(1),
+});
+const syllabus = z.object({
+  title: text,
+  handwritten: text,
+  summary: text,
+  moduleLabel: text,
+  sessionLabel: text,
+  topicsLabel: text,
+  modules: z.array(z.object({
+    t: text,
+    d: text,
+    topics: z.array(text).min(1),
+    sessions: z.array(text).min(1),
+    illustration: z.enum(moduleIllustrations),
+    alt: text,
+  })).min(1),
+});
 // Un servicio por archivo en src/content/services/: el nombre del archivo es el
 // slug y `order` fija el orden en la retícula de la pagina principal.
 export const serviceSchema = z.object({
@@ -41,6 +85,9 @@ export const serviceSchema = z.object({
   payback: z.object({ headline: text, body: paragraphs }),
   challenge: z.object({ cards: z.array(card).min(1) }),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
+  audienceFit: audienceFit.optional(),
+  howItWorks: howItWorks.optional(),
+  syllabus: syllabus.optional(),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']).default(''), target: z.string().default('') }),
   ctaSecondary: optional(text),
   contactCta: optional(text),

@@ -5,6 +5,9 @@ import ServiceHero from '../../components/ServiceHero.astro';
 import ServiceBento from '../../components/ServiceBento.astro';
 import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
+import AudienceFit from '../../components/AudienceFit.astro';
+import HowItWorks from '../../components/HowItWorks.astro';
+import Syllabus from '../../components/Syllabus.astro';
 import Checkout from '../../components/Checkout.astro';
 import Faq from '../../components/Faq.astro';
 import Footer from '../../components/Footer.astro';
@@ -68,6 +71,12 @@ const schemas = [
     body={service.payback.body}
     cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
   />
+
+  {service.audienceFit && <AudienceFit fit={service.audienceFit} cta={service.cta} />}
+
+  {service.howItWorks && <HowItWorks flow={service.howItWorks} />}
+
+  {service.syllabus && <Syllabus syllabus={service.syllabus} cta={service.cta} />}
 
   <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
 
