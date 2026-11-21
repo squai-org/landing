@@ -20,6 +20,14 @@
     ]
   },
   "ctaSecondary": "Aprende IA",
+  "video": {
+    "url": "",
+    "title": "En menos de 2 minutos, conoce el programa y a quienes lo imparten",
+    "playLabel": "Reproducir",
+    "iframeTitle": "Video de presentación de Squai One con Laura y Sebastián",
+    "caption": "Laura y Sebastián te lo cuentan",
+    "posterAlt": "Ilustración de una persona que explica algo junto a una videollamada con dos participantes"
+  },
   "challenge": {
     "cards": [
       {

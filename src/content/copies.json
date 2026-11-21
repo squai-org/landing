@@ -58,6 +58,10 @@
         "menuLabel": "Menú",
         "closeLabel": "Cerrar"
       },
+      "whatsapp": {
+        "label": "Escríbenos por WhatsApp (se abre en una pestaña nueva)",
+        "message": "Hola Squai, quiero resolver una duda sobre el programa."
+      },
       "skip": "Saltar al contenido",
       "motion": {
         "pause": "Pausar animaciones",

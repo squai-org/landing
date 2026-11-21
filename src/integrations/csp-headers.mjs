@@ -25,6 +25,7 @@ const TURNSTILE = 'https://challenges.cloudflare.com';
  * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-manual
  */
 const BOLD = 'https://checkout.bold.co';
+const YOUTUBE_NOCOOKIE = 'https://www.youtube-nocookie.com';
 /**
  * La libreria de Bold inyecta el CSS de su modal en un <style> dentro del
  * shadow DOM de <bold-embedded-checkout>. Sin este hash, `style-src` lo
@@ -121,7 +122,7 @@ export default function cspHeaders(options = {}) {
           `connect-src 'self' ${TURNSTILE} ${BOLD}`,
           // Turnstile se renderiza dentro de un iframe de su propio origen.
           // https://developers.cloudflare.com/turnstile/
-          `frame-src ${TURNSTILE} ${BOLD}`,
+          `frame-src ${TURNSTILE} ${BOLD} ${YOUTUBE_NOCOOKIE}`,
           'upgrade-insecure-requests',
         ];
 
