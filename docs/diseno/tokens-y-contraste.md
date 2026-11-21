@@ -67,6 +67,10 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Flecha del botón oscuro | `--gold-9` | `--midnight` | 11.90 | 3 |
 | base | Botón blanco | `--midnight` | `--canvas` | 18.02 | 4.5 |
 | base | Botón de pausa de animaciones | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Equipo y testimonios: texto sobre la sección dorada | `--ink` | `--gold-9` | 11.90 | 4.5 |
+| base | Equipo y testimonios: texto sobre tarjeta suave | `--ink` | `--accent-soft` | 15.47 | 4.5 |
+| base | Equipo: cargo sobre tarjeta suave | `--ink-muted` | `--accent-soft` | 4.61 | 4.5 |
+| base | Testimonios: texto sobre tarjeta fuerte | `--ink` | `--accent-soft-strong` | 13.76 | 4.5 |
 | base | Franja dorada animada (marquee) | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Franja oscura animada (marquee) | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |
@@ -81,6 +85,7 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Texto de acento sobre blanco | `--accent-ink` | `--surface` | 5.82 | 4.5 |
 | base | Texto de acento sobre fondo suave | `--accent-ink` | `--accent-soft` | 4.64 | 4.5 |
 | base | Texto oscuro sobre fondo suave | `--midnight` | `--accent-soft` | 15.47 | 4.5 |
+| base | Temario: texto oscuro sobre tarjeta crema | `--midnight` | `--gold-3` | 17.24 | 4.5 |
 | base | Pie, texto principal | `--on-deep` | `--accent-deep` | 11.16 | 4.5 |
 | base | Pie, texto secundario y títulos | `--on-deep-muted` | `--accent-deep` | 8.52 | 4.5 |
 | base | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 7.36 | 4.5 |
@@ -104,6 +109,7 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | learn | Pie, texto principal | `--on-deep` | `--accent-deep` | 9.99 | 4.5 |
 | learn | Pie, texto secundario y títulos | `--on-deep-muted` | `--accent-deep` | 8.68 | 4.5 |
 | learn | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 6.58 | 4.5 |
+| base | Ícono del botón de WhatsApp | `--midnight` | `#25D366` | 9.80 | 4.5 |
 | learn | Foco sobre el pie | `--canvas` | `--accent-deep` | 9.97 | 3 |
 
 ## Fuera de la tabla, a propósito

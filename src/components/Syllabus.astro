@@ -1,0 +1,142 @@
+---
+import Button from './Button.astro';
+import type { Service } from '../lib/content';
+
+interface Props {
+  syllabus: NonNullable<Service['syllabus']>;
+  cta: Service['cta'];
+}
+
+const { syllabus, cta } = Astro.props;
+const tones = ['is-accent', 'is-gold', 'is-soft', 'is-cream'];
+const firstSessionOf = syllabus.modules.map((_, index) =>
+  syllabus.modules.slice(0, index).reduce((total, module) => total + module.sessions.length, 1),
+);
+---
+
+<section id="temario" class="section syllabus" aria-labelledby="syllabus-title">
+  <div class="shell syllabus-shell">
+    <header class="syllabus-header">
+      <h2 id="syllabus-title" class="display d-h1 syllabus-title" data-reveal="heading">{syllabus.title}</h2>
+      <p class="syllabus-handwritten" data-reveal="copy">{syllabus.handwritten}</p>
+      <p class="label syllabus-summary" data-reveal="copy">{syllabus.summary}</p>
+    </header>
+
+    <ol class="syllabus-modules">
+      {
+        syllabus.modules.map((module, index) => (
+          <li class:list={['syllabus-module', tones[index % tones.length]]} data-reveal="card" data-reveal-delay={(index % 3) * 90}>
+            <p class="syllabus-module-number">{syllabus.moduleLabel} {index + 1}</p>
+            <img src={module.illustration} alt={module.alt} width="1400" height="1365" loading="lazy" decoding="async" />
+            <h3 class="display d-h3">{module.t}</h3>
+            <p class="body">{module.d}</p>
+            <div class="syllabus-topics">
+              <h4 class="label">{syllabus.topicsLabel}</h4>
+              <ul>
+                {module.topics.map((topic) => <li class="body">{topic}</li>)}
+              </ul>
+            </div>
+            <ul class="syllabus-sessions">
+              {
+                module.sessions.map((focus, offset) => (
+                  <li class="syllabus-session">
+                    <span class="syllabus-session-tag">{syllabus.sessionLabel} {firstSessionOf[index]! + offset}</span>
+                    <span class="body">{focus}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="syllabus-cta">
+      {
+        cta.modal ? (
+          <Button variant="primary" arrow data-open-modal={cta.modal}>{cta.label}</Button>
+        ) : (
+          <Button variant="primary" arrow href={`#${cta.target}`}>{cta.label}</Button>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .syllabus { background: var(--canvas); }
+  .syllabus-shell { display: grid; gap: clamp(32px, 4vw, 64px); }
+  .syllabus-header { display: grid; justify-items: start; gap: 14px; }
+  .syllabus-title { color: var(--ink); max-width: 16ch; }
+  .syllabus-handwritten {
+    margin: 0;
+    color: var(--accent-ink);
+    font-family: var(--font-hand);
+    font-size: clamp(20px, 2vw, 30px);
+    line-height: 1.3;
+    rotate: -1.2deg;
+    transform-origin: left center;
+  }
+  .syllabus-summary {
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    background: var(--gold-9);
+    color: var(--ink);
+  }
+  .syllabus-modules {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    grid-template-columns: 1fr;
+    gap: clamp(14px, 1.4vw, 22px);
+    list-style: none;
+  }
+  .syllabus-module {
+    display: flex;
+    min-width: 0;
+    padding: clamp(24px, 2.4vw, 40px);
+    flex-direction: column;
+    gap: 14px;
+    border-radius: var(--radius-xl);
+    color: var(--ink);
+  }
+  .syllabus-module.is-accent { background: var(--accent); }
+  .syllabus-module.is-gold { background: var(--gold-9); }
+  .syllabus-module.is-soft { background: var(--accent-soft); }
+  .syllabus-module.is-cream { background: var(--gold-3); }
+  .syllabus-module-number { margin: 0; font-family: var(--font-hand); font-size: clamp(20px, 1.6vw, 26px); line-height: 1.2; }
+  .syllabus-module img {
+    display: block;
+    width: min(100%, 260px);
+    height: auto;
+    align-self: center;
+    aspect-ratio: 1400 / 1365;
+  }
+  .syllabus-module .body { color: var(--ink); }
+  .syllabus-topics { display: grid; gap: 8px; }
+  .syllabus-topics h4 { margin: 0; }
+  .syllabus-topics ul { display: grid; margin: 0; padding-left: 1.2em; gap: 4px; }
+  .syllabus-sessions {
+    display: grid;
+    margin: auto 0 0;
+    padding: 0;
+    gap: 8px;
+    list-style: none;
+  }
+  .syllabus-session {
+    display: grid;
+    padding: 12px 14px;
+    gap: 4px;
+    border-radius: var(--radius-md);
+    background: var(--canvas);
+  }
+  .syllabus-session-tag { font-family: var(--font-display); font-size: var(--t-label); font-weight: 700; color: var(--ink); }
+  .syllabus-cta { display: flex; }
+
+  @media (min-width: 768px) {
+    .syllabus-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1200px) {
+    .syllabus-modules { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+</style>

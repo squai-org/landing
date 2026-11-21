@@ -13,6 +13,7 @@
 
 import type { Faq, Service, SiteContent } from './content';
 import { SITE_URL } from '../config/site';
+import { foundersOf } from './founders';
 
 export { SITE_URL };
 export const SITE_NAME = 'Squai';
@@ -56,7 +57,7 @@ type Json = Record<string, unknown>;
 
 export const organizationSchema = (content: SiteContent): Json => {
   const sameAs = content.socials.map((social) => social.href).filter(Boolean);
-  const founders = content.squadGrid.filter((person) => /fundador/i.test(person.role));
+  const founders = foundersOf(content.squadGrid);
 
   return {
     '@type': ['Organization', 'EducationalOrganization'],
