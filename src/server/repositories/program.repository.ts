@@ -4,6 +4,9 @@ export interface Program {
   code: string;
   description: string;
   closedManually: boolean;
+  startsOn: string | null;
+  endsOn: string | null;
+  schedule: string | null;
 }
 
 export interface ProgramPrice {
@@ -12,7 +15,8 @@ export interface ProgramPrice {
 }
 
 const PROGRAM_SQL = `
-  SELECT code, description, closed_manually AS closedManually
+  SELECT code, description, closed_manually AS closedManually,
+    starts_on AS startsOn, ends_on AS endsOn, schedule
   FROM programs
   WHERE code = ?
 `;

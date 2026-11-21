@@ -106,6 +106,10 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | learn | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 6.58 | 4.5 |
 | base | Ícono del botón de WhatsApp | `--midnight` | `#25D366` | 9.80 | 4.5 |
 | learn | Foco sobre el pie | `--canvas` | `--accent-deep` | 9.97 | 3 |
+| base | Hero de Squai One: texto sobre Periwinkle | `--midnight` | `--periwinkle-9` | 6.77 | 4.5 |
+| base | Datos clave: texto en tarjeta clara | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
+| base | Datos clave: texto en tarjeta intermedia | `--midnight` | `--periwinkle-4` | 13.76 | 4.5 |
+| base | Datos clave: apunte a mano | `--accent-ink` | `--canvas` | 5.40 | 4.5 |
 
 ## Fuera de la tabla, a propósito
 

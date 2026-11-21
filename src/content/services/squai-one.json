@@ -4,7 +4,54 @@
   "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
   "cta": {
     "target": "inscripcion",
-    "label": "Potencia tus habilidades"
+    "label": "Inscribirme al programa"
+  },
+  "hero": {
+    "title": "Aprende IA sin sentirte perdido.",
+    "lead": "Entiende la IA desde las bases y conviértela en una herramienta para tu trabajo, en vivo, con práctica guiada y mentores que la usan todos los días.",
+    "note": "100% en vivo, sin clases pregrabadas",
+    "sticker": "Sin saber programar",
+    "photoAlt": "Mujer sonriente sostiene su portátil y mira hacia el título",
+    "datesPending": "Fechas por confirmar",
+    "schedulePending": "Horario por confirmar"
+  },
+  "keyFacts": {
+    "title": "Lo que necesitas saber.",
+    "lead": "Lo práctico de un vistazo: cuánto dura, cómo son las clases y qué recibes. No necesitas conocimientos previos.",
+    "handwritten": "Un mes, dos clases por semana",
+    "load": {
+      "weeks": 4,
+      "sessionsPerWeek": 2,
+      "sessionMinutes": 150
+    },
+    "labels": {
+      "duration": "Duración",
+      "sessions": "Sesiones",
+      "dates": "Fechas",
+      "schedule": "Horario",
+      "modality": "Modalidad",
+      "seats": "Cupo"
+    },
+    "modality": "100% virtual y en vivo, con grabaciones por si la vida se interpone",
+    "seats": "Grupos pequeños y cupos limitados para que tus preguntas se escuchen",
+    "includes": [
+      {
+        "t": "Sesiones en vivo",
+        "d": "Aprendes con mentores que enseñan y aplican la IA, con tiempo para resolver tus dudas en cada sesión."
+      },
+      {
+        "t": "Grabación de cada sesión",
+        "d": "Si un día no puedes conectarte, la ves después y nos escribes tus preguntas."
+      },
+      {
+        "t": "Guías y comunidad",
+        "d": "Guías y recursos para practicar, y un grupo de WhatsApp para preguntar entre sesiones."
+      },
+      {
+        "t": "Certificado",
+        "d": "Al terminar recibes un certificado que respalda tus nuevas habilidades."
+      }
+    ]
   },
   "menuAudience": "Personas",
   "cardCopy": "Un programa en vivo para entender la IA, en lugar de seguir guardando tutoriales que nunca vas a ver.",

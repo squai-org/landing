@@ -42,6 +42,21 @@ export const serviceSchema = z.object({
   challenge: z.object({ cards: z.array(card).min(1) }),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']).default(''), target: z.string().default('') }),
+  hero: z.object({
+    title: text, lead: text, note: text, sticker: text, photoAlt: text,
+    datesPending: text, schedulePending: text,
+  }).optional(),
+  keyFacts: z.object({
+    title: text, lead: text, handwritten: text,
+    load: z.object({
+      weeks: z.number().int().min(1),
+      sessionsPerWeek: z.number().int().min(1),
+      sessionMinutes: z.number().int().min(15),
+    }),
+    labels: z.object({ duration: text, sessions: text, dates: text, schedule: text, modality: text, seats: text }),
+    modality: text, seats: text,
+    includes: z.array(card).length(4),
+  }).optional(),
   ctaSecondary: optional(text),
   contactCta: optional(text),
   contactCopy: optional(text),

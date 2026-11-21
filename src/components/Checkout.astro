@@ -175,6 +175,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
 <script>
   import { openBoldCheckout } from '../lib/bold-library';
+  import { fetchProgram } from '../lib/program-client';
   import { type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
   import {
     buttonView,
@@ -220,15 +221,10 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
     const loadPrice = async () => {
       try {
-        const res = await fetch(`${root.dataset.programEndpoint}/${root.dataset.program}`, {
-          headers: { Accept: 'application/json' },
-        });
-        if (!res.ok) return;
-        const { program } = (await res.json()) as {
-          program: { prices: Partial<Record<string, number>>; defaultCurrency: string; status?: string };
-        };
+        const program = await fetchProgram(`${root.dataset.programEndpoint}/${root.dataset.program}`);
+        if (!program) return;
         showSalesPanel(salesPanel(program.status));
-        prices = program.prices;
+        prices = program.prices ?? {};
         currencyInputs.forEach((input) => {
           const available = prices[input.value] !== undefined;
           input.disabled = !available;
