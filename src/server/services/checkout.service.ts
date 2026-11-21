@@ -3,61 +3,93 @@ import {
   fetchBoldPaymentStatus,
   verifyBoldWebhookSignature,
   type BoldPaymentStatus,
+  type BoldVoucher,
 } from '../lib/bold';
 import { assertHuman } from '../lib/human';
 import { normalizePhone } from '../lib/phone';
-import { badRequest, notFound, serviceUnavailable, unauthorized } from '../lib/http';
+import { badRequest, gone, notFound, serviceUnavailable, unauthorized } from '../lib/http';
+import { DAY_MS } from '../lib/time';
 import { recordBoldTransaction } from '../repositories/bold-transaction.repository';
+import { upsertCustomer } from '../repositories/customer.repository';
 import {
-  applyEnrollmentPayment,
-  findEnrollmentByOrderId,
-  insertEnrollment,
-  type EnrollmentStatus,
-} from '../repositories/enrollment.repository';
-import { findActivePaymentPlan, type PaymentPlan } from '../repositories/payment-plan.repository';
+  applyOrderPayment,
+  findOrderByOrderId,
+  insertOrder,
+  type OrderStatus,
+} from '../repositories/order.repository';
 import { boldWebhookEventSchema } from '../schemas/bold-webhook.schema';
-import type { CheckoutSessionInput } from '../schemas/checkout.schema';
+import type { CheckoutResumeInput, CheckoutSessionInput } from '../schemas/checkout.schema';
 import { parseBody } from '../lib/validate';
+import { checkout, type Currency, type Tax } from '../../config/checkout';
+import { assertOpenAndNotEnrolled, loadProgram, priceIn, type ProgramView } from './program.service';
 import type { Env, RequestMeta } from '../types';
 
 export interface CheckoutSession {
   apiKey: string;
   orderId: string;
   amount: number;
-  currency: string;
+  currency: Currency;
   description: string;
+  tax: Tax;
   integritySignature: string;
 }
 
-/**
- * Bold acepta en data-order-id letras, digitos, `_` y `-` hasta 60 caracteres,
- * y pide que sea unico por venta. Se antepone el plan para poder leer en el
- * panel de Bold que se vendio sin cruzar tablas.
- */
 const newOrderId = (code: string) => `${code}-${crypto.randomUUID().replaceAll('-', '')}`.slice(0, 60);
 
-export const loadPaymentPlan = async (env: Env, code: string): Promise<PaymentPlan> => {
-  const plan = await findActivePaymentPlan(env.DB, code);
+const boldKeys = (env: Env) => {
+  const apiKey = env.BOLD_IDENTITY_KEY;
+  const secretKey = env.BOLD_SECRET_KEY;
 
-  if (!plan) throw notFound('plan_not_found', 'El plan solicitado no esta disponible.');
+  if (!apiKey || !secretKey) {
+    console.error('BOLD_IDENTITY_KEY o BOLD_SECRET_KEY no configurados: no se puede abrir el checkout.');
+    throw serviceUnavailable('bold_not_configured', 'Los pagos no estan disponibles en este momento.');
+  }
 
-  return plan;
+  return { apiKey, secretKey };
+};
+
+const openOrder = async (
+  env: Env,
+  keys: ReturnType<typeof boldKeys>,
+  order: { program: ProgramView; currency: Currency; customerId: number; referralSource: string | null },
+  meta: RequestMeta
+): Promise<CheckoutSession> => {
+  const { program, currency } = order;
+  const amount = priceIn(program, currency);
+  const tax = checkout.tax;
+  const orderId = newOrderId(program.code);
+
+  await insertOrder(env.DB, {
+    orderId,
+    customerId: order.customerId,
+    programCode: program.code,
+    referralSource: order.referralSource,
+    amount,
+    currency,
+    tax,
+    sourcePage: meta.sourcePage,
+    ipCountry: meta.ipCountry,
+    userAgent: meta.userAgent,
+  });
+
+  return {
+    apiKey: keys.apiKey,
+    orderId,
+    amount,
+    currency,
+    description: program.description,
+    tax,
+    integritySignature: await boldIntegritySignature({ orderId, amount, currency, secretKey: keys.secretKey }),
+  };
 };
 
 export const createCheckoutSession = async (
   env: Env,
   input: CheckoutSessionInput,
-  meta: RequestMeta
+  meta: RequestMeta,
+  now: Date = new Date()
 ): Promise<CheckoutSession> => {
-  const apiKey = env.BOLD_IDENTITY_KEY;
-  const secretKey = env.BOLD_SECRET_KEY;
-
-  // Sin llaves no se puede cobrar. Se responde 503 y no 500 porque el codigo
-  // esta bien: lo que falta es la configuracion del entorno.
-  if (!apiKey || !secretKey) {
-    console.error('BOLD_IDENTITY_KEY o BOLD_SECRET_KEY no configurados: no se puede abrir el checkout.');
-    throw serviceUnavailable('bold_not_configured', 'Los pagos no estan disponibles en este momento.');
-  }
+  const keys = boldKeys(env);
 
   await assertHuman(env, input['cf-turnstile-response'], 'checkout', meta);
 
@@ -69,48 +101,39 @@ export const createCheckoutSession = async (
     });
   }
 
-  const plan = await loadPaymentPlan(env, input.plan);
-  const orderId = newOrderId(plan.code);
+  const program = await loadProgram(env, input.program, now, meta.ipCountry);
+  await assertOpenAndNotEnrolled(env, program, input.email);
+  priceIn(program, input.currency);
 
-  // La inscripcion se guarda antes de abrir el pago: es lo que liga el
-  // order-id con la persona, y deja rastro de quien empieza y no termina.
-  await insertEnrollment(env.DB, {
-    orderId,
-    planCode: plan.code,
-    fullName: input.full_name,
+  const customerId = await upsertCustomer(env.DB, {
     email: input.email,
+    fullName: input.full_name,
     countryCode: phone.countryCode,
     phone: phone.nationalNumber,
     phoneE164: phone.e164,
-    referralSource: input.referral_source,
-    amount: plan.amount,
-    currency: plan.currency,
-    sourcePage: meta.sourcePage,
-    ipCountry: meta.ipCountry,
-    userAgent: meta.userAgent,
   });
 
-  return {
-    apiKey,
-    orderId,
-    amount: plan.amount,
-    currency: plan.currency,
-    description: plan.description,
-    integritySignature: await boldIntegritySignature({
-      orderId,
-      amount: plan.amount,
-      currency: plan.currency,
-      secretKey,
-    }),
-  };
+  return openOrder(
+    env,
+    keys,
+    { program, currency: input.currency, customerId, referralSource: input.referral_source },
+    meta
+  );
 };
 
-/**
- * Tipos de evento del webhook traducidos a estado de inscripcion.
- * VOID_REJECTED (una anulacion que fallo) no cambia nada: el pago sigue como
- * estaba. https://developers.bold.co/webhook
- */
-const WEBHOOK_STATUS: Record<string, EnrollmentStatus | undefined> = {
+export type OnApproved = (orderId: string) => void;
+
+const applyPayment = async (
+  env: Env,
+  orderId: string,
+  payment: Parameters<typeof applyOrderPayment>[2],
+  onApproved: OnApproved
+): Promise<void> => {
+  const { becameApproved } = await applyOrderPayment(env.DB, orderId, payment);
+  if (becameApproved) onApproved(orderId);
+};
+
+const WEBHOOK_STATUS: Record<string, OrderStatus | undefined> = {
   SALE_APPROVED: 'approved',
   SALE_REJECTED: 'rejected',
   VOID_APPROVED: 'voided',
@@ -123,7 +146,12 @@ const WEBHOOK_STATUS: Record<string, EnrollmentStatus | undefined> = {
  * se verifica antes de mirar el contenido: sin firma valida el cuerpo no es
  * informacion, es una peticion anonima de internet.
  */
-export const handleBoldWebhook = async (env: Env, rawBody: string, signature: string | undefined) => {
+export const handleBoldWebhook = async (
+  env: Env,
+  rawBody: string,
+  signature: string | undefined,
+  onApproved: OnApproved = () => {}
+) => {
   const secretKey = env.BOLD_SECRET_KEY;
 
   if (!secretKey) {
@@ -161,28 +189,22 @@ export const handleBoldWebhook = async (env: Env, rawBody: string, signature: st
     payload: rawBody,
   });
 
-  // Red de seguridad: si el comprador cerro la pestana y nunca volvio a la
-  // pagina de gracias, la venta queda registrada igual. applyEnrollmentPayment
-  // es idempotente, asi que no importa quien llegue primero.
   const status = WEBHOOK_STATUS[parsed.type];
   const reference = data.metadata?.reference;
 
   if (status && reference) {
-    await applyEnrollmentPayment(env.DB, reference, {
-      status,
-      transactionId: data.payment_id,
-      paymentMethod: data.payment_method,
-    });
+    await applyPayment(
+      env,
+      reference,
+      { status, transactionId: data.payment_id, paymentMethod: data.payment_method },
+      onApproved
+    );
   }
 
   return { type: parsed.type, paymentId: data.payment_id };
 };
 
-/**
- * Estados de Bold traducidos a los de una inscripcion. NO_TRANSACTION_FOUND y
- * PENDING (que solo usa PSE) son "todavia no hay veredicto", no un rechazo.
- */
-const ENROLLMENT_STATUS: Record<BoldPaymentStatus, EnrollmentStatus> = {
+const ORDER_STATUS: Record<BoldPaymentStatus, OrderStatus> = {
   NO_TRANSACTION_FOUND: 'pending',
   PENDING: 'pending',
   PROCESSING: 'processing',
@@ -192,38 +214,40 @@ const ENROLLMENT_STATUS: Record<BoldPaymentStatus, EnrollmentStatus> = {
   VOIDED: 'voided',
 };
 
-const FINAL_STATUSES: EnrollmentStatus[] = ['approved', 'rejected', 'failed', 'voided'];
+const FINAL_STATUSES: OrderStatus[] = ['approved', 'rejected', 'failed', 'voided'];
 
-export interface EnrollmentStatusView {
-  status: EnrollmentStatus;
-  planCode: string;
+const voucherPayment = (voucher: BoldVoucher, status: OrderStatus) => ({
+  status,
+  transactionId: voucher.transactionId,
+  paymentMethod: voucher.paymentMethod,
+});
+
+export interface OrderStatusView {
+  status: OrderStatus;
+  programCode: string;
   amount: number;
-  currency: string;
+  currency: Currency;
   fullName: string;
 }
 
-/**
- * Verificacion de retorno: la pagina de gracias pregunta por un order-id y el
- * Worker le pregunta a Bold. Los parametros que Bold anade a la URL
- * (bold-tx-status) no entran aqui: cualquiera puede escribirlos a mano.
- *
- * Si la inscripcion ya tiene un estado final no se vuelve a llamar a Bold:
- * ahorra la llamada saliente y hace inofensivo que la pagina reintente.
- */
-export const confirmEnrollment = async (env: Env, orderId: string): Promise<EnrollmentStatusView> => {
-  const enrollment = await findEnrollmentByOrderId(env.DB, orderId);
+export const confirmOrder = async (
+  env: Env,
+  orderId: string,
+  onApproved: OnApproved = () => {}
+): Promise<OrderStatusView> => {
+  const order = await findOrderByOrderId(env.DB, orderId);
 
-  if (!enrollment) throw notFound('enrollment_not_found', 'No encontramos esa inscripcion.');
+  if (!order) throw notFound('order_not_found', 'No encontramos esa orden.');
 
-  const view: EnrollmentStatusView = {
-    status: enrollment.status,
-    planCode: enrollment.planCode,
-    amount: enrollment.amount,
-    currency: enrollment.currency,
-    fullName: enrollment.fullName,
+  const view: OrderStatusView = {
+    status: order.status,
+    programCode: order.programCode,
+    amount: order.amount,
+    currency: order.currency,
+    fullName: order.fullName,
   };
 
-  if (FINAL_STATUSES.includes(enrollment.status)) return view;
+  if (FINAL_STATUSES.includes(order.status)) return view;
 
   const identityKey = env.BOLD_IDENTITY_KEY;
 
@@ -233,13 +257,77 @@ export const confirmEnrollment = async (env: Env, orderId: string): Promise<Enro
   }
 
   const voucher = await fetchBoldPaymentStatus(identityKey, orderId);
-  const status = ENROLLMENT_STATUS[voucher.status];
+  const status = ORDER_STATUS[voucher.status];
 
-  await applyEnrollmentPayment(env.DB, orderId, {
-    status,
-    transactionId: voucher.transactionId,
-    paymentMethod: voucher.paymentMethod,
-  });
+  await applyPayment(env, orderId, voucherPayment(voucher, status), onApproved);
 
   return { ...view, status };
+};
+
+export type ResumeResult = { session: CheckoutSession } | { enrolled: true; orderId: string };
+
+export const resumeOrder = async (
+  env: Env,
+  input: CheckoutResumeInput,
+  meta: RequestMeta,
+  now: Date = new Date(),
+  onApproved: OnApproved = () => {}
+): Promise<ResumeResult> => {
+  const previous = await findOrderByOrderId(env.DB, input.order_id);
+
+  if (!previous) throw notFound('order_not_found', 'No encontramos esa orden.');
+
+  const keys = boldKeys(env);
+
+  if (previous.status === 'approved') return { enrolled: true, orderId: previous.orderId };
+
+  const expiresAt = Date.parse(previous.createdAt) + checkout.resumeExpiryDays * DAY_MS;
+  if (now.getTime() > expiresAt) {
+    throw gone('resume_expired', 'El enlace para retomar la compra expiro.');
+  }
+
+  const status = await refreshResumedStatus(env, keys.apiKey, previous, onApproved);
+
+  if (status === 'approved') return { enrolled: true, orderId: previous.orderId };
+
+  const program = await loadProgram(env, previous.programCode, now, meta.ipCountry);
+  await assertOpenAndNotEnrolled(env, program, previous.email);
+
+  return {
+    session: await openOrder(
+      env,
+      keys,
+      {
+        program,
+        currency: previous.currency,
+        customerId: previous.customerId,
+        referralSource: previous.referralSource,
+      },
+      meta
+    ),
+  };
+};
+
+const refreshResumedStatus = async (
+  env: Env,
+  identityKey: string,
+  order: { orderId: string; status: OrderStatus },
+  onApproved: OnApproved
+): Promise<OrderStatus> => {
+  if (FINAL_STATUSES.includes(order.status)) return order.status;
+
+  let voucher: BoldVoucher;
+  try {
+    voucher = await fetchBoldPaymentStatus(identityKey, order.orderId);
+  } catch (error) {
+    console.warn('Bold no respondio por la orden a retomar; se usa el estado guardado.', error);
+    return order.status;
+  }
+
+  if (voucher.status === 'NO_TRANSACTION_FOUND') return order.status;
+
+  const status = ORDER_STATUS[voucher.status];
+  await applyPayment(env, order.orderId, voucherPayment(voucher, status), onApproved);
+
+  return status;
 };

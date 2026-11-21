@@ -1,12 +1,3 @@
-/**
- * Fases del boton unico de registro y pago (docs/bold-checkout.md).
- *
- * idle    formulario sin enviar: el boton dice "Reservar" y lo habilita el
- *         formulario (consentimiento + Turnstile).
- * paying  la inscripcion quedo guardada y firmada, y el modal de Bold esta abierto.
- * retry   el comprador cerro el modal sin pagar: el mismo boton cambia de estilo
- *         y de texto para retomar la MISMA sesion, sin crear otra inscripcion.
- */
 export type Phase = 'idle' | 'paying' | 'retry';
 export type FlowEvent = 'session' | 'closed' | 'retry' | 'edited';
 
@@ -20,24 +11,56 @@ export const nextPhase = (phase: Phase, event: FlowEvent): Phase => transitions[
 
 export interface ButtonView {
   variant: 'primary' | 'dark';
-  /** Clave del texto: el de `idle` viene del contenido; los otros, de src/config/checkout.ts. */
   text: 'reserve' | 'paying' | 'retry';
-  /** `true`: el flujo decide si el boton esta habilitado. `false`: lo decide el formulario. */
   locked: boolean;
-  /** Solo se lee cuando `locked` es `true`. */
   disabled: boolean;
 }
 
-const views: Record<Phase, ButtonView> = {
-  idle: { variant: 'primary', text: 'reserve', locked: false, disabled: false },
-  paying: { variant: 'dark', text: 'paying', locked: true, disabled: true },
-  retry: { variant: 'dark', text: 'retry', locked: true, disabled: false },
+export interface Consents {
+  terms: boolean;
+  privacy: boolean;
+}
+
+const views: Record<Phase, Omit<ButtonView, 'disabled'> & { open: boolean }> = {
+  idle: { variant: 'primary', text: 'reserve', locked: false, open: true },
+  paying: { variant: 'dark', text: 'paying', locked: true, open: false },
+  retry: { variant: 'dark', text: 'retry', locked: true, open: true },
 };
 
-export const buttonView = (phase: Phase): ButtonView => views[phase];
+export const buttonView = (phase: Phase, consents: Consents): ButtonView => {
+  const { open, ...view } = views[phase];
+  return { ...view, disabled: !(open && consents.terms && consents.privacy) };
+};
 
 /**
  * Antes de reabrir el pago se consulta la inscripcion: si Bold ya la aprobo, un
  * segundo pago seria un doble cobro.
  */
 export const canReopen = (enrollmentStatus: string): boolean => enrollmentStatus !== 'approved';
+
+export type SalesPanel = 'form' | 'upcoming' | 'closed';
+
+export const salesPanel = (status: string | undefined): SalesPanel => {
+  if (status === 'upcoming' || status === 'closed') return status;
+  return 'form';
+};
+
+export const rejectionAction = (code: string | undefined): 'enrolled' | 'closed' | null => {
+  if (code === 'already_enrolled') return 'enrolled';
+  if (code === 'program_not_open') return 'closed';
+  return null;
+};
+
+const ENROLLED_PARAM = 'estado';
+const ENROLLED_VALUE = 'inscrito';
+
+export const enrolledUrl = (returnPath: string): string => `${returnPath}?${ENROLLED_PARAM}=${ENROLLED_VALUE}`;
+
+export type ThanksStart = { state: 'enrolled' } | { state: 'error' } | { state: 'checking'; orderId: string };
+
+export const thanksStart = (search: string): ThanksStart => {
+  const params = new URLSearchParams(search);
+  if (params.get(ENROLLED_PARAM) === ENROLLED_VALUE) return { state: 'enrolled' };
+  const orderId = params.get('bold-order-id');
+  return orderId ? { state: 'checking', orderId } : { state: 'error' };
+};

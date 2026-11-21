@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:test';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import app from '../../src/server/index';
 import { TEST_IDENTITY_KEY, TEST_SECRET_KEY } from '../fixtures/bold';
 
@@ -9,12 +9,48 @@ const withKeys = { ...env, BOLD_IDENTITY_KEY: TEST_IDENTITY_KEY, BOLD_SECRET_KEY
 let ipCounter = 0;
 const nextIp = () => `203.0.113.${++ipCounter % 250}`;
 
-const get = (path: string) =>
-  app.request(`https://squai.io${path}`, { headers: { Origin: 'https://squai.io' } }, withKeys);
+const get = (path: string, headers: Record<string, string> = {}) =>
+  app.request(`https://squai.io${path}`, { headers: { Origin: 'https://squai.io', ...headers } }, withKeys);
+
+const PROGRAM = 'programa-prueba';
+const COP_ONLY = 'programa-solo-cop';
+const UPCOMING = 'programa-proximo';
+
+beforeAll(async () => {
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO programs (code, description) VALUES (?, 'Programa de prueba'), (?, 'Programa solo en pesos')
+       ON CONFLICT (code) DO NOTHING`
+    ).bind(PROGRAM, COP_ONLY),
+    env.DB.prepare(
+      `INSERT INTO program_prices (program_code, currency, amount, valid_from) VALUES
+         (?1, 'COP', 250000, '2020-01-01T05:00:00.000Z'),
+         (?1, 'USD', 80, '2020-01-01T05:00:00.000Z'),
+         (?2, 'COP', 300000, '2020-01-01T05:00:00.000Z')
+       ON CONFLICT DO NOTHING`
+    ).bind(PROGRAM, COP_ONLY),
+    env.DB.prepare(
+      `INSERT INTO programs (code, description) VALUES (?, 'Programa que abre en el futuro')
+       ON CONFLICT (code) DO NOTHING`
+    ).bind(UPCOMING),
+    env.DB.prepare(
+      `INSERT INTO program_prices (program_code, currency, amount, valid_from)
+       VALUES (?, 'COP', 250000, '2020-01-01T05:00:00.000Z') ON CONFLICT DO NOTHING`
+    ).bind(UPCOMING),
+    env.DB.prepare(
+      `INSERT INTO program_limits (program_code, opens_at, closes_at, capacity) VALUES
+         (?1, '2020-01-01T05:00:00.000Z', '2100-01-01T05:00:00.000Z', 1000),
+         (?2, '2020-01-01T05:00:00.000Z', '2100-01-01T05:00:00.000Z', 1000),
+         (?3, '2099-01-01T05:00:00.000Z', '2100-01-01T05:00:00.000Z', 30)
+       ON CONFLICT DO NOTHING`
+    ).bind(PROGRAM, COP_ONLY, UPCOMING),
+  ]);
+});
 
 /** Datos de la persona que se inscribe: sin ellos no se abre el pago. */
-const enrollmentPayload = {
-  plan: 'squai-one',
+const orderPayload = {
+  program: PROGRAM,
+  currency: 'COP',
   full_name: 'Ana  Rios',
   email: ' ANA@Empresa.CO ',
   country_code: '+57',
@@ -37,6 +73,11 @@ const postSession = (body: unknown, bindings: typeof withKeys = withKeys) =>
     bindings
   );
 
+const clearOrders = async () => {
+  await env.DB.exec('DELETE FROM orders');
+  await env.DB.exec('DELETE FROM customers');
+};
+
 /**
  * SHA-256 hexadecimal calculado con crypto.subtle directamente, sin pasar por
  * src/server/lib/bold.ts: si la ruta firmara otra cadena, este valor no
@@ -47,39 +88,67 @@ const sha256Hex = async (text: string) => {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
-describe('GET /api/checkout/plan/:code', () => {
-  it('devuelve el precio vigente del plan desde la base', async () => {
-    const res = await get('/api/checkout/plan/squai-one');
+describe('GET /api/checkout/program/:code', () => {
+  it('devuelve los precios vigentes por moneda y COP por defecto en Colombia', async () => {
+    const res = await get(`/api/checkout/program/${PROGRAM}`, { 'CF-IPCountry': 'CO' });
 
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toMatchObject({
+    await expect(res.json()).resolves.toEqual({
       ok: true,
-      plan: { code: 'squai-one', amount: 399000, currency: 'COP' },
+      program: {
+        code: PROGRAM,
+        description: 'Programa de prueba',
+        prices: { COP: 250000, USD: 80 },
+        defaultCurrency: 'COP',
+        status: 'open',
+      },
     });
   });
 
-  it('responde 404 cuando el plan no existe', async () => {
-    const res = await get('/api/checkout/plan/no-existe');
+  it('expone el estado calculado: proximamente antes de la apertura', async () => {
+    const res = await get(`/api/checkout/program/${UPCOMING}`);
 
-    expect(res.status).toBe(404);
-    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'plan_not_found' } });
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({ program: { code: UPCOMING, status: 'upcoming' } });
   });
 
-  it('responde 404 cuando el plan esta desactivado', async () => {
-    await env.DB.prepare('UPDATE payment_plans SET active = 0 WHERE code = ?').bind('squai-one').run();
+  it('propone USD fuera de Colombia', async () => {
+    const res = await get(`/api/checkout/program/${PROGRAM}`, { 'CF-IPCountry': 'MX' });
 
-    try {
-      const res = await get('/api/checkout/plan/squai-one');
-      expect(res.status).toBe(404);
-    } finally {
-      await env.DB.prepare('UPDATE payment_plans SET active = 1 WHERE code = ?').bind('squai-one').run();
-    }
+    await expect(res.json()).resolves.toMatchObject({ program: { defaultCurrency: 'USD' } });
+  });
+
+  it('propone USD si no se conoce el pais', async () => {
+    const res = await get(`/api/checkout/program/${PROGRAM}`);
+
+    await expect(res.json()).resolves.toMatchObject({ program: { defaultCurrency: 'USD' } });
+  });
+
+  it('propone la moneda que tenga precio si la del pais no lo tiene', async () => {
+    const res = await get(`/api/checkout/program/${COP_ONLY}`, { 'CF-IPCountry': 'US' });
+
+    await expect(res.json()).resolves.toMatchObject({
+      program: { prices: { COP: 300000 }, defaultCurrency: 'COP' },
+    });
+  });
+
+  it('responde 404 cuando el programa no existe', async () => {
+    const res = await get('/api/checkout/program/no-existe');
+
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'program_not_found' } });
+  });
+
+  it('ya no expone la ruta del plan', async () => {
+    const res = await get(`/api/checkout/plan/${PROGRAM}`);
+
+    expect(res.status).toBe(404);
   });
 });
 
 describe('POST /api/checkout/session', () => {
-  it('firma el monto del plan y nunca devuelve la llave secreta', async () => {
-    const res = await postSession(enrollmentPayload);
+  it('firma el monto del programa y nunca devuelve la llave secreta', async () => {
+    const res = await postSession(orderPayload);
 
     expect(res.status).toBe(201);
     const body = (await res.json()) as {
@@ -88,7 +157,7 @@ describe('POST /api/checkout/session', () => {
     const { session } = body;
 
     expect(session.apiKey).toBe(TEST_IDENTITY_KEY);
-    expect(session.amount).toBe(399000);
+    expect(session.amount).toBe(250000);
     expect(session.currency).toBe('COP');
     // Bold acepta letras, digitos, _ y - hasta 60 caracteres en data-order-id.
     expect(session.orderId).toMatch(/^[A-Za-z0-9_-]{1,60}$/);
@@ -98,38 +167,75 @@ describe('POST /api/checkout/session', () => {
     expect(JSON.stringify(body)).not.toContain(TEST_SECRET_KEY);
   });
 
-  it('usa como descripcion de la venta el nombre del plan que hay en D1', async () => {
+  it('firma en la moneda elegida y declara el IVA del 19% a Bold', async () => {
+    const res = await postSession({ ...orderPayload, currency: 'USD' });
+
+    expect(res.status).toBe(201);
+    const { session } = (await res.json()) as {
+      session: { orderId: string; amount: number; currency: string; tax: string; integritySignature: string };
+    };
+
+    expect(session).toMatchObject({ amount: 80, currency: 'USD', tax: 'vat-19' });
+    expect(session.integritySignature).toBe(await sha256Hex(`${session.orderId}80USD${TEST_SECRET_KEY}`));
+  });
+
+  it('responde 400 si la moneda elegida no tiene precio vigente', async () => {
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, program: COP_ONLY, currency: 'USD' });
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'currency_not_available' } });
+
+    const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
+    expect(results).toEqual([]);
+  });
+
+  it('rechaza una moneda que no se cobra, senalando el campo', async () => {
+    const res = await postSession({ ...orderPayload, currency: 'EUR' });
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: { code: 'validation_failed', fields: { currency: expect.any(String) } },
+    });
+  });
+
+  it('responde 400 si falta la moneda', async () => {
+    const res = await postSession({ ...orderPayload, currency: undefined });
+    expect(res.status).toBe(400);
+  });
+
+  it('usa como descripcion de la venta la del programa que hay en D1', async () => {
     // Bold muestra esta descripcion al comprador: tiene que salir de la tabla y
     // no de un texto fijo en el codigo, para poder cambiarla sin desplegar.
-    await env.DB.prepare('UPDATE payment_plans SET description = ? WHERE code = ?')
-      .bind('Plan de prueba desde D1', 'squai-one')
+    await env.DB.prepare('UPDATE programs SET description = ? WHERE code = ?')
+      .bind('Programa de prueba desde D1', PROGRAM)
       .run();
 
     try {
-      const res = await postSession(enrollmentPayload);
+      const res = await postSession(orderPayload);
 
       expect(res.status).toBe(201);
       const { session } = (await res.json()) as { session: { description: string } };
-      expect(session.description).toBe('Plan de prueba desde D1');
+      expect(session.description).toBe('Programa de prueba desde D1');
     } finally {
-      await env.DB.prepare('UPDATE payment_plans SET description = ? WHERE code = ?')
-        .bind('Fundamentos de Inteligencia Artificial Generativa', 'squai-one')
+      await env.DB.prepare('UPDATE programs SET description = ? WHERE code = ?')
+        .bind('Programa de prueba', PROGRAM)
         .run();
     }
   });
 
   it('ignora el monto que mande el navegador y cobra el de la base', async () => {
-    const res = await postSession({ ...enrollmentPayload, amount: 1000, currency: 'USD' });
+    const res = await postSession({ ...orderPayload, amount: 1000, currency: 'USD' });
 
     expect(res.status).toBe(201);
     const { session } = (await res.json()) as { session: { amount: number; currency: string } };
-    expect(session).toMatchObject({ amount: 399000, currency: 'COP' });
+    expect(session).toMatchObject({ amount: 80, currency: 'USD' });
   });
 
   it('da un orderId distinto a cada sesion', async () => {
     const [first, second] = await Promise.all([
-      postSession(enrollmentPayload),
-      postSession(enrollmentPayload),
+      postSession(orderPayload),
+      postSession(orderPayload),
     ]);
     const ids = await Promise.all(
       [first, second].map(async (res) => ((await res.json()) as { session: { orderId: string } }).session.orderId)
@@ -138,52 +244,90 @@ describe('POST /api/checkout/session', () => {
     expect(ids[0]).not.toBe(ids[1]);
   });
 
-  it('responde 404 si el plan no existe', async () => {
-    const res = await postSession({ ...enrollmentPayload, plan: 'no-existe' });
+  it('responde 404 si el programa no existe', async () => {
+    const res = await postSession({ ...orderPayload, program: 'no-existe' });
     expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toMatchObject({ error: { code: 'program_not_found' } });
   });
 
-  it('responde 400 si falta el plan', async () => {
-    const res = await postSession({ ...enrollmentPayload, plan: undefined });
+  it('responde 400 si falta el programa', async () => {
+    const res = await postSession({ ...orderPayload, program: undefined });
     expect(res.status).toBe(400);
   });
 
-  it('guarda la inscripcion como pendiente, ligada al orderId firmado', async () => {
-    await env.DB.exec('DELETE FROM enrollments');
-    const res = await postSession(enrollmentPayload);
+  it('guarda la orden como pendiente, ligada al orderId firmado y a su cliente', async () => {
+    await clearOrders();
+    const res = await postSession(orderPayload);
 
     expect(res.status).toBe(201);
     const { session } = (await res.json()) as { session: { orderId: string } };
 
-    const row = await env.DB.prepare('SELECT * FROM enrollments').first<Record<string, unknown>>();
+    const row = await env.DB.prepare(
+      `SELECT o.*, c.full_name, c.email, c.phone_e164
+       FROM orders o JOIN customers c ON c.id = o.customer_id`
+    ).first<Record<string, unknown>>();
     expect(row).toMatchObject({
       order_id: session.orderId,
-      plan_code: 'squai-one',
+      program_code: PROGRAM,
       status: 'pending',
       full_name: 'Ana Rios',
       email: 'ana@empresa.co',
       phone_e164: '+573205551234',
       referral_source: 'instagram',
-      amount: 399000,
+      amount: 250000,
       currency: 'COP',
+      tax: 'vat-19',
     });
   });
 
+  it('reutiliza al cliente con el mismo correo en otro formato y actualiza su contacto', async () => {
+    await clearOrders();
+    await postSession(orderPayload);
+    const res = await postSession({
+      ...orderPayload,
+      full_name: 'Ana Maria Rios',
+      email: 'ana@empresa.co',
+      country_code: '+1',
+      phone: '202 555 0100',
+      referral_source: 'linkedin',
+    });
+
+    expect(res.status).toBe(201);
+
+    const { results: customers } = await env.DB.prepare(
+      'SELECT email, full_name, country_code, phone, phone_e164 FROM customers'
+    ).all();
+    expect(customers).toEqual([
+      {
+        email: 'ana@empresa.co',
+        full_name: 'Ana Maria Rios',
+        country_code: '+1',
+        phone: '2025550100',
+        phone_e164: '+12025550100',
+      },
+    ]);
+
+    const { results: orders } = await env.DB.prepare(
+      'SELECT o.referral_source FROM orders o JOIN customers c ON c.id = o.customer_id ORDER BY o.id'
+    ).all();
+    expect(orders).toEqual([{ referral_source: 'instagram' }, { referral_source: 'linkedin' }]);
+  });
+
   it('rechaza un correo invalido senalando el campo y no deja fila', async () => {
-    await env.DB.exec('DELETE FROM enrollments');
-    const res = await postSession({ ...enrollmentPayload, email: 'ana(at)empresa.co' });
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, email: 'ana(at)empresa.co' });
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toMatchObject({
       error: { code: 'validation_failed', fields: { email: expect.any(String) } },
     });
 
-    const { results } = await env.DB.prepare('SELECT order_id FROM enrollments').all();
+    const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
     expect(results).toEqual([]);
   });
 
   it('exige el token de Turnstile cuando hay secret configurado', async () => {
-    const res = await postSession(enrollmentPayload, {
+    const res = await postSession(orderPayload, {
       ...withKeys,
       TURNSTILE_SECRET_KEY: 'test-secret',
     } as typeof withKeys);
@@ -192,12 +336,68 @@ describe('POST /api/checkout/session', () => {
     await expect(res.json()).resolves.toMatchObject({ error: { code: 'turnstile_missing' } });
   });
 
+  it('responde 409 program_not_open si el programa no esta abierto y no deja orden', async () => {
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, program: UPCOMING });
+
+    expect(res.status).toBe(409);
+    await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'program_not_open' } });
+
+    const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
+    expect(results).toEqual([]);
+  });
+
+  describe('cliente ya inscrito', () => {
+    const ENROLLED_ORDER = `${PROGRAM}-ya-inscrito`;
+
+    const enroll = async (status = 'approved') => {
+      await clearOrders();
+      const customer = await env.DB.prepare(
+        `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+         VALUES ('ana@empresa.co', 'Ana Rios', '+57', '3205551234', '+573205551234') RETURNING id`
+      ).first<{ id: number }>();
+      await env.DB.prepare(
+        `INSERT INTO orders (order_id, customer_id, program_code, status, amount, currency)
+         VALUES (?, ?, ?, ?, 250000, 'COP')`
+      )
+        .bind(ENROLLED_ORDER, customer!.id, PROGRAM, status)
+        .run();
+    };
+
+    it('responde 409 already_enrolled, distinto de programa cerrado, sin revelar su orden', async () => {
+      await enroll();
+      const res = await postSession(orderPayload);
+
+      expect(res.status).toBe(409);
+      const text = await res.text();
+      expect(JSON.parse(text)).toMatchObject({ ok: false, error: { code: 'already_enrolled' } });
+      expect(text).not.toContain(ENROLLED_ORDER);
+
+      const { results } = await env.DB.prepare('SELECT order_id FROM orders').all();
+      expect(results).toEqual([{ order_id: ENROLLED_ORDER }]);
+    });
+
+    it('deja pagar a quien solo tiene ordenes no aprobadas en el programa', async () => {
+      await enroll('rejected');
+      const res = await postSession(orderPayload);
+
+      expect(res.status).toBe(201);
+    });
+
+    it('deja pagar a quien esta inscrito en otro programa', async () => {
+      await enroll();
+      const res = await postSession({ ...orderPayload, program: COP_ONLY });
+
+      expect(res.status).toBe(201);
+    });
+  });
+
   it('responde 503 cuando las llaves de Bold no estan configuradas', async () => {
-    const res = await postSession(enrollmentPayload, {
+    const res = await postSession(orderPayload, {
       ...env,
       BOLD_IDENTITY_KEY: undefined,
       BOLD_SECRET_KEY: undefined,
-    } as typeof withKeys);
+    } as unknown as typeof withKeys);
 
     expect(res.status).toBe(503);
     await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'bold_not_configured' } });

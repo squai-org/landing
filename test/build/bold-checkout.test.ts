@@ -13,6 +13,7 @@ const session = {
   amount: 399000,
   currency: 'COP',
   description: 'Squai One',
+  tax: 'vat-19',
   integritySignature: 'abc123',
 };
 
@@ -32,6 +33,16 @@ describe('boldCheckoutConfig', () => {
     });
   });
 
+  it('declara a Bold el impuesto que firmo el Worker y cobra en la moneda elegida', () => {
+    const usd = { ...session, amount: 147, currency: 'USD' };
+
+    expect(boldCheckoutConfig(usd, 'https://squai.io/x')).toMatchObject({
+      amount: '147',
+      currency: 'USD',
+      tax: 'vat-19',
+    });
+  });
+
   it('devuelve al comprador a la URL indicada', () => {
     expect(boldCheckoutConfig(session, 'https://squai.io/servicios/squai-one').redirectionUrl).toBe(
       'https://squai.io/servicios/squai-one'
@@ -44,6 +55,12 @@ describe('boldCheckoutConfig', () => {
     const config = boldCheckoutConfig(session, 'https://squai.io/gracias', customer);
 
     expect(JSON.parse(config.customerData as string)).toEqual(customer);
+  });
+
+  it('manda como origin-url la pagina para retomar esa orden, en el mismo dominio', () => {
+    expect(boldCheckoutConfig(session, 'https://squai.io/gracias').originUrl).toBe(
+      'https://squai.io/retomar?order_id=squai-one-123'
+    );
   });
 
   it('no manda customerData si no hay datos del comprador', () => {

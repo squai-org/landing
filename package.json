@@ -11,11 +11,12 @@
     "preview:worker": "astro build && wrangler dev",
     "deploy": "astro build && pnpm db:migrate:remote && wrangler deploy",
     "deploy:ci": "pnpm db:migrate:remote && wrangler deploy",
+    "preview:ci": "node scripts/preview-ci.mjs",
     "version:upload": "astro build && wrangler versions upload",
     "version:promote": "wrangler versions deploy",
     "typecheck": "tsc -p src/server",
     "test": "vitest run",
-    "verify": "pnpm test && pnpm build",
+    "verify": "pnpm typecheck && pnpm test && pnpm build",
     "cf-typegen": "wrangler types",
     "db:create": "wrangler d1 create squai",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.7",
+    "typescript": "^7.0.2",
     "vitest": "^5.0.5",
     "wrangler": "^4.152.0"
   }

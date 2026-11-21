@@ -33,20 +33,27 @@ const postWebhook = (body: string, signature?: string) =>
     withKeys
   );
 
-/** Las notificaciones de prueba referencian esta inscripcion. */
-const seedEnrollment = (orderId: string) =>
-  env.DB.prepare(
-    `INSERT INTO enrollments
-      (order_id, plan_code, full_name, email, country_code, phone, phone_e164, referral_source, amount, currency)
-     VALUES (?, 'squai-one', 'Ana Rios', 'ana@empresa.co', '+57', '3205551234', '+573205551234', 'instagram', 399000, 'COP')`
+const seedOrder = async (orderId: string) => {
+  const customer = await env.DB.prepare(
+    `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+     VALUES ('ana@empresa.co', 'Ana Rios', '+57', '3205551234', '+573205551234')
+     ON CONFLICT (email) DO UPDATE SET full_name = excluded.full_name
+     RETURNING id`
+  ).first<{ id: number }>();
+
+  await env.DB.prepare(
+    `INSERT INTO orders (order_id, customer_id, program_code, referral_source, amount, currency)
+     VALUES (?, ?, 'squai-one', 'instagram', 399000, 'COP')`
   )
-    .bind(orderId)
+    .bind(orderId, customer?.id)
     .run();
+};
 
 beforeEach(async () => {
   await env.DB.exec('DELETE FROM bold_transactions');
-  await env.DB.exec('DELETE FROM enrollments');
-  await seedEnrollment('SQUAI-ONE-TEST');
+  await env.DB.exec('DELETE FROM orders');
+  await env.DB.exec('DELETE FROM customers');
+  await seedOrder('SQUAI-ONE-TEST');
 });
 
 describe('POST /api/checkout/webhook', () => {
@@ -125,30 +132,30 @@ describe('POST /api/checkout/webhook', () => {
     expect(row).toMatchObject({ payment_method: 'PSE', card_brand: null });
   });
 
-  it('confirma la inscripcion aunque el comprador nunca vuelva a la pagina', async () => {
+  it('confirma la orden aunque el comprador nunca vuelva a la pagina', async () => {
     const res = await postWebhook(APPROVED_SALE_BODY, APPROVED_SALE_SIGNATURE);
 
     expect(res.status).toBe(200);
-    const row = await env.DB.prepare('SELECT status, bold_transaction_id FROM enrollments').first();
+    const row = await env.DB.prepare('SELECT status, bold_transaction_id FROM orders').first();
     expect(row).toMatchObject({ status: 'approved', bold_transaction_id: 'TX-4111-APPROVED' });
   });
 
-  it('marca la inscripcion como rechazada con SALE_REJECTED', async () => {
+  it('marca la orden como rechazada con SALE_REJECTED', async () => {
     await postWebhook(REJECTED_SALE_BODY, REJECTED_SALE_SIGNATURE);
 
-    const row = await env.DB.prepare('SELECT status FROM enrollments').first();
+    const row = await env.DB.prepare('SELECT status FROM orders').first();
     expect(row).toMatchObject({ status: 'rejected' });
   });
 
-  it('una anulacion si revierte una inscripcion ya aprobada', async () => {
+  it('una anulacion si revierte una orden ya aprobada', async () => {
     await postWebhook(APPROVED_SALE_BODY, APPROVED_SALE_SIGNATURE);
     await postWebhook(VOID_APPROVED_BODY, VOID_APPROVED_SIGNATURE);
 
-    const row = await env.DB.prepare('SELECT status FROM enrollments').first();
+    const row = await env.DB.prepare('SELECT status FROM orders').first();
     expect(row).toMatchObject({ status: 'voided' });
   });
 
-  it('acepta una notificacion cuya referencia no corresponde a ninguna inscripcion', async () => {
+  it('acepta una notificacion cuya referencia no corresponde a ninguna orden', async () => {
     const res = await postWebhook(PSE_APPROVED_BODY, PSE_APPROVED_SIGNATURE);
 
     expect(res.status).toBe(200);

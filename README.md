@@ -22,7 +22,7 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm preview`            | Sirve localmente el resultado de `pnpm build`                  |
 | `pnpm preview:worker`     | Build + `wrangler dev`: front y `/api/*` con D1 local          |
 | `pnpm test`               | Tests del backend en workerd (vitest)                          |
-| `pnpm typecheck`          | `tsc` sobre el código del Worker                               |
+| `pnpm typecheck`          | `tsc` sobre el código del Worker y sus tests                   |
 | `pnpm cf-typegen`         | Regenera `worker-configuration.d.ts` desde `wrangler.jsonc`     |
 | `pnpm db:create`          | Crea la base de datos D1 `squai`                         |
 | `pnpm db:migrate:local`   | Aplica `migrations/` en el D1 local                            |
@@ -74,7 +74,7 @@ por su campo `order` y con el slug tomado del nombre del archivo.
   componentes no cambian.
 - Los campos de texto largo (`statement.body`, `whatWeDo.body`, `impact.body`,
   `originStory`, `faqs[].a`, `ui.team.intro`, `ui.finalCta.body`, `ui.follow.copy`,
-  `ui.waitlist.copy`, `ui.waitlist.investment.copy`) aceptan una lista de párrafos o un string donde una línea
+  `ui.checkout.copy`, `ui.checkout.investment.copy`) aceptan una lista de párrafos o un string donde una línea
   en blanco separa párrafos. Cada párrafo se renderiza como su propio `<p>`.
 - Rutas de la API y otra configuración de runtime van en `src/config/`, no en el
   contenido.
@@ -145,23 +145,33 @@ SQL fuera de `repositories/`.
 
 ### Endpoints
 
-| Método | Ruta            | Origen                                    |
-| :----- | :-------------- | :---------------------------------------- |
-| `POST` | `/api/waitlist` | `Waitlist.astro` — lista del programa     |
-| `POST` | `/api/contact`  | `ContactModal.astro` — Grow y Learn        |
-| `GET`  | `/api/health`   | Sonda de salud                             |
+| Método | Ruta                        | Origen                                    |
+| :----- | :-------------------------- | :---------------------------------------- |
+| `GET`  | `/api/checkout/plan/:code`  | `Checkout.astro` — precio del programa     |
+| `POST` | `/api/checkout/session`     | `Checkout.astro` — inscripción y pago      |
+| `GET`  | `/api/checkout/status`      | `gracias.astro` — estado del pago          |
+| `POST` | `/api/checkout/webhook`     | Webhook de Bold                            |
+| `POST` | `/api/contact`              | `ContactModal.astro` — Grow y Learn        |
+| `GET`  | `/api/health`               | Sonda de salud                             |
 
-Respuesta de éxito: `{ "ok": true, "id": 1, "created": true }`.
+El flujo de `/api/checkout/*` está en `docs/bold-checkout.md`, incluido el
+correo de confirmación por Brevo (plantilla en `src/emails/`, secret
+`BREVO_API_KEY`).
+
+Respuesta de éxito de `/api/contact`: `{ "ok": true, "id": 1, "created": true }`.
 Respuesta de error: `{ "ok": false, "error": { "code", "message", "fields"? } }`,
 donde `fields` mapea campo → mensaje para pintarlo en el formulario.
 
-`/api/waitlist` hace upsert por correo (un correo = un lugar en la lista);
 `/api/contact` guarda cada solicitud como una fila nueva.
 
 ### Seguridad
 
 - **Bots**: Turnstile en los dos formularios, validado contra `siteverify` en el
   Worker. Sin `TURNSTILE_SECRET_KEY` la verificación se omite con un warning.
+- **Secrets del Worker**: `TURNSTILE_SECRET_KEY`, `BOLD_IDENTITY_KEY`,
+  `BOLD_SECRET_KEY` y `BREVO_API_KEY` (correo de confirmación). En local van en
+  `.dev.vars`; en producción, con `wrangler secret put` o en Settings →
+  Variables and Secrets. Nunca en `.env`: terminaría en el HTML publicado.
 - **Inyección SQL**: todas las consultas son prepared statements con `.bind()`.
 - **Validación**: Zod en el edge; normaliza nombre, correo (minúsculas) y
   teléfono a E.164. Los formularios aceptan cualquier proveedor de correo

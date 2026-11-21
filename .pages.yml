@@ -657,7 +657,7 @@ content:
                       collapsible: false
       - name: one-contacto
         label: Contacto
-        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la sección de inscripción.
         type: file
         path: src/content/services/squai-one.json
         format: json
@@ -905,7 +905,7 @@ content:
                       collapsible: false
       - name: grow-contacto
         label: Contacto
-        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la sección de inscripción.
         type: file
         path: src/content/services/squai-grow.json
         format: json
@@ -1153,7 +1153,7 @@ content:
                       collapsible: false
       - name: learn-contacto
         label: Contacto
-        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la lista de espera.
+        description: Solo aparece si el botón principal abre un formulario. Si no, esta página muestra la sección de inscripción.
         type: file
         path: src/content/services/squai-learn.json
         format: json
@@ -1397,8 +1397,8 @@ content:
                         label: Abrir submenú de servicios
                         type: string
                         required: true
-                      - name: waitlist
-                        label: Botón de inscripción
+                      - name: program
+                        label: Botón hacia los programas
                         type: string
                         required: true
                       - name: contactCta
@@ -1406,7 +1406,7 @@ content:
                         type: string
                         required: true
                       - name: oneCta
-                        label: Botón de preinscripción
+                        label: Botón de inscripción (Squai One)
                         type: string
                         required: true
                   - name: skip
@@ -1500,7 +1500,7 @@ content:
                       message: Usa una URL que empiece por https:// o deja el campo vacío.
       - name: formularios
         label: Formularios
-        description: Los mismos textos en el formulario de empresas, el de instituciones educativas y la lista de espera.
+        description: Los mismos textos en el formulario de empresas, el de instituciones educativas y el de inscripción.
         type: file
         path: src/content/copies.json
         format: json
@@ -1679,6 +1679,19 @@ content:
                             label: Texto visible
                             type: string
                             required: true
+                      - name: termsConsentPrefix
+                        label: Consentimiento de términos, texto previo
+                        description: Casilla obligatoria del formulario de compra. El enlace lleva a /terminos-de-servicio.
+                        type: string
+                        required: true
+                      - name: termsConsentLink
+                        label: Consentimiento de términos, texto del enlace
+                        type: string
+                        required: true
+                      - name: termsConsentSuffix
+                        label: Consentimiento de términos, texto posterior
+                        type: string
+                        required: true
                   - name: feedback
                     label: Mensajes de respuesta
                     type: object
@@ -1862,6 +1875,14 @@ content:
                             label: Botón de volver
                             type: string
                             required: true
+                          - name: enrolledTitle
+                            label: Título de cliente ya inscrito
+                            type: string
+                            required: true
+                          - name: enrolledBody
+                            label: Texto de cliente ya inscrito
+                            type: string
+                            required: true
                       - name: investment
                         label: Inversión
                         type: object
@@ -1878,10 +1899,193 @@ content:
                             list:
                               min: 1
                               collapsible: true
-                          - name: referencePrice
-                            label: Precio de referencia
+                      - name: currency
+                        label: Selector de moneda
+                        description: El precio de cada moneda vive en D1 (program_prices), no aquí.
+                        type: object
+                        required: true
+                        fields:
+                          - name: label
+                            label: Etiqueta del selector
                             type: string
                             required: true
+                          - name: cop
+                            label: Opción pesos colombianos
+                            type: string
+                            required: true
+                          - name: usd
+                            label: Opción dólares
+                            type: string
+                            required: true
+                      - name: button
+                        label: Botón de pago
+                        description: El texto inicial del botón es el «Botón de reserva». Estos son los que muestra mientras el modal de Bold está abierto y después de cerrarlo sin pagar.
+                        type: object
+                        required: true
+                        fields:
+                          - name: paying
+                            label: Mientras se paga
+                            type: string
+                            required: true
+                          - name: retry
+                            label: Para retomar el pago
+                            type: string
+                            required: true
+                      - name: status
+                        label: Aviso de inscripciones
+                        description: Reemplaza al botón de pago antes de la apertura o cuando las inscripciones cierran. Las fechas y el cupo viven en D1 (program_limits), no aquí.
+                        type: object
+                        required: true
+                        fields:
+                          - name: upcomingTitle
+                            label: Título antes de la apertura
+                            type: string
+                            required: true
+                          - name: upcomingBody
+                            label: Texto antes de la apertura
+                            description: Sin fechas. La apertura vive en D1 (program_limits); una fecha escrita aquí quedaría mal si cambia.
+                            type: string
+                            required: true
+                          - name: closedTitle
+                            label: Título de inscripciones cerradas
+                            type: string
+                            required: true
+                          - name: closedBody
+                            label: Texto de inscripciones cerradas
+                            type: string
+                            required: true
+                      - name: resume
+                        label: Página para retomar el pago
+                        description: Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace vive en src/config/checkout.ts (resumeExpiryDays): no lo repitas en estos textos.
+                        type: object
+                        required: true
+                        fields:
+                          - name: checking
+                            label: Mientras prepara el pago
+                            type: string
+                            required: true
+                          - name: expiredTitle
+                            label: Título de enlace expirado
+                            type: string
+                            required: true
+                          - name: expiredBody
+                            label: Texto de enlace expirado
+                            type: string
+                            required: true
+                          - name: closedTitle
+                            label: Título de inscripciones cerradas
+                            type: string
+                            required: true
+                          - name: closedBody
+                            label: Texto de inscripciones cerradas
+                            type: string
+                            required: true
+                          - name: notFoundTitle
+                            label: Título de compra no encontrada
+                            type: string
+                            required: true
+                          - name: notFoundBody
+                            label: Texto de compra no encontrada
+                            type: string
+                            required: true
+                          - name: backCta
+                            label: Botón para ir al programa
+                            type: string
+                            required: true
+                          - name: errorTitle
+                            label: Título de error
+                            type: string
+                            required: true
+                          - name: errorBody
+                            label: Texto de error
+                            type: string
+                            required: true
+                      - name: confirmationEmail
+                        label: Correo de confirmación
+                        description: Textos que arma el Worker para el correo de confirmación (acuse de recibo). El resto del correo está en la plantilla de Brevo (src/emails/confirmation.html). Fechas y horario salen de D1 (programs).
+                        type: object
+                        required: true
+                        fields:
+                          - name: pending
+                            label: Dato sin confirmar
+                            description: Lo que sale en fechas, horario o duración mientras no estén en D1.
+                            type: string
+                            required: true
+                          - name: durationOne
+                            label: Duración de una semana
+                            description: Debe incluir {weeks}.
+                            type: string
+                            required: true
+                          - name: durationMany
+                            label: Duración de varias semanas
+                            description: Debe incluir {weeks}.
+                            type: string
+                            required: true
+                          - name: sessionsLinkBefore
+                            label: Cuándo llega el enlace de las sesiones
+                            description: Debe incluir {date}, la fecha de inicio.
+                            type: string
+                            required: true
+                          - name: sessionsLinkFallback
+                            label: Cuándo llega el enlace, sin fecha de inicio
+                            type: string
+                            required: true
+                          - name: paymentMethods
+                            label: Formas de pago
+                            description: Nombre de cada forma de pago que informa Bold.
+                            type: object
+                            required: true
+                            fields:
+                              - name: CREDIT_CARD
+                                label: Tarjeta de crédito
+                                type: string
+                                required: true
+                              - name: DEBIT_CARD
+                                label: Tarjeta débito
+                                type: string
+                                required: true
+                              - name: PSE
+                                label: PSE
+                                type: string
+                                required: true
+                              - name: NEQUI
+                                label: Nequi
+                                type: string
+                                required: true
+                              - name: BOTON_BANCOLOMBIA
+                                label: Botón Bancolombia
+                                type: string
+                                required: true
+                          - name: paymentMethodFallback
+                            label: Forma de pago desconocida
+                            type: string
+                            required: true
+              - name: company
+                label: Datos de Squai en el correo
+                description: Salen en el correo de confirmación (acuse de recibo, Ley 1480 art. 50). Razón social y NIT deben ser los mismos de los Términos de Servicio.
+                type: object
+                required: true
+                fields:
+                  - name: legalName
+                    label: Razón social
+                    type: string
+                    required: true
+                  - name: nit
+                    label: NIT
+                    type: string
+                    required: true
+                  - name: address
+                    label: Dirección
+                    type: string
+                    required: true
+                  - name: phone
+                    label: Teléfono
+                    type: string
+                    required: true
+                  - name: contact
+                    label: Correo de contacto
+                    type: string
+                    required: true
       - name: titulos-compartidos
         label: Títulos compartidos
         description: Títulos que se repiten igual en las tres páginas de servicio y en las legales.

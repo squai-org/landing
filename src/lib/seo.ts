@@ -12,8 +12,9 @@
 --------------------------------------------------------------------------- */
 
 import type { Faq, Service, SiteContent } from './content';
+import { SITE_URL } from '../config/site';
 
-export const SITE_URL = 'https://squai.io';
+export { SITE_URL };
 export const SITE_NAME = 'Squai';
 export const SITE_LOCALE = 'es_CO';
 export const SITE_LANG = 'es-419';
@@ -166,7 +167,7 @@ export const courseSchema = (content: SiteContent, service: Service, pageUrl: st
     '@id': `${pageUrl}#program-instance`,
     name: content.program.name,
     courseMode: 'Online, en vivo',
-    courseWorkload: '4 horas por semana durante 5 semanas',
+    courseWorkload: '5 horas por semana durante 4 semanas',
     duration: 'PT20H',
     inLanguage: SITE_LANG,
   },

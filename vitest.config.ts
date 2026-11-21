@@ -17,6 +17,7 @@ export default defineConfig({
             wrangler: { configPath: './wrangler.jsonc' },
             miniflare: {
               bindings: { TEST_MIGRATIONS: migrations },
+              d1Databases: ['MIGRATIONS_DB'],
               compatibilityDate: '2026-08-22',
             },
           }),

@@ -22,6 +22,10 @@ export const unauthorized = (code: string, message: string) => new ApiError(401,
 
 export const notFound = (code: string, message: string) => new ApiError(404, code, message);
 
+export const conflict = (code: string, message: string) => new ApiError(409, code, message);
+
+export const gone = (code: string, message: string) => new ApiError(410, code, message);
+
 export const serviceUnavailable = (code: string, message: string) => new ApiError(503, code, message);
 
 export const ok = <T extends Record<string, unknown>>(c: Context, data: T, status: 200 | 201 = 200) =>

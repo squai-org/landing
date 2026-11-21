@@ -7,6 +7,7 @@ import { sameOrigin } from './middleware/same-origin';
 import { securityHeaders } from './middleware/security-headers';
 import { checkoutRoute } from './routes/checkout';
 import { contactRoute } from './routes/contact';
+import { scheduled } from './scheduled';
 import type { AppBindings } from './types';
 
 const app = new Hono<AppBindings>();
@@ -24,10 +25,11 @@ api.get('/health', (c) => c.json({ ok: true }));
 
 api.use('/contact', rateLimit(), jsonRequest());
 api.use('/checkout/session', jsonRequest());
+api.use('/checkout/resume', rateLimit(), jsonRequest());
 
 api.route('/checkout', checkoutRoute);
 api.route('/contact', contactRoute);
 
 app.route('/api', api);
 
-export default app;
+export default Object.assign(app, { scheduled });
