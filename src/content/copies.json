@@ -183,7 +183,14 @@
           "copy": [
             "Un solo pago por las cuatro semanas del programa.",
             "Cuesta menos que seguir perdiendo horas intentando entender la IA por tu cuenta."
-          ]
+          ],
+          "referenceLabel": "Precio de referencia",
+          "discountLabel": "{percent} % de descuento",
+          "deadlineLabel": "Hasta el {date}"
+        },
+        "paymentMethods": {
+          "label": "Medios de pago",
+          "items": ["Tarjeta de crédito", "Tarjeta débito", "PSE", "Nequi", "Botón Bancolombia"]
         },
         "button": {
           "paying": "Completa el pago en la ventana de Bold",
