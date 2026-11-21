@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import '../styles/motion.css';
+import MotionToggle from '../components/MotionToggle.astro';
 import Seo from '../components/Seo.astro';
 import { getSiteContent } from '../lib/content';
 import { SITE_LANG } from '../lib/seo';
@@ -68,15 +70,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   <body data-client-copy={JSON.stringify({ modal: ui.modal, feedback: ui.feedback })}>
     <a class="skip-link" href="#contenido">{ui.skip}</a>
     <slot />
+    <MotionToggle pauseLabel={ui.motion.pause} resumeLabel={ui.motion.resume} />
   </body>
 </html>
 
 <script>
   import type { ClientCopy } from '../lib/content';
+  import { initMotion } from '../lib/motion-client';
 
   const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  initMotion();
 
   const navOffset = () => {
     const bar = document.querySelector<HTMLElement>('[data-header-row]');
@@ -195,6 +201,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
     document.querySelectorAll<HTMLElement>('.footer-grid > *').forEach((column, index) =>
       addReveal(column, 'copy', index * 60)
+    );
+
+    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) =>
+      addReveal(el, el.dataset.reveal!, Number(el.dataset.revealDelay ?? 0))
     );
 
     targets.forEach((el) => el.classList.add('reveal'));

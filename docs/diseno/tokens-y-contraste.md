@@ -66,6 +66,9 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Botón oscuro en hover | `--canvas` | `--neutral-12` | 15.28 | 4.5 |
 | base | Flecha del botón oscuro | `--gold-9` | `--midnight` | 11.90 | 3 |
 | base | Botón blanco | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Botón de pausa de animaciones | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Franja dorada animada (marquee) | `--midnight` | `--gold-9` | 11.90 | 4.5 |
+| base | Franja oscura animada (marquee) | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Pie: barra legal | `--on-deep-muted` | `--midnight` | 13.76 | 4.5 |
 | base | Pie: enlaces de la barra legal en hover | `--gold-9` | `--midnight` | 11.90 | 4.5 |

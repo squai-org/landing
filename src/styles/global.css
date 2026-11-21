@@ -541,7 +541,7 @@ textarea.field { min-height: 120px; resize: vertical; }
 
 .js-reveal .reveal {
   opacity: 0;
-  transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 24px), 0) scale(var(--reveal-scale, 1));
+  transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 24px), 0) rotate(var(--reveal-rotate, 0deg)) scale(var(--reveal-scale, 1));
   transition:
     opacity var(--reveal-duration, .55s) cubic-bezier(0, 0, .2, 1),
     transform var(--reveal-duration, .55s) cubic-bezier(0, 0, .2, 1);
