@@ -99,6 +99,7 @@ export const siteSchema = z.object({
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text, menuLabel: text, closeLabel: text }),
     motion: z.object({ pause: text, resume: text }),
+    whatsapp: z.object({ label: text, message: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
     services: z.object({ payback: text, capabilitiesFallback: text }),
     program: z.object({ duration: text, schedule: text, modality: text }),

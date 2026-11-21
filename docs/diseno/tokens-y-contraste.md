@@ -104,6 +104,7 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | learn | Pie, texto principal | `--on-deep` | `--accent-deep` | 9.99 | 4.5 |
 | learn | Pie, texto secundario y títulos | `--on-deep-muted` | `--accent-deep` | 8.68 | 4.5 |
 | learn | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 6.58 | 4.5 |
+| base | Ícono del botón de WhatsApp | `--midnight` | `#25D366` | 9.80 | 4.5 |
 | learn | Foco sobre el pie | `--canvas` | `--accent-deep` | 9.97 | 3 |
 
 ## Fuera de la tabla, a propósito
