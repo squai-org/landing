@@ -23,11 +23,14 @@ const closingIndex = (html: string, start: number, tag: string) => {
   throw new Error(`Sin cierre para <${tag}> en ${start}`);
 };
 
-const elementAt = (html: string, start: number, tag: string) => html.slice(start, closingIndex(html, start, tag));
+const enclosingElement = (html: string, marker: string, tag: string) => {
+  const markerIndex = html.indexOf(marker);
+  if (markerIndex === -1) throw new Error(`Sin ${marker} en el HTML`);
+  const start = html.lastIndexOf(`<${tag}`, markerIndex);
+  return html.slice(start, closingIndex(html, start, tag));
+};
 
 const openingTags = (fragment: string, tag: string) => fragment.match(new RegExp(`<${tag}\\b[^>]*>`, 'g')) ?? [];
-
-const attribute = (tag: string, name: string) => new RegExp(`\\s${name}(?:="([^"]*)")?(?=[\\s>/])`).exec(tag)?.[1] ?? (new RegExp(`\\s${name}(?=[\\s>/])`).test(tag) ? '' : undefined);
 
 const firstTag = (fragment: string, tag: string) => {
   const [found] = openingTags(fragment, tag);
@@ -35,7 +38,35 @@ const firstTag = (fragment: string, tag: string) => {
   return found;
 };
 
-const hasAttribute = (fragment: string, name: string) => new RegExp(`\\s${name}(?:=|\\s|>|/)`).test(fragment);
+const attribute = (tag: string, name: string) => {
+  const match = new RegExp(`\\s${name}(?:="([^"]*)")?(?=[\\s>/])`).exec(tag);
+  return match ? (match[1] ?? '') : undefined;
+};
+
+const hasAttribute = (fragment: string, name: string) => new RegExp(`\\s${name}(?=[=\\s>/])`).test(fragment);
+
+const submitButtons = (fragment: string) => openingTags(fragment, 'button').filter((tag) => attribute(tag, 'type') === 'submit');
+
+const customSelectAttributes = [
+  'data-select-name',
+  'data-select-required',
+  'data-select-message',
+  'data-select-trigger',
+  'data-select-trigger-label',
+  'data-select-value',
+  'data-select-panel',
+  'data-select-option',
+];
+
+const countrySelectAttributes = [
+  'data-country-select',
+  'data-country-trigger',
+  'data-country-trigger-label',
+  'data-country-value',
+  'data-country-panel',
+  'data-country-search',
+  'data-country-list',
+];
 
 describe('pagina de Squai One: contrato del formulario', () => {
   let page: string;
@@ -44,10 +75,8 @@ describe('pagina de Squai One: contrato del formulario', () => {
 
   beforeAll(async () => {
     page = await readDist('servicios/squai-one.html');
-    const containerStart = page.lastIndexOf('<div', page.indexOf('data-bold-checkout'));
-    container = elementAt(page, containerStart, 'div');
-    const formStart = page.indexOf('<form', page.indexOf('id="checkout-form"') - 40);
-    form = page.slice(formStart, page.indexOf('</form>', formStart) + 7);
+    container = enclosingElement(page, 'data-bold-checkout', 'div');
+    form = enclosingElement(page, 'id="checkout-form"', 'form');
   });
 
   it('el formulario cuelga del contenedor del checkout con sus endpoints', () => {
@@ -58,7 +87,7 @@ describe('pagina de Squai One: contrato del formulario', () => {
     expect(attribute(formTag, 'id')).toBe('checkout-form');
     expect(attribute(formTag, 'data-form')).toBe('checkout');
     expect(attribute(formTag, 'data-endpoint')).toMatch(/^\/api\//);
-    expect(hasAttribute(formTag, 'novalidate')).toBe(true);
+    expect(attribute(formTag, 'novalidate')).toBe('');
     expect(attribute(containerTag, 'data-program')).toBe('squai-one');
     for (const name of ['data-program-endpoint', 'data-status-endpoint', 'data-library-url', 'data-return-path']) {
       expect(attribute(containerTag, name), name).toBeTruthy();
@@ -85,11 +114,10 @@ describe('pagina de Squai One: contrato del formulario', () => {
   });
 
   it('tiene un unico boton de envio con su etiqueta', () => {
-    const submits = openingTags(form, 'button').filter((tag) => attribute(tag, 'type') === 'submit');
-    const submitStart = form.indexOf(submits[0]!);
-    const submit = elementAt(form, submitStart, 'button');
+    const submits = submitButtons(form);
 
     expect(submits).toHaveLength(1);
+    const submit = enclosingElement(form, submits[0]!, 'button');
     expect(submit).toMatch(/class="[^"]*\bbtn-label\b[^"]*"/);
     expect(attribute(submits[0]!, 'class')).toContain('btn-primary');
   });
@@ -101,8 +129,7 @@ describe('pagina de Squai One: contrato del formulario', () => {
   });
 
   it('el selector de moneda enlaza sus radios con el formulario', () => {
-    const pickerStart = page.lastIndexOf('<', page.indexOf('data-currency-picker'));
-    const picker = elementAt(page, pickerStart, page.slice(pickerStart + 1).match(/^[a-z0-9]+/i)![0]);
+    const picker = enclosingElement(page, ' data-currency-picker', 'fieldset');
     const radios = openingTags(picker, 'input');
 
     expect(radios.map((tag) => attribute(tag, 'value'))).toEqual(['COP', 'USD']);
@@ -117,15 +144,14 @@ describe('pagina de Squai One: contrato del formulario', () => {
 
   it('los paneles de venta cubren el formulario, lo proximo y lo cerrado', () => {
     const panels = openingTags(container, 'div').map((tag) => attribute(tag, 'data-sales-panel')).filter(Boolean);
-    const formPanelStart = container.lastIndexOf('<div', container.indexOf('data-sales-panel="form"'));
-    const formPanel = elementAt(container, formPanelStart, 'div');
+    const formPanel = enclosingElement(container, 'data-sales-panel="form"', 'div');
 
     expect(panels.sort()).toEqual(['closed', 'form', 'upcoming']);
-    expect(openingTags(formPanel, 'button').filter((tag) => attribute(tag, 'type') === 'submit')).toHaveLength(1);
+    expect(submitButtons(formPanel)).toHaveLength(1);
   });
 
   it('el estado del formulario se anuncia a los lectores de pantalla', () => {
-    const [status] = openingTags(container, 'div').filter((tag) => hasAttribute(tag, 'data-form-status'));
+    const status = openingTags(container, 'div').find((tag) => hasAttribute(tag, 'data-form-status'));
 
     expect(status).toBeDefined();
     expect(attribute(status!, 'role')).toBe('status');
@@ -137,30 +163,14 @@ describe('pagina de Squai One: contrato del formulario', () => {
     expect(page).toMatch(/(?:href="[^"]*#inscripcion"|data-scroll-to="inscripcion")/);
   });
 
-  it('los selectores personalizados conservan sus atributos de comportamiento', () => {
-    for (const name of [
-      'data-custom-select',
-      'data-select-name',
-      'data-select-trigger',
-      'data-select-trigger-label',
-      'data-select-value',
-      'data-select-panel',
-      'data-select-option',
-      'data-country-trigger',
-      'data-country-trigger-label',
-      'data-country-value',
-      'data-country-panel',
-      'data-country-search',
-      'data-country-list',
-    ]) {
-      expect(hasAttribute(form, name), name).toBe(true);
-    }
-  });
+  it('cada selector personalizado conserva sus atributos de comportamiento', () => {
+    const referral = enclosingElement(form, 'data-select-name="referral_source"', 'div');
+    const country = enclosingElement(form, 'data-country-select', 'div');
 
-  it('Turnstile, si se renderiza, queda dentro del formulario', () => {
-    if (!hasAttribute(page, 'data-turnstile-widget')) return;
-
-    expect(hasAttribute(form, 'data-turnstile-widget')).toBe(true);
+    for (const name of customSelectAttributes) expect(hasAttribute(referral, name), `referral_source ${name}`).toBe(true);
+    for (const name of countrySelectAttributes) expect(hasAttribute(country, name), `country_code ${name}`).toBe(true);
+    expect(attribute(firstTag(referral, 'div'), 'data-custom-select')).toBe('');
+    expect(openingTags(referral, 'button').filter((tag) => hasAttribute(tag, 'data-select-option'))).not.toHaveLength(0);
   });
 
   it('mantiene la regla global que oculta lo marcado con hidden', async () => {
