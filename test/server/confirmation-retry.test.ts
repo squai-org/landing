@@ -3,12 +3,6 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import worker from '../../src/server/index';
 import { email } from '../../src/config/email';
 
-/**
- * Cron Trigger (#56): el handler scheduled reintenta las confirmaciones de
- * ordenes aprobadas que no tienen un envio exitoso. Se invoca directo, con D1
- * real y el fetch saliente a Brevo simulado.
- */
-
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 const TEMPLATE_ID = 4242;
 const NOW = new Date('2027-01-10T15:00:00.000Z');
@@ -36,7 +30,6 @@ const brevoDown = () =>
     headers: { 'Content-Type': 'application/json' },
   });
 
-/** Devuelve las llamadas a Brevo; cualquier otra URL es un error del test. */
 const mockBrevo = (brevo: () => Promise<Response> | Response = brevoOk) => {
   const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
     const url = input instanceof Request ? input.url : String(input);
@@ -110,7 +103,7 @@ describe('cron: reintento de confirmaciones', () => {
     await runCron();
 
     expect(brevoCalls()).toHaveLength(1);
-    const [, init] = brevoCalls()[0];
+    const [, init] = brevoCalls()[0] ?? [];
     expect(new Headers(init?.headers).get('api-key')).toBe('test_brevo_key');
     expect(JSON.parse(String(init?.body))).toMatchObject({
       templateId: TEMPLATE_ID,
@@ -208,7 +201,7 @@ describe('cron: reintento de confirmaciones', () => {
     await runCron();
 
     expect(brevoCalls()).toHaveLength(1);
-    expect(JSON.parse(String(brevoCalls()[0][1]?.body)).params.ORDER_ID).toBe('SQUAI-ONE-STUCK');
+    expect(JSON.parse(String(brevoCalls()[0]?.[1]?.body)).params.ORDER_ID).toBe('SQUAI-ONE-STUCK');
     expect(await emailRows()).toMatchObject([
       { order_id: 'SQUAI-ONE-IN-FLIGHT', status: 'pending', attempts: 0, updated_at: minutesAgo(2) },
       { order_id: 'SQUAI-ONE-STUCK', status: 'sent', attempts: 1 },
@@ -229,8 +222,60 @@ describe('cron: reintento de confirmaciones', () => {
 
     const [row] = await emailRows();
     expect(row).toMatchObject({ status: 'failed', attempts: 2, sent_at: null, updated_at: NOW.toISOString() });
-    expect(row.last_error).toContain('503');
-    expect(row.last_error).toContain('internal_error');
+    expect(row?.last_error).toContain('503');
+    expect(row?.last_error).toContain('internal_error');
+  });
+
+  it('no reintenta una confirmacion omitida (ventas anteriores a 0009)', async () => {
+    await insertOrder('SQUAI-ONE-HISTORIC');
+    await insertConfirmation('SQUAI-ONE-HISTORIC', {
+      status: 'skipped',
+      attempts: 0,
+      lastError: 'omitida por 0009',
+      updatedAt: minutesAgo(60 * 24),
+    });
+    const brevoCalls = mockBrevo();
+
+    await runCron();
+
+    expect(brevoCalls()).toHaveLength(0);
+    expect(await emailRows()).toMatchObject([{ status: 'skipped', attempts: 0, updated_at: minutesAgo(60 * 24) }]);
+  });
+
+  it('una omitida que el equipo pasa a fallida se envia', async () => {
+    await insertOrder('SQUAI-ONE-HISTORIC');
+    await insertConfirmation('SQUAI-ONE-HISTORIC', { status: 'skipped', attempts: 0, updatedAt: minutesAgo(60) });
+    await env.DB.prepare(`UPDATE email_messages SET status = 'failed' WHERE order_id = 'SQUAI-ONE-HISTORIC'`).run();
+    const brevoCalls = mockBrevo();
+
+    await runCron();
+
+    expect(brevoCalls()).toHaveLength(1);
+    expect(await emailRows()).toMatchObject([{ status: 'sent', attempts: 1, template_id: TEMPLATE_ID }]);
+  });
+
+  it('las fallidas que llevan mas tiempo sin intento van primero: 50 que siempre fallan no tapan a las demas', async () => {
+    await env.DB.batch(
+      Array.from({ length: 50 }, (_, i) => [
+        env.DB.prepare(
+          `INSERT INTO orders (order_id, customer_id, program_code, amount, currency, tax, status)
+           VALUES (?, ?, 'squai-one', 440000, 'COP', 'vat-19', 'approved')`
+        ).bind(`SQUAI-ONE-STUCK-${i}`, customerId),
+        env.DB.prepare(
+          `INSERT INTO email_messages (order_id, customer_id, program_code, kind, template_id, status, attempts, updated_at)
+           VALUES (?, ?, 'squai-one', 'confirmation', ?, 'failed', 40, ?)`
+        ).bind(`SQUAI-ONE-STUCK-${i}`, customerId, TEMPLATE_ID, minutesAgo(5)),
+      ]).flat()
+    );
+    await insertOrder('SQUAI-ONE-NEWER');
+    await insertConfirmation('SQUAI-ONE-NEWER', { status: 'failed', attempts: 1, updatedAt: minutesAgo(30) });
+    const brevoCalls = mockBrevo();
+
+    await runCron();
+
+    const sentIds = brevoCalls().map(([, init]) => JSON.parse(String(init?.body)).params.ORDER_ID);
+    expect(sentIds).toContain('SQUAI-ONE-NEWER');
+    expect(sentIds).toHaveLength(50);
   });
 
   it('no envia confirmaciones de ordenes que no estan aprobadas', async () => {

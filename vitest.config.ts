@@ -17,9 +17,6 @@ export default defineConfig({
             wrangler: { configPath: './wrangler.jsonc' },
             miniflare: {
               bindings: { TEST_MIGRATIONS: migrations },
-              // D1 vacia para los tests de migracion: DB ya llega migrada por
-              // el setup, y esos tests necesitan aplicar las migraciones por
-              // tramos con datos sembrados en medio.
               d1Databases: ['MIGRATIONS_DB'],
               compatibilityDate: '2026-08-22',
             },

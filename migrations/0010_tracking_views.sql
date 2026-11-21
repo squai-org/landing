@@ -1,18 +1,4 @@
--- Vistas de seguimiento del embudo de ventas (ver GLOSSARY.md y ADR 0001).
---
--- El equipo consulta en D1, sin depender de Brevo, quien mostro intencion de
--- compra y no pago, quien esta inscrito y cuantos cupos quedan. Las vistas no
--- guardan nada: se calculan al consultarlas, igual que el estado del programa.
--- Uso en docs/bold-checkout.md, seccion "Seguimiento en D1".
---
--- Inscripcion = orden aprobada del cliente en el programa. Una venta anulada
--- (voided) deja de contar y libera el cupo.
---
--- Sin BEGIN/COMMIT: D1 aplica cada migracion como un solo lote atomico.
 
--- Clientes con ordenes en un programa y sin inscripcion en el, una fila por
--- cliente y programa aunque haya intentado varias veces. last_status es el
--- estado de su orden mas reciente y last_attempt_at, cuando la creo.
 CREATE VIEW v_customers_without_enrollment AS
 SELECT
   c.id         AS customer_id,
@@ -30,10 +16,6 @@ JOIN customers c ON c.id = o.customer_id
 GROUP BY o.customer_id, o.program_code
 HAVING sum(o.status = 'approved') = 0;
 
--- Inscritos por programa: una fila por cliente con una orden aprobada en el
--- programa, aunque haya pagado dos veces. order_id y enrolled_at son los de su
--- primera orden aprobada (enrolled_at cae en created_at si la orden no tiene
--- confirmed_at). El conteo sale con GROUP BY program_code.
 CREATE VIEW v_enrollments_by_program AS
 SELECT
   o.program_code AS program_code,
@@ -54,12 +36,6 @@ WHERE o.id = (
   LIMIT 1
 );
 
--- Cupos por programa: el cupo de program_limits menos las ordenes aprobadas,
--- la misma cuenta con que el Worker cierra el programa por cupo (una venta
--- anulada libera su lugar). seats_left no baja de 0. Un programa sin fila en
--- program_limits sale con capacity y seats_left en NULL: no se vende.
--- El estado por fechas no esta aqui: depende del instante, y lo calcula el
--- Worker; opens_at, closes_at y closed_manually se muestran para leerlo.
 CREATE VIEW v_program_seats AS
 SELECT
   p.code     AS program_code,

@@ -1,9 +1,3 @@
-/**
- * Cliente minimo de la API transaccional de Brevo, sobre fetch y sin SDK.
- * Envia con una plantilla (templateId) y sus parametros; los placeholders de
- * la plantilla son {{ params.NOMBRE }} (New Template Language).
- * https://developers.brevo.com/reference/send-transac-email
- */
 const BREVO_SEND_URL = 'https://api.brevo.com/v3/smtp/email';
 
 export interface BrevoContact {
@@ -20,7 +14,6 @@ export interface BrevoTemplateEmail {
   tags?: string[];
 }
 
-/** Brevo no acepto el envio. El mensaje es lo que se guarda como last_error. */
 export class BrevoError extends Error {
   constructor(
     readonly status: number,
@@ -31,10 +24,6 @@ export class BrevoError extends Error {
   }
 }
 
-/**
- * Envia un correo con plantilla. Devuelve el messageId de Brevo; cualquier
- * respuesta que no sea 2xx lanza BrevoError con estado, codigo y mensaje.
- */
 export const sendBrevoTemplateEmail = async (
   apiKey: string,
   message: BrevoTemplateEmail

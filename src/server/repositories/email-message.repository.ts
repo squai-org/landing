@@ -1,16 +1,16 @@
+import type { Currency, Tax } from '../../config/checkout';
 import type { OrderStatus } from './order.repository';
 
 export type EmailKind = 'confirmation' | 'recovery';
 
-/** Lo que necesita el correo de confirmacion: orden, cliente y programa. */
 export interface ConfirmationData {
   orderId: string;
   customerId: number;
   programCode: string;
   status: OrderStatus;
   amount: number;
-  currency: string;
-  tax: string | null;
+  currency: Currency;
+  tax: Tax | null;
   paymentMethod: string | null;
   email: string;
   fullName: string;
@@ -34,12 +34,6 @@ const CONFIRMATION_DATA_SQL = `
 export const findConfirmationData = async (db: D1Database, orderId: string) =>
   db.prepare(CONFIRMATION_DATA_SQL).bind(orderId).first<ConfirmationData>();
 
-/**
- * Reclama el envio: crea la fila pendiente si no existe. Devuelve true solo a
- * quien la creo; ese es el unico que envia. La unicidad (order_id, kind) y la
- * de recuperacion por cliente y programa hacen que un segundo intento, aunque
- * sea concurrente, no cambie nada.
- */
 const CLAIM_SQL = `
   INSERT INTO email_messages (order_id, customer_id, program_code, kind, template_id, created_at, updated_at)
   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)
@@ -59,19 +53,13 @@ export const claimEmailMessage = async (
   return meta.changes > 0;
 };
 
-/**
- * Confirmaciones que el cron debe reintentar: ordenes aprobadas sin fila de
- * confirmacion, con la fila fallida, o con la fila pendiente sin cambios desde
- * antes de `staleBefore` (un envio en curso de waitUntil la deja pendiente
- * unos segundos; pasado el margen se da por perdido).
- */
 const RETRY_CANDIDATES_SQL = `
   SELECT o.order_id AS orderId, m.id IS NOT NULL AS hasMessage
   FROM orders o
   LEFT JOIN email_messages m ON m.order_id = o.order_id AND m.kind = 'confirmation'
   WHERE o.status = 'approved'
     AND (m.id IS NULL OR m.status = 'failed' OR (m.status = 'pending' AND m.updated_at < ?1))
-  ORDER BY o.id
+  ORDER BY m.updated_at IS NOT NULL, m.updated_at, o.id
   LIMIT ?2
 `;
 
@@ -84,12 +72,6 @@ export const findConfirmationsToRetry = async (db: D1Database, staleBefore: Date
   return results.map((row) => ({ orderId: row.orderId, hasMessage: row.hasMessage === 1 }));
 };
 
-/**
- * Reclama de nuevo una confirmacion fallida o atascada: la vuelve a dejar
- * pendiente con la plantilla actual. Igual que claimEmailMessage, devuelve
- * true solo a quien la cambio, asi dos ejecuciones del cron que se crucen no
- * envian dos veces.
- */
 const RECLAIM_SQL = `
   UPDATE email_messages
   SET status = 'pending', template_id = ?3, updated_at = ?4
@@ -112,7 +94,87 @@ export const reclaimEmailMessage = async (
   return meta.changes > 0;
 };
 
-/** Anota el resultado de un intento de envio. */
+export interface RecoveryData {
+  orderId: string;
+  customerId: number;
+  programCode: string;
+  email: string;
+  fullName: string;
+  programName: string;
+}
+
+const RECOVERY_CANDIDATES_SQL = `
+  WITH latest AS (
+    SELECT o.order_id, o.customer_id, o.program_code, o.status, o.created_at,
+           ROW_NUMBER() OVER (PARTITION BY o.customer_id, o.program_code ORDER BY o.created_at DESC, o.id DESC) AS rn
+    FROM orders o
+  )
+  SELECT l.order_id AS orderId, l.customer_id AS customerId, l.program_code AS programCode,
+         c.email, c.full_name AS fullName, p.description AS programName
+  FROM latest l
+  JOIN customers c ON c.id = l.customer_id
+  JOIN programs p ON p.code = l.program_code
+  WHERE l.rn = 1
+    AND l.status IN ('pending', 'rejected', 'failed')
+    AND l.created_at < ?1
+    AND l.created_at > ?2
+    AND NOT EXISTS (
+      SELECT 1 FROM orders a
+      WHERE a.customer_id = l.customer_id AND a.program_code = l.program_code AND a.status = 'approved'
+    )
+    AND NOT EXISTS (
+      SELECT 1 FROM email_messages m
+      WHERE m.customer_id = l.customer_id AND m.program_code = l.program_code AND m.kind = 'recovery'
+    )
+  ORDER BY l.created_at
+  LIMIT ?3
+`;
+
+export const findRecoveriesToSend = async (
+  db: D1Database,
+  window: { createdBefore: Date; expiredBefore: Date },
+  limit: number
+) => {
+  const { results } = await db
+    .prepare(RECOVERY_CANDIDATES_SQL)
+    .bind(window.createdBefore.toISOString(), window.expiredBefore.toISOString(), limit)
+    .all<RecoveryData>();
+
+  return results;
+};
+
+const RECOVERY_RETRY_SQL = `
+  SELECT o.order_id AS orderId, o.customer_id AS customerId, o.program_code AS programCode,
+         c.email, c.full_name AS fullName, p.description AS programName
+  FROM email_messages m
+  JOIN orders o ON o.order_id = m.order_id
+  JOIN customers c ON c.id = o.customer_id
+  JOIN programs p ON p.code = o.program_code
+  WHERE m.kind = 'recovery'
+    AND (m.status = 'failed' OR (m.status = 'pending' AND m.updated_at < ?1))
+    AND o.status IN ('pending', 'rejected', 'failed')
+    AND o.created_at > ?2
+    AND NOT EXISTS (
+      SELECT 1 FROM orders a
+      WHERE a.customer_id = o.customer_id AND a.program_code = o.program_code AND a.status = 'approved'
+    )
+  ORDER BY m.updated_at, m.id
+  LIMIT ?3
+`;
+
+export const findRecoveriesToRetry = async (
+  db: D1Database,
+  window: { staleBefore: Date; expiredBefore: Date },
+  limit: number
+) => {
+  const { results } = await db
+    .prepare(RECOVERY_RETRY_SQL)
+    .bind(window.staleBefore.toISOString(), window.expiredBefore.toISOString(), limit)
+    .all<RecoveryData>();
+
+  return results;
+};
+
 const RESULT_SQL = `
   UPDATE email_messages
   SET status = ?3,

@@ -2,25 +2,16 @@ import { Hono, type Context } from 'hono';
 import { defer } from '../lib/background';
 import { badRequest, ok } from '../lib/http';
 import { parseBody } from '../lib/validate';
-import { checkoutSessionSchema } from '../schemas/checkout.schema';
-import { confirmOrder, createCheckoutSession, handleBoldWebhook } from '../services/checkout.service';
+import { checkoutResumeSchema, checkoutSessionSchema } from '../schemas/checkout.schema';
+import { confirmOrder, createCheckoutSession, handleBoldWebhook, resumeOrder } from '../services/checkout.service';
 import { sendConfirmation } from '../services/email.service';
 import { loadProgram } from '../services/program.service';
 import type { AppBindings } from '../types';
 
-/**
- * Cuando una orden pasa a aprobada, el correo de confirmacion sale con
- * waitUntil: la respuesta (y el 200 que Bold espera en menos de 2 s) no
- * espera a Brevo.
- */
 const confirmInBackground = (c: Context<AppBindings>) => (orderId: string) =>
   defer(c)(sendConfirmation(c.env, orderId, new Date()));
 
 export const checkoutRoute = new Hono<AppBindings>()
-  /**
-   * Precios vigentes por moneda para pintarlos en la pagina: son los mismos que
-   * se firman. La moneda por defecto sale del pais que informa Cloudflare.
-   */
   .get('/program/:code', async (c) => {
     const program = await loadProgram(c.env, c.req.param('code'), new Date(), c.get('requestMeta').ipCountry);
 
@@ -50,6 +41,21 @@ export const checkoutRoute = new Hono<AppBindings>()
     );
 
     return ok(c, { session }, 201);
+  })
+  .post('/resume', async (c) => {
+    const raw = await c.req.json().catch(() => {
+      throw badRequest('invalid_json', 'El cuerpo de la peticion no es JSON valido.');
+    });
+
+    const result = await resumeOrder(
+      c.env,
+      parseBody(checkoutResumeSchema, raw),
+      c.get('requestMeta'),
+      new Date(),
+      confirmInBackground(c)
+    );
+
+    return 'session' in result ? ok(c, result, 201) : ok(c, result);
   })
   /**
    * Notificaciones de Bold. No pasa por jsonRequest ni por rateLimit: Bold no

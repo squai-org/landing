@@ -2,20 +2,12 @@ import { env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { loadProgram } from '../../src/server/services/program.service';
 
-/**
- * El estado del programa se calcula con el instante que pasa el llamador: el
- * test fija el reloj sin tocar el del Worker.
- *
- * Programa propio, con las mismas fechas y cupo que la cohorte de Squai One:
- * ventas del 1 de diciembre de 2026 al 22 de enero de 2027 inclusive, hora de
- * Colombia (UTC-5), y 30 cupos.
- */
 const PROGRAM = 'programa-limites';
 const CAPACITY = 30;
-const BEFORE_OPENING = new Date('2026-12-01T04:59:59.999Z'); // 30 nov 23:59:59.999 en Bogota
-const OPENING = new Date('2026-12-01T05:00:00.000Z'); // 1 dic 00:00 en Bogota
-const LAST_MOMENT = new Date('2027-01-23T04:59:59.999Z'); // 22 ene 23:59:59.999 en Bogota
-const CLOSING = new Date('2027-01-23T05:00:00.000Z'); // 23 ene 00:00 en Bogota
+const BEFORE_OPENING = new Date('2026-12-01T04:59:59.999Z');
+const OPENING = new Date('2026-12-01T05:00:00.000Z');
+const LAST_MOMENT = new Date('2027-01-23T04:59:59.999Z');
+const CLOSING = new Date('2027-01-23T05:00:00.000Z');
 
 let customerId = 0;
 
@@ -48,7 +40,6 @@ beforeEach(async () => {
   await env.DB.prepare('UPDATE programs SET closed_manually = 0 WHERE code = ?').bind(PROGRAM).run();
 });
 
-/** Ordenes del programa en un estado dado; devuelve sus order_id. */
 const seedOrders = async (count: number, status: string) => {
   const ids = Array.from({ length: count }, () => `${PROGRAM}-${crypto.randomUUID()}`);
   await env.DB.batch(

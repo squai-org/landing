@@ -1,21 +1,25 @@
+import { checkout, resumeUrl, type Tax } from '../../config/checkout';
 import { email } from '../../config/email';
-import { SITE_URL } from '../../lib/seo';
+import { legalPaths } from '../../config/legal';
+import { SITE_URL } from '../../config/site';
 import { sendBrevoTemplateEmail } from '../lib/brevo';
+import { company, confirmationEmailCopy as copy } from '../lib/copy';
+import { before, DAY_MS, HOUR_MS, MINUTE_MS } from '../lib/time';
 import {
   claimEmailMessage,
   findConfirmationData,
   findConfirmationsToRetry,
+  findRecoveriesToRetry,
+  findRecoveriesToSend,
   reclaimEmailMessage,
   recordEmailResult,
   type ConfirmationData,
+  type EmailKind,
+  type RecoveryData,
 } from '../repositories/email-message.repository';
 import type { Env } from '../types';
+import { programStatus, type ProgramStatus } from './program.service';
 
-/**
- * Parametros que el Worker envia a la plantilla de confirmacion. Cada uno es
- * un placeholder {{ params.NOMBRE }} de src/emails/confirmation.html; un test
- * de build comprueba que coinciden.
- */
 export const CONFIRMATION_PARAMS = [
   'FIRST_NAME',
   'PROGRAM_NAME',
@@ -40,62 +44,47 @@ export const CONFIRMATION_PARAMS = [
 
 type ConfirmationParams = Record<(typeof CONFIRMATION_PARAMS)[number], string>;
 
-/** Tasa de cada impuesto que se declara a Bold, incluido en el monto. */
-const TAX_RATES: Record<string, number> = { 'vat-19': 0.19 };
+export const RECOVERY_PARAMS = ['FIRST_NAME', 'PROGRAM_NAME', 'RESUME_URL', 'RESUME_EXPIRY_DAYS'] as const;
 
-/**
- * Desglose de un monto con IVA incluido, en enteros: base = round(total / (1 + tasa))
- * e IVA = total - base, asi base + IVA siempre suma el total cobrado. Una orden
- * sin impuesto declarado (anteriores a 0007) va completa como base.
- */
-export const vatBreakdown = (total: number, tax: string | null) => {
-  const rate = (tax && TAX_RATES[tax]) || 0;
+type RecoveryParams = Record<(typeof RECOVERY_PARAMS)[number], string>;
+
+const firstName = (fullName: string) => fullName.trim().split(/\s+/)[0] || fullName;
+
+const TAX_RATES: Record<Tax, number> = { 'vat-19': 0.19 };
+
+export const vatBreakdown = (total: number, tax: Tax | null) => {
+  const rate = tax ? TAX_RATES[tax] : 0;
   const base = Math.round(total / (1 + rate));
   return { base, vat: total - base };
 };
 
-/** $440.000: separador de miles con punto, como se escribe en Colombia. */
 const money = (amount: number) => `$${String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
 
-const MONTHS = [
-  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
-];
+const LONG_DATE = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-const PENDING = 'Por confirmar';
+const longDate = (day: string | null) =>
+  day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? LONG_DATE.format(new Date(`${day}T00:00:00Z`)) : null;
 
-/** YYYY-MM-DD a "12 de enero de 2027"; sin fecha, "Por confirmar". */
-const longDate = (day: string | null) => {
-  const match = day?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) return null;
-  return `${Number(match[3])} de ${MONTHS[Number(match[2]) - 1]} de ${match[1]}`;
-};
-
-/** Semanas entre inicio y fin, contando ambos dias. */
 const duration = (startsOn: string | null, endsOn: string | null) => {
-  if (!longDate(startsOn) || !longDate(endsOn)) return PENDING;
-  const days = (Date.parse(`${endsOn}T00:00:00Z`) - Date.parse(`${startsOn}T00:00:00Z`)) / 86_400_000 + 1;
+  if (!longDate(startsOn) || !longDate(endsOn)) return copy.pending;
+  const days = (Date.parse(`${endsOn}T00:00:00Z`) - Date.parse(`${startsOn}T00:00:00Z`)) / DAY_MS + 1;
   const weeks = Math.ceil(days / 7);
-  return `${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+  return (weeks === 1 ? copy.durationOne : copy.durationMany).replace('{weeks}', String(weeks));
 };
 
-/** Forma de pago que informa Bold, en palabras del cliente. */
-const PAYMENT_METHODS: Record<string, string> = {
-  CREDIT_CARD: 'Tarjeta de crédito',
-  DEBIT_CARD: 'Tarjeta débito',
-  PSE: 'PSE',
-  NEQUI: 'Nequi',
-  BOTON_BANCOLOMBIA: 'Botón Bancolombia',
+const paymentMethod = (method: string | null) => {
+  if (!method) return copy.paymentMethodFallback;
+  return Object.hasOwn(copy.paymentMethods, method)
+    ? copy.paymentMethods[method as keyof typeof copy.paymentMethods]
+    : method;
 };
-
-const paymentMethod = (method: string | null) => (method ? (PAYMENT_METHODS[method] ?? method) : 'Pago en línea con Bold');
 
 export const confirmationParams = (data: ConfirmationData): ConfirmationParams => {
   const { base, vat } = vatBreakdown(data.amount, data.tax);
   const start = longDate(data.startsOn);
 
   return {
-    FIRST_NAME: data.fullName.trim().split(/\s+/)[0] ?? data.fullName,
+    FIRST_NAME: firstName(data.fullName),
     PROGRAM_NAME: data.programName,
     ORDER_ID: data.orderId,
     AMOUNT_TOTAL: money(data.amount),
@@ -103,132 +92,182 @@ export const confirmationParams = (data: ConfirmationData): ConfirmationParams =
     AMOUNT_VAT: money(vat),
     CURRENCY: data.currency,
     PAYMENT_METHOD: paymentMethod(data.paymentMethod),
-    START_DATE: start ?? PENDING,
-    END_DATE: longDate(data.endsOn) ?? PENDING,
-    SCHEDULE: data.schedule?.trim() || PENDING,
+    START_DATE: start ?? copy.pending,
+    END_DATE: longDate(data.endsOn) ?? copy.pending,
+    SCHEDULE: data.schedule?.trim() || copy.pending,
     DURATION: duration(data.startsOn, data.endsOn),
-    SESSIONS_LINK_INFO: start ? `antes del ${start}` : 'antes de la primera sesión',
-    COMPANY_NAME: email.company.name,
-    COMPANY_NIT: email.company.nit,
-    COMPANY_ADDRESS: email.company.address,
-    COMPANY_PHONE: email.company.phone,
-    COMPANY_CONTACT: email.company.contact,
-    TERMS_URL: `${SITE_URL}${email.termsPath}`,
+    SESSIONS_LINK_INFO: start ? copy.sessionsLinkBefore.replace('{date}', start) : copy.sessionsLinkFallback,
+    COMPANY_NAME: company.legalName,
+    COMPANY_NIT: company.nit,
+    COMPANY_ADDRESS: company.address,
+    COMPANY_PHONE: company.phone,
+    COMPANY_CONTACT: company.contact,
+    TERMS_URL: `${SITE_URL}${legalPaths.terms}`,
   };
 };
 
-/**
- * Envia el correo de confirmacion de una orden aprobada (acuse de recibo).
- *
- * Primero reclama la fila en email_messages y solo envia quien la creo: el
- * webhook y /status pueden llegar juntos o repetirse y sale un solo correo.
- * El resultado (enviado o fallido, con el error) queda en la misma fila para
- * que el cron reintente los fallidos. Sin BREVO_API_KEY o sin plantilla no se
- * reclama nada: la orden queda aprobada y sin fila, y el cron la toma despues.
- */
-export const sendConfirmation = async (env: Env, orderId: string, now: Date): Promise<void> => {
+
+export const recoveryParams = (data: RecoveryData): RecoveryParams => ({
+  FIRST_NAME: firstName(data.fullName),
+  PROGRAM_NAME: data.programName,
+  RESUME_URL: resumeUrl(SITE_URL, data.orderId),
+  RESUME_EXPIRY_DAYS: String(checkout.resumeExpiryDays),
+});
+
+interface BrevoTemplate {
+  apiKey: string;
+  templateId: number;
+}
+
+const brevoTemplate = (env: Env, kind: EmailKind): BrevoTemplate | null => {
   const apiKey = env.BREVO_API_KEY;
-  const templateId = email.templates.confirmation;
+  const templateId = email.templates[kind];
 
   if (!apiKey || !templateId) {
-    console.error('BREVO_API_KEY o la plantilla de confirmacion no configurados: no se envia la confirmacion.');
-    return;
+    console.error(`BREVO_API_KEY o la plantilla de ${kind} no configurados: no se envia ni se reclama ese correo.`);
+    return null;
   }
 
-  const data = await findConfirmationData(env.DB, orderId);
-
-  // Una anulacion pudo llegar antes de este envio.
-  if (!data || data.status !== 'approved') return;
-
-  const claimed = await claimEmailMessage(
-    env.DB,
-    { orderId, customerId: data.customerId, programCode: data.programCode, kind: 'confirmation', templateId },
-    now
-  );
-
-  if (!claimed) return;
-
-  await deliverConfirmation(env.DB, apiKey, templateId, data, now);
+  return { apiKey, templateId };
 };
 
-/**
- * Envia por Brevo una confirmacion ya reclamada y anota el resultado (enviado
- * o fallido, con el error) en su fila de email_messages.
- */
-const deliverConfirmation = async (
+export const PENDING_GRACE_MINUTES = 10;
+
+const staleBefore = (now: Date) => before(now, PENDING_GRACE_MINUTES * MINUTE_MS);
+
+interface EmailMessageKey {
+  orderId: string;
+  customerId: number;
+  programCode: string;
+  kind: EmailKind;
+}
+
+const claim = async (
   db: D1Database,
-  apiKey: string,
+  message: EmailMessageKey,
   templateId: number,
-  data: ConfirmationData,
+  retry: boolean,
+  now: Date
+): Promise<boolean> =>
+  retry
+    ? reclaimEmailMessage(db, { orderId: message.orderId, kind: message.kind }, templateId, staleBefore(now), now)
+    : claimEmailMessage(db, { ...message, templateId }, now);
+
+const deliver = async (
+  db: D1Database,
+  template: BrevoTemplate,
+  message: { orderId: string; kind: EmailKind; to: { email: string; name: string }; params: Record<string, string> },
   now: Date
 ): Promise<void> => {
-  const key = { orderId: data.orderId, kind: 'confirmation' as const };
+  const key = { orderId: message.orderId, kind: message.kind };
 
   try {
-    const { messageId } = await sendBrevoTemplateEmail(apiKey, {
-      templateId,
-      to: [{ email: data.email, name: data.fullName }],
+    const { messageId } = await sendBrevoTemplateEmail(template.apiKey, {
+      templateId: template.templateId,
+      to: [message.to],
       sender: email.sender,
       replyTo: email.replyTo,
-      params: confirmationParams(data),
-      tags: ['confirmation'],
+      params: message.params,
+      tags: [message.kind],
     });
 
     await recordEmailResult(db, key, { status: 'sent', providerMessageId: messageId }, now);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`Brevo no envio la confirmacion de ${data.orderId}: ${message}`);
-    await recordEmailResult(db, key, { status: 'failed', error: message.slice(0, 500) }, now);
+    const reason = error instanceof Error ? error.message : String(error);
+    console.error(`Brevo no envio el correo ${message.kind} de ${message.orderId}: ${reason}`);
+    await recordEmailResult(db, key, { status: 'failed', error: reason.slice(0, 500) }, now);
   }
 };
 
-/**
- * Margen antes de dar por perdida una confirmacion pendiente: el envio de
- * waitUntil tarda segundos, asi que una fila pendiente mas vieja que esto no
- * tiene a nadie enviandola.
- */
-export const PENDING_GRACE_MINUTES = 10;
+const confirm = async (
+  db: D1Database,
+  template: BrevoTemplate,
+  data: ConfirmationData,
+  retry: boolean,
+  now: Date
+): Promise<void> => {
+  const message = { orderId: data.orderId, customerId: data.customerId, programCode: data.programCode, kind: 'confirmation' as const };
 
-/** Confirmaciones por ejecucion del cron, para acotar su duracion. */
+  if (!(await claim(db, message, template.templateId, retry, now))) return;
+
+  await deliver(
+    db,
+    template,
+    { ...message, to: { email: data.email, name: data.fullName }, params: confirmationParams(data) },
+    now
+  );
+};
+
+export const sendConfirmation = async (env: Env, orderId: string, now: Date): Promise<void> => {
+  const template = brevoTemplate(env, 'confirmation');
+  if (!template) return;
+
+  const data = await findConfirmationData(env.DB, orderId);
+
+  if (!data || data.status !== 'approved') return;
+
+  await confirm(env.DB, template, data, false, now);
+};
+
 const RETRY_BATCH = 50;
 
-/**
- * Reintenta las confirmaciones de ordenes aprobadas sin envio exitoso: las
- * fallidas, las pendientes atascadas y las aprobadas que nunca se reclamaron
- * (por ejemplo, sin BREVO_API_KEY o sin plantilla en su momento). Cada una se
- * reclama antes de enviar, asi que dos ejecuciones seguidas o cruzadas no
- * duplican el correo. Sin BREVO_API_KEY o sin plantilla no hace nada, igual
- * que sendConfirmation.
- */
 export const retryConfirmations = async (env: Env, now: Date): Promise<void> => {
-  const apiKey = env.BREVO_API_KEY;
-  const templateId = email.templates.confirmation;
+  const template = brevoTemplate(env, 'confirmation');
+  if (!template) return;
 
-  if (!apiKey || !templateId) {
-    console.error('BREVO_API_KEY o la plantilla de confirmacion no configurados: el cron no reintenta confirmaciones.');
-    return;
-  }
-
-  const staleBefore = new Date(now.getTime() - PENDING_GRACE_MINUTES * 60_000);
-  const candidates = await findConfirmationsToRetry(env.DB, staleBefore, RETRY_BATCH);
+  const candidates = await findConfirmationsToRetry(env.DB, staleBefore(now), RETRY_BATCH);
 
   for (const { orderId, hasMessage } of candidates) {
     try {
       const data = await findConfirmationData(env.DB, orderId);
       if (!data || data.status !== 'approved') continue;
 
-      const claimed = hasMessage
-        ? await reclaimEmailMessage(env.DB, { orderId, kind: 'confirmation' }, templateId, staleBefore, now)
-        : await claimEmailMessage(
-            env.DB,
-            { orderId, customerId: data.customerId, programCode: data.programCode, kind: 'confirmation', templateId },
-            now
-          );
-
-      if (claimed) await deliverConfirmation(env.DB, apiKey, templateId, data, now);
+      await confirm(env.DB, template, data, hasMessage, now);
     } catch (error) {
-      // Un error de D1 con una orden no detiene las demas; la proxima ejecucion la retoma.
       console.error(`El cron no pudo reintentar la confirmacion de ${orderId}:`, error);
+    }
+  }
+};
+
+const RECOVERY_BATCH = 50;
+
+export const sendRecoveries = async (env: Env, now: Date): Promise<void> => {
+  const template = brevoTemplate(env, 'recovery');
+  if (!template) return;
+
+  const createdBefore = before(now, checkout.recoveryDelayHours * HOUR_MS);
+  const expiredBefore = before(now, checkout.resumeExpiryDays * DAY_MS);
+
+  const retries = await findRecoveriesToRetry(env.DB, { staleBefore: staleBefore(now), expiredBefore }, RECOVERY_BATCH);
+  const fresh = await findRecoveriesToSend(env.DB, { createdBefore, expiredBefore }, RECOVERY_BATCH);
+
+  const statuses = new Map<string, Promise<ProgramStatus>>();
+  const isOpen = async (code: string) => {
+    if (!statuses.has(code)) statuses.set(code, programStatus(env, code, now));
+    return (await statuses.get(code)) === 'open';
+  };
+
+  const attempts = [
+    ...retries.map((data) => ({ data, retry: true })),
+    ...fresh.map((data) => ({ data, retry: false })),
+  ];
+
+  for (const { data, retry } of attempts) {
+    try {
+      if (!(await isOpen(data.programCode))) continue;
+
+      const message = { orderId: data.orderId, customerId: data.customerId, programCode: data.programCode, kind: 'recovery' as const };
+
+      if (!(await claim(env.DB, message, template.templateId, retry, now))) continue;
+
+      await deliver(
+        env.DB,
+        template,
+        { ...message, to: { email: data.email, name: data.fullName }, params: recoveryParams(data) },
+        now
+      );
+    } catch (error) {
+      console.error(`El cron no pudo enviar la recuperacion de ${data.orderId}:`, error);
     }
   }
 };

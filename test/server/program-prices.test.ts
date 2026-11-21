@@ -4,17 +4,9 @@ import { createCheckoutSession } from '../../src/server/services/checkout.servic
 import { loadProgram } from '../../src/server/services/program.service';
 import { TEST_IDENTITY_KEY, TEST_SECRET_KEY } from '../fixtures/bold';
 
-/**
- * El precio vigente depende del instante. Los servicios reciben `now` del
- * llamador, asi el test fija el reloj sin tocar el del Worker.
- *
- * Programa propio, con el mismo calendario que la cohorte de Squai One: un
- * precio desde 2026 y otro desde el 1 de enero de 2027 a las 00:00 de Colombia
- * (UTC-5, sin horario de verano), que son las 05:00 UTC.
- */
 const PROGRAM = 'programa-calendario';
-const JUST_BEFORE = new Date('2027-01-01T04:59:59.999Z'); // 31 dic 23:59:59.999 en Bogota
-const SWITCH = new Date('2027-01-01T05:00:00.000Z'); // 1 ene 00:00 en Bogota
+const JUST_BEFORE = new Date('2027-01-01T04:59:59.999Z');
+const SWITCH = new Date('2027-01-01T05:00:00.000Z');
 
 const withKeys = { ...env, BOLD_IDENTITY_KEY: TEST_IDENTITY_KEY, BOLD_SECRET_KEY: TEST_SECRET_KEY };
 
@@ -45,7 +37,6 @@ beforeAll(async () => {
          (?1, 'USD', 185, '2027-01-01T05:00:00.000Z')
        ON CONFLICT DO NOTHING`
     ).bind(PROGRAM),
-    // Ventas abiertas a ambos lados del cambio de precio.
     env.DB.prepare(
       `INSERT INTO program_limits (program_code, opens_at, closes_at, capacity)
        VALUES (?, '2026-11-01T05:00:00.000Z', '2027-02-01T05:00:00.000Z', 30)

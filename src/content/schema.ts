@@ -94,6 +94,7 @@ export const siteSchema = z.object({
       .refine((item) => Boolean(item.target || item.href), 'Provide a target or href')),
   }).refine((item) => Boolean(item.h) !== Boolean(item.headingKey), 'Provide h or headingKey')),
   seo: z.object({ title: text, description: text, imageAlt: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
+  company: z.object({ legalName: text, nit: text, address: text, phone: text, contact: text }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text }),
@@ -104,11 +105,6 @@ export const siteSchema = z.object({
     finalCta: z.object({ title: text, body: paragraphs, cta: text }),
     follow: z.object({ title: text }),
     footer: z.object({ copyright: text }),
-    /**
-     * El precio no esta aqui: vive en la tabla program_prices de D1, por moneda
-     * y fecha de vigencia, para poder cambiarlo sin desplegar, y es el mismo
-     * monto que se firma para Bold. Ver docs/bold-checkout.md.
-     */
     checkout: z.object({
       title: text,
       copy: paragraphs,
@@ -120,18 +116,29 @@ export const siteSchema = z.object({
         rejectedTitle: text, rejectedBody: text,
         errorTitle: text, errorBody: text,
         orderLabel: text, backCta: text,
-        /** /gracias?estado=inscrito: el correo ya tiene una orden aprobada en el programa. */
         enrolledTitle: text, enrolledBody: text,
       }),
       investment: z.object({ eyebrow: text, copy: paragraphs }),
       button: z.object({ paying: text, retry: text }),
-      /** Selector de moneda de la tarjeta de inversion. */
       currency: z.object({ label: text, cop: text, usd: text }),
-      /**
-       * Aviso que reemplaza al boton fuera del periodo de venta. El estado lo
-       * calcula el Worker con los limites de D1 (program_limits).
-       */
       status: z.object({ upcomingTitle: text, upcomingBody: text, closedTitle: text, closedBody: text }),
+      resume: z.object({
+        checking: text,
+        expiredTitle: text, expiredBody: text,
+        closedTitle: text, closedBody: text,
+        notFoundTitle: text, notFoundBody: text,
+        backCta: text,
+        errorTitle: text, errorBody: text,
+      }),
+      confirmationEmail: z.object({
+        pending: text,
+        durationOne: text.refine((value) => value.includes('{weeks}'), 'Include {weeks}'),
+        durationMany: text.refine((value) => value.includes('{weeks}'), 'Include {weeks}'),
+        sessionsLinkBefore: text.refine((value) => value.includes('{date}'), 'Include {date}'),
+        sessionsLinkFallback: text,
+        paymentMethods: z.object({ CREDIT_CARD: text, DEBIT_CARD: text, PSE: text, NEQUI: text, BOTON_BANCOLOMBIA: text }),
+        paymentMethodFallback: text,
+      }),
     }),
     forms: z.object({
       required: text, fullName: text, email: text, corporateEmail: text, organization: text,

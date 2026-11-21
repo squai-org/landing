@@ -190,9 +190,36 @@
         },
         "status": {
           "upcomingTitle": "Próximamente",
-          "upcomingBody": "Las inscripciones abren el 1 de diciembre. Vuelve ese día para reservar tu cupo.",
+          "upcomingBody": "Las inscripciones todavía no abren. Vuelve pronto para reservar tu cupo o escríbenos a team@squai.io y te contamos cuándo abren.",
           "closedTitle": "Inscripciones cerradas",
           "closedBody": "Las inscripciones de esta cohorte están cerradas. Escríbenos a team@squai.io si quieres saber cuándo abre la próxima."
+        },
+        "resume": {
+          "checking": "Estamos preparando tu pago…",
+          "expiredTitle": "Este enlace ya expiró",
+          "expiredBody": "El enlace para retomar tu compra ya no está vigente. Puedes inscribirte de nuevo desde la página del programa: no te cobramos nada por el intento anterior.",
+          "closedTitle": "Inscripciones cerradas",
+          "closedBody": "Las inscripciones de esta cohorte se cerraron, así que no podemos abrir el pago. Escríbenos a team@squai.io si quieres saber cuándo abre la próxima.",
+          "notFoundTitle": "No encontramos tu compra",
+          "notFoundBody": "Revisa que el enlace esté completo. Si el problema sigue, inscríbete desde la página del programa o escríbenos a team@squai.io.",
+          "backCta": "Ir al programa",
+          "errorTitle": "No pudimos abrir el pago",
+          "errorBody": "Algo falló de nuestro lado. Intenta de nuevo en unos minutos o escríbenos a team@squai.io."
+        },
+        "confirmationEmail": {
+          "pending": "Por confirmar",
+          "durationOne": "{weeks} semana",
+          "durationMany": "{weeks} semanas",
+          "sessionsLinkBefore": "antes del {date}",
+          "sessionsLinkFallback": "antes de la primera sesión",
+          "paymentMethods": {
+            "CREDIT_CARD": "Tarjeta de crédito",
+            "DEBIT_CARD": "Tarjeta débito",
+            "PSE": "PSE",
+            "NEQUI": "Nequi",
+            "BOTON_BANCOLOMBIA": "Botón Bancolombia"
+          },
+          "paymentMethodFallback": "Pago en línea con Bold"
         }
       },
       "services": {
@@ -364,6 +391,13 @@
       "serviceTitle": "{service} — Squai",
       "title": "Capacitación y formación en inteligencia artificial | Squai",
       "description": "Capacitación en inteligencia artificial para personas, empresas e instituciones educativas. Programas prácticos, en vivo y sin necesidad de perfil técnico."
+    },
+    "company": {
+      "legalName": "Squai S.A.S.",
+      "nit": "902.071.792",
+      "address": "[DIRECCION PENDIENTE]",
+      "phone": "[TELEFONO PENDIENTE]",
+      "contact": "team@squai.io"
     },
     "legal": {
       "terms": {

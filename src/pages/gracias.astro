@@ -94,8 +94,6 @@ const { thanks } = ui.checkout;
       });
     };
 
-    // Bold solo documenta `bold-order-id` como parametro de la vuelta. El
-    // checkout trae aqui, sin order-id, a quien ya estaba inscrito.
     const start = thanksStart(window.location.search);
 
     if (start.state !== 'checking') {

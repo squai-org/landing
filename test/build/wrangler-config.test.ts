@@ -40,7 +40,24 @@ describe('wrangler.jsonc', () => {
   it('declara el Cron Trigger que reintenta las confirmaciones cada 5 minutos', async () => {
     const config = await readJsonc('wrangler.jsonc');
 
-    // Cloudflare interpreta los crons en UTC; cada 5 minutos no depende de la zona.
     expect(config.triggers).toEqual({ crons: ['*/5 * * * *'] });
+  });
+
+  it('las previews usan una base de pruebas distinta de la de produccion', async () => {
+    const config = await readJsonc('wrangler.jsonc');
+    const production = (config.d1_databases as { database_id: string }[])[0];
+    const preview = (config.previews as { d1_databases: { binding: string; database_id: string; database_name: string }[] }).d1_databases[0];
+
+    expect(preview?.binding).toBe('DB');
+    expect(preview?.database_name).toBe('squai-test');
+    expect(preview?.database_id).not.toBe(production?.database_id);
+  });
+
+  it('wrangler.test.jsonc migra la misma base de pruebas que usan las previews', async () => {
+    const config = await readJsonc('wrangler.jsonc');
+    const test = await readJsonc('wrangler.test.jsonc');
+    const preview = (config.previews as { d1_databases: unknown[] }).d1_databases;
+
+    expect(test.d1_databases).toEqual(preview);
   });
 });

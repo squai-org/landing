@@ -1,19 +1,11 @@
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-/**
- * Las migraciones se prueban sobre datos que ya existen en produccion: se
- * aplica el esquema hasta la ultima migracion ya publicada, se siembran filas
- * con la forma de entonces y luego se aplican las nuevas.
- */
 const LAST_PUBLISHED = '0004_enrollments.sql';
 
 const db = () => env.MIGRATIONS_DB;
 
-/** Deja la base vacia, incluida la tabla que registra migraciones aplicadas. */
 const wipe = async () => {
-  // Las vistas primero: no bloquean el DROP de sus tablas, pero sobreviven a
-  // el y la migracion que las crea fallaria al volver a aplicarse.
   const { results: views } = await db()
     .prepare(`SELECT name FROM sqlite_master WHERE type = 'view'`)
     .all<{ name: string }>();
@@ -26,8 +18,6 @@ const wipe = async () => {
     )
     .all<{ name: string }>();
 
-  // Con claves foraneas activas una tabla padre no se puede borrar antes que
-  // sus hijas; se reintenta hasta que no quede ninguna.
   let pending = results.map((r) => r.name);
   while (pending.length) {
     const failed: string[] = [];
@@ -78,7 +68,6 @@ describe('0006_customers_orders', () => {
 
     const { results: customers } = await db().prepare('SELECT * FROM customers').all<Record<string, unknown>>();
     expect(customers).toHaveLength(1);
-    // Los datos de contacto son los del intento mas reciente.
     expect(customers[0]).toMatchObject({
       email: 'ana@x.co',
       full_name: 'Ana Rios',
@@ -94,7 +83,7 @@ describe('0006_customers_orders', () => {
       {
         id: 7,
         order_id: 'squai-one-aaa',
-        customer_id: customers[0].id,
+        customer_id: customers[0]?.id,
         program_code: 'squai-one',
         status: 'rejected',
         referral_source: 'instagram',
@@ -107,13 +96,12 @@ describe('0006_customers_orders', () => {
         user_agent: 'UA-1',
         created_at: '2026-10-01T10:00:00.000Z',
         confirmed_at: '2026-10-01T10:05:00.000Z',
-        // 0007: las ordenes historicas no declaran impuesto.
         tax: null,
       },
       {
         id: 9,
         order_id: 'squai-one-bbb',
-        customer_id: customers[0].id,
+        customer_id: customers[0]?.id,
         program_code: 'squai-one',
         status: 'approved',
         referral_source: 'linkedin',
@@ -157,6 +145,28 @@ describe('0006_customers_orders', () => {
       .first<{ id: number }>();
     expect(inserted?.id).toBeGreaterThan(41);
   });
+
+  it('solo admite las monedas de CURRENCIES', async () => {
+    await applyAll();
+
+    const customer = await db()
+      .prepare(
+        `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+         VALUES ('eur@x.co', 'Eva', '+57', '3001112222', '+573001112222') RETURNING id`
+      )
+      .first<{ id: number }>();
+    const insert = (currency: string) =>
+      db()
+        .prepare(
+          `INSERT INTO orders (order_id, customer_id, program_code, amount, currency)
+           VALUES (?, ?, 'squai-one', 1000, ?)`
+        )
+        .bind(`squai-one-${currency}`, customer?.id, currency)
+        .run();
+
+    await expect(insert('EUR')).rejects.toThrow();
+    await expect(insert('USD')).resolves.toBeDefined();
+  });
 });
 
 describe('0007_programs_prices', () => {
@@ -169,9 +179,15 @@ describe('0007_programs_prices', () => {
 
     await applyAll();
 
-    const program = await db().prepare('SELECT code, description FROM programs').all();
+    const program = await db().prepare('SELECT code, description, starts_on, ends_on, schedule FROM programs').all();
     expect(program.results).toEqual([
-      { code: 'squai-one', description: 'Fundamentos de Inteligencia Artificial Generativa' },
+      {
+        code: 'squai-one',
+        description: 'Fundamentos de Inteligencia Artificial Generativa',
+        starts_on: '2027-01-26',
+        ends_on: '2027-02-18',
+        schedule: 'Martes y jueves de 6:30 a 9:00 p. m. (hora de Colombia)',
+      },
     ]);
 
     const { results: prices } = await db()
@@ -181,8 +197,6 @@ describe('0007_programs_prices', () => {
       )
       .all<{ program_code: string; currency: string; amount: number; valid_from: string }>();
 
-    // 399.000 COP es historia; 440.000 / 147 rigen desde la migracion; el
-    // 1 de enero de 2027 a las 00:00 de Colombia (05:00 UTC) suben solos.
     expect(prices.map(({ currency, amount }) => [currency, amount])).toEqual([
       ['COP', 399000],
       ['COP', 440000],
@@ -268,8 +282,6 @@ describe('0008_program_limits', () => {
     await applyAll();
 
     const limits = await db().prepare('SELECT * FROM program_limits').all();
-    // Las 00:00 de Colombia son las 05:00 UTC; el cierre es exclusivo, asi que
-    // el 22 de enero se vende completo.
     expect(limits.results).toEqual([
       {
         program_code: 'squai-one',
@@ -311,6 +323,72 @@ describe('0008_program_limits', () => {
   });
 });
 
+describe('0009_email_messages', () => {
+  it('marca como omitida la confirmacion de las ventas aprobadas antes de la migracion', async () => {
+    const enrollment = (id: number, status: string, email: string) =>
+      db()
+        .prepare(
+          `INSERT INTO enrollments
+            (id, order_id, plan_code, status, full_name, email, country_code, phone, phone_e164, amount, currency)
+           VALUES (?, ?, 'squai-one', ?, 'Cliente', ?, '+57', '3001112222', '+573001112222', 399000, 'COP')`
+        )
+        .bind(id, `squai-one-${id}`, status, email);
+
+    await db().batch([
+      enrollment(1, 'approved', 'ana@x.co'),
+      enrollment(2, 'rejected', 'beto@x.co'),
+      enrollment(3, 'pending', 'caro@x.co'),
+    ]);
+
+    await applyAll();
+
+    const customer = await db().prepare(`SELECT id FROM customers WHERE email = 'ana@x.co'`).first<{ id: number }>();
+    const { results } = await db().prepare('SELECT * FROM email_messages').all<Record<string, unknown>>();
+
+    expect(results).toHaveLength(1);
+    expect(results[0]).toMatchObject({
+      order_id: 'squai-one-1',
+      customer_id: customer?.id,
+      program_code: 'squai-one',
+      kind: 'confirmation',
+      template_id: 0,
+      status: 'skipped',
+      attempts: 0,
+      provider_message_id: null,
+      sent_at: null,
+    });
+    expect(results[0]?.last_error).toMatch(/0009/);
+  });
+
+  it('solo acepta los estados pending, sent, failed y skipped', async () => {
+    await applyAll();
+    await db()
+      .prepare(
+        `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+         VALUES ('ana@x.co', 'Ana', '+57', '3001112222', '+573001112222')`
+      )
+      .run();
+    await db()
+      .prepare(
+        `INSERT INTO orders (order_id, customer_id, program_code, amount, currency)
+         SELECT 'squai-one-x', id, 'squai-one', 440000, 'COP' FROM customers`
+      )
+      .run();
+
+    const insert = (status: string) =>
+      db()
+        .prepare(
+          `INSERT INTO email_messages (order_id, customer_id, program_code, kind, template_id, status)
+           SELECT 'squai-one-x', id, 'squai-one', 'confirmation', 1, ? FROM customers`
+        )
+        .bind(status)
+        .run();
+
+    await expect(insert('lost')).rejects.toThrow();
+    await expect(insert('skipped')).resolves.toBeDefined();
+  });
+});
+
 describe('0010_tracking_views', () => {
   it('ve las ventas migradas: quien no pago, quien esta inscrito y cuantos cupos quedan', async () => {
     const enrollment = (id: number, status: string, email: string, createdAt: string) =>
@@ -325,10 +403,8 @@ describe('0010_tracking_views', () => {
         .bind(id, `squai-one-${id}`, status, email, createdAt, status === 'pending' ? null : createdAt);
 
     await db().batch([
-      // Dos intentos del mismo correo, escrito distinto, sin pago.
       enrollment(1, 'rejected', 'Ana@X.co ', '2026-10-01T10:00:00.000Z'),
       enrollment(2, 'pending', 'ana@x.co', '2026-10-02T10:00:00.000Z'),
-      // Una venta aprobada.
       enrollment(3, 'approved', 'beto@x.co', '2026-10-03T10:00:00.000Z'),
     ]);
 

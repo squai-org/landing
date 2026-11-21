@@ -12,8 +12,9 @@
 --------------------------------------------------------------------------- */
 
 import type { Faq, Service, SiteContent } from './content';
+import { SITE_URL } from '../config/site';
 
-export const SITE_URL = 'https://squai.io';
+export { SITE_URL };
 export const SITE_NAME = 'Squai';
 export const SITE_LOCALE = 'es_CO';
 export const SITE_LANG = 'es-419';

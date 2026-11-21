@@ -63,11 +63,6 @@ describe('buttonView', () => {
   });
 });
 
-/**
- * El comprador acepta por separado los Terminos de Servicio y la Politica de
- * Privacidad. Sin las dos casillas el boton no avanza, ni al registrarse ni al
- * continuar un pago que dejo a medias.
- */
 describe('buttonView con las dos casillas de consentimiento', () => {
   const combos = [
     { terms: false, privacy: false, disabled: true },
@@ -99,11 +94,6 @@ describe('canReopen', () => {
   });
 });
 
-/**
- * El programa abre y cierra solo (estado calculado por el Worker). Fuera de su
- * periodo de venta la pagina muestra un aviso con textos del CMS en lugar del
- * boton.
- */
 describe('salesPanel', () => {
   it('muestra el formulario con su boton cuando el programa esta abierto', () => {
     expect(salesPanel('open')).toBe('form');

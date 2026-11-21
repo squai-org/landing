@@ -12,16 +12,8 @@ const nextIp = () => `203.0.113.${++ipCounter % 250}`;
 const get = (path: string, headers: Record<string, string> = {}) =>
   app.request(`https://squai.io${path}`, { headers: { Origin: 'https://squai.io', ...headers } }, withKeys);
 
-/**
- * Programas propios del test, con precios vigentes desde 2020 y sin cambios
- * futuros, y ventas abiertas de 2020 a 2100: asi los montos y el estado no
- * dependen del dia en que corra la suite. El cambio de precio y los limites
- * en una fecha se prueban con `now` fijo en program-prices.test.ts y
- * program-limits.test.ts.
- */
 const PROGRAM = 'programa-prueba';
 const COP_ONLY = 'programa-solo-cop';
-/** Programa que abre en 2099: siempre proximamente. */
 const UPCOMING = 'programa-proximo';
 
 beforeAll(async () => {
@@ -81,7 +73,6 @@ const postSession = (body: unknown, bindings: typeof withKeys = withKeys) =>
     bindings
   );
 
-/** Las ordenes apuntan a su cliente: se borran antes que los clientes. */
 const clearOrders = async () => {
   await env.DB.exec('DELETE FROM orders');
   await env.DB.exec('DELETE FROM customers');
@@ -185,7 +176,6 @@ describe('POST /api/checkout/session', () => {
     };
 
     expect(session).toMatchObject({ amount: 80, currency: 'USD', tax: 'vat-19' });
-    // El impuesto no entra en la firma: Bold firma solo orden, monto y moneda.
     expect(session.integritySignature).toBe(await sha256Hex(`${session.orderId}80USD${TEST_SECRET_KEY}`));
   });
 
@@ -360,7 +350,6 @@ describe('POST /api/checkout/session', () => {
   describe('cliente ya inscrito', () => {
     const ENROLLED_ORDER = `${PROGRAM}-ya-inscrito`;
 
-    /** Inscripcion = una orden aprobada del cliente en el programa. */
     const enroll = async (status = 'approved') => {
       await clearOrders();
       const customer = await env.DB.prepare(
@@ -377,7 +366,6 @@ describe('POST /api/checkout/session', () => {
 
     it('responde 409 already_enrolled, distinto de programa cerrado, sin revelar su orden', async () => {
       await enroll();
-      // El mismo correo en otro formato es el mismo cliente.
       const res = await postSession(orderPayload);
 
       expect(res.status).toBe(409);
@@ -409,7 +397,7 @@ describe('POST /api/checkout/session', () => {
       ...env,
       BOLD_IDENTITY_KEY: undefined,
       BOLD_SECRET_KEY: undefined,
-    } as typeof withKeys);
+    } as unknown as typeof withKeys);
 
     expect(res.status).toBe(503);
     await expect(res.json()).resolves.toMatchObject({ ok: false, error: { code: 'bold_not_configured' } });

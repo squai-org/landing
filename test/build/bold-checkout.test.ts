@@ -57,6 +57,12 @@ describe('boldCheckoutConfig', () => {
     expect(JSON.parse(config.customerData as string)).toEqual(customer);
   });
 
+  it('manda como origin-url la pagina para retomar esa orden, en el mismo dominio', () => {
+    expect(boldCheckoutConfig(session, 'https://squai.io/gracias').originUrl).toBe(
+      'https://squai.io/retomar?order_id=squai-one-123'
+    );
+  });
+
   it('no manda customerData si no hay datos del comprador', () => {
     expect(boldCheckoutConfig(session, 'https://squai.io/gracias')).not.toHaveProperty('customerData');
   });
