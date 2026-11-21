@@ -503,6 +503,140 @@ content:
                 label: Texto del botón
                 type: string
                 required: true
+          - name: hero
+            label: Encabezado
+            type: object
+            fields:
+              - name: title
+                label: Título
+                type: string
+                required: true
+              - name: lead
+                label: Subtítulo
+                type: text
+                required: true
+              - name: note
+                label: Apunte a mano
+                description: Etiqueta oscura junto a la foto.
+                type: string
+                required: true
+              - name: sticker
+                label: Segunda etiqueta
+                type: string
+                required: true
+              - name: photoAlt
+                label: Descripción de la foto
+                description: Texto alternativo para lectores de pantalla.
+                type: string
+                required: true
+              - name: datesPending
+                label: Texto mientras no hay fechas
+                description: Se muestra hasta que la base de datos entrega las fechas de la cohorte.
+                type: string
+                required: true
+              - name: schedulePending
+                label: Texto mientras no hay horario
+                description: Se muestra hasta que la base de datos entrega el horario de la cohorte.
+                type: string
+                required: true
+      - name: one-datos-clave
+        label: Datos clave
+        description: Las fechas y el horario de la cohorte no se editan aquí, salen de la base de datos.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: keyFacts
+            label: false
+            type: object
+            fields:
+              - name: title
+                label: Título
+                type: string
+                required: true
+              - name: lead
+                label: Subtítulo
+                type: text
+                required: true
+              - name: handwritten
+                label: Apunte a mano
+                type: string
+                required: true
+              - name: load
+                label: Carga del programa
+                description: De aquí salen la duración, las sesiones y el dato estructurado que leen los buscadores.
+                type: object
+                required: true
+                fields:
+                  - name: weeks
+                    label: Semanas
+                    type: number
+                    required: true
+                  - name: sessionsPerWeek
+                    label: Sesiones por semana
+                    type: number
+                    required: true
+                  - name: sessionMinutes
+                    label: Minutos por sesión
+                    type: number
+                    required: true
+              - name: labels
+                label: Títulos de los datos
+                type: object
+                required: true
+                fields:
+                  - name: duration
+                    label: Duración
+                    type: string
+                    required: true
+                  - name: sessions
+                    label: Sesiones
+                    type: string
+                    required: true
+                  - name: dates
+                    label: Fechas
+                    type: string
+                    required: true
+                  - name: schedule
+                    label: Horario
+                    type: string
+                    required: true
+                  - name: modality
+                    label: Modalidad
+                    type: string
+                    required: true
+                  - name: seats
+                    label: Cupo
+                    type: string
+                    required: true
+              - name: modality
+                label: Texto de modalidad
+                type: string
+                required: true
+              - name: seats
+                label: Texto de cupo
+                description: No lleva cifras: el cupo real vive en la base de datos.
+                type: string
+                required: true
+              - name: includes
+                label: Qué incluye
+                description: Son cuatro tarjetas, una por ilustración.
+                type: object
+                required: true
+                list:
+                  min: 4
+                  max: 4
+                  collapsible:
+                    summary: '{t}'
+                fields:
+                  - name: t
+                    label: Título
+                    type: string
+                    required: true
+                  - name: d
+                    label: Descripción
+                    type: text
+                    required: true
       - name: one-tarjeta
         label: Tarjeta en Inicio
         description: Cómo se ve este servicio en la retícula de la página principal y en el menú.

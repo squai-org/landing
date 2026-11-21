@@ -1,3 +1,4 @@
+import { fetchProgram } from './program-client';
 import { programStatusLabel } from './program-status';
 
 const SHOWN = 'programStatusShown';
@@ -7,15 +8,9 @@ const showProgramStatus = async (element: HTMLElement): Promise<void> => {
   element.dataset[SHOWN] = 'true';
 
   const { endpoint, upcoming = '', open = '', closed = '' } = element.dataset;
-  const body = await fetch(endpoint ?? '', { headers: { Accept: 'application/json' } })
-    .then((res) => (res.ok ? res.json() : null))
-    .catch(() => null);
+  const program = await fetchProgram(endpoint ?? '');
 
-  const label = programStatusLabel((body as { program?: { status?: unknown } } | null)?.program?.status, {
-    upcoming,
-    open,
-    closed,
-  });
+  const label = programStatusLabel(program?.status, { upcoming, open, closed });
 
   if (!label) return;
   element.textContent = label;
