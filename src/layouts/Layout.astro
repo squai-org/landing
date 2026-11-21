@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Seo from '../components/Seo.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
 import { getSiteContent } from '../lib/content';
 import { SITE_LANG } from '../lib/seo';
 
@@ -68,6 +69,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   <body data-client-copy={JSON.stringify({ modal: ui.modal, feedback: ui.feedback })}>
     <a class="skip-link" href="#contenido">{ui.skip}</a>
     <slot />
+    <WhatsAppButton />
   </body>
 </html>
 
