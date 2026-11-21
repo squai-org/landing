@@ -50,7 +50,8 @@ CREATE TABLE orders (
                         CHECK (status IN ('pending', 'processing', 'approved', 'rejected', 'failed', 'voided')),
   referral_source     TEXT CHECK (referral_source IN ('instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras')),
   amount              INTEGER NOT NULL,
-  currency            TEXT NOT NULL,
+  -- Las mismas monedas de payment_plans (0003) y de CURRENCIES en src/config/checkout.ts.
+  currency            TEXT NOT NULL CHECK (currency IN ('COP', 'USD')),
   bold_transaction_id TEXT,
   payment_method      TEXT,
   source_page         TEXT,

@@ -7,7 +7,8 @@ import {
 } from '../lib/bold';
 import { assertHuman } from '../lib/human';
 import { normalizePhone } from '../lib/phone';
-import { ApiError, badRequest, notFound, serviceUnavailable, unauthorized } from '../lib/http';
+import { badRequest, gone, notFound, serviceUnavailable, unauthorized } from '../lib/http';
+import { DAY_MS } from '../lib/time';
 import { recordBoldTransaction } from '../repositories/bold-transaction.repository';
 import { upsertCustomer } from '../repositories/customer.repository';
 import {
@@ -19,24 +20,18 @@ import {
 import { boldWebhookEventSchema } from '../schemas/bold-webhook.schema';
 import type { CheckoutResumeInput, CheckoutSessionInput } from '../schemas/checkout.schema';
 import { parseBody } from '../lib/validate';
-import { checkout } from '../../config/checkout';
-import {
-  assertOpenAndNotEnrolled,
-  loadProgram,
-  priceIn,
-  type Currency,
-  type ProgramView,
-} from './program.service';
+import { checkout, type Currency, type Tax } from '../../config/checkout';
+import { assertOpenAndNotEnrolled, loadProgram, priceIn, type ProgramView } from './program.service';
 import type { Env, RequestMeta } from '../types';
 
 export interface CheckoutSession {
   apiKey: string;
   orderId: string;
   amount: number;
-  currency: string;
+  currency: Currency;
   description: string;
   /** Impuesto incluido en el monto que se declara a Bold (data-tax). No entra en la firma. */
-  tax: string;
+  tax: Tax;
   integritySignature: string;
 }
 
@@ -47,10 +42,6 @@ export interface CheckoutSession {
  */
 const newOrderId = (code: string) => `${code}-${crypto.randomUUID().replaceAll('-', '')}`.slice(0, 60);
 
-/**
- * `now` decide que precio rige; la ruta pasa el reloj del Worker y los tests
- * un instante fijo.
- */
 /**
  * Sin llaves no se puede cobrar. Se responde 503 y no 500 porque el codigo
  * esta bien: lo que falta es la configuracion del entorno.
@@ -106,6 +97,10 @@ const openOrder = async (
   };
 };
 
+/**
+ * `now` decide que precio rige; la ruta pasa el reloj del Worker y los tests
+ * un instante fijo.
+ */
 export const createCheckoutSession = async (
   env: Env,
   input: CheckoutSessionInput,
@@ -153,6 +148,21 @@ export const createCheckoutSession = async (
  * La ruta lo usa para programar el correo de confirmacion sin esperar a Brevo.
  */
 export type OnApproved = (orderId: string) => void;
+
+/**
+ * Aplica un veredicto de Bold con applyOrderPayment (la unica escritura del
+ * estado de pago) y avisa a onApproved solo si esta llamada aprobo la orden.
+ * Lo usan el webhook, /status y retomar.
+ */
+const applyPayment = async (
+  env: Env,
+  orderId: string,
+  payment: Parameters<typeof applyOrderPayment>[2],
+  onApproved: OnApproved
+): Promise<void> => {
+  const { becameApproved } = await applyOrderPayment(env.DB, orderId, payment);
+  if (becameApproved) onApproved(orderId);
+};
 
 /**
  * Tipos de evento del webhook traducidos a estado de orden.
@@ -222,13 +232,12 @@ export const handleBoldWebhook = async (
   const reference = data.metadata?.reference;
 
   if (status && reference) {
-    const { becameApproved } = await applyOrderPayment(env.DB, reference, {
-      status,
-      transactionId: data.payment_id,
-      paymentMethod: data.payment_method,
-    });
-
-    if (becameApproved) onApproved(reference);
+    await applyPayment(
+      env,
+      reference,
+      { status, transactionId: data.payment_id, paymentMethod: data.payment_method },
+      onApproved
+    );
   }
 
   return { type: parsed.type, paymentId: data.payment_id };
@@ -250,11 +259,18 @@ const ORDER_STATUS: Record<BoldPaymentStatus, OrderStatus> = {
 
 const FINAL_STATUSES: OrderStatus[] = ['approved', 'rejected', 'failed', 'voided'];
 
+/** Lo que se escribe en la orden a partir de la consulta de estado a Bold. */
+const voucherPayment = (voucher: BoldVoucher, status: OrderStatus) => ({
+  status,
+  transactionId: voucher.transactionId,
+  paymentMethod: voucher.paymentMethod,
+});
+
 export interface OrderStatusView {
   status: OrderStatus;
   programCode: string;
   amount: number;
-  currency: string;
+  currency: Currency;
   fullName: string;
 }
 
@@ -295,18 +311,10 @@ export const confirmOrder = async (
   const voucher = await fetchBoldPaymentStatus(identityKey, orderId);
   const status = ORDER_STATUS[voucher.status];
 
-  const { becameApproved } = await applyOrderPayment(env.DB, orderId, {
-    status,
-    transactionId: voucher.transactionId,
-    paymentMethod: voucher.paymentMethod,
-  });
-
-  if (becameApproved) onApproved(orderId);
+  await applyPayment(env, orderId, voucherPayment(voucher, status), onApproved);
 
   return { ...view, status };
 };
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type ResumeResult = { session: CheckoutSession } | { enrolled: true; orderId: string };
 
@@ -333,7 +341,7 @@ export const resumeOrder = async (
   // created_at es ISO-8601 UTC (Date#toISOString), igual que `now`.
   const expiresAt = Date.parse(previous.createdAt) + checkout.resumeExpiryDays * DAY_MS;
   if (now.getTime() > expiresAt) {
-    throw new ApiError(410, 'resume_expired', 'El enlace para retomar la compra expiro.');
+    throw gone('resume_expired', 'El enlace para retomar la compra expiro.');
   }
 
   const status = await refreshResumedStatus(env, keys.apiKey, previous, onApproved);
@@ -352,7 +360,7 @@ export const resumeOrder = async (
       keys,
       {
         program,
-        currency: previous.currency as Currency,
+        currency: previous.currency,
         customerId: previous.customerId,
         referralSource: previous.referralSource,
       },
@@ -388,13 +396,7 @@ const refreshResumedStatus = async (
   if (voucher.status === 'NO_TRANSACTION_FOUND') return order.status;
 
   const status = ORDER_STATUS[voucher.status];
-  const { becameApproved } = await applyOrderPayment(env.DB, order.orderId, {
-    status,
-    transactionId: voucher.transactionId,
-    paymentMethod: voucher.paymentMethod,
-  });
-
-  if (becameApproved) onApproved(order.orderId);
+  await applyPayment(env, order.orderId, voucherPayment(voucher, status), onApproved);
 
   return status;
 };

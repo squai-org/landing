@@ -1,3 +1,4 @@
+import type { Currency } from '../../config/checkout';
 import { badRequest, conflict, notFound } from '../lib/http';
 import { isEnrolled } from '../repositories/order.repository';
 import {
@@ -5,12 +6,9 @@ import {
   findCurrentPrices,
   findProgram,
   findProgramLimits,
-  type Currency,
   type Program,
 } from '../repositories/program.repository';
 import type { Env } from '../types';
-
-export type { Currency };
 
 /**
  * Estado de ventas, calculado y nunca guardado (ver GLOSSARY.md):

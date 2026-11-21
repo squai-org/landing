@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
 const { footerCols, heroSubtitle, tagline, socials, ui, labels } = await getSiteContent();
 
@@ -76,8 +77,8 @@ const ICONS: Record<string, string> = {
     <div class="footer-bottom">
       <span class="footer-copyright">{ui.footer.copyright}</span>
       <div class="footer-legal-links">
-        <a href="/terminos-de-servicio" class="footer-link footer-legal-link">{labels.terms}</a>
-        <a href="/politica-de-privacidad" class="footer-link footer-legal-link">{labels.privacy}</a>
+        <a href={legalPaths.terms} class="footer-link footer-legal-link">{labels.terms}</a>
+        <a href={legalPaths.privacy} class="footer-link footer-legal-link">{labels.privacy}</a>
       </div>
     </div>
   </div>

@@ -13,7 +13,8 @@
   // https://developers.cloudflare.com/workers/previews/configuration/
   "previews": {},
   // Cron Trigger (UTC): reintenta las confirmaciones de inscripcion que Brevo
-  // no envio. Handler: src/server/scheduled.ts. Ver docs/bold-checkout.md.
+  // no envio y envia el correo de recuperacion a quien no pago. Handler:
+  // src/server/scheduled.ts. Ver docs/bold-checkout.md.
   "triggers": {
     "crons": ["*/5 * * * *"]
   },

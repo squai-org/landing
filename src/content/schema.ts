@@ -94,6 +94,12 @@ export const siteSchema = z.object({
       .refine((item) => Boolean(item.target || item.href), 'Provide a target or href')),
   }).refine((item) => Boolean(item.h) !== Boolean(item.headingKey), 'Provide h or headingKey')),
   seo: z.object({ title: text, description: text, imageAlt: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
+  /**
+   * Datos de Squai que exige el acuse de recibo (Ley 1480 art. 50) en el correo
+   * de confirmacion. Razon social y NIT deben ser los de los Terminos de
+   * Servicio; un test de build lo comprueba.
+   */
+  company: z.object({ legalName: text, nit: text, address: text, phone: text, contact: text }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text }),
@@ -143,6 +149,21 @@ export const siteSchema = z.object({
         notFoundTitle: text, notFoundBody: text,
         backCta: text,
         errorTitle: text, errorBody: text,
+      }),
+      /**
+       * Textos del correo de confirmacion que arma el Worker
+       * (src/server/services/email.service.ts); el resto esta en la plantilla
+       * de Brevo (src/emails/confirmation.html). Las claves de paymentMethods
+       * son las formas de pago que informa Bold.
+       */
+      confirmationEmail: z.object({
+        pending: text,
+        durationOne: text.refine((value) => value.includes('{weeks}'), 'Include {weeks}'),
+        durationMany: text.refine((value) => value.includes('{weeks}'), 'Include {weeks}'),
+        sessionsLinkBefore: text.refine((value) => value.includes('{date}'), 'Include {date}'),
+        sessionsLinkFallback: text,
+        paymentMethods: z.object({ CREDIT_CARD: text, DEBIT_CARD: text, PSE: text, NEQUI: text, BOTON_BANCOLOMBIA: text }),
+        paymentMethodFallback: text,
       }),
     }),
     forms: z.object({

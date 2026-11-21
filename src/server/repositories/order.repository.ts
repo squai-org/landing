@@ -1,3 +1,4 @@
+import type { Currency, Tax } from '../../config/checkout';
 import { normalizeEmail } from '../lib/email';
 
 export type OrderStatus = 'pending' | 'processing' | 'approved' | 'rejected' | 'failed' | 'voided';
@@ -9,9 +10,10 @@ export interface NewOrder {
   /** NULL solo en ordenes anteriores al formulario con ese campo. */
   referralSource: string | null;
   amount: number;
-  currency: string;
-  /** Impuesto declarado a Bold (p. ej. vat-19); se congela con el monto. */
-  tax: string;
+  /** El CHECK de orders (0006) solo admite estas monedas. */
+  currency: Currency;
+  /** Impuesto declarado a Bold (checkout.tax); se congela con el monto. */
+  tax: Tax;
   sourcePage: string | null;
   ipCountry: string | null;
   userAgent: string | null;
@@ -19,7 +21,7 @@ export interface NewOrder {
 
 export interface Order extends Omit<NewOrder, 'tax'> {
   /** NULL en las ordenes anteriores a 0007. */
-  tax: string | null;
+  tax: Tax | null;
   id: number;
   status: OrderStatus;
   boldTransactionId: string | null;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CURRENCIES } from '../../config/checkout';
 import {
   countryCodeField,
   emailField,
@@ -24,7 +25,7 @@ export const checkoutSessionSchema = z.object({
   currency: z
     .string('Falta la moneda.')
     .transform((value) => value.trim().toUpperCase())
-    .pipe(z.enum(['COP', 'USD'], 'La moneda no es valida.')),
+    .pipe(z.enum(CURRENCIES, 'La moneda no es valida.')),
   full_name: nameField,
   email: emailField,
   country_code: countryCodeField,

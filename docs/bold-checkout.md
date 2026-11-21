@@ -191,8 +191,8 @@ Antes de enviar, `sendConfirmation` (`src/server/services/email.service.ts`)
 reclama la fila en `email_messages` con `INSERT ... ON CONFLICT DO NOTHING`
 sobre `UNIQUE (order_id, kind)`: solo envía quien la creó, aunque el webhook y
 `/status` lleguen juntos o se repitan. Después anota en esa fila `status`
-(`sent` o `failed`), `attempts`, `provider_message_id` (el `messageId` de
-Brevo), `last_error` y `sent_at`. D1 es la prueba de qué se envió, con qué
+(`sent` o `failed`; `skipped` solo lo pone la migración 0009, ver abajo),
+`attempts`, `provider_message_id` (el `messageId` de Brevo), `last_error` y `sent_at`. D1 es la prueba de qué se envió, con qué
 plantilla (`template_id`) y cuándo (ADR 0001). Un fallo de Brevo queda en
 `failed` y no rompe la respuesta; el cron la reintenta (ver abajo).
 
@@ -221,9 +221,39 @@ hay fila; si la hay, un `UPDATE` que solo cambia una fila todavía fallida o
 atascada), así que dos ejecuciones seguidas o cruzadas no duplican el correo.
 Cada intento suma `attempts` y deja `last_error`; un envío exitoso limpia el
 error y anota `sent_at`. No hay tope de intentos: una confirmación que sigue
-fallando se reintenta cada 5 minutos hasta que salga, y `last_error` dice por
-qué. Igual que el envío inmediato, sin `BREVO_API_KEY` o con
+fallando se reintenta hasta que salga. Van primero las que llevan más tiempo
+sin intento (las que nunca se reclamaron antes que todas, luego por
+`updated_at`), así que 50 o más que fallan siempre rotan y no tapan a las
+nuevas. Como no hay tope ni alerta, **los fallos se ven en D1**: una fila
+`failed` con `attempts` alto y su `last_error` es un correo que no sale (ver la
+consulta de abajo). Igual que el envío inmediato, sin `BREVO_API_KEY` o con
 `email.templates.confirmation` en `null` el cron no envía ni toca nada.
+
+```sql
+SELECT order_id, kind, attempts, last_error, updated_at
+FROM email_messages
+WHERE status = 'failed'
+ORDER BY attempts DESC;
+```
+
+**Entrega al menos una vez.** Si Brevo acepta el envío pero falla la escritura
+del resultado en D1, la fila queda `pending` y, pasados los 10 minutos de
+margen, el cron la reclama y la envía de nuevo: en ese caso raro el cliente
+recibe el correo dos veces. Se prefiere eso a perder un acuse de recibo.
+
+**Ventas anteriores a la migración 0009.** Las órdenes que ya estaban
+`approved` al aplicar `0009_email_messages.sql` no reciben confirmación
+retroactiva (no declaraban impuesto: el acuse saldría con IVA 0 y con los datos
+de hoy). La migración les deja una fila de confirmación `skipped`, con
+`template_id = 0`, sin intentos y con el motivo en `last_error`; el cron nunca
+toca una fila `skipped`. Para enviarle la confirmación a una de ellas, el
+equipo la pasa a `failed` y el siguiente cron la envía con la plantilla
+vigente:
+
+```sh
+wrangler d1 execute squai --remote \
+  --command "UPDATE email_messages SET status = 'failed' WHERE order_id = '<orderId>' AND kind = 'confirmation' AND status = 'skipped'"
+```
 
 Los cambios de crons tardan hasta 15 minutos en propagarse tras desplegar. En
 local: `pnpm preview:worker` y luego
@@ -269,7 +299,9 @@ o con `email.templates.recovery` en `null` el cron no envía ni toca nada. Se
 procesan hasta 50 recuperaciones nuevas y 50 reintentos por ejecución.
 
 Parámetros de la plantilla (`RECOVERY_PARAMS`): `FIRST_NAME` (primera palabra
-del nombre), `PROGRAM_NAME` (`programs.description`) y `RESUME_URL`.
+del nombre), `PROGRAM_NAME` (`programs.description`), `RESUME_URL` y
+`RESUME_EXPIRY_DAYS` (`checkout.resumeExpiryDays`, el mismo plazo que aplica
+`/api/checkout/resume`; la plantilla no lo escribe a mano).
 
 ### Llave y remitente
 
@@ -309,17 +341,28 @@ Montos: el IVA del 19 % va incluido. `base = round(total / 1.19)` e
 `IVA = total − base`, en enteros, así base + IVA siempre suma lo cobrado
 (440.000 → 369.748 + 70.252). Las órdenes sin `tax` (anteriores a 0007) van
 completas como base. Fechas y horario salen de `programs.starts_on`,
-`ends_on` y `schedule`; si están vacíos el correo dice "Por confirmar".
+`ends_on` y `schedule`; si están vacíos el correo usa
+`ui.checkout.confirmationEmail.pending`.
+
+Los textos que arma el Worker (dato pendiente, duración, cuándo llega el enlace
+de las sesiones, nombre de cada forma de pago) están en
+`ui.checkout.confirmationEmail` y los datos de Squai del acuse de recibo en
+`company`, ambos en `src/content/copies.json` y editables en Pages CMS
+(Inscripción). El Worker los lee con `src/server/lib/copy.ts`; el esquema los
+valida en `astro build` y un test de build comprueba que razón social y NIT
+son los de los Términos de Servicio. Los meses los escribe `Intl` (es-CO).
 
 ### Pendientes del equipo
 
 - Subir las dos plantillas (confirmación y recuperación) a Brevo y poner sus
   ids en `src/config/email.ts`.
-- **Dirección y teléfono de Squai**: en `email.company` quedan
+- **Dirección y teléfono de Squai**: en `company` (contenido) quedan
   `[DIRECCION PENDIENTE]` y `[TELEFONO PENDIENTE]`, y así salen en el correo
   hasta que se reemplacen. Razón social y NIT son los de los Términos de
   Servicio.
-- Llenar `starts_on`, `ends_on` y `schedule` del programa en D1.
+- `0007` siembra las fechas y el horario de Squai One (26 ene – 18 feb 2027,
+  martes y jueves de 6:30 a 9:00 p. m., hora de Colombia). Si cambian, se
+  corrigen en D1 (ver "Cambiar precio, fechas y cupos sin desplegar").
 - Probar la plantilla en clientes de correo reales (Gmail web y app, Outlook
   escritorio y web, Apple Mail/iOS), por ejemplo con el envío de prueba de
   Brevo. No está hecho: los tests solo validan los placeholders.
@@ -370,7 +413,7 @@ Quien llenó el formulario y no pagó vuelve con un enlace,
 enlace solo lleva el `order_id`, que es opaco (programa + UUID) y no tiene
 datos personales. Es el `originUrl` que el checkout manda a Bold en cada pago
 (a donde vuelve quien abandona o cancela el modal) y el enlace del correo de
-recuperación. Lo arma `resumeUrl()` en `src/lib/bold-checkout.ts`; la ruta y
+recuperación. Lo arma `resumeUrl()` en `src/config/checkout.ts`; la ruta y
 el plazo viven en `src/config/checkout.ts` (`resumePath`, `resumeExpiryDays`).
 
 `src/pages/retomar.astro` (con `noindex` y fuera del sitemap) llama a

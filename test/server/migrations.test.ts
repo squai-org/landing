@@ -157,6 +157,28 @@ describe('0006_customers_orders', () => {
       .first<{ id: number }>();
     expect(inserted?.id).toBeGreaterThan(41);
   });
+
+  it('solo admite las monedas de CURRENCIES', async () => {
+    await applyAll();
+
+    const customer = await db()
+      .prepare(
+        `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+         VALUES ('eur@x.co', 'Eva', '+57', '3001112222', '+573001112222') RETURNING id`
+      )
+      .first<{ id: number }>();
+    const insert = (currency: string) =>
+      db()
+        .prepare(
+          `INSERT INTO orders (order_id, customer_id, program_code, amount, currency)
+           VALUES (?, ?, 'squai-one', 1000, ?)`
+        )
+        .bind(`squai-one-${currency}`, customer?.id, currency)
+        .run();
+
+    await expect(insert('EUR')).rejects.toThrow();
+    await expect(insert('USD')).resolves.toBeDefined();
+  });
 });
 
 describe('0007_programs_prices', () => {
@@ -169,9 +191,16 @@ describe('0007_programs_prices', () => {
 
     await applyAll();
 
-    const program = await db().prepare('SELECT code, description FROM programs').all();
+    const program = await db().prepare('SELECT code, description, starts_on, ends_on, schedule FROM programs').all();
+    // Fechas y horario de la cohorte, que salen en el correo de confirmacion.
     expect(program.results).toEqual([
-      { code: 'squai-one', description: 'Fundamentos de Inteligencia Artificial Generativa' },
+      {
+        code: 'squai-one',
+        description: 'Fundamentos de Inteligencia Artificial Generativa',
+        starts_on: '2027-01-26',
+        ends_on: '2027-02-18',
+        schedule: 'Martes y jueves de 6:30 a 9:00 p. m. (hora de Colombia)',
+      },
     ]);
 
     const { results: prices } = await db()
@@ -308,6 +337,74 @@ describe('0008_program_limits', () => {
     await expect(insert('otro', '2030-01-01T05:00:00.000Z', '2030-02-01T05:00:00.000Z', 0)).rejects.toThrow();
     await expect(insert('otro', '2030-02-01T05:00:00.000Z', '2030-01-01T05:00:00.000Z', 10)).rejects.toThrow();
     await expect(insert('otro', '2030-01-01T05:00:00.000Z', '2030-02-01T05:00:00.000Z', 10)).resolves.toBeDefined();
+  });
+});
+
+describe('0009_email_messages', () => {
+  it('marca como omitida la confirmacion de las ventas aprobadas antes de la migracion', async () => {
+    const enrollment = (id: number, status: string, email: string) =>
+      db()
+        .prepare(
+          `INSERT INTO enrollments
+            (id, order_id, plan_code, status, full_name, email, country_code, phone, phone_e164, amount, currency)
+           VALUES (?, ?, 'squai-one', ?, 'Cliente', ?, '+57', '3001112222', '+573001112222', 399000, 'COP')`
+        )
+        .bind(id, `squai-one-${id}`, status, email);
+
+    await db().batch([
+      enrollment(1, 'approved', 'ana@x.co'),
+      enrollment(2, 'rejected', 'beto@x.co'),
+      enrollment(3, 'pending', 'caro@x.co'),
+    ]);
+
+    await applyAll();
+
+    const customer = await db().prepare(`SELECT id FROM customers WHERE email = 'ana@x.co'`).first<{ id: number }>();
+    const { results } = await db().prepare('SELECT * FROM email_messages').all<Record<string, unknown>>();
+
+    // Una sola fila, para la venta aprobada: el cron no le manda hoy un acuse
+    // de recibo con IVA 0 y los datos actuales. Sin plantilla ni intentos.
+    expect(results).toHaveLength(1);
+    expect(results[0]).toMatchObject({
+      order_id: 'squai-one-1',
+      customer_id: customer?.id,
+      program_code: 'squai-one',
+      kind: 'confirmation',
+      template_id: 0,
+      status: 'skipped',
+      attempts: 0,
+      provider_message_id: null,
+      sent_at: null,
+    });
+    expect(results[0]?.last_error).toMatch(/0009/);
+  });
+
+  it('solo acepta los estados pending, sent, failed y skipped', async () => {
+    await applyAll();
+    await db()
+      .prepare(
+        `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+         VALUES ('ana@x.co', 'Ana', '+57', '3001112222', '+573001112222')`
+      )
+      .run();
+    await db()
+      .prepare(
+        `INSERT INTO orders (order_id, customer_id, program_code, amount, currency)
+         SELECT 'squai-one-x', id, 'squai-one', 440000, 'COP' FROM customers`
+      )
+      .run();
+
+    const insert = (status: string) =>
+      db()
+        .prepare(
+          `INSERT INTO email_messages (order_id, customer_id, program_code, kind, template_id, status)
+           SELECT 'squai-one-x', id, 'squai-one', 'confirmation', 1, ? FROM customers`
+        )
+        .bind(status)
+        .run();
+
+    await expect(insert('lost')).rejects.toThrow();
+    await expect(insert('skipped')).resolves.toBeDefined();
   });
 });
 

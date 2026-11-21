@@ -24,7 +24,7 @@ CREATE TABLE programs (
   -- Bold muestra esta descripcion en el checkout y exige entre 2 y 100 caracteres.
   description TEXT NOT NULL CHECK (length(description) BETWEEN 2 AND 100),
   -- Fechas del programa (YYYY-MM-DD) y horario en texto, para el correo de
-  -- confirmacion. Se llenan cuando se confirman.
+  -- confirmacion. Sin valor, el correo dice "Por confirmar".
   starts_on   TEXT,
   ends_on     TEXT,
   schedule    TEXT,
@@ -35,6 +35,13 @@ CREATE TABLE programs (
 INSERT INTO programs (code, description, created_at, updated_at)
 SELECT code, description, strftime('%Y-%m-%dT%H:%M:%fZ', updated_at), strftime('%Y-%m-%dT%H:%M:%fZ', updated_at)
 FROM payment_plans;
+
+-- Fechas y horario de la cohorte de Squai One (ver la especificacion, #49).
+UPDATE programs
+SET starts_on = '2027-01-26',
+    ends_on = '2027-02-18',
+    schedule = 'Martes y jueves de 6:30 a 9:00 p. m. (hora de Colombia)'
+WHERE code = 'squai-one';
 
 CREATE TABLE program_prices (
   id           INTEGER PRIMARY KEY AUTOINCREMENT,

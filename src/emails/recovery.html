@@ -19,7 +19,7 @@
     Misma maquetacion y marca que confirmation.html: Periwinkle #8A8EF9,
     Midnight #0A0C1A, Canvas #F4F6FF, texto oscuro sobre color, tuteo, sin
     emojis. El enlace solo lleva el order-id, sin datos personales, y vence a
-    los 7 dias de creada la orden.
+    los checkout.resumeExpiryDays dias de creada la orden (RESUME_EXPIRY_DAYS).
   -->
   <!--[if mso]>
   <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
@@ -99,7 +99,7 @@
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td style="background-color:#F4F6FF; border-left:4px solid #44D4C8; border-radius:8px; padding:16px 20px; font-family:'Atkinson Hyperlegible Next', Helvetica, Arial, sans-serif; font-size:15px; line-height:24px; color:#0A0C1A;">
-                    <strong>Ten en cuenta.</strong> El enlace sirve durante 7 días desde que empezaste la inscripción, y los cupos son limitados: si el programa se llena o cierra antes, te lo diremos al abrirlo.
+                    <strong>Ten en cuenta.</strong> El enlace sirve durante {{ params.RESUME_EXPIRY_DAYS }} días desde que empezaste la inscripción, y los cupos son limitados: si el programa se llena o cierra antes, te lo diremos al abrirlo.
                   </td>
                 </tr>
               </table>
