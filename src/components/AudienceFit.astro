@@ -1,0 +1,143 @@
+---
+import BackdropShape from './BackdropShape.astro';
+import Button from './Button.astro';
+import CornerBlocks from './CornerBlocks.astro';
+import type { Service } from '../lib/content';
+
+interface Props {
+  fit: NonNullable<Service['audienceFit']>;
+  cta: Service['cta'];
+}
+
+const { fit, cta } = Astro.props;
+const profileAngles = [-1.2, 0.9, -0.7];
+---
+
+<section id="para-quien" class="section fit" data-surface="deep" aria-labelledby="fit-title">
+  <BackdropShape shape="benefits" class="fit-backdrop" />
+  <div class="shell fit-shell">
+    <header class="fit-header">
+      <h2 id="fit-title" class="display d-h1 fit-title" data-reveal="heading">{fit.title}</h2>
+      <p class="fit-handwritten" data-reveal="copy">{fit.handwritten}</p>
+    </header>
+
+    <ul class="fit-profiles">
+      {
+        fit.profiles.map((profile, index) => (
+          <li class="corner-host" data-reveal="tilt" data-reveal-delay={index * 90}>
+            <CornerBlocks preset={index % 2 === 0 ? 'diagonal-a' : 'diagonal-b'} color="var(--gold-9)" hoverOnly />
+            <article class="fit-profile" style={`--tilt: ${profileAngles[index % profileAngles.length]}deg`}>
+              <h3 class="display d-h3">{profile.t}</h3>
+              <p class="body">{profile.d}</p>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="lead fit-closing" data-reveal="copy">{fit.closing}</p>
+
+    <div class="fit-pair">
+      <section class="fit-card fit-not" aria-labelledby="fit-not-title" data-reveal="card">
+        <h3 id="fit-not-title" class="display d-h2">{fit.notFor.title}</h3>
+        <p class="lead">{fit.notFor.body}</p>
+      </section>
+      <section class="fit-card fit-needs" aria-labelledby="fit-needs-title" data-reveal="card" data-reveal-delay="90">
+        <h3 id="fit-needs-title" class="display d-h2">{fit.needs.title}</h3>
+        <ul class="fit-needs-list">
+          {fit.needs.items.map((item) => <li class="lead">{item}</li>)}
+        </ul>
+        <p class="body fit-needs-note">{fit.needs.note}</p>
+      </section>
+    </div>
+
+    <div class="fit-cta">
+      {
+        cta.modal ? (
+          <Button variant="gold" arrow data-open-modal={cta.modal}>{cta.label}</Button>
+        ) : (
+          <Button variant="gold" arrow href={`#${cta.target}`}>{cta.label}</Button>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .fit {
+    position: relative;
+    overflow: hidden;
+    background: var(--accent-deep);
+    color: var(--on-deep);
+    --shape-1: var(--periwinkle-11);
+    --shape-2: var(--periwinkle-10);
+    --shape-1-opacity: 0.5;
+    --shape-2-opacity: 0.3;
+  }
+  .fit-shell { position: relative; z-index: 1; display: grid; gap: clamp(28px, 3.4vw, 56px); }
+  .fit-header { display: grid; gap: 14px; }
+  .fit-title { color: var(--on-deep); max-width: 14ch; }
+  .fit-handwritten {
+    margin: 0;
+    color: var(--gold-9);
+    font-family: var(--font-hand);
+    font-size: clamp(20px, 2vw, 30px);
+    line-height: 1.3;
+    rotate: -1.5deg;
+    transform-origin: left center;
+  }
+  .fit-profiles {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    grid-template-columns: 1fr;
+    gap: clamp(18px, 2vw, 28px);
+    list-style: none;
+  }
+  .fit-profile {
+    display: flex;
+    height: 100%;
+    padding: clamp(24px, 2.4vw, 40px);
+    flex-direction: column;
+    gap: 14px;
+    border-radius: var(--radius-xl);
+    background: var(--canvas);
+    color: var(--ink);
+    transition: rotate var(--duration-slow) var(--ease-overshoot);
+  }
+  .fit-profile .body { color: var(--ink-body); }
+  .corner-host:hover .fit-profile,
+  .corner-host:focus-within .fit-profile { rotate: var(--tilt); }
+  .fit-closing { max-width: 46ch; color: var(--on-deep); }
+  .fit-pair { display: grid; grid-template-columns: 1fr; gap: clamp(16px, 1.8vw, 24px); }
+  .fit-card {
+    display: flex;
+    padding: clamp(24px, 2.6vw, 44px);
+    flex-direction: column;
+    gap: 16px;
+    border-radius: var(--radius-xl);
+    color: var(--ink);
+  }
+  .fit-not { background: var(--gold-9); }
+  .fit-needs { background: var(--accent-soft); }
+  .fit-needs-list { display: grid; margin: 0; padding: 0; gap: 8px; list-style: none; }
+  .fit-needs-list li { display: flex; gap: 12px; align-items: baseline; font-weight: 700; }
+  .fit-needs-list li::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    flex: none;
+    border-radius: 3px;
+    background: var(--accent-ink);
+    rotate: 12deg;
+  }
+  .fit-needs-note { color: var(--ink); }
+  .fit-cta { display: flex; }
+
+  @media (min-width: 768px) {
+    .fit-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 960px) {
+    .fit-profiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+</style>

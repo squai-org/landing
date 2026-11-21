@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { youtubeVideoId } from '../lib/youtube';
 
 const text = z.string().min(1);
 const paragraphs = z
@@ -32,6 +33,55 @@ const labels = z.object({
 });
 const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone });
+export const stepIllustrations = [
+  '/illustrations/pasos/paso-2.svg',
+  '/illustrations/pasos/paso-3.svg',
+  '/illustrations/pasos/paso-4.svg',
+  '/illustrations/incluye/incluye-4.svg',
+] as const;
+export const moduleIllustrations = [
+  '/illustrations/sesiones/sesion-1.svg',
+  '/illustrations/sesiones/sesion-4.svg',
+  '/illustrations/sesiones/sesion-5.svg',
+  '/illustrations/sesiones/sesion-6.svg',
+  '/illustrations/sesiones/sesion-7.svg',
+  '/illustrations/sesiones/sesion-8.svg',
+] as const;
+const audienceFit = z.object({
+  title: text,
+  handwritten: text,
+  profiles: z.array(card).min(1),
+  closing: text,
+  notFor: z.object({ title: text, body: text }),
+  needs: z.object({ title: text, items: z.array(text).min(1), note: text }),
+});
+const howItWorks = z.object({
+  title: text,
+  handwritten: text,
+  stepLabel: text,
+  steps: z.array(z.object({ t: text, d: text, illustration: z.enum(stepIllustrations), alt: text })).min(1),
+});
+const syllabus = z.object({
+  title: text,
+  handwritten: text,
+  summary: text,
+  moduleLabel: text,
+  sessionLabel: text,
+  topicsLabel: text,
+  modules: z.array(z.object({
+    t: text,
+    d: text,
+    topics: z.array(text).min(1),
+    sessions: z.array(text).min(1),
+    illustration: z.enum(moduleIllustrations),
+    alt: text,
+  })).min(1),
+});
+const youtubeUrl = text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
+const videoSchema = z.object({
+  url: optional(youtubeUrl),
+  title: text, playLabel: text, iframeTitle: text, caption: text, posterAlt: text,
+});
 // Un servicio por archivo en src/content/services/: el nombre del archivo es el
 // slug y `order` fija el orden en la retícula de la pagina principal.
 export const serviceSchema = z.object({
@@ -41,6 +91,9 @@ export const serviceSchema = z.object({
   payback: z.object({ headline: text, body: paragraphs }),
   challenge: z.object({ cards: z.array(card).min(1) }),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
+  audienceFit: audienceFit.optional(),
+  howItWorks: howItWorks.optional(),
+  syllabus: syllabus.optional(),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']).default(''), target: z.string().default('') }),
   hero: z.object({
     title: text, lead: text, note: text, sticker: text, photoAlt: text,
@@ -61,8 +114,14 @@ export const serviceSchema = z.object({
   contactCta: optional(text),
   contactCopy: optional(text),
   contactAside: optional(text),
+  video: videoSchema.optional(),
   seoTitle: optional(text),
   seoDescription: optional(text),
+  team: z.object({ title: text, closing: text }).optional(),
+  testimonials: z.object({
+    title: text,
+    quotes: z.array(z.object({ text, name: text, context: text })).min(1),
+  }).optional(),
   faqs: z.array(faq).min(1),
 });
 const modal = z.object({ title: text, copy: text, placeholder: text });
@@ -94,7 +153,7 @@ export const siteSchema = z.object({
   capabilities: z.array(card.extend({ span, tone })).min(1),
   impact: z.object({ body: paragraphs }),
   originStory: paragraphs,
-  squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link) })).min(1),
+  squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link), founder: z.boolean().default(false) })).min(1),
   faqs: z.array(faq).min(1),
   socials: z.array(z.object({ name: text, href: optionalLink.default('') })),
   footerServices: z.object({
