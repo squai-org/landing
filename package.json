@@ -11,6 +11,7 @@
     "preview:worker": "astro build && wrangler dev",
     "deploy": "astro build && pnpm db:migrate:remote && wrangler deploy",
     "deploy:ci": "pnpm db:migrate:remote && wrangler deploy",
+    "preview:ci": "node scripts/preview-ci.mjs",
     "version:upload": "astro build && wrangler versions upload",
     "version:promote": "wrangler versions deploy",
     "typecheck": "tsc -p src/server",

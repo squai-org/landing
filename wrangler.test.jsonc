@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "landing-page",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "squai-test",
+      "database_id": "62ad7c84-f96b-43ab-85d8-bbe516a64abb",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

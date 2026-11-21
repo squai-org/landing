@@ -6,12 +6,16 @@
   "observability": {
     "enabled": true
   },
-  // Workers Builds corre `npx wrangler preview` en las ramas que no son la de
-  // produccion y exige este bloque aunque este vacio. Los Previews no heredan
-  // los bindings de produccion (D1, rate limit, llaves de Bold): hasta que se
-  // les asigne una base de pruebas, /api/* no funciona en una preview.
-  // https://developers.cloudflare.com/workers/previews/configuration/
-  "previews": {},
+  "previews": {
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "squai-test",
+        "database_id": "62ad7c84-f96b-43ab-85d8-bbe516a64abb",
+        "migrations_dir": "migrations"
+      }
+    ]
+  },
   "triggers": {
     "crons": ["*/5 * * * *"]
   },

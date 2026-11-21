@@ -42,6 +42,7 @@ Squai's marketing site (https://squai.io): a static Astro site plus a lead-captu
 
 ## Known pitfalls
 
+* TEST is the `develop` branch: Workers Builds runs `pnpm preview:ci`, which migrates D1 `squai-test` and deploys a Preview. `previews.d1_databases` in `wrangler.jsonc` and `wrangler.test.jsonc` must name that same database, never the production one (a test enforces it).
 * `pnpm dev` does not serve `/api`, so forms fail there. Use `pnpm preview:worker` to test them.
 * `pnpm typecheck` covers `src/server` and `test/`; the root `tsconfig.json` excludes it, and Astro files are not checked by it. `pnpm build` is what catches content and Astro errors.
 * `README.md` links to `docs/pages-cms.md`, `docs/pages-cms-inventario.md` and `docs/cloudflare-setup.md`, which do not exist, and says team photos are in `public/images/` when they are in `src/assets/`. Do not rely on those references.

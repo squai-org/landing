@@ -588,29 +588,53 @@ Workers & Pages → `landing-page` → Settings → **Builds**
 | --- | --- | --- |
 | Build command | `pnpm verify` | vacío |
 | Deploy command | `pnpm deploy:ci` | `npx wrangler deploy` |
-| Preview command | dejar el valor por defecto (`npx wrangler preview`) | `npx wrangler preview` |
+| Preview command | `pnpm preview:ci` | `npx wrangler preview` |
 
 **El Build command no lleva `pnpm install`.** Workers Builds instala las
 dependencias por su cuenta antes de ejecutarlo; en el registro del build se ve
 como `Installing project dependencies: pnpm install --frozen-lockfile`.
 Repetirlo solo alarga el build.
 
-`pnpm verify` corre `pnpm test` y `pnpm build`. Si un test falla, sale con
+`pnpm verify` corre `pnpm typecheck`, `pnpm test` y `pnpm build`. Si un test falla, sale con
 código distinto de cero y Workers Builds no ejecuta el deploy: producción se
 queda en la versión anterior. `pnpm deploy:ci` aplica las migraciones pendientes
 (`db:migrate:remote`) antes de `wrangler deploy`, así que
 `0003_bold_checkout.sql` entra con el primer despliegue.
 
-El **Preview command** corre en las ramas que no son la de producción. Su valor
-por defecto, `npx wrangler preview`, crea un Preview de la rama bajo el mismo
-Worker y **exige un bloque `previews` en `wrangler.jsonc`**, aunque esté vacío;
-sin él el deploy de la rama falla con `missing a previews block`
-(`test/build/wrangler-config.test.ts` lo protege). Según la
-[documentación de Previews][prev], los Previews **no heredan** los bindings de
-producción: con el bloque vacío la rama se despliega, pero `/api/*` no tiene D1,
-rate limit ni llaves de Bold. Para probar el pago en una preview hay que darle
-una base de pruebas en `previews.d1_databases` (con sus migraciones aplicadas) y
-las llaves de **pruebas** con `npx wrangler preview base-config secret put`.
+El **Preview command** corre en las ramas que no son la de producción.
+`pnpm preview:ci` (`scripts/preview-ci.mjs`) hace dos cosas: en la rama
+`develop` aplica las migraciones pendientes a la base `squai-test`
+(`wrangler d1 migrations apply DB --remote -c wrangler.test.jsonc`) y después
+corre `npx wrangler preview`. En cualquier otra rama solo crea el Preview.
+Si una migración falla, el build de la rama falla y el Preview no se actualiza.
+
+Los Previews **no heredan** los bindings de producción
+([documentación][prev]). `wrangler.jsonc` les da solo la base de pruebas
+`squai-test` en `previews.d1_databases`, nunca la de producción;
+`wrangler.test.jsonc` declara esa misma base para poder migrarla y
+`test/build/wrangler-config.test.ts` exige que ambas coincidan y que no sea la
+de producción. Los Previews no tienen rate limit ni Cron Trigger, así que en
+TEST no corren los reintentos de confirmación ni el correo de recuperación; la
+confirmación al aprobarse el pago sí se envía.
+
+### Entorno TEST (rama `develop`)
+
+`develop` es la rama de pruebas funcionales. Su Preview tiene URL estable
+`https://develop-landing-page.heysquai.workers.dev` y usa la base `squai-test`,
+las llaves de pruebas de Bold y un widget de Turnstile propio.
+
+Configuración en el panel de Cloudflare (Workers & Pages → `landing-page` → Settings):
+
+| Dónde | Qué |
+| --- | --- |
+| Build → Variables and secrets | `PUBLIC_TURNSTILE_SITE_KEY_TEST` = site key del widget de TEST. Las ramas distintas de `main` la usan en lugar de `PUBLIC_TURNSTILE_SITE_KEY` |
+| Variables and secrets → **Previews Base** | Secrets `BOLD_IDENTITY_KEY` y `BOLD_SECRET_KEY` de pruebas, `TURNSTILE_SECRET_KEY` del widget de TEST y `BREVO_API_KEY` |
+| Build → Preview command | `pnpm preview:ci` |
+| Token de Workers Builds (My Profile → API Tokens) | Permiso **D1 Edit**, necesario para migrar `squai-test` |
+
+Los secrets de Previews Base se copian a cada Preview al crearse: si cambian,
+los Previews ya creados conservan el valor anterior. Brevo usa la misma API key,
+así que las compras de prueba envían correos reales.
 
 `npx wrangler versions upload` como Preview command **no** sirve aquí: en este
 proyecto falló con `The name in your wrangler.jsonc file (landing-page) must
