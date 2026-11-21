@@ -189,7 +189,6 @@ export const handleBoldWebhook = async (
     payload: rawBody,
   });
 
-  // Red de seguridad: si el comprador cerro la pestana y nunca volvio a la
   const status = WEBHOOK_STATUS[parsed.type];
   const reference = data.metadata?.reference;
 

@@ -1,5 +1,6 @@
 ---
 import { getSiteContent, type Service } from '../lib/content';
+import { programStatusAttributes } from '../lib/program-status';
 import Button from './Button.astro';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 
 const { service } = Astro.props;
 const { program, labels, ui } = await getSiteContent();
+const statusAttributes = programStatusAttributes({ program, ui });
 ---
 
 <section class="service-hero" data-hero>
@@ -22,7 +24,7 @@ const { program, labels, ui } = await getSiteContent();
         service.slug === 'squai-one' && (
           <p class="service-hero-eyebrow">
             <span class="service-hero-eyebrow-dot" aria-hidden="true" />
-            <span class="service-hero-eyebrow-status">{program.status}</span>
+            <span class="service-hero-eyebrow-status" {...statusAttributes} hidden>{program.status}</span>
             <span class="service-hero-eyebrow-name">{program.name}</span>
           </p>
         )
@@ -41,6 +43,11 @@ const { program, labels, ui } = await getSiteContent();
     </div>
   </div>
 </section>
+
+<script>
+  import { showProgramStatuses } from '../lib/program-status-client';
+  showProgramStatuses();
+</script>
 
 <style>
   .service-hero {

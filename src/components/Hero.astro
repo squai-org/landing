@@ -1,7 +1,9 @@
 ---
 import Button from './Button.astro';
 import { getSiteContent } from '../lib/content';
+import { programStatusAttributes } from '../lib/program-status';
 const { program, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSiteContent();
+const statusAttributes = programStatusAttributes({ program, ui });
 ---
 
 <section class="hero" data-hero data-hero-copy={JSON.stringify({ verbs: heroVerbs, ...ui.hero })}>
@@ -27,7 +29,7 @@ const { program, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSit
       </button>
       <a href="/servicios/squai-one" class="hero-eyebrow">
         <span class="hero-dot" aria-hidden="true"></span>
-        <span class="hero-eyebrow-status">{program.status}</span>
+        <span class="hero-eyebrow-status" {...statusAttributes} hidden>{program.status}</span>
         <span class="hero-eyebrow-text">{program.name}</span>
       </a>
     </div>
@@ -439,6 +441,8 @@ const { program, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSit
 
 <script>
   import type { HeroClientCopy } from '../lib/content';
+  import { showProgramStatuses } from '../lib/program-status-client';
+  showProgramStatuses();
   const heroCopy: HeroClientCopy = JSON.parse(document.querySelector<HTMLElement>('[data-hero-copy]')!.dataset.heroCopy!);
   const heroVerbs = heroCopy.verbs;
 

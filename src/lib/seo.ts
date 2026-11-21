@@ -167,7 +167,7 @@ export const courseSchema = (content: SiteContent, service: Service, pageUrl: st
     '@id': `${pageUrl}#program-instance`,
     name: content.program.name,
     courseMode: 'Online, en vivo',
-    courseWorkload: '4 horas por semana durante 5 semanas',
+    courseWorkload: '5 horas por semana durante 4 semanas',
     duration: 'PT20H',
     inLanguage: SITE_LANG,
   },
