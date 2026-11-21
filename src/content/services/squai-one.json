@@ -68,6 +68,167 @@
       }
     ]
   },
+  "audienceFit": {
+    "title": "¿Es para ti?",
+    "handwritten": "Sin humo: te lo decimos de frente",
+    "profiles": [
+      {
+        "t": "Trabajas en una empresa",
+        "d": "La IA ya llegó a tu oficina, pero le pides algo y te devuelve un texto tan raro que tardas más arreglándolo que haciéndolo tú."
+      },
+      {
+        "t": "Trabajas por tu cuenta o tienes un negocio",
+        "d": "Haces de todo y quieres que la IA te ahorre tiempo, sin probar diez herramientas distintas ni sentir que vas atrasado."
+      },
+      {
+        "t": "Te da curiosidad",
+        "d": "Quieres aprovecharla, pero solo encuentras tutoriales confusos y promesas exageradas, y no sabes por dónde empezar."
+      }
+    ],
+    "closing": "Puedes empezar sin haber usado la IA antes: arrancamos desde las bases.",
+    "notFor": {
+      "title": "No es para ti si…",
+      "body": "Buscas construir agentes de IA para hacerte rico rápido. Aquí aprendes a usar la IA con criterio en tu trabajo, y si no sirve para tu problema, te lo decimos."
+    },
+    "needs": {
+      "title": "Lo que necesitas",
+      "items": [
+        "Un computador",
+        "Conexión a internet",
+        "Una cuenta gratuita en Claude, ChatGPT o Gemini"
+      ],
+      "note": "Si todavía no tienes cuenta, te ayudamos a crearla en la primera sesión. Las versiones gratuitas tienen límites de uso y los tenemos en cuenta en las prácticas."
+    }
+  },
+  "howItWorks": {
+    "title": "Cómo funciona",
+    "handwritten": "Cuatro pasos, sin sorpresas",
+    "stepLabel": "Paso",
+    "steps": [
+      {
+        "t": "Una semana antes",
+        "d": "Te llega por correo la invitación a la comunidad de WhatsApp y los datos para conectarte a las sesiones.",
+        "illustration": "/illustrations/pasos/paso-2.svg",
+        "alt": "Persona toma café junto a un sobre abierto con una llave de acceso"
+      },
+      {
+        "t": "En cada sesión",
+        "d": "Explicamos, hacemos ejemplos en vivo y practicas con nosotros al lado. No avanzamos mientras queden dudas.",
+        "illustration": "/illustrations/pasos/paso-3.svg",
+        "alt": "Persona explica algo junto a una videollamada con dos participantes"
+      },
+      {
+        "t": "Entre sesiones",
+        "d": "Trabajas en tu proyecto personal y preguntas lo que no te salga en el grupo de WhatsApp.",
+        "illustration": "/illustrations/pasos/paso-4.svg",
+        "alt": "Persona revisa su celular junto a la grabación de una clase y un globo con una pregunta"
+      },
+      {
+        "t": "Al terminar",
+        "d": "La comunidad sigue abierta, puedes ver las grabaciones hasta un mes después de la última sesión y recibes tu certificado.",
+        "illustration": "/illustrations/incluye/incluye-4.svg",
+        "alt": "Persona sostiene un certificado de finalización"
+      }
+    ]
+  },
+  "syllabus": {
+    "title": "Seis módulos, ocho sesiones",
+    "handwritten": "Un recorrido gradual, sin abrumarte",
+    "summary": "8 sesiones · 2 por semana · 2 horas y media cada una",
+    "moduleLabel": "Módulo",
+    "sessionLabel": "Sesión",
+    "topicsLabel": "Lo que vemos",
+    "modules": [
+      {
+        "t": "Qué es la IA",
+        "d": "Entiendes cómo funciona la IA por dentro, para saber qué pedirle y por qué falla cuando no le das las instrucciones correctas.",
+        "topics": [
+          "Cómo responde la IA y por qué a veces se equivoca",
+          "Qué hace bien y qué no",
+          "Tu proyecto personal para el programa"
+        ],
+        "sessions": [
+          "Bases de la IA y elección de tu proyecto personal"
+        ],
+        "illustration": "/illustrations/sesiones/sesion-1.svg",
+        "alt": "Persona señala hacia arriba junto a un chip con una chispa"
+      },
+      {
+        "t": "Conceptos y uso seguro",
+        "d": "Aprendes a pedir con claridad, a iterar sobre las respuestas y a cuidar tu información y la de los demás.",
+        "topics": [
+          "Instrucciones claras, contexto y ejemplos",
+          "Iterar hasta llegar a lo que buscas",
+          "Qué datos no se comparten",
+          "Alucinaciones: cuándo confiar y cuándo revisar"
+        ],
+        "sessions": [
+          "Pedir con claridad e iterar",
+          "Cuidar tu información y saber cuándo confiar"
+        ],
+        "illustration": "/illustrations/sesiones/sesion-6.svg",
+        "alt": "Persona de brazos cruzados junto a un escudo con candado"
+      },
+      {
+        "t": "De tareas a procesos",
+        "d": "Identificas lo que haces una y otra vez y lo conviertes en un proceso donde la IA te acompaña, con tu revisión.",
+        "topics": [
+          "Qué tareas vale la pena delegar",
+          "Qué debes revisar tú siempre",
+          "Elegir la herramienta adecuada"
+        ],
+        "sessions": [
+          "Convertir tus tareas repetitivas en procesos"
+        ],
+        "illustration": "/illustrations/sesiones/sesion-7.svg",
+        "alt": "Persona toma café junto a un sobre de correo y un reloj"
+      },
+      {
+        "t": "Productividad y planeación",
+        "d": "Ordenas tu trabajo, priorizas y planeas tu semana apoyándote en la IA sin perder el control.",
+        "topics": [
+          "Ordenar y priorizar tareas",
+          "Planear tu semana",
+          "Integrar la IA en tu rutina"
+        ],
+        "sessions": [
+          "Organizar y planear tu trabajo con IA"
+        ],
+        "illustration": "/illustrations/sesiones/sesion-8.svg",
+        "alt": "Persona señala un camino con pasos completados que termina en una bandera"
+      },
+      {
+        "t": "Crear documentos, presentaciones e imágenes",
+        "d": "Creas materiales propios sin caer en resultados genéricos: que suenen a ti y sirvan para tu caso.",
+        "topics": [
+          "Documentos y textos con tu estilo",
+          "Presentaciones",
+          "Imágenes con IA",
+          "Revisar y corregir lo que crea"
+        ],
+        "sessions": [
+          "Documentos y presentaciones",
+          "Imágenes y revisión de lo creado"
+        ],
+        "illustration": "/illustrations/sesiones/sesion-4.svg",
+        "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato"
+      },
+      {
+        "t": "Analizar información",
+        "d": "Usas la IA para entender textos y datos, sacar conclusiones y cerrar tu proyecto personal con lo aprendido.",
+        "topics": [
+          "Resumir y analizar documentos",
+          "Sacar conclusiones de tus datos",
+          "Cierre del proyecto personal"
+        ],
+        "sessions": [
+          "Analizar información y cerrar tu proyecto"
+        ],
+        "illustration": "/illustrations/sesiones/sesion-5.svg",
+        "alt": "Persona con gafas trabaja en su portátil junto a un documento y una lupa"
+      }
+    ]
+  },
   "faqs": [
     {
       "q": "¿En qué se diferencia Squai de los otros 500 programas de IA que he visto?",

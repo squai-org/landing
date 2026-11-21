@@ -81,6 +81,7 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Texto de acento sobre blanco | `--accent-ink` | `--surface` | 5.82 | 4.5 |
 | base | Texto de acento sobre fondo suave | `--accent-ink` | `--accent-soft` | 4.64 | 4.5 |
 | base | Texto oscuro sobre fondo suave | `--midnight` | `--accent-soft` | 15.47 | 4.5 |
+| base | Temario: texto oscuro sobre tarjeta crema | `--midnight` | `--gold-3` | 17.24 | 4.5 |
 | base | Pie, texto principal | `--on-deep` | `--accent-deep` | 11.16 | 4.5 |
 | base | Pie, texto secundario y títulos | `--on-deep-muted` | `--accent-deep` | 8.52 | 4.5 |
 | base | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 7.36 | 4.5 |
