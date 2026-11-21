@@ -595,7 +595,8 @@ dependencias por su cuenta antes de ejecutarlo; en el registro del build se ve
 como `Installing project dependencies: pnpm install --frozen-lockfile`.
 Repetirlo solo alarga el build.
 
-`pnpm verify` corre `pnpm typecheck`, `pnpm test` y `pnpm build`. Si un test falla, sale con
+`pnpm verify` corre `pnpm typecheck`, `pnpm test`, `pnpm build` y `pnpm test:dist`, que
+prueba el HTML generado y por eso va después del build. Si un test falla, sale con
 código distinto de cero y Workers Builds no ejecuta el deploy: producción se
 queda en la versión anterior. `pnpm deploy:ci` aplica las migraciones pendientes
 (`db:migrate:remote`) antes de `wrangler deploy`, así que

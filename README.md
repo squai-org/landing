@@ -21,7 +21,8 @@ Un único Worker sirve el sitio estático desde `./dist` y atiende `/api/*` con
 | `pnpm og`                 | Regenera la imagen social y los iconos desde el logo vectorial |
 | `pnpm preview`            | Sirve localmente el resultado de `pnpm build`                  |
 | `pnpm preview:worker`     | Build + `wrangler dev`: front y `/api/*` con D1 local          |
-| `pnpm test`               | Tests del backend en workerd (vitest)                          |
+| `pnpm test`               | Tests del backend en workerd y del build (vitest)              |
+| `pnpm test:dist`          | Tests del HTML generado; exige `pnpm build` antes              |
 | `pnpm typecheck`          | `tsc` sobre el código del Worker y sus tests                   |
 | `pnpm cf-typegen`         | Regenera `worker-configuration.d.ts` desde `wrangler.jsonc`     |
 | `pnpm db:create`          | Crea la base de datos D1 `squai`                         |
