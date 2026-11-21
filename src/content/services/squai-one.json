@@ -229,6 +229,10 @@
       }
     ]
   },
+  "team": {
+    "title": "Quiénes te enseñan",
+    "closing": "Uno de los dos será tu mentor."
+  },
   "faqs": [
     {
       "q": "¿En qué se diferencia Squai de los otros 500 programas de IA que he visto?",

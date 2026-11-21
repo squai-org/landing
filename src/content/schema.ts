@@ -102,6 +102,11 @@ export const serviceSchema = z.object({
   video: videoSchema.optional(),
   seoTitle: optional(text),
   seoDescription: optional(text),
+  team: z.object({ title: text, closing: text }).optional(),
+  testimonials: z.object({
+    title: text,
+    quotes: z.array(z.object({ text, name: text, context: text })).min(1),
+  }).optional(),
   faqs: z.array(faq).min(1),
 });
 const modal = z.object({ title: text, copy: text, placeholder: text });
@@ -133,7 +138,7 @@ export const siteSchema = z.object({
   capabilities: z.array(card.extend({ span, tone })).min(1),
   impact: z.object({ body: paragraphs }),
   originStory: paragraphs,
-  squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link) })).min(1),
+  squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link), founder: z.boolean().default(false) })).min(1),
   faqs: z.array(faq).min(1),
   socials: z.array(z.object({ name: text, href: optionalLink.default('') })),
   footerServices: z.object({

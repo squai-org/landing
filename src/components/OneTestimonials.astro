@@ -1,0 +1,85 @@
+---
+import CornerBlocks from './CornerBlocks.astro';
+
+interface Props {
+  title: string;
+  quotes: { text: string; name: string; context: string }[];
+}
+
+const { title, quotes } = Astro.props;
+
+const cardStyles = [
+  { surface: 'soft', corners: 'diagonal-a', tilt: '-1.6deg' },
+  { surface: 'surface', corners: 'diagonal-b', tilt: '1.2deg' },
+  { surface: 'strong', corners: 'left-pair', tilt: '1.8deg' },
+] as const;
+---
+
+<section id="testimonios" class="one-quotes" aria-labelledby="one-quotes-title">
+  <div class="one-quotes-shell">
+    <h2 id="one-quotes-title" class="display d-h1 one-quotes-title" data-reveal="heading">{title}</h2>
+    <ul class="one-quotes-list">
+      {
+        quotes.map((quote, index) => {
+          const style = cardStyles[index % cardStyles.length]!;
+          return (
+            <li class="corner-host one-quote-item" style={`--tilt:${style.tilt}`} data-reveal="tilt" data-reveal-delay={index * 90}>
+              <CornerBlocks preset={style.corners} color="var(--gold-9)" hoverOnly />
+              <figure class:list={['one-quote-card', `is-${style.surface}`]}>
+                <blockquote class="one-quote-text">
+                  <p>{quote.text}</p>
+                </blockquote>
+                <figcaption class="one-quote-author">
+                  <span class="one-quote-name">{quote.name}</span>
+                  <span class="one-quote-context">{quote.context}</span>
+                </figcaption>
+              </figure>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .one-quotes { margin-top: var(--section-gap); padding-inline: var(--gutter); }
+  .one-quotes-shell { width: min(100%, 1200px); margin-inline: auto; display: grid; gap: clamp(32px, 4vw, 56px); }
+  .one-quotes-title { margin: 0; text-align: center; color: var(--ink); text-wrap: balance; }
+  .one-quotes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(32px, 3vw, 44px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .one-quote-item { rotate: var(--tilt); transition: rotate var(--duration-base) var(--ease-out), translate var(--duration-base) var(--ease-out); }
+  .one-quote-item:hover { rotate: 0deg; translate: 0 -6px; }
+  .one-quote-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    height: 100%;
+    margin: 0;
+    padding: clamp(24px, 2.6vw, 36px);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-float);
+    color: var(--ink);
+  }
+  .one-quote-card.is-surface { background: var(--surface); }
+  .one-quote-card.is-soft { background: var(--accent-soft); }
+  .one-quote-card.is-strong { background: var(--accent-soft-strong); }
+  .one-quote-text { margin: 0; }
+  .one-quote-text p { margin: 0; font-family: var(--font-hand); font-size: clamp(19px, 1.7vw, 23px); line-height: 1.45; }
+  .one-quote-text p::before { content: '\201C'; }
+  .one-quote-text p::after { content: '\201D'; }
+  .one-quote-author { display: grid; gap: 2px; }
+  .one-quote-name { font-weight: 700; }
+  .one-quote-context { font-size: 0.95em; }
+  @media (prefers-reduced-motion: reduce) {
+    .one-quote-item { transition: none; }
+    .one-quote-item:hover { translate: none; }
+  }
+</style>

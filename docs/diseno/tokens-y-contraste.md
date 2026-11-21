@@ -67,6 +67,10 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Flecha del botón oscuro | `--gold-9` | `--midnight` | 11.90 | 3 |
 | base | Botón blanco | `--midnight` | `--canvas` | 18.02 | 4.5 |
 | base | Botón de pausa de animaciones | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Equipo y testimonios: texto sobre la sección dorada | `--ink` | `--gold-9` | 11.90 | 4.5 |
+| base | Equipo y testimonios: texto sobre tarjeta suave | `--ink` | `--accent-soft` | 15.47 | 4.5 |
+| base | Equipo: cargo sobre tarjeta suave | `--ink-muted` | `--accent-soft` | 4.61 | 4.5 |
+| base | Testimonios: texto sobre tarjeta fuerte | `--ink` | `--accent-soft-strong` | 13.76 | 4.5 |
 | base | Franja dorada animada (marquee) | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Franja oscura animada (marquee) | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |
