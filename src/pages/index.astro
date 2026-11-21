@@ -21,7 +21,7 @@ const { faqs, seo } = content;
 
 <Layout title={seo.title} description={seo.description} schemas={homeGraph(content)}>
   <div class="page-frame">
-    <Header />
+    <Header tone="dark" />
 
     <main id="contenido">
       <Hero />
@@ -45,6 +45,6 @@ const { faqs, seo } = content;
 </Layout>
 
 <style>
-  .page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .page-frame { background: var(--canvas); }
   .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
 </style>

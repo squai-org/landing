@@ -54,7 +54,9 @@
         "servicesSubmenu": "Mostrar submenú de servicios",
         "program": "Empieza aquí",
         "contactCta": "Agenda tu llamada",
-        "oneCta": "Inscribirme"
+        "oneCta": "Inscribirme",
+        "menuLabel": "Menú",
+        "closeLabel": "Cerrar"
       },
       "skip": "Saltar al contenido",
       "footer": {

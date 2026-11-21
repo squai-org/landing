@@ -1,267 +1,404 @@
 ---
 import Logo from './Logo.astro';
+import Block from './Block.astro';
 import Button from './Button.astro';
+import SocialLinks from './SocialLinks.astro';
 import { getSiteContent } from '../lib/content';
+
+interface Props {
+  tone?: 'light' | 'dark';
+}
+
+const { tone = 'light' } = Astro.props;
 const { navLinks, services, ui } = await getSiteContent();
 
 const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const serviceLinks = services.map((service) => ({ name: service.name, subtitle: service.menuAudience, href: `/servicios/${service.slug}` }));
 const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath === '/servicios/squai-learn' ? 'learn' : undefined;
 const isSquaiOne = currentPath === '/servicios/squai-one';
+const ctaVariant = tone === 'dark' ? 'white' : 'dark';
+const toggleVariant = tone === 'dark' ? 'white' : 'dark';
 ---
 
-<header class="header-wrap over-hero" data-header>
-  <div class="nav-bar">
+<header class="site-header" data-header data-tone={tone} data-scrolled="false">
+  <div class="site-header-row" data-header-row>
     <a href="/" class="logo-link" aria-label={ui.navigation.home}>
       <Logo size={34} />
     </a>
+
     <button
       type="button"
-      class="nav-toggle"
+      class={`btn btn-${toggleVariant} btn-split btn-compact nav-toggle`}
       data-nav-toggle
-      aria-label={ui.navigation.open}
       aria-expanded="false"
       aria-controls="site-nav"
+      data-menu-label={ui.navigation.menuLabel}
+      data-close-label={ui.navigation.closeLabel}
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
+      <span class="btn-text"><span class="btn-label" data-nav-toggle-label>{ui.navigation.menuLabel}</span></span>
+      <span class="btn-arrow" aria-hidden="true">
+        <svg class="nav-toggle-icon nav-toggle-icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+        <svg class="nav-toggle-icon nav-toggle-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </span>
     </button>
-    <nav id="site-nav" class="nav-links-row" data-nav-menu aria-label={ui.navigation.main}>
-      <ul class="nav-list">
-        {
-          navLinks.map((link) =>
-            link.target === 'servicios' ? (
-              <li class="nav-services" data-services-menu>
-              <a
-                href="/#servicios"
-                data-scroll-to={link.target}
-                data-nav-section={link.target}
-                class="nav-link nav-services-link"
-                aria-current={currentPath.startsWith('/servicios') ? 'page' : undefined}
-              >
-                {link.label}
-              </a>
-              <button
-                type="button"
-                class="nav-services-toggle"
-                data-services-toggle
-                aria-expanded="false"
-                aria-controls="services-submenu"
-                aria-label={ui.navigation.servicesSubmenu}
-              >
-                <svg class="nav-services-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="m6 9 6 6 6-6"></path>
-                </svg>
-              </button>
-              <ul id="services-submenu" class="services-submenu" data-services-submenu>
-                {serviceLinks.map((service) => (
-                  <li>
-                    <a href={service.href} class="service-menu-link" aria-current={currentPath === service.href ? 'page' : undefined}>
-                      <span class="service-menu-title">{service.name}</span>
-                      <span class="service-menu-subtitle">{service.subtitle}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-              </li>
-            ) : (
-              <li>
-                <a
-                  href={`/#${link.target}`}
-                  data-scroll-to={link.target}
-                  data-nav-section={link.target}
-                  class="nav-link"
-                >
-                  {link.label}
-                </a>
-              </li>
-            )
-          )
-        }
-        <li class="nav-cta-wrap">
+
+    <nav id="site-nav" class="site-nav" data-nav-menu aria-label={ui.navigation.main}>
+      <div class="site-nav-panel">
+        <ul class="site-nav-list">
           {
-            navModal ? (
-              <Button variant="primary" data-open-modal={navModal} compact class="nav-cta">
-                {ui.navigation.contactCta}
-              </Button>
-            ) : isSquaiOne ? (
-              <Button variant="primary" href="#inscripcion" data-scroll-to="inscripcion" compact class="nav-cta">
-                {ui.navigation.oneCta}
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                href="/#servicios"
-                data-scroll-to="servicios"
-                compact
-                class="nav-cta"
-                aria-current={currentPath.startsWith('/servicios') ? 'page' : undefined}
-              >
-                {ui.navigation.program}
-              </Button>
+            navLinks.map((link) =>
+              link.target === 'servicios' ? (
+                <li class="nav-services" data-services-menu>
+                  <div class="nav-services-group">
+                    <a
+                      href="/#servicios"
+                      data-scroll-to={link.target}
+                      data-nav-section={link.target}
+                      class="nav-pill nav-services-link"
+                      aria-current={currentPath.startsWith('/servicios') ? 'page' : undefined}
+                    >
+                      <span class="nav-pill-label">{link.label}</span>
+                    </a>
+                    <span class="nav-pill-blocks" aria-hidden="true">
+                      <span class="nav-pill-block nav-pill-block-a"><Block /></span>
+                      <span class="nav-pill-block nav-pill-block-b"><Block /></span>
+                    </span>
+                    <button
+                      type="button"
+                      class="nav-services-toggle"
+                      data-services-toggle
+                      aria-expanded="false"
+                      aria-controls="services-submenu"
+                      aria-label={ui.navigation.servicesSubmenu}
+                    >
+                      <svg class="nav-services-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <ul id="services-submenu" class="services-submenu" data-services-submenu>
+                    {serviceLinks.map((service) => (
+                      <li>
+                        <a href={service.href} class="service-menu-link" aria-current={currentPath === service.href ? 'page' : undefined}>
+                          <span class="service-menu-title">{service.name}</span>
+                          <span class="service-menu-subtitle">{service.subtitle}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ) : (
+                <li class="nav-item">
+                  <a href={`/#${link.target}`} data-scroll-to={link.target} data-nav-section={link.target} class="nav-pill">
+                    <span class="nav-pill-label">{link.label}</span>
+                  </a>
+                  <span class="nav-pill-blocks" aria-hidden="true">
+                    <span class="nav-pill-block nav-pill-block-a"><Block /></span>
+                    <span class="nav-pill-block nav-pill-block-b"><Block /></span>
+                  </span>
+                </li>
+              )
             )
           }
-        </li>
-      </ul>
+          <li class="nav-cta-wrap">
+            {
+              navModal ? (
+                <Button variant={ctaVariant} arrow compact data-open-modal={navModal} class="nav-cta">
+                  {ui.navigation.contactCta}
+                </Button>
+              ) : isSquaiOne ? (
+                <Button variant={ctaVariant} arrow compact href="#inscripcion" data-scroll-to="inscripcion" class="nav-cta">
+                  {ui.navigation.oneCta}
+                </Button>
+              ) : (
+                <Button
+                  variant={ctaVariant}
+                  arrow
+                  compact
+                  href="/#servicios"
+                  data-scroll-to="servicios"
+                  class="nav-cta"
+                  aria-current={currentPath.startsWith('/servicios') ? 'page' : undefined}
+                >
+                  {ui.navigation.program}
+                </Button>
+              )
+            }
+          </li>
+        </ul>
+        <div class="site-nav-social"><SocialLinks /></div>
+      </div>
     </nav>
+
+    <div class="site-header-social"><SocialLinks /></div>
   </div>
 </header>
 
 <style>
-  .header-wrap { position: fixed; inset: 0 0 auto; z-index: 60; padding: 30px 24px 0; }
-  .nav-bar {
+  .site-header {
+    --header-ink: var(--midnight);
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    padding: max(16px, 1.6vw) var(--gutter) 0;
+    pointer-events: none;
+  }
+  .site-header-row {
+    position: relative;
     display: flex;
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 9px 10px 9px 24px;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    border-radius: var(--radius-pill);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 1px 2px rgba(13, 27, 42, .04), 0 14px 34px -22px rgba(13, 27, 42, .28);
+    gap: 16px;
   }
-  .nav-links-row { display: block; }
-  .nav-list {
+  .site-header-row > * { pointer-events: auto; }
+
+  .logo-link {
+    --wordmark-color: var(--header-ink);
+    --logo-mark: currentColor;
+    --logo-block: currentColor;
+    color: var(--header-ink);
+    padding: 6px 0;
+    border-radius: var(--radius-pill);
+    transition: background-color var(--duration-base) var(--ease-out), padding var(--duration-base) var(--ease-out);
+  }
+  .site-header[data-scrolled='true'] .logo-link,
+  .site-header[data-tone='dark'] .logo-link {
+    --wordmark-color: var(--midnight);
+    --logo-mark: initial;
+    --logo-block: initial;
+    padding: 8px 18px;
+    background: var(--canvas);
+    box-shadow: inset 0 0 0 1px var(--line-soft), 0 8px 20px -12px rgba(10, 12, 26, .35);
+  }
+  .logo-link:focus-visible { border-radius: var(--radius-pill); }
+
+  .nav-toggle { display: none; position: relative; z-index: 2; flex: none; }
+  .nav-toggle-icon { display: block; width: 20px; height: 20px; }
+  .nav-toggle-icon-close { display: none; }
+  .nav-toggle[aria-expanded='true'] .nav-toggle-icon-menu { display: none; }
+  .nav-toggle[aria-expanded='true'] .nav-toggle-icon-close { display: block; }
+
+  .site-nav-list {
     display: flex;
+    align-items: center;
+    gap: 14px;
     margin: 0;
     padding: 0;
-    align-items: center;
-    gap: 4px;
     list-style: none;
   }
-  .nav-link {
-    padding: 9px 14px;
+  .site-nav-social { display: none; }
+
+  .nav-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--control-height-compact);
+    padding: 0 18px;
     border-radius: var(--radius-pill);
-    color: var(--ink);
-    cursor: pointer;
+    background: var(--canvas);
+    box-shadow: inset 0 0 0 1px var(--line-soft), 0 8px 20px -14px rgba(10, 12, 26, .4);
+    color: var(--midnight);
+    font-family: var(--font-display);
     font-size: 17px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) ease, transform var(--duration-slow) var(--ease-overshoot);
   }
+  .nav-pill:hover { background: var(--surface); color: var(--midnight); }
+  .nav-pill-label { position: relative; z-index: 1; }
+  .nav-item, .nav-services-group { position: relative; }
+  .nav-pill-block {
+    position: absolute;
+    z-index: -1;
+    display: none;
+    color: var(--accent-soft-strong);
+  }
+  .nav-pill-block-a { top: -12px; left: -10px; width: 30px; height: 30px; rotate: -22deg; }
+  .nav-pill-block-b { right: -9px; bottom: -11px; width: 26px; height: 26px; rotate: 18deg; }
+  .nav-pill[aria-current] ~ .nav-pill-blocks .nav-pill-block { display: block; }
+
   .nav-services { position: relative; display: inline-flex; align-items: center; }
-  .nav-services-link { padding-right: 8px; }
+  .nav-services-group { display: inline-flex; align-items: center; }
+  .nav-services-link { padding-right: 10px; border-top-right-radius: 0; border-bottom-right-radius: 0; }
   .nav-services-toggle {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    margin-left: -6px;
+    width: 36px;
+    min-height: var(--control-height-compact);
+    margin-left: 1px;
+    padding: 0;
     border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: inherit;
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+    background: var(--canvas);
+    box-shadow: inset 0 0 0 1px var(--line-soft), 0 8px 20px -14px rgba(10, 12, 26, .4);
+    color: var(--midnight);
     cursor: pointer;
-    transition: background .2s, color .2s;
+    transition: background-color var(--duration-fast) ease;
   }
-  .nav-services-toggle:hover,
-  .nav-services-toggle:focus-visible { background: var(--canvas); color: var(--ink); }
-  .header-wrap.over-hero .nav-services-toggle { color: #E4E7F2; }
-  .header-wrap.over-hero .nav-services-toggle:hover,
-  .header-wrap.over-hero .nav-services-toggle:focus-visible {
-    background: rgba(244, 246, 255, .12);
-    color: var(--surface);
-  }
+  .nav-services-toggle:hover { background: var(--surface); }
   .nav-services-chevron { flex: none; transition: transform .18s ease; }
   .nav-services.is-open .nav-services-chevron { transform: rotate(180deg); }
   .services-submenu {
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 12px);
     left: 50%;
-    display: grid;
     z-index: 2;
-    width: min(150px, calc(100vw - 32px));
+    display: grid;
+    width: 232px;
     margin: 0;
     padding: 10px;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    background: var(--surface);
+    border-radius: 24px;
+    background: var(--canvas);
     list-style: none;
-    box-shadow: 0 1px 2px rgba(10, 12, 26, .04), 0 20px 40px -16px rgba(10, 12, 26, .3);
+    box-shadow: var(--shadow-float);
     opacity: 0;
     visibility: hidden;
     transform: translate(-50%, -4px);
     transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
   }
-  .nav-services.is-open .services-submenu {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, 0);
-  }
+  .nav-services.is-open .services-submenu { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
   .service-menu-link {
     display: grid;
     gap: 3px;
     min-height: 58px;
     padding: 12px 14px;
     align-content: center;
-    border-radius: 12px;
-    color: var(--ink);
+    border-radius: 16px;
+    color: var(--midnight);
   }
-  .service-menu-link:hover,
-  .service-menu-link:focus-visible { background: var(--canvas); }
-  .service-menu-title { font-size: 17px; font-weight: 700; }
+  .service-menu-link:hover { background: var(--surface); color: var(--midnight); }
+  .service-menu-link[aria-current] { background: var(--accent-soft); }
+  .service-menu-title { font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: -0.015em; }
   .service-menu-subtitle { color: var(--ink-muted); font-size: 15px; line-height: 1.35; }
-  .nav-cta-wrap { margin-left: 8px; }
-  .nav-toggle { display: none; border: 0; background: transparent; color: var(--ink); cursor: pointer; flex: none; }
+
+  .site-header-social {
+    transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out), visibility var(--duration-base);
+  }
+  .site-header[data-scrolled='true'] .site-header-social {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-24px);
+  }
+
+  @keyframes pill-block-in {
+    from { scale: .3; opacity: 0; }
+    to { scale: 1; opacity: 1; }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .nav-pill:hover { transform: scale(1.04, 1.08); }
+    .nav-pill[aria-current] ~ .nav-pill-blocks .nav-pill-block { animation: pill-block-in var(--duration-slow) var(--ease-overshoot) both; }
+    .nav-pill[aria-current] ~ .nav-pill-blocks .nav-pill-block-b { animation-delay: .08s; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-link, .nav-pill, .nav-services-chevron, .services-submenu, .site-header-social { transition: none; }
+  }
+
+  .nav-cta-wrap :global(.btn-label) { white-space: nowrap; }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .site-nav-list { gap: 8px; }
+    .nav-pill { padding: 0 13px; font-size: 16px; }
+    .nav-services-link { padding-right: 8px; }
+    .nav-services-toggle { width: 32px; }
+    .site-header-social { display: none; }
+  }
 
   @media (max-width: 1023px) {
-    .header-wrap { padding: 18px 16px 0; }
-    .nav-bar { position: relative; padding: 9px 9px 9px 18px; }
-    .nav-toggle { display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: var(--radius-md); }
-    .nav-toggle:hover { background: rgba(244, 246, 255, .12); }
-    .nav-links-row {
-      position: absolute;
-      top: calc(100% + 10px);
-      right: 0;
-      left: 0;
+    .nav-toggle { display: inline-flex; }
+    .site-header-social { display: none; }
+    .site-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
       display: none;
-      padding: 12px;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 4px;
-      border: 1px solid var(--line-soft);
-      border-radius: 24px;
-      background: var(--surface);
-      box-shadow: 0 1px 2px rgba(10, 12, 26, .04), 0 20px 40px -16px rgba(10, 12, 26, .3);
+      padding: 84px 12px 12px;
+      overflow-y: auto;
+      background: rgba(10, 12, 26, .45);
+      backdrop-filter: blur(6px);
+      pointer-events: auto;
     }
-    .nav-links-row.nav-open { display: block; }
-    .nav-list { flex-direction: column; align-items: stretch; }
-    .nav-link { width: 100%; padding: 14px; text-align: center; }
-    .nav-services { flex-wrap: wrap; width: 100%; }
-    .nav-services-link { flex: 1; padding-right: 14px; text-align: left; }
+    .site-nav.nav-open { display: block; }
+    .site-nav-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: var(--radius-xl);
+      background: var(--accent-soft);
+      box-shadow: var(--shadow-float);
+    }
+    .site-nav-list { flex-direction: column; align-items: stretch; gap: 10px; }
+    .nav-pill {
+      display: flex;
+      justify-content: flex-start;
+      min-height: 56px;
+      padding: 0 22px;
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: none;
+      font-size: 20px;
+    }
+    .nav-pill:hover { transform: none; }
+    .nav-pill-blocks { display: none; }
+    .nav-pill[aria-current] { box-shadow: inset 0 0 0 2px var(--accent-ink); }
+    .nav-services { flex-direction: column; align-items: stretch; }
+    .nav-services-group { display: block; }
+    .nav-services-link { display: flex; border-radius: 18px; padding-right: 22px; }
     .nav-services-toggle { display: none; }
     .services-submenu {
       position: static;
-      display: grid;
-      z-index: auto;
       width: 100%;
-      margin: 2px 0 0;
-      padding: 4px 0 4px 14px;
-      border: 0;
+      margin-top: 6px;
+      padding: 0 0 0 12px;
       border-radius: 0;
       background: transparent;
       box-shadow: none;
       opacity: 1;
       visibility: visible;
       transform: none;
+      gap: 6px;
     }
-    .service-menu-link {
-      min-height: 52px;
-      padding: 10px 12px;
-      text-align: left;
-    }
-    .nav-cta-wrap { width: 100%; margin-top: 6px; margin-left: 0; }
+    .service-menu-link { min-height: 52px; background: rgba(255, 255, 255, .6); }
     .nav-cta-wrap :global(.btn) { width: 100%; }
+    .nav-cta-wrap :global(.btn-text) { flex: 1; }
+    .site-nav-social { display: flex; justify-content: center; }
   }
 </style>
 
 <script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const navToggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
+  const toggleLabel = document.querySelector<HTMLElement>('[data-nav-toggle-label]');
   const servicesMenu = document.querySelector<HTMLElement>('[data-services-menu]');
   const servicesToggle = servicesMenu?.querySelector<HTMLButtonElement>('[data-services-toggle]');
+
+  const SCROLLED_AFTER = 70;
+  let scrollTicking = false;
+  const syncScrolled = () => {
+    header?.setAttribute('data-scrolled', String(window.scrollY > SCROLLED_AFTER));
+    scrollTicking = false;
+  };
+  syncScrolled();
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(syncScrolled);
+    },
+    { passive: true }
+  );
 
   const setServicesMenu = (open: boolean) => {
     if (!servicesMenu || !servicesToggle) return;
@@ -272,25 +409,69 @@ const isSquaiOne = currentPath === '/servicios/squai-one';
   servicesToggle?.addEventListener('click', () => {
     setServicesMenu(servicesToggle.getAttribute('aria-expanded') !== 'true');
   });
-
   servicesMenu?.querySelectorAll<HTMLAnchorElement>('.service-menu-link').forEach((link) => {
     link.addEventListener('click', () => setServicesMenu(false));
   });
-
   servicesMenu?.addEventListener('focusout', () => {
     requestAnimationFrame(() => {
       if (!servicesMenu.contains(document.activeElement)) setServicesMenu(false);
     });
   });
-
   document.addEventListener('click', (event) => {
     if (!servicesMenu?.classList.contains('is-open')) return;
     if (!servicesMenu.contains(event.target as Node)) setServicesMenu(false);
   });
 
+  const isNavOpen = () => navMenu?.classList.contains('nav-open') ?? false;
+
+  const setNavOpen = (open: boolean) => {
+    if (!navMenu || !navToggle) return;
+    navMenu.classList.toggle('nav-open', open);
+    navToggle.setAttribute('aria-expanded', String(open));
+    if (toggleLabel) toggleLabel.textContent = open ? navToggle.dataset.closeLabel! : navToggle.dataset.menuLabel!;
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  };
+
+  navToggle?.addEventListener('click', () => setNavOpen(!isNavOpen()));
+  navMenu?.querySelectorAll('a, button').forEach((el) => {
+    el.addEventListener('click', () => {
+      if (el instanceof HTMLButtonElement && el.hasAttribute('data-services-toggle')) return;
+      setNavOpen(false);
+    });
+  });
+  navMenu?.addEventListener('click', (event) => {
+    if (event.target === navMenu) setNavOpen(false);
+  });
+
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !servicesMenu?.classList.contains('is-open')) return;
-    setServicesMenu(false);
-    servicesToggle?.focus();
+    if (event.key === 'Escape') {
+      if (servicesMenu?.classList.contains('is-open')) {
+        setServicesMenu(false);
+        servicesToggle?.focus();
+        return;
+      }
+      if (isNavOpen()) {
+        setNavOpen(false);
+        navToggle?.focus();
+      }
+      return;
+    }
+    if (event.key !== 'Tab' || !isNavOpen() || !navMenu || !navToggle) return;
+    const stops = [navToggle, ...Array.from(navMenu.querySelectorAll<HTMLElement>('a[href], button'))].filter(
+      (el) => el.offsetParent !== null
+    );
+    const first = stops[0];
+    const last = stops[stops.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+    if (event.matches) setNavOpen(false);
   });
 </script>

@@ -1409,6 +1409,14 @@ content:
                         label: Botón de inscripción (Squai One)
                         type: string
                         required: true
+                      - name: menuLabel
+                        label: Texto visible del botón de menú
+                        type: string
+                        required: true
+                      - name: closeLabel
+                        label: Texto visible del botón al cerrar el menú
+                        type: string
+                        required: true
                   - name: skip
                     label: Enlace "Saltar al contenido"
                     type: string

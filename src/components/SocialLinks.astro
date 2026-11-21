@@ -1,0 +1,32 @@
+---
+import { getSiteContent } from '../lib/content';
+
+const { socials, ui } = await getSiteContent();
+
+const ICONS: Record<string, string> = {
+  LinkedIn:
+    'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21.4 8.65 22 11 22 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21h-4V9Z',
+};
+
+const links = socials.filter((social) => social.href && ICONS[social.name]);
+---
+
+{
+  links.length > 0 && (
+    <ul class="social-links" aria-label={ui.follow.title}>
+      {links.map((social) => (
+        <li>
+          <a class="social-button" href={social.href} aria-label={social.name} target="_blank" rel="noopener noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d={ICONS[social.name]} />
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .social-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 0; list-style: none; }
+</style>
