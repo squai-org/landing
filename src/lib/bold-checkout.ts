@@ -46,3 +46,42 @@ export const boldCheckoutConfig = (session: CheckoutSession, redirectionUrl: str
   // Prellena el formulario de Bold con lo que la persona ya escribio.
   ...(customer && { customerData: JSON.stringify(customer) }),
 });
+
+declare global {
+  interface Window {
+    BoldCheckout: new (config: ReturnType<typeof boldCheckoutConfig>) => { open(): void };
+  }
+}
+
+let library: Promise<void> | null = null;
+
+/**
+ * Carga la libreria de Bold (checkout.libraryUrl) una sola vez por pagina, al
+ * momento de pagar y no antes. Si falla, el siguiente intento la vuelve a pedir.
+ * La usan Checkout.astro y retomar.astro.
+ */
+export const loadBoldLibrary = (url: string): Promise<void> => {
+  library ??= new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = url;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('bold_library'));
+    document.head.appendChild(script);
+  });
+  library.catch(() => {
+    library = null;
+  });
+  return library;
+};
+
+/** Abre el modal de Bold con una sesion firmada, cargando antes la libreria. */
+export const openBoldCheckout = async (
+  libraryUrl: string,
+  session: CheckoutSession,
+  redirectionUrl: string,
+  customer?: CustomerData
+): Promise<void> => {
+  await loadBoldLibrary(libraryUrl);
+  new window.BoldCheckout(boldCheckoutConfig(session, redirectionUrl, customer)).open();
+};

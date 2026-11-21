@@ -79,14 +79,8 @@ const programPath = `/servicios/${checkout.program}`;
 </Layout>
 
 <script>
-  import { boldCheckoutConfig, type CheckoutSession } from '../lib/bold-checkout';
+  import { openBoldCheckout, type CheckoutSession } from '../lib/bold-checkout';
   import { resumeOrderId, resumeOutcome } from '../lib/resume-flow';
-
-  declare global {
-    interface Window {
-      BoldCheckout: new (config: ReturnType<typeof boldCheckoutConfig>) => { open(): void };
-    }
-  }
 
   const root = document.querySelector<HTMLElement>('[data-resume]');
 
@@ -104,29 +98,12 @@ const programPath = `/servicios/${checkout.program}`;
       if (back) back.hidden = state === 'checking' || state === 'retry';
     };
 
-    let library: Promise<void> | null = null;
-    const loadLibrary = () => {
-      library ??= new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = libraryUrl;
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('bold_library'));
-        document.head.appendChild(script);
-      });
-      library.catch(() => {
-        library = null;
-      });
-      return library;
-    };
-
     /** Abre el modal de Bold con la sesion firmada; reabrir usa la misma orden. */
     const openPayment = async () => {
       if (!session) return;
       try {
-        await loadLibrary();
         const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
-        new window.BoldCheckout(boldCheckoutConfig(session, redirectionUrl)).open();
+        await openBoldCheckout(libraryUrl, session, redirectionUrl);
       } catch {
         show('error');
       }

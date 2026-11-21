@@ -157,6 +157,28 @@ describe('0006_customers_orders', () => {
       .first<{ id: number }>();
     expect(inserted?.id).toBeGreaterThan(41);
   });
+
+  it('solo admite las monedas de CURRENCIES', async () => {
+    await applyAll();
+
+    const customer = await db()
+      .prepare(
+        `INSERT INTO customers (email, full_name, country_code, phone, phone_e164)
+         VALUES ('eur@x.co', 'Eva', '+57', '3001112222', '+573001112222') RETURNING id`
+      )
+      .first<{ id: number }>();
+    const insert = (currency: string) =>
+      db()
+        .prepare(
+          `INSERT INTO orders (order_id, customer_id, program_code, amount, currency)
+           VALUES (?, ?, 'squai-one', 1000, ?)`
+        )
+        .bind(`squai-one-${currency}`, customer?.id, currency)
+        .run();
+
+    await expect(insert('EUR')).rejects.toThrow();
+    await expect(insert('USD')).resolves.toBeDefined();
+  });
 });
 
 describe('0007_programs_prices', () => {

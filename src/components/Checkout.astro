@@ -18,12 +18,14 @@ import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
 import CustomSelect from './CustomSelect.astro';
 import Turnstile from './Turnstile.astro';
-import { checkout } from '../config/checkout';
+import { checkout, CURRENCIES, type Currency } from '../config/checkout';
 import { endpoints } from '../config/endpoints';
 import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
 
 const { program, ui, labels } = await getSiteContent();
+/** Un texto del CMS por cada moneda de CURRENCIES; una moneda nueva sin texto no compila. */
+const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop, USD: ui.checkout.currency.usd };
 ---
 
 <section class="section tint">
@@ -150,14 +152,14 @@ const { program, ui, labels } = await getSiteContent();
               que haya moneda aunque falle la carga de precios. */}
           <fieldset class="currency-picker" data-currency-picker>
             <legend class="currency-legend">{ui.checkout.currency.label}</legend>
-            <label class="currency-option" data-currency-option="COP">
-              <input type="radio" name="currency" value="COP" form="checkout-form" checked />
-              <span>{ui.checkout.currency.cop}</span>
-            </label>
-            <label class="currency-option" data-currency-option="USD">
-              <input type="radio" name="currency" value="USD" form="checkout-form" />
-              <span>{ui.checkout.currency.usd}</span>
-            </label>
+            {
+              CURRENCIES.map((currency, index) => (
+                <label class="currency-option" data-currency-option={currency}>
+                  <input type="radio" name="currency" value={currency} form="checkout-form" checked={index === 0} />
+                  <span>{currencyLabels[currency]}</span>
+                </label>
+              ))
+            }
           </fieldset>
         </div>
       </div>
@@ -178,7 +180,7 @@ const { program, ui, labels } = await getSiteContent();
 </section>
 
 <script>
-  import { boldCheckoutConfig, type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
+  import { openBoldCheckout, type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
   import {
     buttonView,
     canReopen,
@@ -194,12 +196,6 @@ const { program, ui, labels } = await getSiteContent();
 
   // Las cadenas llegan por data-client-copy, como el resto del JS de cliente.
   const { feedback } = JSON.parse(document.body.dataset.clientCopy!) as ClientCopy;
-
-  declare global {
-    interface Window {
-      BoldCheckout: new (config: ReturnType<typeof boldCheckoutConfig>) => { open(): void };
-    }
-  }
 
   const root = document.querySelector<HTMLElement>('[data-bold-checkout]');
 
@@ -313,22 +309,6 @@ const { program, ui, labels } = await getSiteContent();
       }
     };
 
-    let library: Promise<void> | null = null;
-    const loadLibrary = () => {
-      library ??= new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = root.dataset.libraryUrl ?? '';
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('bold_library'));
-        document.head.appendChild(script);
-      });
-      library.catch(() => {
-        library = null;
-      });
-      return library;
-    };
-
     /**
      * Integracion personalizada de Bold: la libreria (window.BoldCheckout) solo
      * abre el modal embebido. Se reabre siempre con la MISMA sesion firmada, asi
@@ -337,10 +317,9 @@ const { program, ui, labels } = await getSiteContent();
     const openPayment = async () => {
       if (!current) return;
       try {
-        await loadLibrary();
-        showError('');
         const redirectionUrl = `${window.location.origin}${root.dataset.returnPath ?? '/'}`;
-        new window.BoldCheckout(boldCheckoutConfig(current.session, redirectionUrl, current.customer)).open();
+        await openBoldCheckout(root.dataset.libraryUrl ?? '', current.session, redirectionUrl, current.customer);
+        showError('');
       } catch {
         showError(feedback.checkoutError);
         step('closed');

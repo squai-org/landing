@@ -1,4 +1,4 @@
-export type Currency = 'COP' | 'USD';
+import type { Currency } from '../../config/checkout';
 
 export interface Program {
   code: string;

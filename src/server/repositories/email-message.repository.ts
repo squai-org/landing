@@ -1,3 +1,4 @@
+import type { Currency, Tax } from '../../config/checkout';
 import type { OrderStatus } from './order.repository';
 
 export type EmailKind = 'confirmation' | 'recovery';
@@ -9,8 +10,8 @@ export interface ConfirmationData {
   programCode: string;
   status: OrderStatus;
   amount: number;
-  currency: string;
-  tax: string | null;
+  currency: Currency;
+  tax: Tax | null;
   paymentMethod: string | null;
   email: string;
   fullName: string;
