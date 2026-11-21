@@ -13,13 +13,6 @@
   "span": "span-3 row-2",
   "tone": "peri",
   "order": 1,
-  "payback": {
-    "headline": "Vas a desarrollar la habilidad de usar cualquier IA, la que está de moda hoy y la que salga mañana.",
-    "body": [
-      "Entiendes mejor por qué la IA responde como responde, practicas con diferentes casos de uso y aprendes una base que puedes llevar contigo aunque mañana aparezca otra herramienta con nombre nuevo."
-    ]
-  },
-  "ctaSecondary": "Aprende IA",
   "video": {
     "url": "",
     "title": "En menos de 2 minutos, conoce el programa y a quienes lo imparten",
@@ -27,46 +20,6 @@
     "iframeTitle": "Video de presentación de Squai One con Laura y Sebastián",
     "caption": "Laura y Sebastián te lo cuentan",
     "posterAlt": "Ilustración de una persona que explica algo junto a una videollamada con dos participantes"
-  },
-  "challenge": {
-    "cards": [
-      {
-        "t": "No saber por dónde empezar",
-        "d": "Quieres aprovechar la IA, pero solo encuentras tutoriales confusos o promesas exageradas."
-      },
-      {
-        "t": "Respuestas inútiles",
-        "d": "Le pides algo y te devuelve un texto tan raro que tardas más arreglándolo que haciéndolo desde cero."
-      },
-      {
-        "t": "Una herramienta nueva cada día",
-        "d": "La ansiedad de estar atrasado no se quita probando diez herramientas diarias, sino entendiendo la base."
-      }
-    ]
-  },
-  "capabilities": {
-    "groups": [
-      {
-        "t": "Entender",
-        "items": [
-          "Te enseñamos cómo funciona la IA.  Así sabrás qué pedirle, cómo guiarla y por qué falla cuando no le das las instrucciones correctas."
-        ]
-      },
-      {
-        "t": "Practicar",
-        "tone": "peri",
-        "items": [
-          "Pones en práctica instrucciones directas, aprendes a analizar información y descubres cómo integrar estas ayudas en tu rutina."
-        ]
-      },
-      {
-        "t": "Ampliar",
-        "tone": "dark",
-        "items": [
-          "Logras identificar qué tareas vale la pena delegar, qué debes revisar tú siempre, y eliges la herramienta adecuada sin sentir que estás adivinando."
-        ]
-      }
-    ]
   },
   "audienceFit": {
     "title": "¿Es para ti?",
@@ -138,6 +91,12 @@
     "moduleLabel": "Módulo",
     "sessionLabel": "Sesión",
     "topicsLabel": "Lo que vemos",
+    "outcome": {
+      "headline": "Vas a desarrollar la habilidad de usar cualquier IA, la que está de moda hoy y la que salga mañana.",
+      "body": [
+        "Entiendes mejor por qué la IA responde como responde, practicas con diferentes casos de uso y aprendes una base que puedes llevar contigo aunque mañana aparezca otra herramienta con nombre nuevo."
+      ]
+    },
     "modules": [
       {
         "t": "Qué es la IA",
@@ -238,45 +197,91 @@
       "q": "¿En qué se diferencia Squai de los otros 500 programas de IA que he visto?",
       "a": [
         "Que no te vendemos la herramienta de moda ni promesas vacías. Te enseñamos a entender qué pasa por detrás. Y si la IA no sirve para tu problema, te lo decimos de frente para que no pierdas tiempo."
-      ]
+      ],
+      "category": "Programa"
+    },
+    {
+      "q": "¿Cuándo son las clases y cuánto duran?",
+      "a": [
+        "El programa dura 4 semanas, con 2 sesiones en vivo por semana de 2 horas y media cada una: 8 sesiones en total. Las fechas y el horario de tu grupo están en los datos clave de esta página y te llegan otra vez en el correo de confirmación de tu inscripción."
+      ],
+      "category": "Programa"
+    },
+    {
+      "q": "¿Qué pasa si no puedo asistir a una clase en vivo?",
+      "a": [
+        "No tienes que inventar una emergencia. Grabamos las sesiones y puedes verlas hasta un mes después de la última sesión del programa, para ponerte al día o volver sobre algo que quieras repasar."
+      ],
+      "category": "Programa"
+    },
+    {
+      "q": "¿Cómo me conecto a las sesiones?",
+      "a": [
+        "Una semana antes de que empiece el programa te llega por correo la invitación a la comunidad de WhatsApp y los datos para conectarte."
+      ],
+      "category": "Programa"
+    },
+    {
+      "q": "¿Qué certificado recibo?",
+      "a": [
+        "Un certificado digital de Fundamentos de Inteligencia Artificial Generativa, si asistes al menos al 80 % de las sesiones."
+      ],
+      "category": "Programa"
     },
     {
       "q": "¿Hay cupos limitados?",
       "a": [
         "Sí. Cada programa tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que se aprueba el pago."
-      ]
+      ],
+      "category": "Programa"
     },
     {
-      "q": "¿Cuándo son las clases y cuánto duran?",
+      "q": "¿Necesito saber de tecnología?",
       "a": [
-        "Las fechas y el horario te llegan en el correo de confirmación de tu inscripción. Son 5 horas semanales durante 4 semanas, suficiente para avanzar sin abrumarte y sin perder el ritmo."
-      ]
+        "No. Arrancamos desde las bases, así que puedes empezar sin haber usado la IA antes."
+      ],
+      "category": "Requisitos"
     },
     {
-      "q": "¿Qué pasa si no puedo asistir a una clase en vivo?",
+      "q": "¿Qué necesito para participar y tengo que pagar alguna herramienta?",
       "a": [
-        "No tienes que inventar una emergencia. Las sesiones quedan grabadas durante el programa para que puedas ponerte al día o volver sobre algo que quieras repasar."
-      ]
+        "Un computador, conexión a internet y una cuenta gratuita en Claude, ChatGPT o Gemini. No necesitas pagar ninguna herramienta: si todavía no tienes cuenta, te ayudamos a crearla en la primera sesión, y en las prácticas tenemos en cuenta los límites de uso de las versiones gratuitas."
+      ],
+      "category": "Requisitos"
     },
     {
-      "q": "¿Qué necesito para participar?",
+      "q": "Si ya uso la IA, ¿me sirve?",
       "a": [
-        "Un computador con internet. Con eso es suficiente para empezar."
-      ]
+        "Sí, sobre todo si ya la usas pero sientes que vas adivinando. Entiendes por qué responde como responde, aprendes a pedir con claridad e iterar, y decides qué delegar y qué revisar tú siempre."
+      ],
+      "category": "Requisitos"
     },
     {
       "q": "¿Cómo me inscribo?",
       "a": [
         "Llenas el formulario de inscripción de esta página y pagas en línea. Cuando el pago se aprueba, tu cupo queda reservado y te llega la confirmación al correo. Fácil."
-      ]
+      ],
+      "category": "Inscripción y pagos"
     },
     {
       "q": "¿Llenar el formulario me obliga a pagar?",
       "a": [
         "No. El formulario solo prepara tu pago: quedas inscrito cuando el pago se aprueba. Si cierras la ventana de pago sin terminar, no se te cobra nada. Tú decides, sin presiones."
-      ]
+      ],
+      "category": "Inscripción y pagos"
+    },
+    {
+      "q": "¿Cómo pago?",
+      "a": [
+        "El pago es en línea y seguro. Desde Colombia puedes pagar con tarjeta débito o crédito, PSE o Nequi; desde otros países, con tarjeta. Algunos medios, como PSE, tardan unos minutos en confirmar, y te avisamos por correo cuando el pago quede aprobado."
+      ],
+      "category": "Inscripción y pagos"
     }
   ],
   "seoTitle": "Programa en vivo para aprender inteligencia artificial | Squai",
-  "seoDescription": "Programa de inteligencia artificial en vivo: 4 semanas, 20 horas, práctica guiada y certificado. Aprende a usar IA en situaciones reales."
+  "seoDescription": "Programa de inteligencia artificial en vivo: 4 semanas, 20 horas, práctica guiada y certificado. Aprende a usar IA en situaciones reales.",
+  "faqIntro": {
+    "lead": "Lo que más nos preguntan antes de inscribirse, con respuestas cortas.",
+    "categoriesLabel": "Categorías"
+  }
 }

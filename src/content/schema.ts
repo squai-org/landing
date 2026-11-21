@@ -25,7 +25,7 @@ const span = text.regex(/^span-[2-6](?: row-[2-5])?$/);
 // Cada ruta es una clave del mapa de fotos compiladas de Team.astro. Anadir una
 // foto nueva es un cambio de codigo, no editorial.
 export const teamPhotos = ['/images/team1.webp', '/images/team2.webp', '/images/team3.webp', '/images/team4.webp', '/images/team5.webp', '/images/team6.webp'] as const;
-const faq = z.object({ q: text, a: paragraphs });
+const faq = z.object({ q: text, a: paragraphs, category: optional(text) });
 const labels = z.object({
   whatWeDo: text, services: text, team: text, faq: text, impact: text,
   origin: text, brand: text, reserve: text, call: text, challenge: text,
@@ -68,6 +68,7 @@ const syllabus = z.object({
   moduleLabel: text,
   sessionLabel: text,
   topicsLabel: text,
+  outcome: z.object({ headline: text, body: paragraphs }).optional(),
   modules: z.array(z.object({
     t: text,
     d: text,
@@ -88,9 +89,9 @@ export const serviceSchema = z.object({
   order: z.number().int().min(1),
   name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text, discoverLabel: text,
   accent: hex, span, tone,
-  payback: z.object({ headline: text, body: paragraphs }),
-  challenge: z.object({ cards: z.array(card).min(1) }),
-  capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
+  payback: z.object({ headline: text, body: paragraphs }).optional(),
+  challenge: z.object({ cards: z.array(card).min(1) }).optional(),
+  capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }).optional(),
   audienceFit: audienceFit.optional(),
   howItWorks: howItWorks.optional(),
   syllabus: syllabus.optional(),
@@ -107,6 +108,7 @@ export const serviceSchema = z.object({
     title: text,
     quotes: z.array(z.object({ text, name: text, context: text })).min(1),
   }).optional(),
+  faqIntro: z.object({ lead: text, categoriesLabel: text }).optional(),
   faqs: z.array(faq).min(1),
 });
 const modal = z.object({ title: text, copy: text, placeholder: text });
@@ -160,7 +162,7 @@ export const siteSchema = z.object({
     motion: z.object({ pause: text, resume: text }),
     whatsapp: z.object({ label: text, message: text }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
-    services: z.object({ payback: text, capabilitiesFallback: text }),
+    services: z.object({ payback: text }),
     program: z.object({ duration: text, schedule: text, modality: text }),
     team: z.object({ intro: paragraphs, memberAlt: text.refine((value) => value.includes('{name}') && value.includes('{role}'), 'Include {name} and {role}') }),
     finalCta: z.object({ title: text, body: paragraphs, cta: text }),

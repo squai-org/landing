@@ -233,8 +233,7 @@
         }
       },
       "services": {
-        "payback": "Qué te llevas",
-        "capabilitiesFallback": "Nuestro programa"
+        "payback": "Qué te llevas"
       },
       "updated": "Última actualización:"
     },

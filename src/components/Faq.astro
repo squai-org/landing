@@ -1,46 +1,85 @@
 ---
+import BackdropShape from './BackdropShape.astro';
 import { getSiteContent, type Faq } from '../lib/content';
 
 interface Props {
   items: Faq[];
   title?: string;
+  intro?: { lead: string; categoriesLabel: string };
 }
 
 const { labels, services } = await getSiteContent();
-const { items, title = labels.faq } = Astro.props;
+const { items, title = labels.faq, intro } = Astro.props;
 const serviceNames = new Set(services.map((service) => service.name));
 const serviceNamePattern = new RegExp(`(${[...serviceNames].map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`);
+
+const entries = items.map((item, index) => ({ ...item, index }));
+const categories = [...new Set(entries.flatMap((entry) => (entry.category ? [entry.category] : [])))];
+const grouped = categories.length > 0;
+const groups = grouped
+  ? categories.map((name, position) => ({
+      name,
+      id: `faq-group-${position}`,
+      entries: entries.filter((entry) => entry.category === name),
+    }))
+  : [{ name: '', id: '', entries }];
+const Question = grouped ? 'h4' : 'h3';
 ---
 
-<section id="faq" class="section tint">
-  <div class="shell">
-    <h2 class="display d-h1 faq-title">{title}</h2>
-    <div class="faq-list">
+<section id="faq" class:list={['section', 'tint', { 'faq-grouped': grouped }]}>
+  {grouped && <BackdropShape shape="faq" still />}
+  <div class:list={['shell', 'faq-shell', { 'is-flat': !grouped }]}>
+    <div class="faq-aside">
+      <h2 class:list={['display', grouped ? 'd-h2' : 'd-h1', 'faq-title']}>{title}</h2>
+      {grouped && intro && <p class="lead faq-lead">{intro.lead}</p>}
       {
-        items.map((f, i) => (
-          <div class="bento-card faq-item">
-            <button
-              type="button"
-              class="faq-toggle"
-              data-faq-toggle={String(i)}
-              aria-expanded="false"
-              aria-controls={`faq-panel-${i}`}
-            >
-              <span class="display d-h3">{f.q}</span>
-              <span data-faq-sign={String(i)} aria-hidden="true" class="faq-sign">
-                +
-              </span>
-            </button>
-            <div id={`faq-panel-${i}`} data-faq-panel={String(i)} hidden class="faq-panel">
+        grouped && intro && (
+          <nav class="faq-categories" aria-label={intro.categoriesLabel}>
+            <p class="label faq-categories-label" aria-hidden="true">{intro.categoriesLabel}</p>
+            <ul>
+              {groups.map((group) => <li><a class="faq-category" href={`#${group.id}`}>{group.name}</a></li>)}
+            </ul>
+          </nav>
+        )
+      }
+    </div>
+    <div class="faq-groups">
+      {
+        groups.map((group) => (
+          <div class="faq-group" id={group.id || undefined} role={group.name ? 'group' : undefined} aria-labelledby={group.name ? `${group.id}-title` : undefined}>
+            {group.name && <h3 id={`${group.id}-title`} class="display d-h2 faq-group-title">{group.name}</h3>}
+            <div class="faq-list">
               {
-                f.a.map((paragraph) => (
-                  <p class="lead faq-answer">
-                    {
-                      paragraph
-                        .split(serviceNamePattern)
-                        .map((part) => serviceNames.has(part) ? <strong>{part}</strong> : part)
-                    }
-                  </p>
+                group.entries.map((f) => (
+                  <div class="bento-card faq-item">
+                    <Question class="faq-question">
+                      <button
+                        type="button"
+                        class="faq-toggle"
+                        data-faq-toggle={String(f.index)}
+                        aria-expanded="false"
+                        aria-controls={`faq-panel-${f.index}`}
+                      >
+                        <span class="display d-h3">{f.q}</span>
+                        <span data-faq-sign={String(f.index)} aria-hidden="true" class="faq-sign">
+                          +
+                        </span>
+                      </button>
+                    </Question>
+                    <div id={`faq-panel-${f.index}`} data-faq-panel={String(f.index)} hidden class="faq-panel">
+                      {
+                        f.a.map((paragraph) => (
+                          <p class="lead faq-answer">
+                            {
+                              paragraph
+                                .split(serviceNamePattern)
+                                .map((part) => serviceNames.has(part) ? <strong>{part}</strong> : part)
+                            }
+                          </p>
+                        ))
+                      }
+                    </div>
+                  </div>
                 ))
               }
             </div>
@@ -52,9 +91,14 @@ const serviceNamePattern = new RegExp(`(${[...serviceNames].map((name) => name.r
 </section>
 
 <style>
+  .faq-grouped { position: relative; overflow: clip; }
+  .faq-shell { position: relative; z-index: 1; }
   .faq-title { color: var(--ink); }
-  .faq-list { display: flex; max-width: 960px; margin-top: clamp(36px, 4vw, 64px); flex-direction: column; gap: clamp(10px, 1vw, 16px); }
+  .faq-groups { display: flex; flex-direction: column; gap: clamp(32px, 4vw, 56px); }
+  .faq-shell.is-flat .faq-groups { max-width: 960px; margin-top: clamp(36px, 4vw, 64px); }
+  .faq-list { display: flex; flex-direction: column; gap: clamp(10px, 1vw, 16px); }
   .faq-item { gap: 0; padding: 0; overflow: hidden; }
+  .faq-question { margin: 0; font: inherit; }
   .faq-toggle {
     display: flex;
     width: 100%;
@@ -71,4 +115,33 @@ const serviceNamePattern = new RegExp(`(${[...serviceNames].map((name) => name.r
   .faq-panel { padding: 0 clamp(22px, 2.2vw, 34px) clamp(22px, 2.2vw, 30px); }
   .faq-answer { max-width: 70ch; color: var(--ink-body); }
   .faq-answer + .faq-answer { margin-top: 12px; }
+
+  .faq-grouped .faq-shell { display: grid; gap: clamp(28px, 4vw, 56px); align-items: start; }
+  .faq-aside { display: grid; gap: clamp(16px, 2vw, 24px); }
+  .faq-lead { max-width: 40ch; margin: 0; color: var(--ink-body); }
+  .faq-categories { display: grid; gap: 12px; }
+  .faq-categories-label { margin: 0; color: var(--ink); }
+  .faq-categories ul { display: flex; margin: 0; padding: 0; flex-wrap: wrap; gap: 10px; list-style: none; }
+  .faq-category {
+    display: inline-flex;
+    min-height: var(--control-height-compact);
+    padding: 0 20px;
+    align-items: center;
+    border-radius: var(--radius-pill);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+  .faq-category:hover { background: var(--accent-soft-strong); }
+  .faq-group { scroll-margin-top: 112px; }
+  .faq-group-title { margin: 0 0 clamp(14px, 1.6vw, 22px); color: var(--ink); }
+
+  @media (min-width: 1024px) {
+    .faq-grouped .faq-shell { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
+    .faq-grouped .faq-aside { position: sticky; top: 112px; }
+    .faq-categories ul { flex-direction: column; align-items: flex-start; }
+  }
 </style>

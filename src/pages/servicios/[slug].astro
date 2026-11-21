@@ -40,7 +40,6 @@ const { service } = Astro.props;
 
 const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
 const seo = serviceSeo(service, content.seo.serviceTitle);
-const capabilitiesHeadline = service.slug === 'squai-one' ? service.capabilities.headline : content.ui.services.capabilitiesFallback;
 
 const offering = service.slug === 'squai-one'
   ? courseSchema(content, service, pageUrl)
@@ -71,11 +70,15 @@ const schemas = [
 
   {service.video && <VideoSection video={service.video} />}
 
-  <ServicePayback
-    headline={service.payback.headline}
-    body={service.payback.body}
-    cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
-  />
+  {
+    service.payback && (
+      <ServicePayback
+        headline={service.payback.headline}
+        body={service.payback.body}
+        cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
+      />
+    )
+  }
 
   {service.audienceFit && <AudienceFit fit={service.audienceFit} cta={service.cta} />}
 
@@ -83,9 +86,9 @@ const schemas = [
 
   {service.syllabus && <Syllabus syllabus={service.syllabus} cta={service.cta} />}
 
-  <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
+  {service.challenge && <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />}
 
-  <ServiceCapabilities headline={service.capabilities.headline} groups={service.capabilities.groups} />
+  {service.capabilities && <ServiceCapabilities headline={service.capabilities.headline} groups={service.capabilities.groups} />}
 
   {service.team && <OneTeam title={service.team.title} closing={service.team.closing} />}
 
@@ -107,7 +110,7 @@ const schemas = [
     )
   }
 
-  <Faq items={service.faqs} />
+  <Faq items={service.faqs} intro={service.faqIntro} />
   </div>
   </main>
 
