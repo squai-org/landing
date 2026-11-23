@@ -48,7 +48,23 @@
     "playLabel": "Reproducir",
     "iframeTitle": "Video de presentación de Squai One con Laura y Sebastián",
     "caption": "Laura y Sebastián te lo cuentan",
-    "posterAlt": "Ilustración de una persona que explica algo junto a una videollamada con dos participantes"
+    "posterAlt": "Ilustración de una persona que explica algo junto a una videollamada con dos participantes",
+    "lead": "En este video te contamos para quién es el programa, cómo son las clases y qué te llevas al terminar.",
+    "body": "Lo grabamos con subtítulos en español para que lo veas donde estés, incluso sin sonido.",
+    "cta": {
+      "label": "Conocer a Laura y Sebastián",
+      "target": "equipo-one"
+    },
+    "mediaTitle": "Video de presentación",
+    "mediaNote": "Muy pronto, con subtítulos",
+    "mediaNoteReady": "Con subtítulos en español",
+    "logosLabel": "Han confiado en nosotros",
+    "logos": [
+      "Nodo",
+      "Aula 21",
+      "Cumbre",
+      "Ruta Pyme"
+    ]
   },
   "audienceFit": {
     "title": "¿Es para ti?",
@@ -155,7 +171,17 @@
           "Cuidar tu información y saber cuándo confiar"
         ],
         "illustration": "/illustrations/sesiones/sesion-6.svg",
-        "alt": "Persona de brazos cruzados junto a un escudo con candado"
+        "alt": "Persona de brazos cruzados junto a un escudo con candado",
+        "sessionArt": [
+          {
+            "illustration": "/illustrations/sesiones/sesion-3.svg",
+            "alt": "Persona escribe en su celular junto a un globo de mensaje con un texto a medio escribir"
+          },
+          {
+            "illustration": "/illustrations/sesiones/sesion-6.svg",
+            "alt": "Persona de brazos cruzados junto a un escudo con candado"
+          }
+        ]
       },
       {
         "t": "De tareas a procesos",
@@ -199,7 +225,17 @@
           "Imágenes y revisión de lo creado"
         ],
         "illustration": "/illustrations/sesiones/sesion-4.svg",
-        "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato"
+        "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato",
+        "sessionArt": [
+          {
+            "illustration": "/illustrations/sesiones/sesion-4.svg",
+            "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato"
+          },
+          {
+            "illustration": "/illustrations/sesiones/sesion-2.svg",
+            "alt": "Persona encoge los hombros entre un globo con un error y otro con un acierto"
+          }
+        ]
       },
       {
         "t": "Analizar información",
@@ -336,10 +372,22 @@
   },
   "nav": {
     "items": [
-      { "label": "El programa", "target": "datos-clave" },
-      { "label": "Sesiones", "target": "temario" },
-      { "label": "Quiénes enseñan", "target": "equipo-one" },
-      { "label": "Preguntas", "target": "faq" }
+      {
+        "label": "El programa",
+        "target": "datos-clave"
+      },
+      {
+        "label": "Sesiones",
+        "target": "temario"
+      },
+      {
+        "label": "Quiénes enseñan",
+        "target": "equipo-one"
+      },
+      {
+        "label": "Preguntas",
+        "target": "faq"
+      }
     ],
     "companyLabel": "Conoce Squai"
   }
