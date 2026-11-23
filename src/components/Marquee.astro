@@ -1,24 +1,72 @@
 ---
+type Cohort = 'dates' | 'schedule';
+type Item = string | { text: string; cohort?: Cohort | '' };
+
 interface Props {
-  items: string[];
+  items: Item[];
   tone?: 'gold' | 'dark';
   reverse?: boolean;
   duration?: number;
   tilt?: number;
   label?: string;
+  size?: 'default' | 'one';
+  ribbon?: { color: string; opacity: number };
+  repeat?: number;
 }
 
-const { items, tone = 'gold', reverse = false, duration = 26, tilt = 0, label } = Astro.props;
-const summary = label ?? items.join(', ');
+const { items, tone = 'gold', reverse = false, duration = 26, tilt = 0, label, size = 'default', ribbon, repeat = 1 } = Astro.props;
+const entries = items.map((item) => (typeof item === 'string' ? { text: item, cohort: '' } : { text: item.text, cohort: item.cohort ?? '' }));
+const cycles = Array.from({ length: repeat }, (_, cycle) => entries.map((entry, index) => ({ ...entry, extra: cycle > 0, last: cycle === 0 && index === entries.length - 1 }))).flat();
+const attrs = (cohort: string) => ({ 'data-cohort-dates': cohort === 'dates' ? '' : undefined, 'data-cohort-schedule': cohort === 'schedule' ? '' : undefined });
 ---
 
 <div
-  class:list={['marquee', `marquee--${tone}`, reverse && 'marquee--reverse']}
+  class:list={['marquee', `marquee--${tone}`, reverse && 'marquee--reverse', size === 'one' && 'marquee--one']}
   style={`--marquee-duration:${duration}s;--marquee-tilt:${tilt}deg`}
 >
-  <p class="sr-only">{summary}</p>
+  {
+    ribbon && (
+      <svg class="marquee-ribbon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 2011 145" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" style={`color:${ribbon.color};opacity:${ribbon.opacity}`}>
+        <path
+          fill="currentColor"
+          d="M360 220 C445 140 475 -45 585 -45 C685 -45 710 135 820 220 Z M910 -55 C990 15 1045 160 1165 160 C1270 160 1320 15 1410 -55 Z M1560 220 C1665 145 1745 -50 1890 -50 C1975 -50 2020 35 2080 120 L2080 220 Z"
+        />
+      </svg>
+    )
+  }
+  <p class="sr-only">
+    {label ?? entries.map((entry, index) => <><span {...attrs(entry.cohort)}>{entry.text}</span>{index < entries.length - 1 ? ', ' : ''}</>)}
+  </p>
   <div class="marquee-track ambient" aria-hidden="true">
-    <ul class="marquee-group">{items.map((item) => <li>{item}</li>)}</ul>
-    <ul class="marquee-group marquee-group--copy">{items.map((item) => <li>{item}</li>)}</ul>
+    <ul class="marquee-group">{cycles.map((entry) => <li class:list={[entry.extra && 'marquee-extra', entry.last && 'marquee-last']} {...attrs(entry.cohort)}>{entry.text}</li>)}</ul>
+    <ul class="marquee-group marquee-group--copy">{cycles.map((entry) => <li class:list={[entry.extra && 'marquee-extra', entry.last && 'marquee-last']} {...attrs(entry.cohort)}>{entry.text}</li>)}</ul>
   </div>
 </div>
+
+<style>
+  .marquee--one {
+    position: relative;
+    --marquee-gap: calc(var(--u) * 64);
+  }
+  .marquee--one.marquee--gold { padding-block: calc(var(--u) * 60); }
+  .marquee--one.marquee--dark { padding-block: calc(var(--u) * 48); }
+  .marquee--one .marquee-group {
+    font-size: var(--fs-badge);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .marquee--one .marquee-track { position: relative; z-index: 10; }
+  .marquee-ribbon {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-extra { display: none; }
+    .marquee-last::after { display: none; }
+  }
+</style>

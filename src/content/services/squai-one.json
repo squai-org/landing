@@ -253,9 +253,51 @@
       }
     ]
   },
+  "outcomes": {
+    "title": "Lo que vas a lograr.",
+    "lead": "Cinco cosas que harás en tu trabajo con la IA que ya usas.",
+    "pills": [
+      "Pedirle bien a la IA",
+      "Revisar lo que responde",
+      "Cuidar tus datos",
+      "Elegir la herramienta",
+      "Armar tus rutinas"
+    ]
+  },
+  "marquee": {
+    "title": "Fecha, horario y datos del programa",
+    "lineA": [
+      { "cohort": "dates" },
+      { "cohort": "schedule" }
+    ],
+    "lineB": [
+      "8 sesiones en vivo",
+      "Grabación de cada clase",
+      "Guía por sesión",
+      "Certificado",
+      "PSE, Nequi, Bancolombia o tarjeta"
+    ]
+  },
   "team": {
     "title": "Quiénes te enseñan",
-    "closing": "Uno de los dos será tu mentor."
+    "closing": "Uno de los dos será tu mentor.",
+    "mentors": [
+      {
+        "name": "Laura Villada",
+        "badge": "Cofundadora",
+        "quote": "Cuando entiendes por qué falla una respuesta, dejas de improvisar y empiezas a ahorrar tiempo cada día."
+      },
+      {
+        "name": "Sebastián Rico",
+        "badge": "Cofundador",
+        "quote": "Las herramientas cambian rápido, pero el criterio para pedir bien y verificar datos se queda contigo."
+      }
+    ],
+    "stats": [
+      { "value": "1.200+", "label": "personas formadas" },
+      { "value": "85", "label": "charlas dictadas" },
+      { "value": "30", "label": "organizaciones atendidas" }
+    ]
   },
   "testimonials": {
     "title": "Lo que dicen después de una charla.",

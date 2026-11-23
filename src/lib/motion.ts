@@ -3,7 +3,7 @@ import type { AnimationOptions, DOMKeyframesDefinition } from 'motion';
 
 type ScrollOffset = NonNullable<NonNullable<Parameters<typeof scroll>[1]>['offset']>;
 
-export { animate };
+export { animate, inView };
 
 type Bezier = [number, number, number, number];
 
