@@ -101,7 +101,7 @@ const slideStyles: SlideStyle[] = [
                   <div class="session-slide-copy">
                     <p class="one-small session-slide-meta">
                       <span class="syllabus-session-tag">{syllabus.sessionLabel} {session.number}</span>
-                      <span class="session-slide-module">{syllabus.moduleLabel} {session.moduleNumber} · {session.moduleTitle}</span>
+                      <span class="session-slide-module">{syllabus.moduleLabel} {session.moduleNumber}</span>
                     </p>
                     <h3 id={`session-${session.number}-title`} class="one-h3">{session.focus}</h3>
                     <ul class="one-small session-slide-topics" aria-label={syllabus.topicsLabel}>
@@ -342,6 +342,7 @@ const slideStyles: SlideStyle[] = [
     overscroll-behavior-x: contain;
     touch-action: pan-x pan-y;
     scroll-snap-type: x mandatory;
+    scroll-padding-inline-start: var(--books-list-px);
     scrollbar-width: none;
     cursor: grab;
   }
@@ -420,8 +421,7 @@ const slideStyles: SlideStyle[] = [
   }
   .session-slide-copy { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
   .session-slide-copy :is(p, ul) { color: var(--neutral-12); }
-  .session-slide-meta { display: flex; flex-direction: column; font-weight: 700; }
-  .session-slide-topics { display: grid; margin: 0; padding-left: 1.1em; gap: 0.15em; }
+  .session-slide-meta { display: flex; flex-wrap: wrap; gap: 0 0.6em; font-weight: 700; }  .session-slide-topics { display: grid; margin: 0; padding-left: 1.1em; gap: 0.15em; }
   .session-slide-link {
     position: absolute;
     inset: 0;

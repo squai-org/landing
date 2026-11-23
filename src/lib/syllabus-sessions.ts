@@ -1,6 +1,7 @@
-import type { Service } from './content';
+import type { z } from 'astro/zod';
+import type { serviceSchema } from '../content/schema';
 
-type Syllabus = NonNullable<Service['syllabus']>;
+type Syllabus = NonNullable<z.infer<typeof serviceSchema>['syllabus']>;
 
 export interface SyllabusSession {
   number: number;
