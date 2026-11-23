@@ -6,17 +6,18 @@ const dist = path.join(import.meta.dirname, '../../dist');
 
 let html = '';
 let course: Record<string, any> = {};
+let graph: Record<string, any>[] = [];
 
 beforeAll(async () => {
   html = await readFile(path.join(dist, 'servicios/squai-one.html'), 'utf8').catch(() => {
     throw new Error('Falta dist/servicios/squai-one.html: ejecuta pnpm build antes de pnpm test:dist');
   });
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((match) => match[1]!);
-  const graph = blocks.flatMap((block) => {
+  graph = blocks.flatMap((block) => {
     const data = JSON.parse(block);
     return data['@graph'] ?? [data];
   });
-  course = graph.find((node) => node['@type'] === 'Course');
+  course = graph.find((node) => node['@type'] === 'Course')!;
 });
 
 describe('hero y datos clave de Squai One', () => {
@@ -48,5 +49,10 @@ describe('hero y datos clave de Squai One', () => {
     expect(course.timeRequired).toBe('PT20H');
     const serialized = JSON.stringify(course);
     expect(serialized).not.toMatch(/price|offers|startDate|endDate|\d{4}-\d{2}-\d{2}/i);
+  });
+
+  it('no afirma direcciones, resenas ni precios en ningun nodo del JSON-LD de la pagina', () => {
+    const serialized = JSON.stringify(graph);
+    expect(serialized).not.toMatch(/PostalAddress|streetAddress|"address"|"review"|aggregateRating|"offers"|"price"|priceCurrency/i);
   });
 });

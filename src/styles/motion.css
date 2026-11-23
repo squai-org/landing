@@ -1,6 +1,7 @@
 .ambient { --ambient-state: paused; }
 .ambient.is-visible { --ambient-state: running; }
 html[data-motion='paused'] .ambient { --ambient-state: paused !important; }
+html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scroll-label) { animation-play-state: paused; }
 
 .reveal[data-reveal-kind='tilt'] { --reveal-y: 28px; --reveal-rotate: -3deg; --reveal-duration: .65s; }
 .reveal[data-reveal-kind='pop'] { --reveal-y: 12px; --reveal-scale: .9; --reveal-duration: .5s; }
@@ -145,6 +146,7 @@ html[data-motion='paused'] .ambient { --ambient-state: paused !important; }
   cursor: pointer;
 }
 .motion-toggle[hidden] { display: none; }
+:root:has(.motion-toggle:not([hidden])) { --float-clearance: 76px; }
 .motion-toggle:hover { background: var(--surface); }
 .motion-toggle-play { display: none; }
 html[data-motion='paused'] .motion-toggle-play { display: block; }
