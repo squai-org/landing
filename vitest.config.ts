@@ -35,6 +35,13 @@ export default defineConfig({
           include: ['test/build/**/*.test.ts'],
         },
       },
+      {
+        test: {
+          name: 'dist',
+          environment: 'node',
+          include: ['test/page/**/*.test.ts'],
+        },
+      },
     ],
   },
 });
