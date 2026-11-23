@@ -229,6 +229,7 @@
     ]
   },
   "marquee": {
+    "title": "Fecha, horario y datos del programa",
     "lineA": [
       { "cohort": "dates" },
       { "cohort": "schedule" }

@@ -982,6 +982,11 @@ content:
             label: false
             type: object
             fields:
+              - name: title
+                label: Nombre accesible de la franja
+                description: Lo lee el lector de pantalla; no se ve.
+                type: string
+                required: true
               - name: lineA
                 label: Cinta superior
                 type: object

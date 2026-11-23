@@ -87,7 +87,7 @@ const syllabus = z.object({
 const outcomes = z.object({ title: text, lead: text, pills: z.array(text).min(1) });
 const marqueeItem = z.object({ text: optional(text), cohort: z.enum(['', 'dates', 'schedule']).default('') })
   .refine((item) => Boolean(item.text || item.cohort), 'Provide text or a cohort');
-const marquee = z.object({ lineA: z.array(marqueeItem).min(1), lineB: z.array(text).min(1) });
+const marquee = z.object({ title: text, lineA: z.array(marqueeItem).min(1), lineB: z.array(text).min(1) });
 const mentorProfile = z.object({ name: text, badge: text, quote: text });
 const teamStat = z.object({ value: text, label: text });
 const youtubeUrl =text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
