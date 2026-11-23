@@ -162,6 +162,12 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
   .one-hero-tag-note { right: 80%; top: 20%; rotate: -4deg; }
   .one-hero-tag-sticker { right: 76%; top: 46%; rotate: 3deg; }
 
+  @media (max-width: 639px) {
+    .one-hero-stage { container-type: size; }
+    .one-hero-tag-note { max-width: min(calc(var(--u) * 150), calc(88cqw - 56.2cqh - 8px)); }
+    .one-hero-tag-sticker { max-width: min(calc(var(--u) * 150), calc(88cqw - 53.4cqh - 8px)); }
+  }
+
   @media (min-width: 640px) {
     .one-hero-tag { max-width: none; white-space: nowrap; }
     .one-hero-tag-note {

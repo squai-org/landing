@@ -155,3 +155,13 @@ describe('una sola definicion de los tokens de landing-design', () => {
     expect(redefining).toEqual([]);
   });
 });
+
+describe('etiquetas del hero en movil', () => {
+  const hero = read('src/components/OneHero.astro');
+
+  it('limitan su ancho para que el texto no salga por la izquierda de la pantalla', () => {
+    expect(hero).toMatch(/@media \(max-width: 639px\) \{[^@]*container-type: size/);
+    expect(hero).toMatch(/\.one-hero-tag-note \{ max-width: min\(/);
+    expect(hero).toMatch(/\.one-hero-tag-sticker \{ max-width: min\(/);
+  });
+});
