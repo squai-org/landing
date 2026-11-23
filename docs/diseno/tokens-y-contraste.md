@@ -86,10 +86,17 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Flecha del botón oscuro | `--gold-9` | `--midnight` | 11.90 | 3 |
 | base | Botón blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
 | base | Botón de pausa de animaciones | `--midnight` | `--canvas` | 18.02 | 4.5 |
-| base | Equipo y testimonios: texto sobre la sección dorada | `--ink` | `--gold-9` | 11.90 | 4.5 |
-| base | Equipo y testimonios: texto sobre tarjeta suave | `--ink` | `--accent-soft` | 15.47 | 4.5 |
+| base | Equipo: texto sobre la sección dorada | `--ink` | `--gold-9` | 11.90 | 4.5 |
+| base | Equipo: texto sobre tarjeta suave | `--ink` | `--accent-soft` | 15.47 | 4.5 |
 | base | Equipo: cargo sobre tarjeta suave | `--ink-muted` | `--accent-soft` | 4.61 | 4.5 |
-| base | Testimonios: texto sobre tarjeta fuerte | `--ink` | `--accent-soft-strong` | 13.76 | 4.5 |
+| base | Testimonios: título sobre la sección | `--midnight` | `--periwinkle-5` | 12.11 | 4.5 |
+| base | Testimonios: lead sobre la sección | `--neutral-12` | `--periwinkle-5` | 10.26 | 4.5 |
+| base | Testimonios: cita y nombre en tarjeta | `--midnight` | `--surface` | 19.44 | 4.5 |
+| base | Testimonios: contexto en tarjeta | `--neutral-11` | `--surface` | 7.10 | 4.5 |
+| base | Testimonios: cita y nombre en tarjeta | `--midnight` | `--gold-3` | 17.24 | 4.5 |
+| base | Testimonios: contexto en tarjeta | `--neutral-11` | `--gold-3` | 6.30 | 4.5 |
+| base | Testimonios: cita y nombre en tarjeta | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
+| base | Testimonios: contexto en tarjeta | `--neutral-11` | `--periwinkle-2` | 6.26 | 4.5 |
 | base | Franja dorada animada (marquee) | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Franja oscura animada (marquee) | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |

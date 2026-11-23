@@ -110,3 +110,31 @@ describe('union entre Mentores y Testimonios', () => {
     expect(/\.one-team \{[^}]*padding: var\(--section-py\) var\(--gutter\) calc\(var\(--section-py\) \+ var\(--edge-r\)\);/.test(team)).toBe(true);
   });
 });
+
+describe('Testimonios', () => {
+  const source = read('src/components/OneTestimonials.astro');
+  const css = styleOf(source);
+  const doc = read('docs/diseno/tokens-y-contraste.md');
+
+  it('la seccion es Periwinkle 5 (#c3c9fc) y el lead pasa a Neutral 12 para cumplir AA sobre ella', () => {
+    expect(read('src/styles/global.css')).toContain('--periwinkle-5: #c3c9fc;');
+    expect(/\.one-quotes \{[^}]*background: var\(--periwinkle-5\);/.test(css)).toBe(true);
+    expect(/\.one-quotes-lead \{[^}]*color: var\(--neutral-12\);/.test(css)).toBe(true);
+  });
+
+  it('las tarjetas son blanca, crema Gold 3 y Periwinkle 2, con su contraste documentado', () => {
+    expect(source).toContain("bg: 'var(--surface)'");
+    expect(source).toContain("bg: 'var(--gold-3)'");
+    expect(source).toContain("bg: 'var(--periwinkle-2)'");
+    for (const card of ['--surface', '--gold-3', '--periwinkle-2']) {
+      expect(doc).toContain(`| base | Testimonios: cita y nombre en tarjeta | \`--midnight\` | \`${card}\` |`);
+      expect(doc).toContain(`| base | Testimonios: contexto en tarjeta | \`--neutral-11\` | \`${card}\` |`);
+    }
+  });
+
+  it('los bloques de esquina entran al pasar sobre la tarjeta con la misma regla que Sesiones y Datos clave', () => {
+    expect(source).toMatch(/<li class="one-quote-item one-card-host"/);
+    expect(source).toMatch(/<OneCornerBlocks preset=\{style\.preset\} color=\{style\.block\} hoverOnly \/>/);
+    expect(css).not.toMatch(/one-corner-blocks|@keyframes/);
+  });
+});

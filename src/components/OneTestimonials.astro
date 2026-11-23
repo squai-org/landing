@@ -12,9 +12,9 @@ interface Props {
 const { title, lead, quotes } = Astro.props;
 
 const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: number; tilt: string }[] = [
-  { bg: '#fff', block: 'var(--periwinkle-9)', preset: 'mod-2', rest: -2, tilt: '-1.6deg' },
-  { bg: 'var(--periwinkle-2)', block: 'var(--gold-9)', preset: 'mod-3', rest: 1.5, tilt: '1.2deg' },
-  { bg: 'var(--periwinkle-4)', block: 'var(--periwinkle-11)', preset: 'mod-4', rest: 2.2, tilt: '1.8deg' },
+  { bg: 'var(--surface)', block: 'var(--periwinkle-9)', preset: 'mod-2', rest: -2, tilt: '-1.6deg' },
+  { bg: 'var(--gold-3)', block: 'var(--gold-9)', preset: 'mod-3', rest: 1.5, tilt: '1.2deg' },
+  { bg: 'var(--periwinkle-2)', block: 'var(--periwinkle-11)', preset: 'mod-4', rest: 2.2, tilt: '1.8deg' },
 ];
 ---
 
@@ -30,9 +30,9 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
         quotes.map((quote, index) => {
           const style = cardStyles[index % cardStyles.length]!;
           return (
-            <li class="one-quote-item" data-quote-enter={index} data-enter-rotate={style.rest * 1.8}>
+            <li class="one-quote-item one-card-host" data-quote-enter={index} data-enter-rotate={style.rest * 1.8}>
               <div class="one-quote-tilt" style={`--tilt:${style.tilt}`}>
-                <OneCornerBlocks preset={style.preset} color={style.block} />
+                <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
                 <figure class="one-quote-card" style={`--card-bg:${style.bg}`}>
                   <blockquote class="one-quote-text">
                     <p>“{quote.text}”</p>
@@ -74,7 +74,7 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
     margin-top: calc(var(--edge-r) * -1);
     padding: var(--section-py) var(--gutter);
     border-radius: var(--edge-r);
-    background: var(--gold-2);
+    background: var(--periwinkle-5);
     color: var(--midnight);
   }
   .one-quotes-content { position: relative; z-index: 10; max-width: calc(var(--u) * 1520); margin-inline: auto; }
@@ -87,7 +87,7 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
     text-align: center;
   }
   .one-quotes-heading h2 { color: var(--midnight); }
-  .one-quotes-lead { max-width: calc(var(--u) * 760); margin-inline: auto; color: var(--neutral-11); }
+  .one-quotes-lead { max-width: calc(var(--u) * 760); margin-inline: auto; color: var(--neutral-12); }
   .one-quotes-list {
     display: grid;
     grid-template-columns: 1fr;
