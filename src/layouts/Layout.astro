@@ -82,7 +82,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
   const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
 
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   initMotion();
 
@@ -96,7 +96,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (!el) return;
     const topPadding = parseFloat(getComputedStyle(el).paddingTop) || 0;
     const target = el.getBoundingClientRect().top + window.scrollY + topPadding - navOffset();
-    if (prefersReducedMotion || instant) {
+    if (prefersReducedMotion() || instant) {
       window.scrollTo(0, target);
       return;
     }

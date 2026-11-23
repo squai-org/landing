@@ -53,6 +53,10 @@ export function prefersReducedMotion(): boolean {
   return window.matchMedia(reducedMotionQuery).matches;
 }
 
+export function onReducedMotionChange(listener: (reduced: boolean) => void): void {
+  window.matchMedia(reducedMotionQuery).addEventListener('change', (event) => listener(event.matches));
+}
+
 export function motionPaused(): boolean {
   return document.documentElement.dataset.motion === 'paused';
 }
@@ -80,13 +84,17 @@ export function hoverPress(
   element: HTMLElement,
   { hover: hoverTarget, press: pressTarget }: { hover?: DOMKeyframesDefinition; press?: DOMKeyframesDefinition }
 ): void {
-  if (prefersReducedMotion()) return;
   let hovered = false;
   const rest = restingState({ ...(hoverTarget ?? {}), ...(pressTarget ?? {}) } as DOMKeyframesDefinition);
   const settle = () => {
+    if (prefersReducedMotion()) return;
     const target = { ...rest, ...(hovered && hoverTarget ? hoverTarget : {}) } as DOMKeyframesDefinition;
     animate(element, target, gestureTransition(target));
   };
+
+  onReducedMotionChange((reduced) => {
+    if (reduced) animate(element, rest, { duration: 0 });
+  });
 
   if (hoverTarget && window.matchMedia(finePointerQuery).matches) {
     hover(element, () => {
@@ -101,7 +109,7 @@ export function hoverPress(
 
   if (pressTarget) {
     press(element, () => {
-      animate(element, pressTarget, gestureTransition(pressTarget));
+      if (!prefersReducedMotion()) animate(element, pressTarget, gestureTransition(pressTarget));
       return () => settle();
     });
   }
@@ -115,11 +123,20 @@ export function revealOnView(
   amount = 0.15
 ): void {
   if (prefersReducedMotion()) return;
+  let revealed = false;
   animate(element, from, { duration: 0 });
+  onReducedMotionChange((reduced) => {
+    if (reduced && !revealed) {
+      revealed = true;
+      animate(element, to, { duration: 0 });
+    }
+  });
   inView(
     element,
     () => {
-      animate(element, to, transition);
+      if (revealed) return;
+      revealed = true;
+      animate(element, to, prefersReducedMotion() ? { duration: 0 } : transition);
     },
     { amount }
   );
@@ -136,8 +153,10 @@ export function scrollRange(
   [from, to]: [number, number],
   apply: (value: number) => void
 ): void {
-  if (prefersReducedMotion()) return;
-  scroll((progress: number) => apply(from + (to - from) * progress), { target, offset: [...scrollOffsets[offset]] });
+  scroll((progress: number) => apply(prefersReducedMotion() ? from : from + (to - from) * progress), {
+    target,
+    offset: [...scrollOffsets[offset]],
+  });
 }
 
 export function flagWhileInView(elements: HTMLElement[], flag: string): void {
