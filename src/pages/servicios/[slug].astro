@@ -9,6 +9,8 @@ import ServiceBento from '../../components/ServiceBento.astro';
 import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
 import AudienceFit from '../../components/AudienceFit.astro';
+import OneOutcomes from '../../components/OneOutcomes.astro';
+import OneMarquee from '../../components/OneMarquee.astro';
 import HowItWorks from '../../components/HowItWorks.astro';
 import Syllabus from '../../components/Syllabus.astro';
 import Checkout from '../../components/Checkout.astro';
@@ -88,6 +90,8 @@ const schemas = [
 
   {service.audienceFit && <AudienceFit fit={service.audienceFit} cta={service.cta} />}
 
+  {service.outcomes && <OneOutcomes outcomes={service.outcomes} />}
+
   {service.howItWorks && <HowItWorks flow={service.howItWorks} cta={service.cta} />}
 
   <div class="content-shell content-shell-joined">
@@ -100,7 +104,9 @@ const schemas = [
 
   </div>
 
-  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} cta={service.cta} />}
+  {service.marquee && service.hero && <OneMarquee marquee={service.marquee} hero={service.hero} />}
+
+  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} cta={service.cta} profiles={service.team.mentors} stats={service.team.stats} />}
 
   {service.testimonials && <OneTestimonials title={service.testimonials.title} lead={service.testimonials.lead} quotes={service.testimonials.quotes} />}
 
