@@ -186,7 +186,8 @@ export const siteSchema = z.object({
   ui: z.object({
     navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text, menuLabel: text, closeLabel: text }),
     motion: z.object({ pause: text, resume: text }),
-    whatsapp: z.object({ label: text, message: text }),
+    whatsapp: z.object({ label: text, message: text, panel: z.object({ dialogLabel: text, title: text, subtitle: text, close: text, topics: z.array(z.object({ label: text, message: text })).min(1).max(5) }).optional() }),
+    scrollTop: z.object({ label: text }).optional(),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
     services: z.object({ payback: text }),
     team: z.object({ intro: paragraphs, memberAlt: text.refine((value) => value.includes('{name}') && value.includes('{role}'), 'Include {name} and {role}') }),

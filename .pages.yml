@@ -1855,6 +1855,46 @@ content:
                         label: Mensaje precargado en el chat
                         type: string
                         required: true
+                      - name: panel
+                        label: Panel de temas rápidos
+                        type: object
+                        fields:
+                          - name: dialogLabel
+                            label: Nombre accesible del panel
+                            type: string
+                          - name: title
+                            label: Título del panel
+                            type: string
+                          - name: subtitle
+                            label: Subtítulo del panel
+                            type: string
+                          - name: close
+                            label: Nombre accesible del botón para cerrar el panel
+                            type: string
+                          - name: topics
+                            label: Temas (entre 1 y 5)
+                            type: object
+                            list:
+                              min: 1
+                              max: 5
+                              collapsible:
+                                summary: '{label}'
+                            fields:
+                              - name: label
+                                label: Texto del tema
+                                type: string
+                                required: true
+                              - name: message
+                                label: Mensaje precargado en el chat
+                                type: string
+                                required: true
+                  - name: scrollTop
+                    label: Botón de volver arriba
+                    type: object
+                    fields:
+                      - name: label
+                        label: Nombre accesible del botón
+                        type: string
                   - name: skip
                     label: Enlace "Saltar al contenido"
                     type: string
