@@ -1,8 +1,10 @@
+import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const dist = path.join(import.meta.dirname, '../../dist');
+const root = path.join(import.meta.dirname, '../..');
 
 const sectionOf = (html: string, id: string) => {
   const start = html.indexOf(`<section id="${id}"`);
@@ -13,6 +15,13 @@ const sectionOf = (html: string, id: string) => {
 const count = (fragment: string, pattern: RegExp) => fragment.match(pattern)?.length ?? 0;
 
 const classed = (name: string) => new RegExp(`class="(?:[^"]* )?${name}(?: [^"]*)?"`, 'g');
+
+const publishedCss = async () => {
+  const page = await readFile(path.join(dist, 'servicios/squai-one.html'), 'utf8');
+  const files = await readdir(path.join(dist, '_astro'));
+  const sheets = await Promise.all(files.filter((file) => file.endsWith('.css')).map((file) => readFile(path.join(dist, '_astro', file), 'utf8')));
+  return [page, ...sheets].join('\n');
+};
 
 describe('Squai One: presentacion', () => {
   let page = '';
@@ -58,6 +67,45 @@ describe('Squai One: presentacion', () => {
   it('el fondo es la forma que respira de las secciones nuevas', () => {
     expect(count(section, /data-one-backdrop/g)).toBe(1);
     expect(section).not.toMatch(/class="backdrop\b/);
+  });
+
+  it('la figura usa el reproductor con interrogacion del paso 3 de Como funciona, el mismo archivo', async () => {
+    const figure = section.slice(section.indexOf('<figure'), section.indexOf('</figure>'));
+    const step = sectionOf(page, 'como-funciona');
+
+    expect(figure).toMatch(/<img[^>]*class="video-poster"[^>]*src="\/illustrations\/pasos\/paso-4\.svg"/);
+    expect(step).toContain('src="/illustrations/pasos/paso-4.svg"');
+    const shared = await readFile(path.join(root, 'public/illustrations/pasos/paso-4.svg'), 'utf8');
+    expect(existsSync(path.join(root, 'src/assets/illustrations/presentacion-video.svg'))).toBe(false);
+    expect(shared).toContain('viewBox="-60 -145 1400 1365"');
+  });
+
+  it('dos personajes decorativos rodean la tarjeta, sin texto alternativo y servidos desde el sitio', () => {
+    const peeps = [...section.matchAll(/<img[^>]*class="video-peep[^"]*"[^>]*>/g)].map((match) => match[0]);
+
+    expect(peeps).toHaveLength(2);
+    const sources = peeps.map((tag) => /src="([^"]+)"/.exec(tag)?.[1]);
+    expect(sources).toEqual(['/illustrations/peeps/peep-standing-14.svg', '/illustrations/peeps/peep-standing-30.svg']);
+    peeps.forEach((tag) => {
+      expect(tag).toMatch(/\balt=""/);
+      expect(tag).toMatch(/aria-hidden="true"/);
+    });
+  });
+
+  it('los personajes miran al lado contrario del dibujo original', async () => {
+    const css = await publishedCss();
+
+    expect(css).toMatch(/\.video-peep[^{]*\{[^}]*scale:\s*-1 1|\.video-peep[^{]*\{[^}]*scaleX\(-1\)/);
+  });
+
+  it('los archivos de los personajes existen y estan en los creditos con su licencia', async () => {
+    const credits = await readFile(path.join(root, 'CREDITOS.md'), 'utf8');
+
+    for (const name of ['peep-standing-14.svg', 'peep-standing-30.svg']) {
+      expect((await readFile(path.join(root, 'public/illustrations/peeps', name), 'utf8')).startsWith('<svg')).toBe(true);
+      expect(credits).toContain(`public/illustrations/peeps/${name}`);
+    }
+    expect(credits).toMatch(/CC0/);
   });
 
   it('sin URL de YouTube muestra la ilustracion con texto alternativo y no el boton de reproducir', () => {

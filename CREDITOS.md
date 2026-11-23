@@ -4,12 +4,15 @@
 
 Personajes: [Open Peeps](https://www.openpeeps.com/) de Pablo Stanley, licencia CC0 (dominio público), tomados del paquete `react-peeps` (MIT). Los objetos de cada escena se dibujaron con el mismo trazo para Squai.
 
+Los dos personajes de `public/illustrations/peeps/` son `peep-standing-14` y `peep-standing-30` de Open Peeps, descargados de `cdn.prod.website-files.com/5e51c674258ffe10d286d30a/` (5e5361e9f3aa4be48230418f_peep-standing-14.svg y 5e53665cc67e79756a9d2d1a_peep-standing-30.svg) sin cambios de dibujo; solo se les quitó el comentario del generador y la descripción. Licencia CC0 según los resultados de búsqueda de openpeeps.com; no se pudo abrir esa web directamente (sin resolución DNS desde el entorno), así que conviene confirmarla allí.
+
 | Archivo | Uso |
 | --- | --- |
 | `public/illustrations/pasos/paso-2.svg`, `paso-3.svg`, `paso-4.svg` | Cómo funciona |
 | `public/illustrations/incluye/incluye-4.svg`, `src/assets/one/incluye/incluye-1.svg` a `incluye-4.svg` | Datos clave |
 | `public/illustrations/sesiones/sesion-1.svg`, 4, 5, 6, 7, 8 | Temario (un módulo cada una) |
-| `src/assets/illustrations/presentacion-video.svg` | Presentación en video |
+| `public/illustrations/pasos/paso-4.svg` | Cómo funciona (paso 3) y reproductor de la Presentación en video (recortado con CSS, sin copia) |
+| `public/illustrations/peeps/peep-standing-14.svg`, `public/illustrations/peeps/peep-standing-30.svg` | Personajes que rodean el video de la Presentación, invertidos en horizontal con CSS |
 | `public/images/shape-*.svg` | Formas decorativas de las secciones |
 
 ## Fotografías

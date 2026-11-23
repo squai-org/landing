@@ -1,7 +1,6 @@
 ---
 import Button from './Button.astro';
 import OneBackdrop from './OneBackdrop.astro';
-import presentation from '../assets/illustrations/presentacion-video.svg';
 import { youtubeEmbedUrl, youtubeVideoId } from '../lib/youtube';
 import type { Service } from '../lib/content';
 import '../styles/one-sections.css';
@@ -13,6 +12,8 @@ interface Props {
 const { video } = Astro.props;
 const videoId = video.url ? youtubeVideoId(video.url) : undefined;
 const embedUrl = videoId ? youtubeEmbedUrl(videoId) : undefined;
+const playerArt = '/illustrations/pasos/paso-4.svg';
+const peeps = ['/illustrations/peeps/peep-standing-14.svg', '/illustrations/peeps/peep-standing-30.svg'] as const;
 const mediaNote = embedUrl ? video.mediaNoteReady : video.mediaNote;
 ---
 
@@ -48,44 +49,50 @@ const mediaNote = embedUrl ? video.mediaNoteReady : video.mediaNote;
     </div>
 
     <div class="video-figure-col">
-      <figure class="video-card" data-video-figure>
-        <div class="video-frame" data-video-frame>
-          <img
-            class="video-poster"
-            src={presentation.src}
-            width={presentation.width}
-            height={presentation.height}
-            alt={video.posterAlt}
-            loading="lazy"
-            decoding="async"
-          />
+      <div class="video-stage">
+        <img class="video-peep video-peep--left" src={peeps[0]} alt="" width="256" height="687" loading="lazy" decoding="async" aria-hidden="true" draggable="false" />
+        <figure class="video-card" data-video-figure>
+          <div class="video-frame" data-video-frame>
+            <div class="video-poster-crop">
+              <img
+                class="video-poster"
+                src={playerArt}
+                width="1400"
+                height="1365"
+                alt={video.posterAlt}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            {
+              embedUrl && (
+                <button
+                  type="button"
+                  class="video-play"
+                  data-video-play
+                  data-embed-url={embedUrl}
+                  data-video-title={video.iframeTitle}
+                  aria-label={`${video.playLabel}: ${video.iframeTitle}`}
+                >
+                  <span class="video-play-pill" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"></path></svg>
+                    {video.playLabel}
+                  </span>
+                </button>
+              )
+            }
+          </div>
           {
-            embedUrl && (
-              <button
-                type="button"
-                class="video-play"
-                data-video-play
-                data-embed-url={embedUrl}
-                data-video-title={video.iframeTitle}
-                aria-label={`${video.playLabel}: ${video.iframeTitle}`}
-              >
-                <span class="video-play-pill" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"></path></svg>
-                  {video.playLabel}
-                </span>
-              </button>
+            (video.mediaTitle || mediaNote) && (
+              <figcaption class="video-caption">
+                {video.mediaTitle && <span class="one-h3 video-media-title">{video.mediaTitle}</span>}
+                {mediaNote && <span class="one-hand video-media-note">{mediaNote}</span>}
+              </figcaption>
             )
           }
-        </div>
-        {
-          (video.mediaTitle || mediaNote) && (
-            <figcaption class="video-caption">
-              {video.mediaTitle && <span class="one-h3 video-media-title">{video.mediaTitle}</span>}
-              {mediaNote && <span class="one-hand video-media-note">{mediaNote}</span>}
-            </figcaption>
-          )
-        }
-      </figure>
+        </figure>
+        <img class="video-peep video-peep--right" src={peeps[1]} alt="" width="213" height="701" loading="lazy" decoding="async" aria-hidden="true" draggable="false" />
+      </div>
     </div>
   </div>
 </section>
@@ -182,10 +189,31 @@ const mediaNote = embedUrl ? video.mediaNoteReady : video.mediaNote;
     font-weight: 700;
     letter-spacing: -0.03em;
   }
-  .video-figure-col { display: flex; justify-content: center; }
+  .video-figure-col { display: flex; justify-content: center; container-type: inline-size; }
+  .video-stage {
+    --peep-w: clamp(48px, 17cqw, 190px);
+    display: grid;
+    grid-template-columns: var(--peep-w) minmax(0, 1fr) var(--peep-w);
+    align-items: end;
+    width: 100%;
+    max-width: calc(var(--u) * 900);
+  }
+  .video-peep {
+    display: block;
+    width: var(--peep-w);
+    height: auto;
+    scale: -1 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .video-peep--left { grid-column: 1; grid-row: 1; z-index: 2; margin-right: calc(var(--peep-w) * -0.4); }
+  .video-peep--right { grid-column: 3; grid-row: 1; z-index: 2; margin-left: calc(var(--peep-w) * -0.4); }
   .video-card {
+    grid-column: 2;
+    grid-row: 1;
     width: 100%;
     max-width: calc(var(--u) * 760);
+    justify-self: center;
     margin: 0;
     padding: calc(var(--u) * 20);
     border-radius: calc(var(--u) * 48);
@@ -201,12 +229,24 @@ const mediaNote = embedUrl ? video.mediaNoteReady : video.mediaNote;
     background: var(--periwinkle-4);
   }
   .video-frame:has(iframe) { background: var(--midnight); }
+  .video-poster-crop {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 78%;
+    aspect-ratio: 497 / 450;
+    overflow: hidden;
+    translate: -50% -50%;
+  }
   .video-poster {
+    position: absolute;
+    top: -27.3%;
+    left: -174.7%;
     display: block;
-    width: 100%;
-    height: 100%;
-    padding: clamp(4px, 1vw, 12px);
-    object-fit: contain;
+    width: 281.7%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 1400 / 1365;
   }
   .video-frame :global(iframe) {
     position: absolute;
@@ -252,7 +292,7 @@ const mediaNote = embedUrl ? video.mediaNoteReady : video.mediaNote;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: calc(var(--u) * 20) calc(var(--u) * 12) calc(var(--u) * 8);
+    padding: calc(var(--u) * 20) calc(var(--u) * 12 + var(--peep-w) * 0.5) calc(var(--u) * 8);
   }
   .video-media-title { color: var(--midnight); }
   .video-media-note { color: var(--periwinkle-11); }
