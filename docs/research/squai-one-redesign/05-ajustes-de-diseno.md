@@ -29,6 +29,23 @@ Fuente del diseño: `src/components/*.tsx`, `src/index.css`, `src/theme/` y `src
 | Temario | Se quitó la lista de seis módulos y el cierre lila "Vas a desarrollar la habilidad..." de debajo del carrusel. Campos fuera de contenido, schema y `.pages.yml`: `syllabus.outcome`. La descripción de cada módulo (`syllabus.modules[].d`) ya no se muestra y quedó opcional. |
 | Es para ti | Se quitaron las tarjetas "No es para ti si…" y "Lo que necesitas" y el texto "Puedes empezar sin haber usado la IA antes". Campos fuera: `audienceFit.closing`, `audienceFit.notFor` y `audienceFit.needs`. |
 | Botones flotantes | Contenedor fijo `.float-dock` con Pausar animaciones primero y volver arriba después; el botón de pausa se activa en toda página con independencia de los elementos ambientales. |
-| Pie | Vuelve `--accent-deep` (superficie del servicio) y la barra legal usa `--accent-deep-bar` (paso 11), un tono más claro que el cuerpo. |
+| Pie | Vuelve `--accent-deep` (superficie del servicio) y la barra legal usa `--accent-deep-bar` (paso 11), un tono más claro que el cuerpo. Revertido en la ronda 5: color fijo en todas las páginas. |
 | Mentores | El nombre no rompe de línea: su cuerpo se ajusta al ancho de la cabecera con unidades de contenedor, sin pasar del tamaño del diseño. |
 | Presentación | Reproductor con interrogación de `public/illustrations/pasos/paso-4.svg` (el mismo archivo, recortado con CSS) y dos personajes Open Peeps (CC0) invertidos en horizontal. |
+
+## Ajustes del dueño tras la ronda 4 (2026-11-23)
+
+Instrucciones explícitas del dueño; mandan sobre `landing-design` donde difieren. Medido con Chrome headless sobre `astro build` servido con `docs/scripts/serve-dist.mjs`, a 375, 768, 1024, 1440 y 1920 px.
+
+| Tema | Resultado |
+|---|---|
+| Sesiones: hueco bajo el lead | Las flechas ya no ocupan una fila propia (en `landing-design` sí la ocupan) y el carrusel sube `--books-header-pb` sobre la cabecera. Desde 992 px las flechas van arriba a la derecha, a la altura del final del lead; por debajo, en el margen inferior del carrusel, a la derecha, porque arriba solo hay 22 px. A 1920 px el hueco entre el lead y la primera tarjeta pasa de 230 a 78 px; queda el margen que necesitan las tarjetas al inclinarse y subir. |
+| Sesiones: CTA | Se quitó "Inscribirme al programa" bajo el carrusel. El enlace de cada tarjeta y los demás CTA del sitio siguen. |
+| Header: alturas | Logo, píldoras del menú, "Conoce Squai" y redes miden `--pill-h` y quedan en la misma línea: 29,9 px a 1024, 37,3 a 1280, 42 a 1440 y 56 a 1920. Las redes son círculos de `--pill-h` (antes `--social`, 48u). El logo escala con la píldora en la proporción que tenía (46 px de cuerpo en 62 px de alto): a 1024 px el wordmark baja a 22 px de cuerpo. En móvil la píldora del logo mide 44 px, como el botón de menú. Los `li` del menú pasan a flex desde 1024 px: el hueco de línea bajaba las píldoras unos 4 px respecto al logo. |
+| Pie | Cuerpo Midnight (`#0A0C1A`) y barra legal P12 (`#303163`) en todas las páginas, con los tokens fijos `--footer-bg`, `--footer-bar`, `--on-footer` y `--on-footer-muted`. Se quitaron `--accent-deep-bar`, `--on-deep` y `--on-deep-muted` de los temas. Texto 18,02:1 y secundario 13,76:1 sobre Midnight; texto 11,16:1 y hover Gold 7,36:1 sobre P12 (los enlaces legales recuperan el hover Gold). |
+| Presentación: personajes | Altura común de 4,2 veces `--peep-w`: 1,4 veces la media de las dos alturas anteriores (2,68 y 3,29), así que la de la izquierda crece un 56 % y la de la derecha un 28 %. Cada personaje se mete el 40 % de su ancho sobre el borde de la tarjeta, para que la tarjeta no se estreche en móvil, y el pie de la tarjeta reserva ese hueco y parte con guion las palabras largas. Sin solapes con texto ni desbordes de 375 a 1920 px. |
+| Formulario | La forma de fondo es `#e1e4fd` (P3) opaca. |
+| Pausar animaciones | Sin borde; se separa del fondo con la misma sombra que volver arriba. El foco por teclado sigue siendo el contorno global. |
+| Mentores y Testimonios | Testimonios sube `--edge-r` (antes 2,5/4/6 rem, menos que el radio) y Mentores suma `--edge-r` a su padding inferior: detrás de las esquinas asoma el dorado. Se revisaron las ocho esquinas curvas de la página: en todas asoma el fondo de la sección vecina. Presentación, Mentores y la base de Qué vas a lograr y Testimonios tienen vecinos blancos y se ven igual que el fondo de la página. |
+| Testimonios | Fondo P5 (`#c3c9fc`). Tarjetas blanca, Gold 3 y P2 (cita 19,44, 17,24 y 17,14:1; contexto 7,10, 6,30 y 6,26:1). El lead pasa a Neutral 12 (10,26:1): Neutral 11 daba 4,43:1. Los bloques de esquina entran al pasar el mouse o con foco con la misma regla que Datos clave (`hoverOnly` y `.one-card-host`: opacidad 0,22 s y escala de 0,58 a 1 en 0,36 s); en táctil quedan ocultos, como en Datos clave y Sesiones. |
+
