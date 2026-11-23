@@ -21,3 +21,14 @@ Fuente del diseño: `src/components/*.tsx`, `src/index.css`, `src/theme/` y `src
 - **Fotos de Pexels:** se usan todas las del diseño, descargadas al repo (la CSP no permite cargarlas de otro origen). La única que se sustituye es la de la sección de video, que va con ilustración.
 - **Testimonios:** se cargan los del diseño como contenido inicial; el dueño los cambiará desde el CMS.
 - **Formulario:** composición del diseño ajustada a los campos de producción.
+
+## Ajustes del dueño tras la ronda 3 (2026-11-23)
+
+| Tema | Resultado |
+|---|---|
+| Temario | Se quitó la lista de seis módulos y el cierre lila "Vas a desarrollar la habilidad..." de debajo del carrusel. Campos fuera de contenido, schema y `.pages.yml`: `syllabus.outcome`. La descripción de cada módulo (`syllabus.modules[].d`) ya no se muestra y quedó opcional. |
+| Es para ti | Se quitaron las tarjetas "No es para ti si…" y "Lo que necesitas" y el texto "Puedes empezar sin haber usado la IA antes". Campos fuera: `audienceFit.closing`, `audienceFit.notFor` y `audienceFit.needs`. |
+| Botones flotantes | Contenedor fijo `.float-dock` con Pausar animaciones primero y volver arriba después; el botón de pausa se activa en toda página con independencia de los elementos ambientales. |
+| Pie | Vuelve `--accent-deep` (superficie del servicio) y la barra legal usa `--accent-deep-bar` (paso 11), un tono más claro que el cuerpo. |
+| Mentores | El nombre no rompe de línea: su cuerpo se ajusta al ancho de la cabecera con unidades de contenedor, sin pasar del tamaño del diseño. |
+| Presentación | Reproductor con interrogación de `public/illustrations/pasos/paso-4.svg` (el mismo archivo, recortado con CSS) y dos personajes Open Peeps (CC0) invertidos en horizontal. |

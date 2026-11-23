@@ -131,7 +131,7 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
   bottom: 12px;
   z-index: 60;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 12px;
 }
 @media (min-width: 768px) {
