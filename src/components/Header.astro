@@ -155,15 +155,19 @@ const pagePills = serviceNav
     </nav>
 
     <div class="site-header-social">
-      {
-        serviceNav && (
-          <a href="/" class="pill-button company-pill">
-            <span class="pill-button-bg" aria-hidden="true"></span>
-            <span class="pill-button-label"><span data-split-text>{serviceNav.companyLabel}</span></span>
-          </a>
-        )
-      }
-      <SocialLinks />
+      <ul class="site-header-list">
+        {
+          serviceNav && (
+            <li>
+              <a href="/" class="pill-button company-pill">
+                <span class="pill-button-bg" aria-hidden="true"></span>
+                <span class="pill-button-label"><span data-split-text>{serviceNav.companyLabel}</span></span>
+              </a>
+            </li>
+          )
+        }
+        <li class="site-header-socials"><SocialLinks /></li>
+      </ul>
     </div>
   </div>
 </header>
@@ -185,7 +189,7 @@ const pagePills = serviceNav
   }
   .site-header-row > * { pointer-events: auto; }
 
-  .header-brand { position: relative; z-index: 2; flex-shrink: 0; }
+  .header-brand { position: relative; z-index: 2; }
   .logo-pill {
     --wordmark-color: var(--midnight);
     padding: 8px 16px;
@@ -280,15 +284,23 @@ const pagePills = serviceNav
 
   .site-header-social {
     display: flex;
-    flex-shrink: 0;
     align-items: center;
     justify-content: flex-end;
-    gap: 8px;
     transition:
       translate .3s var(--ease-smooth),
       opacity .3s var(--ease-smooth),
       visibility .3s;
   }
+  .site-header-list {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .site-header-socials { display: flex; align-items: center; }
   .site-header[data-scrolled='true'] .site-header-social {
     translate: 0 -96px;
     opacity: 0;
@@ -296,20 +308,21 @@ const pagePills = serviceNav
     pointer-events: none;
   }
 
-  .company-pill { height: var(--social); }
-
-  @media (min-width: 1280px) {
+  @media (min-width: 1024px) {
     .header-brand,
-    .site-header-social { width: 240px; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .nav-services-chevron, .services-submenu, .site-header-social { transition: none; }
+    .site-header-social { flex: 0 1 240px; }
   }
 
   @media (min-width: 1024px) and (max-width: 1279px) {
     .site-nav-list { gap: 8px; }
-    .site-header-social { display: none; }
+  }
+
+  @media (min-width: 1280px) {
+    .site-header-social { min-width: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-services-chevron, .services-submenu, .site-header-social { transition: none; }
   }
 
   @media (max-width: 1023px) {
