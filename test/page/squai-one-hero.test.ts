@@ -17,7 +17,7 @@ beforeAll(async () => {
     const data = JSON.parse(block);
     return data['@graph'] ?? [data];
   });
-  course = graph.find((node) => node['@type'] === 'Course');
+  course = graph.find((node) => node['@type'] === 'Course')!;
 });
 
 describe('hero y datos clave de Squai One', () => {
