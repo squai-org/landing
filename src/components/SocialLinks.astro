@@ -1,11 +1,18 @@
 ---
 import { getSiteContent } from '../lib/content';
 
+interface Props {
+  surface?: 'canvas' | 'white';
+}
+
+const { surface = 'canvas' } = Astro.props;
 const { socials, ui } = await getSiteContent();
 
 const ICONS: Record<string, string> = {
+  Instagram:
+    'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6Zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
   LinkedIn:
-    'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21.4 8.65 22 11 22 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21h-4V9Z',
+    'M6.94 8.5H3.56V19.5H6.94V8.5ZM5.25 3.5C4.14 3.5 3.25 4.39 3.25 5.5C3.25 6.6 4.14 7.5 5.25 7.5C6.35 7.5 7.25 6.6 7.25 5.5C7.25 4.39 6.35 3.5 5.25 3.5ZM20.44 13.02C20.44 9.88 18.76 8.21 16.16 8.21C14.37 8.21 13.48 9.19 13.02 9.93V8.5H9.65C9.7 9.48 9.65 19.5 9.65 19.5H13.02V13.36C13.02 13.02 13.05 12.69 13.15 12.45C13.42 11.78 14.03 11.09 15.07 11.09C16.41 11.09 17.06 12.11 17.06 13.61V19.5H20.44V13.02Z',
 };
 
 const links = socials.filter((social) => social.href && ICONS[social.name]);
@@ -13,12 +20,13 @@ const links = socials.filter((social) => social.href && ICONS[social.name]);
 
 {
   links.length > 0 && (
-    <ul class="social-links" aria-label={ui.follow.title}>
+    <ul class:list={['social-links', `social-links-${surface}`]} aria-label={ui.follow.title}>
       {links.map((social) => (
         <li>
           <a class="social-button" href={social.href} aria-label={social.name} target="_blank" rel="noopener noreferrer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d={ICONS[social.name]} />
+            <span class="social-button-bg" aria-hidden="true"></span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d={ICONS[social.name]} fill="currentColor" />
             </svg>
           </a>
         </li>
@@ -29,4 +37,5 @@ const links = socials.filter((social) => social.href && ICONS[social.name]);
 
 <style>
   .social-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .social-links-white { --social-bg: var(--surface); }
 </style>

@@ -330,5 +330,14 @@
   "faqIntro": {
     "lead": "Lo que más nos preguntan antes de inscribirse, con respuestas cortas.",
     "categoriesLabel": "Categorías"
+  },
+  "nav": {
+    "items": [
+      { "label": "El programa", "target": "datos-clave" },
+      { "label": "Sesiones", "target": "temario" },
+      { "label": "Quiénes enseñan", "target": "equipo-one" },
+      { "label": "Preguntas", "target": "faq" }
+    ],
+    "companyLabel": "Conoce Squai"
   }
 }

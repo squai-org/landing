@@ -294,21 +294,25 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   }
 
   const navSectionLinks = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-section]'));
-  if (location.pathname === '/' && navSectionLinks.length && 'IntersectionObserver' in window) {
+  const pageSections = navSectionLinks.filter((link) => {
+    const href = link.getAttribute('href') ?? '';
+    return href.startsWith('#') || (location.pathname === '/' && href.startsWith('/#'));
+  });
+  if (pageSections.length && 'IntersectionObserver' in window) {
     const currentSectionObserver = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (!visible) return;
-        navSectionLinks.forEach((link) => {
+        pageSections.forEach((link) => {
           if (link.dataset.navSection === visible.target.id) link.setAttribute('aria-current', 'location');
           else link.removeAttribute('aria-current');
         });
       },
-      { rootMargin: '-25% 0px -60% 0px', threshold: [0, .25, .5] }
+      { rootMargin: '-18% 0px -55% 0px', threshold: [0.1, 0.35, 0.6] }
     );
-    navSectionLinks.forEach((link) => {
+    pageSections.forEach((link) => {
       const section = document.getElementById(link.dataset.navSection || '');
       if (section) currentSectionObserver.observe(section);
     });

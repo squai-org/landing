@@ -68,7 +68,8 @@
         "resume": "Reanudar animaciones"
       },
       "footer": {
-        "copyright": "© 2026 Squai · Todos los derechos reservados"
+        "copyright": "© 2026 Squai · Todos los derechos reservados",
+        "whatsapp": "Escribirle al equipo Squai"
       },
       "follow": {
         "title": "Síguenos"
@@ -409,7 +410,7 @@
       "legalName": "Squai S.A.S.",
       "nit": "902.071.792",
       "address": "[DIRECCION PENDIENTE]",
-      "phone": "[TELEFONO PENDIENTE]",
+      "phone": "+57 314 380 2400",
       "contact": "team@squai.io"
     },
     "legal": {
@@ -907,6 +908,10 @@
     },
     "tagline": "Aprende IA. Potencia tus habilidades.",
     "socials": [
+      {
+        "name": "Instagram",
+        "href": "https://www.instagram.com/heysquai/"
+      },
       {
         "name": "LinkedIn",
         "href": "https://www.linkedin.com/company/heysquai"
