@@ -1100,6 +1100,10 @@ content:
                 label: Título de la lista de categorías
                 type: string
                 required: true
+              - name: allLabel
+                label: Texto del filtro que muestra todas las preguntas
+                type: string
+                required: false
           - name: faqs
             label: Preguntas
             type: object
