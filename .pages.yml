@@ -787,43 +787,6 @@ content:
                     label: Descripción
                     type: text
                     required: true
-              - name: closing
-                label: Cierre de los perfiles
-                type: text
-                required: true
-              - name: notFor
-                label: No es para ti
-                type: object
-                required: true
-                fields:
-                  - name: title
-                    label: Título
-                    type: string
-                    required: true
-                  - name: body
-                    label: Texto
-                    type: text
-                    required: true
-              - name: needs
-                label: Lo que necesitas
-                type: object
-                required: true
-                fields:
-                  - name: title
-                    label: Título
-                    type: string
-                    required: true
-                  - name: items
-                    label: Requisitos
-                    type: string
-                    required: true
-                    list:
-                      min: 1
-                      collapsible: false
-                  - name: note
-                    label: Nota
-                    type: text
-                    required: true
       - name: one-logros
         label: Qué vas a lograr
         description: Etiquetas manuscritas entre Para quién es y Cómo funciona.
@@ -955,22 +918,6 @@ content:
                 label: Etiqueta de la flecha siguiente
                 description: Opcional. Por defecto, "Ver sesiones siguientes".
                 type: string
-              - name: outcome
-                label: Qué te llevas
-                description: Cierre del temario, antes del botón de inscripción.
-                type: object
-                fields:
-                  - name: headline
-                    label: Titular
-                    type: string
-                    required: true
-                  - name: body
-                    label: Párrafos
-                    type: text
-                    required: true
-                    list:
-                      min: 1
-                      collapsible: true
               - name: modules
                 label: Módulos
                 type: object
@@ -987,7 +934,7 @@ content:
                   - name: d
                     label: Descripción
                     type: text
-                    required: true
+                    description: Opcional. Ya no se muestra en la página.
                   - name: topics
                     label: Temas
                     type: string

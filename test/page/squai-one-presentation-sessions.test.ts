@@ -127,10 +127,11 @@ describe('Squai One: sesiones en carrusel', () => {
     expect(new Set(sources).size).toBe(8);
   });
 
-  it('conserva los seis modulos con su descripcion y el cierre', () => {
-    expect(count(section, classed('syllabus-module'))).toBe(6);
-    expect(section).toContain('Entiendes cómo funciona la IA por dentro');
-    expect(section).toContain('Vas a desarrollar la habilidad de usar cualquier IA');
+  it('no repite los seis modulos ni el cierre bajo el carrusel y conserva el boton de inscripcion', () => {
+    expect(count(section, classed('syllabus-module'))).toBe(0);
+    expect(section).not.toContain('Entiendes cómo funciona la IA por dentro');
+    expect(section).not.toContain('syllabus-outcome');
+    expect(section).not.toContain('Vas a desarrollar la habilidad de usar cualquier IA');
     expect(section).toMatch(/<a[^>]*href="#inscripcion"[^>]*>[\s\S]*Inscribirme al programa/);
   });
 

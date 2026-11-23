@@ -82,21 +82,7 @@
         "t": "Te da curiosidad",
         "d": "Quieres aprovecharla, pero solo encuentras tutoriales confusos y promesas exageradas, y no sabes por dónde empezar."
       }
-    ],
-    "closing": "Puedes empezar sin haber usado la IA antes: arrancamos desde las bases.",
-    "notFor": {
-      "title": "No es para ti si…",
-      "body": "Buscas construir agentes de IA para hacerte rico rápido. Aquí aprendes a usar la IA con criterio en tu trabajo, y si no sirve para tu problema, te lo decimos."
-    },
-    "needs": {
-      "title": "Lo que necesitas",
-      "items": [
-        "Un computador",
-        "Conexión a internet",
-        "Una cuenta gratuita en Claude, ChatGPT o Gemini"
-      ],
-      "note": "Si todavía no tienes cuenta, te ayudamos a crearla en la primera sesión. Las versiones gratuitas tienen límites de uso y los tenemos en cuenta en las prácticas."
-    }
+    ]
   },
   "howItWorks": {
     "title": "Cómo funciona",
@@ -136,12 +122,6 @@
     "moduleLabel": "Módulo",
     "sessionLabel": "Sesión",
     "topicsLabel": "Lo que vemos",
-    "outcome": {
-      "headline": "Vas a desarrollar la habilidad de usar cualquier IA, la que está de moda hoy y la que salga mañana.",
-      "body": [
-        "Entiendes mejor por qué la IA responde como responde, practicas con diferentes casos de uso y aprendes una base que puedes llevar contigo aunque mañana aparezca otra herramienta con nombre nuevo."
-      ]
-    },
     "modules": [
       {
         "t": "Qué es la IA",

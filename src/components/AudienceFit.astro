@@ -98,8 +98,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
         {fit.profiles.map((profile, index) => <p class="one-lead one-fit-example" data-fit-example={index} hidden={index !== 0}>{profile.d}</p>)}
       </div>
 
-      <p class="one-lead one-fit-closing">{fit.closing}</p>
-
       <div class="one-fit-cta">
         {
           cta.modal ? (
@@ -109,20 +107,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
           )
         }
       </div>
-    </div>
-
-    <div class="one-fit-pair">
-      <section class="one-fit-card is-white" aria-labelledby="fit-not-title">
-        <h3 id="fit-not-title" class="one-h3">{fit.notFor.title}</h3>
-        <p class="one-body">{fit.notFor.body}</p>
-      </section>
-      <section class="one-fit-card is-gold" aria-labelledby="fit-needs-title">
-        <h3 id="fit-needs-title" class="one-h3">{fit.needs.title}</h3>
-        <ul class="one-fit-needs">
-          {fit.needs.items.map((item) => <li class="one-body">{item}</li>)}
-        </ul>
-        <p class="one-small">{fit.needs.note}</p>
-      </section>
     </div>
   </div>
 </section>
@@ -347,35 +331,9 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     margin: calc(var(--u) * 64) auto 0;
     text-align: center;
   }
-  .one-fit-example, .one-fit-closing { color: var(--periwinkle-4); }
+  .one-fit-example { color: var(--periwinkle-4); }
   .one-fit-cta { display: flex; justify-content: center; }
 
-  .one-fit-pair {
-    position: relative;
-    z-index: 20;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: calc(var(--u) * 36);
-    max-width: calc(var(--u) * 1520);
-    margin: calc(var(--u) * 64) auto 0;
-  }
-  .one-fit-card {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--u) * 16);
-    padding: max(28px, calc(var(--u) * 42)) max(24px, calc(var(--u) * 34));
-    border-radius: var(--card-r);
-    color: var(--midnight);
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  }
-  .one-fit-card.is-white { background: #fff; rotate: -1.6deg; }
-  .one-fit-card.is-gold { background: var(--gold-9); rotate: 1.2deg; }
-  .one-fit-card h3 { color: var(--midnight); }
-  .one-fit-needs { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; padding: 0 0 0 1.2em; }
-
-  @media (min-width: 768px) {
-    .one-fit-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
   @media (max-width: 991px) {
     .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(0.35rem); }
     .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-0.35rem); }

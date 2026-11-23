@@ -59,9 +59,6 @@ const audienceFit = z.object({
   title: text,
   handwritten: text,
   profiles: z.array(card).min(1),
-  closing: text,
-  notFor: z.object({ title: text, body: text }),
-  needs: z.object({ title: text, items: z.array(text).min(1), note: text }),
 });
 const howItWorks = z.object({
   title: text,
@@ -78,10 +75,9 @@ const syllabus = z.object({
   topicsLabel: text,
   prevLabel: text.default('Ver sesiones anteriores'),
   nextLabel: text.default('Ver sesiones siguientes'),
-  outcome: z.object({ headline: text, body: paragraphs }).optional(),
   modules: z.array(z.object({
     t: text,
-    d: text,
+    d: optional(text),
     topics: z.array(text).min(1),
     sessions: z.array(text).min(1),
     illustration: z.enum(moduleIllustrations),

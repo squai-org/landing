@@ -130,29 +130,6 @@ const slideStyles: SlideStyle[] = [
   </div>
 
   <div class="syllabus-extra">
-    <ol class="syllabus-modules">
-      {
-        syllabus.modules.map((module, index) => (
-          <li class="syllabus-module">
-            <p class="one-hand syllabus-module-number">{syllabus.moduleLabel} {index + 1}</p>
-            <h3 class="one-h3">{module.t}</h3>
-            <p class="one-small">{module.d}</p>
-          </li>
-        ))
-      }
-    </ol>
-
-    {
-      syllabus.outcome && (
-        <div class="syllabus-outcome">
-          <h3 class="one-h3 syllabus-outcome-title">{syllabus.outcome.headline}</h3>
-          <div class="syllabus-outcome-copy">
-            {syllabus.outcome.body.map((paragraph) => <p class="one-body">{paragraph}</p>)}
-          </div>
-        </div>
-      )
-    }
-
     <div class="syllabus-cta">
       {
         cta.modal ? (
@@ -490,44 +467,10 @@ const slideStyles: SlideStyle[] = [
     padding: 0 var(--gutter);
     gap: calc(var(--u) * 56);
   }
-  .syllabus-modules {
-    display: grid;
-    grid-template-columns: 1fr;
-    margin: 0;
-    padding: 0;
-    gap: calc(var(--u) * 20);
-    list-style: none;
-  }
-  .syllabus-module {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--u) * 10);
-    padding: calc(var(--u) * 28);
-    border-radius: var(--card-r);
-    background: var(--periwinkle-2);
-    color: var(--midnight);
-  }
-  .syllabus-module-number { color: var(--periwinkle-11); }
-  .syllabus-module p:last-child { color: var(--neutral-12); }
-  .syllabus-outcome {
-    display: grid;
-    padding: calc(var(--u) * 40);
-    gap: calc(var(--u) * 20);
-    border-radius: var(--card-r);
-    background: var(--periwinkle-4);
-    color: var(--midnight);
-  }
-  .syllabus-outcome-title { max-width: 28ch; font-size: calc(var(--fs-h3) * 1.4); }
-  .syllabus-outcome-copy { display: grid; max-width: 74ch; gap: calc(var(--u) * 14); }
-  .syllabus-outcome-copy p { color: var(--neutral-12); }
   .syllabus-cta { display: flex; }
 
-  @media (min-width: 768px) {
-    .syllabus-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
   @media (min-width: 992px) {
     .syllabus-arrows { padding-right: calc(var(--u) * 40); }
-    .syllabus-modules { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .session-slide-bg,
     .session-slide-body { min-height: calc(var(--u) * 660); }
     .session-slide-body { padding: calc(var(--u) * 32); }

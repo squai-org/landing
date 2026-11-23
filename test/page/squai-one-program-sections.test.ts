@@ -36,10 +36,10 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     }
   });
 
-  it('el temario tiene 6 modulos repartidos en 8 sesiones', () => {
+  it('el temario es el carrusel de 8 sesiones sin la lista de modulos', () => {
     const syllabus = sectionOf(page, 'temario');
 
-    expect(count(syllabus, classed('syllabus-module'))).toBe(6);
+    expect(count(syllabus, classed('syllabus-module'))).toBe(0);
     expect(count(syllabus, classed('syllabus-session'))).toBe(8);
     expect(syllabus).toMatch(/Seis módulos, ocho sesiones/);
   });
@@ -48,6 +48,17 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     const tags = [...sectionOf(page, 'temario').matchAll(/syllabus-session-tag[^>]*>Sesión (\d+)</g)].map((match) => Number(match[1]));
 
     expect(tags).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  });
+
+  it('Es para ti no lleva tarjetas de requisitos ni el cierre de bases', () => {
+    const fit = sectionOf(page, 'para-quien');
+
+    expect(fit).not.toContain('one-fit-pair');
+    expect(fit).not.toContain('one-fit-card');
+    expect(fit).not.toContain('No es para ti si');
+    expect(fit).not.toContain('Lo que necesitas');
+    expect(fit).not.toContain('Puedes empezar sin haber usado la IA antes');
+    expect(fit).toContain('Inscribirme al programa');
   });
 
   it('cuenta cuatro pasos y cada ilustracion lleva texto alternativo', () => {
