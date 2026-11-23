@@ -63,7 +63,7 @@ const stepStyles = [
 </section>
 
 <script>
-  import { enterOnView, scrollLinked } from '../lib/one-motion';
+  import { revealOnView, scrollRange, springs } from '../lib/motion';
 
   const deck = document.querySelector<HTMLElement>('[data-flow-deck]');
   if (deck) {
@@ -71,11 +71,12 @@ const stepStyles = [
     const rest = items.map((item) => ({ rotate: Number(item.dataset.restRotate), y: Number(item.dataset.restY) }));
 
     items.forEach((item, index) => {
-      enterOnView(item, {
-        from: { opacity: 0, y: 120, rotate: rest[index]!.rotate * 2 },
-        spring: { stiffness: 185, damping: 18 },
-        delay: index * 0.08,
-      });
+      revealOnView(
+        item,
+        { opacity: 0, y: 120, rotate: rest[index]!.rotate * 2 },
+        { opacity: 1, y: 0, rotate: 0 },
+        { ...springs.flowCard, delay: index * 0.08 }
+      );
     });
 
     const paint = (hovered: number | null) => {
@@ -91,17 +92,9 @@ const stepStyles = [
     items.forEach((item, index) => item.addEventListener('mouseenter', () => paint(index)));
     deck.addEventListener('mouseleave', () => paint(null));
 
-    scrollLinked([
-      {
-        target: deck.closest('section') ?? deck,
-        offset: 'start-end',
-        from: 32,
-        to: -32,
-        apply: (value) => {
-          deck.style.transform = `translateY(${value.toFixed(2)}px)`;
-        },
-      },
-    ]);
+    scrollRange(deck.closest('section') ?? deck, 'start-end', [32, -32], (value) => {
+      deck.style.transform = `translateY(${value.toFixed(2)}px)`;
+    });
   }
 </script>
 

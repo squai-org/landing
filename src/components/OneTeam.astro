@@ -89,14 +89,15 @@ const cardStyles = [
 }
 
 <script>
-  import { enterOnView } from '../lib/one-motion';
+  import { revealOnView, springs } from '../lib/motion';
 
   document.querySelectorAll<HTMLElement>('[data-mentor-enter]').forEach((card) => {
-    enterOnView(card, {
-      from: { opacity: 0, y: 40, rotate: Number(card.dataset.enterRotate) },
-      spring: { stiffness: 195, damping: 18 },
-      delay: Number(card.dataset.mentorEnter) * 0.1,
-    });
+    revealOnView(
+      card,
+      { opacity: 0, y: 40, rotate: Number(card.dataset.enterRotate) },
+      { opacity: 1, y: 0, rotate: 0 },
+      { ...springs.mentorCard, delay: Number(card.dataset.mentorEnter) * 0.1 }
+    );
   });
 </script>
 

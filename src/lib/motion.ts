@@ -1,5 +1,9 @@
-import { animate, hover, inView, press } from 'motion';
+import { animate, hover, inView, press, scroll } from 'motion';
 import type { AnimationOptions, DOMKeyframesDefinition } from 'motion';
+
+type ScrollOffset = NonNullable<NonNullable<Parameters<typeof scroll>[1]>['offset']>;
+
+export { animate };
 
 type Bezier = [number, number, number, number];
 
@@ -34,6 +38,7 @@ export const tweens = {
   formCardReveal: { duration: 0.4, delay: 0.08, ease: easing.smooth },
   faqItem: { duration: 0.36, ease: easing.smooth },
   faqPanel: { duration: 0.28, ease: easing.smooth },
+  audienceExample: { duration: 0.18 },
 } as const satisfies Record<string, AnimationOptions>;
 
 export const gestures = {
@@ -117,6 +122,35 @@ export function revealOnView(
       animate(element, to, transition);
     },
     { amount }
+  );
+}
+
+const scrollOffsets = {
+  'start-end': ['start end', 'end start'],
+  'start-start': ['start start', 'end start'],
+} as const satisfies Record<string, ScrollOffset>;
+
+export function scrollRange(
+  target: Element,
+  offset: keyof typeof scrollOffsets,
+  [from, to]: [number, number],
+  apply: (value: number) => void
+): void {
+  if (prefersReducedMotion()) return;
+  scroll((progress: number) => apply(from + (to - from) * progress), { target, offset: [...scrollOffsets[offset]] });
+}
+
+export function flagWhileInView(elements: HTMLElement[], flag: string): void {
+  if (elements.length === 0) return;
+  inView(
+    elements,
+    (element) => {
+      (element as HTMLElement).dataset[flag] = 'on';
+      return () => {
+        (element as HTMLElement).dataset[flag] = 'off';
+      };
+    },
+    { margin: '10% 0px 10% 0px' }
   );
 }
 

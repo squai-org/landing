@@ -1,5 +1,4 @@
 .one-u {
-  --u: calc(100vw / 402);
   --fs-h1: calc(var(--u) * 52);
   --fs-h2: calc(var(--u) * 40);
   --fs-h3: calc(var(--u) * 30);
@@ -9,14 +8,7 @@
   --fs-small: max(16px, calc(var(--u) * 16));
   --fs-hand: max(16px, calc(var(--u) * 24));
   --fs-tag: max(14px, calc(var(--u) * 16));
-  --btn-h: max(44px, calc(var(--u) * 48));
   --tag-r: calc(var(--u) * 24);
-  --card-r: calc(var(--u) * 32);
-  --band-r: calc(var(--u) * 32);
-  --edge-r: calc(var(--u) * 40);
-  --band-inset: calc(var(--u) * 16);
-  --gutter: calc(var(--u) * 16);
-  --section-py: calc(var(--u) * 70);
   --input-h: max(44px, calc(var(--u) * 51));
   --input-r: calc(var(--u) * 13.5);
   --input-fs: max(16px, calc(var(--u) * 18));
@@ -28,26 +20,20 @@
   --hero-gap-cta: calc(var(--u) * 16);
   --hero-p-fs: max(16px, calc(var(--u) * 18));
   --hero-p-w: 100%;
-  --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.57, 0.64, 1);
-  --button-alt-ease-bounce: cubic-bezier(0.34, 2.27, 0.64, 1);
 }
 
 @media (min-width: 768px) {
   .one-u {
-    --u: calc(100vw / 834);
     --fs-h1: calc(var(--u) * 96);
     --hero-title-w: calc(var(--u) * 740);
     --hero-p-w: calc(var(--u) * 315);
     --input-h: calc(var(--u) * 58);
     --input-px: calc(var(--u) * 19);
-    --gutter: calc(var(--u) * 24);
   }
 }
 
 @media (min-width: 992px) {
   .one-u {
-    --u: calc(100vw / 1920);
     --fs-h1: calc(var(--u) * 160);
     --fs-h2: calc(var(--u) * 104);
     --fs-h3: calc(var(--u) * 40);
@@ -56,12 +42,6 @@
     --fs-body: max(16px, calc(var(--u) * 24));
     --fs-small: max(16px, calc(var(--u) * 20));
     --fs-hand: max(16px, calc(var(--u) * 32));
-    --btn-h: calc(var(--u) * 56);
-    --band-r: calc(var(--u) * 160);
-    --edge-r: calc(var(--u) * 160);
-    --band-inset: calc(var(--u) * 24);
-    --gutter: calc(var(--u) * 40);
-    --section-py: calc(var(--u) * 140);
     --input-h: calc(var(--u) * 80);
     --input-r: calc(var(--u) * 25);
     --input-fs: max(16px, calc(var(--u) * 25));
@@ -70,7 +50,6 @@
     --hero-title-top: calc(var(--u) * 240);
     --hero-title-w: calc(var(--u) * 1232);
     --hero-gap-title: calc(var(--u) * 32);
-    --hero-gap-cta: calc(var(--u) * 16);
     --hero-p-fs: max(16px, calc(var(--u) * 24));
     --hero-p-w: calc(var(--u) * 421);
   }

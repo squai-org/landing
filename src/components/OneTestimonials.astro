@@ -52,15 +52,16 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
 </section>
 
 <script>
-  import { enterOnView } from '../lib/one-motion';
+  import { revealOnView, springs } from '../lib/motion';
 
   document.querySelectorAll<HTMLElement>('[data-quote-enter]').forEach((item) => {
-    enterOnView(item, {
-      from: { opacity: 0, y: 40, rotate: Number(item.dataset.enterRotate) },
-      spring: { stiffness: 195, damping: 18 },
-      delay: Number(item.dataset.quoteEnter) * 0.08,
-      amount: 0.2,
-    });
+    revealOnView(
+      item,
+      { opacity: 0, y: 40, rotate: Number(item.dataset.enterRotate) },
+      { opacity: 1, y: 0, rotate: 0 },
+      { ...springs.testimonialCard, delay: Number(item.dataset.quoteEnter) * 0.08 },
+      0.2
+    );
   });
 </script>
 

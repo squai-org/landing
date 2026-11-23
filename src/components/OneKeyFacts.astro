@@ -135,10 +135,10 @@ const cards: Card[] = [
 </section>
 
 <script>
-  import { enterOnView } from '../lib/one-motion';
+  import { revealOnView, tweens } from '../lib/motion';
 
   document.querySelectorAll<HTMLElement>('.one-facts-item[data-one-enter]').forEach((item) => {
-    enterOnView(item, { from: { opacity: 0, y: 36 }, duration: 0.48, delay: Number(item.dataset.oneEnter) * 0.07 });
+    revealOnView(item, { opacity: 0, y: 36 }, { opacity: 1, y: 0 }, { ...tweens.includesCard, delay: Number(item.dataset.oneEnter) * 0.07 });
   });
 </script>
 
