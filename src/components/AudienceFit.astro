@@ -1,8 +1,16 @@
 ---
-import BackdropShape from './BackdropShape.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Button from './Button.astro';
-import CornerBlocks from './CornerBlocks.astro';
+import OneBackdrop from './OneBackdrop.astro';
 import type { Service } from '../lib/content';
+import teamTable from '../assets/one/para-ti/pexels-3184325.jpeg';
+import teamLead from '../assets/one/para-ti/pexels-3184405.jpeg';
+import charts from '../assets/one/para-ti/pexels-3184292.jpeg';
+import officeTalk from '../assets/one/para-ti/pexels-3182765.jpeg';
+import laptopDesk from '../assets/one/para-ti/pexels-4050315.jpeg';
+import colleagues from '../assets/one/para-ti/pexels-3153198.jpeg';
+import '../styles/one-sections.css';
 
 interface Props {
   fit: NonNullable<Service['audienceFit']>;
@@ -10,134 +18,370 @@ interface Props {
 }
 
 const { fit, cta } = Astro.props;
-const profileAngles = [-1.2, 0.9, -0.7];
+
+interface Photo {
+  src: ImageMetadata;
+  alt: string;
+  position: string;
+}
+
+const photoPairs: [Photo, Photo][] = [
+  [
+    { src: teamTable, alt: 'Equipo reunido alrededor de una mesa con portátiles', position: 'center' },
+    { src: teamLead, alt: 'Líder de equipo sonríe con su grupo trabajando detrás', position: 'right top' },
+  ],
+  [
+    { src: charts, alt: 'Manos revisan gráficas impresas sobre una mesa', position: 'center' },
+    { src: officeTalk, alt: 'Dos personas conversan de pie en una oficina', position: 'top' },
+  ],
+  [
+    { src: laptopDesk, alt: 'Persona trabaja en su portátil desde una mesa blanca, vista desde arriba', position: 'center' },
+    { src: colleagues, alt: 'Grupo de colegas se ríe frente a un portátil', position: 'top' },
+  ],
+];
+
+const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
 ---
 
-<section id="para-quien" class="section fit" data-surface="deep" aria-labelledby="fit-title">
-  <BackdropShape shape="benefits" class="fit-backdrop" />
-  <div class="shell fit-shell">
-    <header class="fit-header">
-      <h2 id="fit-title" class="display d-h1 fit-title" data-reveal="heading">{fit.title}</h2>
-      <p class="fit-handwritten" data-reveal="copy">{fit.handwritten}</p>
-    </header>
+<section id="para-quien" class="one-fit one-u" aria-labelledby="fit-title" data-fit>
+  <OneBackdrop shape="benefits" colors={['#5a5bb6', '#777ae3']} opacities={[0.35, 0.18]} flip="x" small />
 
-    <ul class="fit-profiles">
-      {
-        fit.profiles.map((profile, index) => (
-          <li class="corner-host" data-reveal="tilt" data-reveal-delay={index * 90}>
-            <CornerBlocks preset={index % 2 === 0 ? 'diagonal-a' : 'diagonal-b'} color="var(--gold-9)" hoverOnly />
-            <article class="fit-profile" style={`--tilt: ${profileAngles[index % profileAngles.length]}deg`}>
-              <h3 class="display d-h3">{profile.t}</h3>
-              <p class="body">{profile.d}</p>
-            </article>
-          </li>
-        ))
-      }
-    </ul>
-
-    <p class="lead fit-closing" data-reveal="copy">{fit.closing}</p>
-
-    <div class="fit-pair">
-      <section class="fit-card fit-not" aria-labelledby="fit-not-title" data-reveal="card">
-        <h3 id="fit-not-title" class="display d-h2">{fit.notFor.title}</h3>
-        <p class="lead">{fit.notFor.body}</p>
-      </section>
-      <section class="fit-card fit-needs" aria-labelledby="fit-needs-title" data-reveal="card" data-reveal-delay="90">
-        <h3 id="fit-needs-title" class="display d-h2">{fit.needs.title}</h3>
-        <ul class="fit-needs-list">
-          {fit.needs.items.map((item) => <li class="lead">{item}</li>)}
-        </ul>
-        <p class="body fit-needs-note">{fit.needs.note}</p>
-      </section>
+  <div class="one-fit-content">
+    <div class="one-fit-heading">
+      <h2 id="fit-title" class="one-h2">{fit.title}</h2>
+      <p class="one-hand one-fit-note">{fit.handwritten}</p>
     </div>
 
-    <div class="fit-cta">
-      {
-        cta.modal ? (
-          <Button variant="gold" arrow data-open-modal={cta.modal}>{cta.label}</Button>
-        ) : (
-          <Button variant="gold" arrow href={`#${cta.target}`}>{cta.label}</Button>
-        )
-      }
+    <div class="one-fit-stage">
+      <div class="one-fit-previews" aria-hidden="true">
+        {
+          [0, 1].map((side) => (
+            <div class:list={['one-fit-preview', side === 0 ? 'is-left' : 'is-right']} data-fit-preview={side}>
+              <div class="one-fit-photo">
+                {fit.profiles.map((_, index) => {
+                  const photo = pairFor(index)[side]!;
+                  return (
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      widths={[350, 700]}
+                      sizes="(min-width: 992px) 18vw, 50vw"
+                      loading="lazy"
+                      style={`object-position:${photo.position}`}
+                      data-fit-photo={index}
+                      hidden={index !== 0}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <ul class="one-fit-list" data-fit-list>
+        {
+          fit.profiles.map((profile, index) => (
+            <li class="one-fit-item" data-selected={index === 0 ? 'true' : 'false'}>
+              <button type="button" class="one-fit-button" data-fit-option={index} aria-pressed={index === 0 ? 'true' : 'false'} aria-controls="fit-example">
+                <span class="one-fit-label">{profile.t}</span>
+                <span class="one-fit-label-hover" aria-hidden="true">{profile.t}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="one-fit-bottom">
+      <div id="fit-example" aria-live="polite">
+        {fit.profiles.map((profile, index) => <p class="one-lead one-fit-example" data-fit-example={index} hidden={index !== 0}>{profile.d}</p>)}
+      </div>
+
+      <p class="one-lead one-fit-closing">{fit.closing}</p>
+
+      <div class="one-fit-cta">
+        {
+          cta.modal ? (
+            <Button variant="gold" arrow data-open-modal={cta.modal}>{cta.label}</Button>
+          ) : (
+            <Button variant="gold" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="one-fit-pair">
+      <section class="one-fit-card is-white" aria-labelledby="fit-not-title">
+        <h3 id="fit-not-title" class="one-h3">{fit.notFor.title}</h3>
+        <p class="one-body">{fit.notFor.body}</p>
+      </section>
+      <section class="one-fit-card is-gold" aria-labelledby="fit-needs-title">
+        <h3 id="fit-needs-title" class="one-h3">{fit.needs.title}</h3>
+        <ul class="one-fit-needs">
+          {fit.needs.items.map((item) => <li class="one-body">{item}</li>)}
+        </ul>
+        <p class="one-small">{fit.needs.note}</p>
+      </section>
     </div>
   </div>
 </section>
 
+<script>
+  import { easeSmooth, prefersReducedMotion, springTiming } from '../lib/one-motion';
+
+  const section = document.querySelector<HTMLElement>('[data-fit]');
+  if (section) {
+    const items = Array.from(section.querySelectorAll<HTMLElement>('.one-fit-item'));
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-fit-option]'));
+    const examples = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-example]'));
+    const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-preview]'));
+    const list = section.querySelector<HTMLElement>('[data-fit-list]');
+    const reduced = prefersReducedMotion();
+    const spring = springTiming({ stiffness: 240, damping: 22 });
+
+    previews.forEach((preview) => {
+      if (reduced) return;
+      preview.style.transition = `transform ${spring.duration}ms ${spring.easing}, opacity ${spring.duration}ms ${spring.easing}`;
+    });
+
+    let hovered: number | null = null;
+    let selected = 0;
+    let shownExample = 0;
+    let pointer = { x: 0, y: 0 };
+
+    const showExample = (next: number) => {
+      if (next === shownExample) return;
+      const current = examples[shownExample]!;
+      const incoming = examples[next]!;
+      shownExample = next;
+      const reveal = () => {
+        examples.forEach((example) => (example.hidden = example !== incoming));
+        if (!reduced) incoming.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 180, easing: easeSmooth });
+      };
+      if (reduced) {
+        reveal();
+        return;
+      }
+      current.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 180, easing: easeSmooth }).finished.then(() => {
+        if (shownExample === next) reveal();
+      });
+    };
+
+    const render = () => {
+      const active = hovered ?? selected;
+      const rowY = active * 54;
+      const isHovering = hovered !== null;
+      items.forEach((item, index) => {
+        item.dataset.selected = (hovered === index || (selected === index && !isHovering)) ? 'true' : 'false';
+      });
+      buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(selected === index)));
+      previews.forEach((preview, side) => {
+        const left = side === 0;
+        const scale = isHovering ? 1 : 0.88;
+        const rotate = left ? (isHovering ? -8 : -14) : (isHovering ? 7 : 13);
+        const x = left ? pointer.x * -0.7 : pointer.x * 0.85;
+        const y = left ? rowY * 0.5 + pointer.y * -0.5 : rowY * 0.5 + 32 + pointer.y * 0.65;
+        preview.style.opacity = String(isHovering ? 1 : 0.42);
+        preview.style.transform = `translateX(${x}px) translateY(${y}px) scale(${scale}) rotate(${rotate}deg)`;
+        preview.querySelectorAll<HTMLElement>('[data-fit-photo]').forEach((photo) => {
+          photo.hidden = Number(photo.dataset.fitPhoto) !== active;
+        });
+      });
+      showExample(active);
+    };
+
+    buttons.forEach((button, index) => {
+      button.addEventListener('mouseenter', () => {
+        hovered = index;
+        render();
+      });
+      button.addEventListener('focus', () => {
+        hovered = index;
+        render();
+      });
+      button.addEventListener('blur', () => {
+        hovered = null;
+        render();
+      });
+      button.addEventListener('click', () => {
+        selected = index;
+        render();
+      });
+    });
+    list?.addEventListener('mouseleave', () => {
+      hovered = null;
+      render();
+    });
+    section.addEventListener('mousemove', (event) => {
+      const rect = section.getBoundingClientRect();
+      pointer = {
+        x: ((event.clientX - rect.left) / rect.width - 0.5) * 28,
+        y: ((event.clientY - rect.top) / rect.height - 0.5) * 22,
+      };
+      render();
+    });
+    render();
+  }
+</script>
+
 <style>
-  .fit {
+  .one-fit {
     position: relative;
+    z-index: 10;
+    width: 100%;
     overflow: hidden;
-    background: var(--accent-deep);
-    color: var(--on-deep);
-    --shape-1: var(--periwinkle-11);
-    --shape-2: var(--periwinkle-10);
-    --shape-1-opacity: 0.5;
-    --shape-2-opacity: 0.3;
+    padding: var(--section-py) var(--gutter);
+    border-radius: var(--edge-r);
+    background: var(--periwinkle-12);
+    color: var(--canvas);
   }
-  .fit-shell { position: relative; z-index: 1; display: grid; gap: clamp(28px, 3.4vw, 56px); }
-  .fit-header { display: grid; gap: 14px; }
-  .fit-title { color: var(--on-deep); max-width: 14ch; }
-  .fit-handwritten {
-    margin: 0;
-    color: var(--gold-9);
-    font-family: var(--font-hand);
-    font-size: clamp(20px, 2vw, 30px);
-    line-height: 1.3;
-    rotate: -1.5deg;
-    transform-origin: left center;
+  .one-fit-content { position: relative; z-index: 10; margin-inline: auto; }
+  .one-fit-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--u) * 16);
+    max-width: calc(var(--u) * 1100);
+    margin: 0 auto calc(var(--u) * 64);
+    text-align: center;
   }
-  .fit-profiles {
-    display: grid;
-    margin: 0;
+  .one-fit-heading h2 { color: var(--canvas); }
+  .one-fit-note { display: inline-block; color: var(--gold-9); rotate: -1.5deg; }
+  .one-fit-stage { position: relative; max-width: calc(var(--u) * 1760); margin-inline: auto; }
+  .one-fit-previews { display: none; pointer-events: none; }
+  .one-fit-preview {
+    position: absolute;
+    z-index: 20;
+    width: calc(var(--u) * 333);
+    padding: calc(var(--u) * 13);
+    border-radius: calc(var(--u) * 37);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    opacity: 0.42;
+  }
+  .one-fit-preview.is-left { left: 0; top: 1rem; background: #fff; }
+  .one-fit-preview.is-right { right: 0; top: 2.5rem; background: var(--gold-9); }
+  .one-fit-photo {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: calc(var(--u) * 26);
+    background: var(--periwinkle-2);
+  }
+  .one-fit-photo :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .one-fit-list {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: calc(var(--u) * 1120);
+    margin: 0 auto;
     padding: 0;
-    grid-template-columns: 1fr;
-    gap: clamp(18px, 2vw, 28px);
     list-style: none;
+    text-align: center;
   }
-  .fit-profile {
+  .one-fit-item { width: 100%; padding: calc(var(--u) * 10) 0; }
+  .one-fit-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.25rem 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.45s var(--ease-smooth);
+  }
+  .one-fit-label {
+    font-family: var(--font-display);
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    line-height: 0.91;
+    letter-spacing: -0.04em;
+    color: var(--canvas);
+    -webkit-text-stroke: 0.02em currentColor;
+    paint-order: stroke fill;
+    text-wrap: balance;
+    will-change: transform, filter, opacity;
+    transition:
+      opacity 0.15s 0.05s var(--ease-smooth),
+      scale 0.35s var(--ease-bounce),
+      filter 0.25s 0.05s var(--ease-smooth);
+  }
+  .one-fit-label-hover {
+    position: absolute;
+    inset: 0;
     display: flex;
-    height: 100%;
-    padding: clamp(24px, 2.4vw, 40px);
-    flex-direction: column;
-    gap: 14px;
-    border-radius: var(--radius-xl);
-    background: var(--canvas);
-    color: var(--ink);
-    transition: rotate var(--duration-slow) var(--ease-overshoot);
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-hand);
+    font-size: calc(var(--fs-h2) * 0.8);
+    line-height: 1;
+    color: var(--gold-9);
+    opacity: 0;
+    scale: 0.75 1.25;
+    filter: blur(2px);
+    will-change: transform, filter, opacity;
+    transition:
+      opacity 0.15s 0.05s var(--ease-smooth),
+      scale 0.35s var(--ease-bounce),
+      filter 0.25s 0.05s var(--ease-smooth);
   }
-  .fit-profile .body { color: var(--ink-body); }
-  .corner-host:hover .fit-profile,
-  .corner-host:focus-within .fit-profile { rotate: var(--tilt); }
-  .fit-closing { max-width: 46ch; color: var(--on-deep); }
-  .fit-pair { display: grid; grid-template-columns: 1fr; gap: clamp(16px, 1.8vw, 24px); }
-  .fit-card {
+  .one-fit-item:hover .one-fit-label,
+  .one-fit-item[data-selected='true'] .one-fit-label { opacity: 0; scale: 0.75 1.25; filter: blur(2px); }
+  .one-fit-item:hover .one-fit-label-hover,
+  .one-fit-item[data-selected='true'] .one-fit-label-hover { opacity: 1; scale: 1 1; filter: blur(0); }
+  .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(0.35rem); }
+  .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-0.35rem); }
+
+  .one-fit-bottom {
+    position: relative;
+    z-index: 20;
     display: flex;
-    padding: clamp(24px, 2.6vw, 44px);
     flex-direction: column;
-    gap: 16px;
-    border-radius: var(--radius-xl);
-    color: var(--ink);
+    gap: calc(var(--u) * 24);
+    max-width: calc(var(--u) * 840);
+    margin: calc(var(--u) * 64) auto 0;
+    text-align: center;
   }
-  .fit-not { background: var(--gold-9); }
-  .fit-needs { background: var(--accent-soft); }
-  .fit-needs-list { display: grid; margin: 0; padding: 0; gap: 8px; list-style: none; }
-  .fit-needs-list li { display: flex; gap: 12px; align-items: baseline; font-weight: 700; }
-  .fit-needs-list li::before {
-    content: '';
-    width: 10px;
-    height: 10px;
-    flex: none;
-    border-radius: 3px;
-    background: var(--accent-ink);
-    rotate: 12deg;
+  .one-fit-example, .one-fit-closing { color: var(--periwinkle-4); }
+  .one-fit-cta { display: flex; justify-content: center; }
+
+  .one-fit-pair {
+    position: relative;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: calc(var(--u) * 36);
+    max-width: calc(var(--u) * 1520);
+    margin: calc(var(--u) * 64) auto 0;
   }
-  .fit-needs-note { color: var(--ink); }
-  .fit-cta { display: flex; }
+  .one-fit-card {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 16);
+    padding: max(28px, calc(var(--u) * 42)) max(24px, calc(var(--u) * 34));
+    border-radius: var(--card-r);
+    color: var(--midnight);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+  .one-fit-card.is-white { background: #fff; rotate: -1.6deg; }
+  .one-fit-card.is-gold { background: var(--gold-9); rotate: 1.2deg; }
+  .one-fit-card h3 { color: var(--midnight); }
+  .one-fit-needs { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; padding: 0 0 0 1.2em; }
 
   @media (min-width: 768px) {
-    .fit-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .one-fit-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (min-width: 960px) {
-    .fit-profiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (min-width: 992px) {
+    .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(1.5rem); }
+    .one-fit-item:hover + .one-fit-item + .one-fit-item .one-fit-button { transform: translateY(0.6rem); }
+    .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-1.5rem); }
+    .one-fit-item:has(+ .one-fit-item + .one-fit-item:hover) .one-fit-button { transform: translateY(-0.6rem); }
+  }
+  @media (min-width: 1024px) {
+    .one-fit-previews { display: block; }
   }
 </style>
