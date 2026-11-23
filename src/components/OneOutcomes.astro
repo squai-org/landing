@@ -38,23 +38,34 @@ const { outcomes } = Astro.props;
 </section>
 
 <script>
-  import { animate, inView, prefersReducedMotion, springs } from '../lib/motion';
+  import { animate, inView, onReducedMotionChange, prefersReducedMotion, springs } from '../lib/motion';
   import { kick, restingBody, settled, step, transformOf } from '../lib/momentum';
 
   const stage = document.querySelector<HTMLElement>('[data-outcomes-stage]');
 
-  if (stage && !prefersReducedMotion()) {
+  if (stage) {
     const pills = Array.from(stage.querySelectorAll<HTMLElement>('[data-outcome-pill]'));
-    const entryRotate = Math.round(Math.random() * 66 - 33);
+    let entered = prefersReducedMotion();
 
-    pills.forEach((pill) => animate(pill, { scale: 0, rotate: entryRotate }, { duration: 0 }));
-    inView(
-      stage,
-      () => {
-        pills.forEach((pill, index) => animate(pill, { scale: 1, rotate: 0 }, { ...springs.outcomeLabel, delay: index * 0.072 }));
-      },
-      { margin: '0px 0px -75% 0px' }
-    );
+    if (!entered) {
+      const entryRotate = Math.round(Math.random() * 66 - 33);
+      pills.forEach((pill) => animate(pill, { scale: 0, rotate: entryRotate }, { duration: 0 }));
+      inView(
+        stage,
+        () => {
+          if (entered) return;
+          entered = true;
+          pills.forEach((pill, index) => animate(pill, { scale: 1, rotate: 0 }, { ...springs.outcomeLabel, delay: index * 0.072 }));
+        },
+        { margin: '0px 0px -75% 0px' }
+      );
+    }
+
+    onReducedMotionChange((reduced) => {
+      if (!reduced || entered) return;
+      entered = true;
+      pills.forEach((pill) => animate(pill, { scale: 1, rotate: 0 }, { duration: 0 }));
+    });
 
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const pointer = { x: 0, y: 0, vx: 0, vy: 0 };
@@ -85,6 +96,7 @@ const { outcomes } = Astro.props;
         };
 
         label.addEventListener('mouseenter', (event) => {
+          if (prefersReducedMotion()) return;
           const rect = target.getBoundingClientRect();
           body = kick(body, pointer, {
             x: event.clientX - (rect.left + rect.width / 2),

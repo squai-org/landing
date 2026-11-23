@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const motion = vi.hoisted(() => ({
@@ -38,6 +40,7 @@ type MotionModule = {
   onReducedMotionChange: (listener: (reduced: boolean) => void) => void;
   scrollRange: (target: object, offset: 'start-end' | 'start-start', range: [number, number], apply: (value: number) => void) => void;
   revealOnView: (element: object, from: object, to: object, transition: object) => void;
+  hoverBetween: (element: object, states: { rest: object; hovered: object }, transition: object) => void;
   hoverPress: (element: object, targets: { hover?: object; press?: object }) => void;
 };
 
@@ -113,4 +116,45 @@ describe('movimiento reducido en vivo', () => {
     onPress();
     expect(motion.animate).not.toHaveBeenCalled();
   });
+  it('hoverBetween registra el gesto aunque la pagina abra con movimiento reducido y lo respeta al momento del hover', async () => {
+    preference.matches = true;
+    vi.stubGlobal('window', {
+      matchMedia: (query: string) => ({
+        get matches() {
+          return query.includes('prefers-reduced-motion') ? preference.matches : true;
+        },
+        addEventListener: (_type: string, listener: Listener) => preference.listeners.add(listener),
+        removeEventListener: (_type: string, listener: Listener) => preference.listeners.delete(listener),
+      }),
+    });
+    const { hoverBetween } = await loadMotion();
+    const element = {};
+    hoverBetween(element, { rest: { scale: 1 }, hovered: { scale: 1.02 } }, { duration: 0.3 });
+    expect(motion.hover).toHaveBeenCalledTimes(1);
+    const onHover = motion.hover.mock.calls[0]![1] as () => () => void;
+
+    motion.animate.mockClear();
+    onHover();
+    expect(motion.animate).not.toHaveBeenCalled();
+
+    setReducedMotion(false);
+    const leave = onHover();
+    expect(motion.animate).toHaveBeenCalledWith(element, { scale: 1.02 }, { duration: 0.3 });
+    leave();
+    expect(motion.animate).toHaveBeenLastCalledWith(element, { scale: 1 }, { duration: 0.3 });
+  });
+});
+
+describe('componentes que leen el movimiento reducido en vivo', () => {
+  const read = (file: string) => readFileSync(path.join(import.meta.dirname, '../..', file), 'utf8');
+
+  it.each(['src/components/AudienceFit.astro', 'src/components/Faq.astro', 'src/components/OneOutcomes.astro'])(
+    '%s se suscribe a onReducedMotionChange y no fija la preferencia una sola vez',
+    (file) => {
+      const source = read(file);
+      expect(source).toContain('onReducedMotionChange');
+      expect(source).not.toMatch(/const reduced = prefersReducedMotion\(\)/);
+      expect(source).not.toMatch(/if \(stage && !prefersReducedMotion\(\)\)/);
+    }
+  );
 });

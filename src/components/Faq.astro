@@ -154,11 +154,14 @@ const filters = grouped && intro
 </section>
 
 <script>
-  import { animate, prefersReducedMotion, revealOnView, tweens } from '../lib/motion';
+  import { animate, onReducedMotionChange, prefersReducedMotion, revealOnView, tweens } from '../lib/motion';
 
   const section = document.querySelector<HTMLElement>('[data-faq-section]');
   if (section) {
-    const reduced = prefersReducedMotion();
+    let reduced = prefersReducedMotion();
+    onReducedMotionChange((value) => {
+      reduced = value;
+    });
     const toggles = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-faq-toggle]'));
     const filters = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-faq-filter]'));
     const groups = Array.from(section.querySelectorAll<HTMLElement>('[data-faq-group]'));

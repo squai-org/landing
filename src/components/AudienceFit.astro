@@ -128,7 +128,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
 </section>
 
 <script>
-  import { animate, prefersReducedMotion, springs, tweens } from '../lib/motion';
+  import { animate, onReducedMotionChange, prefersReducedMotion, springs, tweens } from '../lib/motion';
 
   const section = document.querySelector<HTMLElement>('[data-fit]');
   if (section) {
@@ -137,7 +137,10 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     const examples = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-example]'));
     const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-preview]'));
     const list = section.querySelector<HTMLElement>('[data-fit-list]');
-    const reduced = prefersReducedMotion();
+    let reduced = prefersReducedMotion();
+    onReducedMotionChange((value) => {
+      reduced = value;
+    });
     let settled = false;
 
     let hovered: number | null = null;

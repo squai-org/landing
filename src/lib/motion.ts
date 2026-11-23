@@ -121,11 +121,12 @@ export function hoverBetween(
   { rest, hovered }: { rest: DOMKeyframesDefinition; hovered: DOMKeyframesDefinition },
   transition: AnimationOptions
 ): void {
-  if (prefersReducedMotion() || !window.matchMedia(finePointerQuery).matches) return;
+  if (!window.matchMedia(finePointerQuery).matches) return;
   hover(element, () => {
+    if (prefersReducedMotion()) return;
     animate(element, hovered, transition);
     return () => {
-      animate(element, rest, transition);
+      animate(element, rest, prefersReducedMotion() ? { duration: 0 } : transition);
     };
   });
 }
