@@ -140,7 +140,7 @@
   --on-deep: var(--canvas);
   --on-deep-muted: var(--periwinkle-4);
 
-  --focus-ink: var(--midnight);
+  --focus-ink: var(--periwinkle-11);
   --focus-halo: var(--canvas);
 
   --font-display: 'Familjen Grotesk', 'Helvetica Neue', Arial, sans-serif;
@@ -189,6 +189,30 @@
   --band-r: calc(var(--u) * 32);
   --edge-r: calc(var(--u) * 40);
   --band-inset: calc(var(--u) * 16);
+  --fs-badge: calc(var(--u) * 18);
+  --faq-r: calc(var(--u) * 16);
+  --faq-py: calc(var(--u) * 23);
+  --faq-px: calc(var(--u) * 20);
+  --frame-r: calc(var(--u) * 40);
+  --frame-b: calc(var(--u) * 8);
+  --hero-note-x: calc(var(--u) * 229);
+  --hero-note-y: calc(var(--u) * 114);
+  --hero-note-w: calc(var(--u) * 137);
+  --books-header-pt: calc(var(--u) * 72);
+  --books-header-pb: calc(var(--u) * 24);
+  --books-header-gap: calc(var(--u) * 12);
+  --books-pb: calc(var(--u) * 40);
+  --books-list-px: calc(var(--u) * 8);
+  --books-list-py: calc(var(--u) * 40);
+  --books-item-w: calc(var(--u) * 380);
+  --books-item-px: calc(var(--u) * 12);
+  --books-item-pad: calc(var(--u) * 28);
+  --books-item-gap: calc(var(--u) * 20);
+  --slider-btn: max(44px, calc(var(--u) * 56));
+  --fs-label: calc(var(--u) * 30);
+  --label-r: calc(var(--u) * 22);
+  --label-px: calc(var(--u) * 12);
+  --label-py: calc(var(--u) * 9);
   --header-pt: max(20px, calc(var(--u) * 32));
   --logo-fs: 46px;
   --footer-logo-fs: 38px;
@@ -220,6 +244,16 @@
   :root {
     --u: calc(100vw / 834);
     --gutter: calc(var(--u) * 24);
+    --fs-label: calc(var(--u) * 52);
+    --hero-note-x: calc(var(--u) * 629);
+    --hero-note-y: calc(var(--u) * 123);
+    --hero-note-w: calc(var(--u) * 138);
+    --label-r: calc(var(--u) * 40);
+    --label-px: calc(var(--u) * 20);
+    --label-py: calc(var(--u) * 12);
+    --fs-badge: calc(var(--u) * 32);
+    --books-item-w: calc(var(--u) * 401);
+    --books-item-px: calc(var(--u) * 16);
   }
 }
 
@@ -237,6 +271,30 @@
     --band-r: calc(var(--u) * 160);
     --edge-r: calc(var(--u) * 160);
     --band-inset: calc(var(--u) * 24);
+    --fs-badge: calc(var(--u) * 64);
+    --faq-r: calc(var(--u) * 24);
+    --faq-py: calc(var(--u) * 28.8);
+    --faq-px: calc(var(--u) * 32);
+    --frame-r: calc(var(--u) * 80);
+    --frame-b: calc(var(--u) * 16);
+    --hero-note-x: calc(var(--u) * 1693);
+    --hero-note-y: calc(var(--u) * 518);
+    --hero-note-w: calc(var(--u) * 153);
+    --books-header-pt: calc(var(--u) * 220);
+    --books-header-pb: calc(var(--u) * 80);
+    --books-header-gap: calc(var(--u) * 32);
+    --books-pb: calc(var(--u) * 125);
+    --books-list-px: calc(var(--u) * 16);
+    --books-list-py: calc(var(--u) * 56);
+    --books-item-w: calc(var(--u) * 420);
+    --books-item-px: calc(var(--u) * 24);
+    --books-item-pad: calc(var(--u) * 32);
+    --books-item-gap: calc(var(--u) * 20);
+    --slider-btn: calc(var(--u) * 72);
+    --fs-label: calc(var(--u) * 84);
+    --label-r: calc(var(--u) * 70);
+    --label-px: calc(var(--u) * 32);
+    --label-py: calc(var(--u) * 22);
   }
 }
 
@@ -264,6 +322,10 @@
   --on-deep-muted: var(--gold-5);
 }
 
+.one-hero-band {
+  --focus-ink: var(--midnight);
+}
+
 [data-surface='deep'] {
   --focus-ink: var(--canvas);
   --focus-halo: var(--midnight);
@@ -285,13 +347,18 @@
   .brand-shape { display: none; }
 }
 
+html {
+  background-color: #FFFFFF;
+  color: #0A0C1A;
+}
+
 body {
   margin: 0;
-  background: var(--canvas);
+  background: var(--surface);
   font-family: var(--font-body);
   font-weight: 400;
   line-height: 1.55;
-  color: var(--ink-body);
+  color: var(--midnight);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -303,9 +370,8 @@ a { color: var(--accent-ink); text-decoration: none; }
 a:hover { color: var(--accent-deep); }
 
 :focus-visible {
-  outline: 3px solid var(--focus-ink);
+  outline: 2px solid var(--focus-ink);
   outline-offset: 3px;
-  box-shadow: 0 0 0 3px var(--focus-halo);
 }
 :focus:not(:focus-visible) { outline: none; }
 

@@ -59,7 +59,7 @@ El pie es P12 (`--periwinkle-12`, `#303163`) en todas las páginas, con la barra
 
 ## Foco visible
 
-Regla global `:focus-visible` con dos tonos: contorno de 3 px `--focus-ink` (Midnight), separado 3 px del elemento y con un halo `--focus-halo` (Canvas) en ese hueco. El contorno contrasta con Canvas y con Periwinkle, y el halo contrasta con Midnight, así que el indicador supera 3:1 sobre cualquier fondo claro u oscuro. Sobre `data-surface="deep"` el contorno es Canvas y el halo Midnight. Los campos de formulario ya no suprimen el contorno.
+Regla global `:focus-visible` igual que `landing-design`: contorno de 2 px `--focus-ink` (Periwinkle 11, `#5a5bb6`) separado 3 px del elemento y sin halo. Sobre `data-surface="deep"` el contorno es Canvas y sobre el hero Periwinkle (`.one-hero-band`) es Midnight, porque Periwinkle 11 no llega a 3:1 contra Periwinkle 9 ni contra P12. Los campos de formulario ya no suprimen el contorno.
 
 ## Contraste
 
@@ -97,8 +97,8 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Pie: barra legal | `--periwinkle-4` | `--midnight` | 13.76 | 4.5 |
 | base | Pie: enlaces de la barra legal en hover | `--gold-9` | `--midnight` | 11.90 | 4.5 |
-| base | Foco: anillo sobre superficie clara | `--focus-ink` | `--canvas` | 18.02 | 3 |
-| base | Foco: anillo sobre Periwinkle (hero claro) | `--focus-ink` | `--periwinkle-9` | 6.77 | 3 |
+| base | Foco: anillo sobre superficie clara | `--focus-ink` | `--canvas` | 5.40 | 3 |
+| base | Foco: anillo Midnight sobre el hero Periwinkle | `--midnight` | `--periwinkle-9` | 6.77 | 3 |
 | base | Foco: halo sobre superficie oscura | `--canvas` | `--midnight` | 18.02 | 3 |
 | base | Texto del botón principal | `--on-accent` | `--accent` | 6.77 | 4.5 |
 | base | Enlaces y texto de acento sobre Canvas | `--accent-ink` | `--canvas` | 5.40 | 4.5 |

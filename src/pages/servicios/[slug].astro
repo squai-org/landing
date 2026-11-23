@@ -122,22 +122,23 @@ const schemas = [
     )
   }
 
-  <div class="content-shell content-shell-joined">
+  <div class="content-shell content-shell-joined content-shell-over-footer">
   <Faq items={service.faqs} intro={service.faqIntro} />
   </div>
   </main>
 
-  <Footer />
+  <Footer overlap />
   </div>
 
   <ContactModal />
 </Layout>
 
 <style>
-  .page-frame { background: var(--canvas); }
+  .page-frame { background: var(--surface); }
   .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
   .content-shell-joined { margin-top: clamp(16px, 1.6vw, 28px); }
   .content-shell-joined:empty { display: none; }
+  .content-shell-over-footer { position: relative; z-index: 20; }
   .service-contact-shell { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(20px, 2.4vw, 36px); }
   .service-contact-title { max-width: 22ch; color: var(--ink); }
   .service-contact-aside {

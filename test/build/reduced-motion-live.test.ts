@@ -34,7 +34,15 @@ const stubWindow = () => {
   vi.stubGlobal('document', { documentElement: { dataset: {} } });
 };
 
-const loadMotion = () => import('../../src/lib/motion');
+type MotionModule = {
+  onReducedMotionChange: (listener: (reduced: boolean) => void) => void;
+  scrollRange: (target: object, offset: 'start-end' | 'start-start', range: [number, number], apply: (value: number) => void) => void;
+  revealOnView: (element: object, from: object, to: object, transition: object) => void;
+  hoverPress: (element: object, targets: { hover?: object; press?: object }) => void;
+};
+
+const motionPath = '../../src/lib/motion';
+const loadMotion = () => import(motionPath) as Promise<MotionModule>;
 
 describe('movimiento reducido en vivo', () => {
   beforeEach(() => {
@@ -57,7 +65,7 @@ describe('movimiento reducido en vivo', () => {
   it('scrollRange deja de mover el valor cuando se activa el movimiento reducido', async () => {
     const { scrollRange } = await loadMotion();
     const applied: number[] = [];
-    scrollRange({} as Element, 'start-end', [10, 50], (value) => applied.push(value));
+    scrollRange({}, 'start-end', [10, 50], (value) => applied.push(value));
     const onScroll = motion.scroll.mock.calls[0]![0] as (progress: number) => void;
     onScroll(0.5);
     setReducedMotion(true);
@@ -69,7 +77,7 @@ describe('movimiento reducido en vivo', () => {
     preference.matches = true;
     const { scrollRange } = await loadMotion();
     const applied: number[] = [];
-    scrollRange({} as Element, 'start-end', [0, 40], (value) => applied.push(value));
+    scrollRange({}, 'start-end', [0, 40], (value) => applied.push(value));
     expect(motion.scroll).toHaveBeenCalledTimes(1);
     const onScroll = motion.scroll.mock.calls[0]![0] as (progress: number) => void;
     setReducedMotion(false);
@@ -79,7 +87,7 @@ describe('movimiento reducido en vivo', () => {
 
   it('revealOnView muestra de inmediato lo que aun estaba oculto al activar movimiento reducido', async () => {
     const { revealOnView } = await loadMotion();
-    const element = {} as Element;
+    const element = {};
     revealOnView(element, { opacity: 0 }, { opacity: 1 }, { duration: 0.4 });
     motion.animate.mockClear();
     setReducedMotion(true);
@@ -97,7 +105,7 @@ describe('movimiento reducido en vivo', () => {
       }),
     });
     const { hoverPress } = await loadMotion();
-    const element = {} as HTMLElement;
+    const element = {};
     hoverPress(element, { hover: { scale: 1.07 }, press: { scale: 0.94 } });
     const onPress = motion.press.mock.calls[0]![1] as () => () => void;
     setReducedMotion(true);
