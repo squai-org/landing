@@ -118,21 +118,21 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
           <label class="field-group" for="checkout-full-name">
             <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
-            <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="checkout-full-name-error" />
+            <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" placeholder={ui.forms.placeholders?.fullName} class="field" aria-describedby="checkout-full-name-error" />
             <span id="checkout-full-name-error" role="alert" class="field-error" data-field-error="full_name"></span>
           </label>
 
           <div class="one-signup-row">
             <label class="field-group" for="checkout-email">
               <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
-              <input id="checkout-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="checkout-email-error" />
+              <input id="checkout-email" type="email" name="email" required autocomplete="email" placeholder={ui.forms.placeholders?.email} class="field" aria-describedby="checkout-email-error" />
               <span id="checkout-email-error" role="alert" class="field-error" data-field-error="email"></span>
             </label>
             <div class="one-signup-phone">
               <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} />
               <label class="field-group" for="checkout-phone">
                 <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
-                <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="checkout-phone-error" />
+                <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" placeholder={ui.forms.placeholders?.phone} class="field" aria-describedby="checkout-phone-error" />
                 <span id="checkout-phone-error" role="alert" class="field-error" data-field-error="phone"></span>
               </label>
             </div>
@@ -170,6 +170,17 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
           <div class="form-submit" data-sales-panel="form">
             <Button variant="primary" type="submit" block arrow>{labels.reserve}</Button>
+            {
+              ui.checkout.secureNote && (
+                <p class="secure-note">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>{ui.checkout.secureNote}</span>
+                </p>
+              )
+            }
           </div>
 
           <div class="sales-notice" data-sales-panel="upcoming" hidden>
@@ -492,7 +503,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   .currency-options { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
   .currency-option { position: relative; display: inline-flex; cursor: pointer; }
   .currency-option span {
-    padding: 0.625rem 1.5rem;
+    padding: 0.625rem 1rem;
     border: 2px solid var(--periwinkle-12);
     border-radius: 9999px;
     background: transparent;
@@ -550,7 +561,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   .one-signup-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .one-signup-phone { display: grid; grid-template-columns: minmax(96px, auto) minmax(0, 1fr); gap: 0.5rem; }
 
-  .one-signup :global(.field-group) { gap: calc(var(--u) * 10); }
+  .one-signup :global(.field-group) { --group-gap: calc(var(--u) * 10); gap: var(--group-gap); }
   .one-signup :global(.field-label) {
     font-family: var(--font-display);
     font-size: var(--fs-small);
@@ -576,7 +587,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   .one-signup :global(.field:focus-visible) { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
   .one-signup :global(.field[aria-invalid='true']) { box-shadow: inset 0 0 0 2px #B3261E; }
 
-  .consent-field { gap: 7px; }
+  .one-signup :global(.consent-field) { --group-gap: 7px; }
   .consent-row { display: flex; align-items: flex-start; gap: 10px; }
   .consent-checkbox { flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--periwinkle-12); }
   .consent-label { font-size: 14px; line-height: 1.625; color: var(--neutral-11); }
@@ -589,7 +600,10 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     text-underline-offset: 2px;
   }
   .consent-label a:hover { color: var(--periwinkle-11); }
-  .form-submit { margin: 0; padding-top: 0.25rem; }
+  .form-submit { display: flex; flex-direction: column; gap: 1.5rem; margin: 0; padding-top: 0.25rem; }
+  .secure-note { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 14px; line-height: 1.43; color: var(--neutral-11); }
+  .secure-note svg { flex: none; color: var(--periwinkle-11); }
+  .one-signup :global(.field-error:empty) { margin-top: calc(var(--group-gap) * -1); }
   @media (min-width: 640px) {
     :global(.form-submit .btn-block .btn-text) { flex: initial; }
   }
@@ -622,7 +636,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
   @media (min-width: 640px) {
     .one-signup-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .currency-option span { font-size: 16px; line-height: 1.5; }
+    .currency-option span { padding-inline: 1.5rem; font-size: 16px; line-height: 1.5; }
   }
   @media (min-width: 1024px) {
     .one-signup { padding-inline: calc(var(--u) * 112); }

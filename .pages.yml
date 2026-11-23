@@ -2400,6 +2400,23 @@ content:
                         label: Consentimiento de términos, texto posterior
                         type: string
                         required: true
+                      - name: placeholders
+                        label: Ejemplos dentro de los campos de inscripción
+                        type: object
+                        required: false
+                        fields:
+                          - name: fullName
+                            label: Ejemplo de nombre completo
+                            type: string
+                            required: true
+                          - name: email
+                            label: Ejemplo de correo electrónico
+                            type: string
+                            required: true
+                          - name: phone
+                            label: Ejemplo de número de teléfono
+                            type: string
+                            required: true
                   - name: feedback
                     label: Mensajes de respuesta
                     type: object
@@ -2517,6 +2534,10 @@ content:
                         label: Subtítulo del formulario
                         type: string
                         required: true
+                      - name: secureNote
+                        label: Nota de pago seguro bajo el botón
+                        type: string
+                        required: false
                       - name: thanks
                         label: Página de gracias
                         type: object

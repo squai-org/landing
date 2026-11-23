@@ -136,6 +136,11 @@
         "privacyConsentPrefix": "He leído y acepto la ",
         "privacyConsentLink": "Política de Privacidad",
         "privacyConsentSuffix": " de Squai.",
+        "placeholders": {
+          "fullName": "Ej. Laura Gómez",
+          "email": "laura@tuempresa.com",
+          "phone": "300 000 0000"
+        },
         "referralSources": [
           { "value": "instagram", "label": "Instagram" },
           { "value": "linkedin", "label": "LinkedIn" },
@@ -186,6 +191,7 @@
         ],
         "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
         "formSubtitle": "Pagas con tarjeta, PSE o Nequi.",
+        "secureNote": "Pago seguro en línea · Confirmación por correo",
         "thanks": {
           "checking": "Estamos confirmando tu pago con Bold…",
           "approvedTitle": "¡Listo! Tu cupo quedó reservado",

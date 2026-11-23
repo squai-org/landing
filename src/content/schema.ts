@@ -224,6 +224,7 @@ export const siteSchema = z.object({
       copy: paragraphs,
       formTitle: text,
       formSubtitle: text,
+      secureNote: text.optional(),
       thanks: z.object({
         checking: text, approvedTitle: text, approvedBody: text,
         pendingTitle: text, pendingBody: text,
@@ -267,6 +268,7 @@ export const siteSchema = z.object({
       referralSources: z.array(z.object({ value: z.enum(['instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras']), label: text })).length(6),
       teamSizes: z.array(z.object({ value: z.enum(['menos-10', '10-30', '30-100', 'mas-100']), label: text })).length(4),
       termsConsentPrefix: text, termsConsentLink: text, termsConsentSuffix: text,
+      placeholders: z.object({ fullName: text, email: text, phone: text }).optional(),
     }),
     contact: z.object({ title: text, close: text, bookingFallback: text, bookingFallbackLink: text }),
     modal: z.object({ grow: modal, learn: modal }),

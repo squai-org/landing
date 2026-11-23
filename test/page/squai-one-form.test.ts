@@ -94,6 +94,22 @@ describe('pagina de Squai One: contrato del formulario', () => {
     }
   });
 
+  it('los campos llevan placeholders del diseno y la nota de pago seguro sigue al boton', () => {
+    const placeholder = (id: string) => attribute(openingTags(form, 'input').find((tag) => attribute(tag, 'id') === id)!, 'placeholder');
+
+    expect(placeholder('checkout-full-name')).toBe('Ej. Laura Gómez');
+    expect(placeholder('checkout-email')).toBe('laura@tuempresa.com');
+    expect(placeholder('checkout-phone')).toBe('300 000 0000');
+
+    const submitPanel = enclosingElement(form, 'data-sales-panel="form"', 'div');
+    expect(submitPanel).toContain('Pago seguro en línea · Confirmación por correo');
+    expect(submitPanel).toContain('<svg');
+  });
+
+  it('no repite la fila de precio del diseno', () => {
+    expect(page).not.toContain('Valor del programa');
+  });
+
   it('tiene exactamente los campos de produccion', () => {
     const names = openingTags(form, 'input')
       .filter((tag) => attribute(tag, 'type') !== 'radio' && attribute(tag, 'name') !== undefined)

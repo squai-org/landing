@@ -191,3 +191,22 @@ describe('estado de ventas en el contenido', () => {
     expect(site.ui.checkout.status.upcomingBody).not.toMatch(/\d/);
   });
 });
+
+describe('placeholders y nota de pago seguro del formulario', () => {
+  it('vienen del contenido y cumplen el esquema', async () => {
+    const site = await loadSite();
+
+    expect(site.ui.forms.placeholders).toEqual({
+      fullName: 'Ej. Laura Gómez',
+      email: 'laura@tuempresa.com',
+      phone: '300 000 0000',
+    });
+    expect(site.ui.checkout.secureNote).toBe('Pago seguro en línea · Confirmación por correo');
+  });
+
+  it('se pueden editar en Pages CMS', async () => {
+    const pages = await readFile(path.join(root, '.pages.yml'), 'utf8');
+
+    for (const field of ['placeholders', 'secureNote']) expect(pages).toContain(`- name: ${field}`);
+  });
+});
