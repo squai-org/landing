@@ -132,6 +132,10 @@ export const serviceSchema = z.object({
   }).optional(),
   faqIntro: z.object({ lead: text, categoriesLabel: text }).optional(),
   faqs: z.array(faq).min(1),
+  nav: z.object({
+    items: z.array(z.object({ label: text, target: text })).min(1),
+    companyLabel: text,
+  }).optional(),
 });
 const modal = z.object({ title: text, copy: text, placeholder: text });
 const inline = z.array(z.object({ text, href: link.optional() })).min(1);
@@ -188,7 +192,7 @@ export const siteSchema = z.object({
     team: z.object({ intro: paragraphs, memberAlt: text.refine((value) => value.includes('{name}') && value.includes('{role}'), 'Include {name} and {role}') }),
     finalCta: z.object({ title: text, body: paragraphs, cta: text }),
     follow: z.object({ title: text }),
-    footer: z.object({ copyright: text }),
+    footer: z.object({ copyright: text, whatsapp: text }),
     checkout: z.object({
       title: text,
       copy: paragraphs,

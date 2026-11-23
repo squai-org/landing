@@ -1,3 +1,5 @@
+import { splitTextOnHover } from './motion';
+
 const reducedMotionQuery = '(prefers-reduced-motion: reduce)';
 
 function watchAmbientVisibility(elements: HTMLElement[]) {
@@ -67,6 +69,7 @@ function bindParallax(frames: HTMLElement[]) {
 }
 
 export function initMotion() {
+  splitTextOnHover();
   if (window.matchMedia(reducedMotionQuery).matches || !('IntersectionObserver' in window)) return;
 
   const ambient = Array.from(document.querySelectorAll<HTMLElement>('.ambient'));

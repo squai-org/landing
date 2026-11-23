@@ -1064,6 +1064,40 @@ content:
                 label: Fecha límite del descuento
                 description: Texto libre, por ejemplo «15 de diciembre».
                 type: string
+      - name: one-navegacion
+        label: Menú de la página
+        description: Elementos del menú superior que solo se ven en la página de Squai One, y el botón que lleva a la página de la empresa.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: nav
+            label: Menú
+            type: object
+            fields:
+              - name: items
+                label: Elementos del menú
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{label}'
+                fields:
+                  - name: label
+                    label: Texto
+                    type: string
+                    required: true
+                  - name: target
+                    label: Sección destino
+                    description: Identificador de la sección de la página (por ejemplo, temario o faq). Se consulta, no se edita.
+                    type: string
+                    required: true
+                    readonly: true
+              - name: companyLabel
+                label: Texto del botón a la página de la empresa
+                type: string
+                required: true
       - name: one-faq
         label: Preguntas frecuentes
         type: file
@@ -1910,6 +1944,10 @@ content:
                     fields:
                       - name: copyright
                         label: Aviso de copyright
+                        type: string
+                        required: true
+                      - name: whatsapp
+                        label: Enlace de WhatsApp del pie
                         type: string
                         required: true
                   - name: follow
