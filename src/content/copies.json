@@ -60,7 +60,30 @@
       },
       "whatsapp": {
         "label": "Escríbenos por WhatsApp (se abre en una pestaña nueva)",
-        "message": "Hola Squai, quiero resolver una duda sobre el programa."
+        "message": "Hola Squai, quiero resolver una duda sobre el programa.",
+        "panel": {
+          "dialogLabel": "Asistencia rápida por WhatsApp",
+          "title": "Chatea con Squai",
+          "subtitle": "Te respondemos directo, sin bots eternos.",
+          "close": "Cerrar ventana de WhatsApp",
+          "topics": [
+            {
+              "label": "Dudas sobre las 8 sesiones del programa",
+              "message": "Hola Squai, quiero resolver una duda sobre las sesiones de Fundamentos de IA para el Trabajo."
+            },
+            {
+              "label": "Medios de pago disponibles",
+              "message": "Hola Squai, quiero consultar los medios de pago en línea para inscribirme."
+            },
+            {
+              "label": "Inscribir a varias personas de mi equipo",
+              "message": "Hola Squai, me interesa inscribir a varias personas de mi equipo en el programa."
+            }
+          ]
+        }
+      },
+      "scrollTop": {
+        "label": "Volver arriba"
       },
       "skip": "Saltar al contenido",
       "motion": {
