@@ -18,15 +18,12 @@ El servicio activo se declara con `data-service="<slug>"` en `<html>` (la prop `
 | `--accent-soft-strong` | Decoración y bloques (paso 4) | `--periwinkle-4` | `--teal-4` | `--gold-4` |
 | `--accent-line` | Bordes decorativos (paso 6) | `--periwinkle-6` | `--teal-6` | `--gold-6` |
 | `--accent-ink` | Texto y enlaces de acento sobre claro (paso 11) | `--periwinkle-11` | `--teal-11` | `--gold-11` |
-| `--accent-deep` | Superficie oscura (paso 12): pie | `--periwinkle-12` | `--teal-12` | `--gold-12` |
-| `--accent-deep-bar` | Barra legal del pie (paso 11) | `--periwinkle-11` | `--teal-11` | `--gold-11` |
+| `--accent-deep` | Paso 12 del servicio: color de enlaces en hover sobre claro | `--periwinkle-12` | `--teal-12` | `--gold-12` |
 | `--on-accent` | Texto sobre `--accent` | `--midnight` | `--midnight` | `--midnight` |
-| `--on-deep` | Texto sobre `--accent-deep` | `--canvas` | `--teal-2` | `--gold-2` |
-| `--on-deep-muted` | Texto secundario sobre `--accent-deep` | `--periwinkle-4` | `--teal-5` | `--gold-5` |
 
 Reglas: el texto sobre un paso 9 es siempre Midnight, nunca blanco; el paso 9 nunca es texto sobre claro (para eso está `--accent-ink`). Gold solo se usa como acento donde pasa AA: relleno con texto Midnight, lema y enlaces en hover sobre superficies oscuras, y paso 11 como texto en Squai Learn.
 
-Para añadir un servicio: un bloque `[data-service='<slug>'] { ... }` con esos once tokens y filas nuevas en la tabla de contraste (la prueba falla si una fila no cumple).
+Para añadir un servicio: un bloque `[data-service='<slug>'] { ... }` con esos ocho tokens y filas nuevas en la tabla de contraste (la prueba falla si una fila no cumple).
 
 ## Escala del diseño
 
@@ -56,7 +53,7 @@ Tipografía: el diseño carga Familjen Grotesk 500–700 y Atkinson Hyperlegible
 
 ## Superficies oscuras
 
-El pie vuelve a usar `--accent-deep` (paso 12 del servicio: P12 `#303163` en Squai One y en la marca madre, Teal 12 en Grow y Gold 12 en Learn) con texto `--on-deep` y secundario `--on-deep-muted`. La barra legal usa `--accent-deep-bar` (paso 11 del mismo servicio: P11, Teal 11 o Gold 11), un tono más claro que el resto del pie, con texto `--on-deep`; el hover de sus enlaces solo engrosa el subrayado porque Gold 9 no llega a 4,5:1 sobre el paso 11. Enlaces en hover del resto del pie, Gold. `data-surface="deep"` invierte los tokens de foco para esa superficie. Las tarjetas oscuras usan Midnight o `--night-surface`.
+El pie tiene el mismo color en todas las páginas, sin tema por servicio: el cuerpo usa `--footer-bg` (Midnight, `#0A0C1A`) y la barra legal `--footer-bar` (P12, `#303163`), un tono más claro. El texto es `--on-footer` (Canvas) y el secundario `--on-footer-muted` (P4). Los enlaces en hover, incluidos los de la barra legal, pasan a Gold 9 (7,36:1 sobre P12). `data-surface="deep"` invierte los tokens de foco para esa superficie. Las tarjetas oscuras usan Midnight o `--night-surface`.
 
 ## Foco visible
 
@@ -96,9 +93,13 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Franja dorada animada (marquee) | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Franja oscura animada (marquee) | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |
-| base | Pie: barra legal | `--on-deep` | `--accent-deep-bar` | 5.40 | 4.5 |
-| grow | Pie: barra legal | `--on-deep` | `--accent-deep-bar` | 4.90 | 4.5 |
-| learn | Pie: barra legal | `--on-deep` | `--accent-deep-bar` | 4.82 | 4.5 |
+| base | Pie: texto principal y enlaces | `--on-footer` | `--footer-bg` | 18.02 | 4.5 |
+| base | Pie: texto secundario | `--on-footer-muted` | `--footer-bg` | 13.76 | 4.5 |
+| base | Pie: enlace de WhatsApp y enlaces en hover | `--gold-9` | `--footer-bg` | 11.90 | 4.5 |
+| base | Foco sobre el pie | `--canvas` | `--footer-bg` | 18.02 | 3 |
+| base | Pie, barra legal: texto y enlaces | `--on-footer` | `--footer-bar` | 11.16 | 4.5 |
+| base | Pie, barra legal: enlaces en hover | `--gold-9` | `--footer-bar` | 7.36 | 4.5 |
+| base | Foco sobre la barra legal | `--canvas` | `--footer-bar` | 11.16 | 3 |
 | base | Foco: anillo sobre superficie clara | `--focus-ink` | `--canvas` | 5.40 | 3 |
 | base | Foco: anillo Midnight sobre el hero Periwinkle | `--midnight` | `--periwinkle-9` | 6.77 | 3 |
 | base | Foco: halo sobre superficie oscura | `--canvas` | `--midnight` | 18.02 | 3 |
@@ -108,16 +109,7 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Texto de acento sobre fondo suave | `--accent-ink` | `--accent-soft` | 4.64 | 4.5 |
 | base | Texto oscuro sobre fondo suave | `--midnight` | `--accent-soft` | 15.47 | 4.5 |
 | base | Temario: texto oscuro sobre tarjeta crema | `--midnight` | `--gold-3` | 17.24 | 4.5 |
-| base | Pie, texto principal y enlaces | `--canvas` | `--periwinkle-12` | 11.16 | 4.5 |
-| base | Pie, texto secundario | `--periwinkle-4` | `--periwinkle-12` | 8.52 | 4.5 |
-| base | Pie, enlace de WhatsApp y enlaces en hover | `--gold-9` | `--periwinkle-12` | 7.36 | 4.5 |
 | base | Foco sobre el pie | `--canvas` | `--periwinkle-12` | 11.16 | 3 |
-| grow | Pie, texto principal y enlaces | `--on-deep` | `--accent-deep` | 10.12 | 4.5 |
-| grow | Pie, texto secundario | `--on-deep-muted` | `--accent-deep` | 8.40 | 4.5 |
-| grow | Pie, enlace de WhatsApp y enlaces en hover | `--gold-9` | `--accent-deep` | 6.75 | 4.5 |
-| learn | Pie, texto principal y enlaces | `--on-deep` | `--accent-deep` | 9.99 | 4.5 |
-| learn | Pie, texto secundario | `--on-deep-muted` | `--accent-deep` | 8.68 | 4.5 |
-| learn | Pie, enlace de WhatsApp y enlaces en hover | `--gold-9` | `--accent-deep` | 6.58 | 4.5 |
 | base | Botón Conoce Squai junto a las redes | `--midnight` | `--canvas` | 18.02 | 4.5 |
 | base | Menú móvil: elementos sobre blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
 | base | Menú móvil: panel | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
@@ -139,7 +131,7 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 
 ## Fuera de la tabla, a propósito
 
-- **Logo.** Los logotipos están exentos de contraste (WCAG 1.4.3 y 1.4.11). El isotipo conserva `#8A8EF9` y `#F9C24D` exactos. El texto "Squai" sí cumple: Midnight sobre la píldora Canvas de la cabecera y Canvas sobre P12 en el pie.
+- **Logo.** Los logotipos están exentos de contraste (WCAG 1.4.3 y 1.4.11). El isotipo conserva `#8A8EF9` y `#F9C24D` exactos. El texto "Squai" sí cumple: Midnight sobre la píldora Canvas de la cabecera y Canvas sobre Midnight en el pie.
 - **Botón de WhatsApp.** Como en `landing-design`, es el logotipo de WhatsApp en blanco sobre el bloque `#25D366` (1,98:1). Se trata como logotipo de marca; el botón tiene nombre accesible propio. Está anotado en `docs/research/squai-one-redesign/04-cambios-a-revisar.md` por si el dueño prefiere el ícono en Midnight (9,80:1).
 - **Bloques decorativos** detrás del enlace activo del menú (`--accent-soft-strong`): son `aria-hidden` y no transmiten información; el estado activo se anuncia con `aria-current`.
 - **Bordes decorativos** de pills y tarjetas (`--line-soft`, `--line`): el control se distingue por su relleno y su texto.

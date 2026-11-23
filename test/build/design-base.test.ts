@@ -129,10 +129,16 @@ describe('base visual de landing-design', () => {
 describe('colores del pie', () => {
   const footer = read('src/components/Footer.astro');
 
-  it('el cuerpo usa la superficie oscura del servicio y la barra legal un paso mas claro', () => {
-    expect(/\.site-footer \{[^}]*background: var\(--accent-deep\);/.test(footer)).toBe(true);
-    expect(/\.footer-bottom \{[^}]*background: var\(--accent-deep-bar\);/.test(footer)).toBe(true);
-    expect(footer).not.toMatch(/\.footer-bottom \{[^}]*background: var\(--midnight\)/);
+  it('el cuerpo es Midnight y la barra legal P12 en todas las paginas, sin color por servicio', () => {
+    const css = read('src/styles/global.css');
+    expect(css).toMatch(/:root \{[^}]*--footer-bg: var\(--midnight\);/);
+    expect(css).toMatch(/:root \{[^}]*--footer-bar: var\(--periwinkle-12\);/);
+    expect(css).toMatch(/--midnight: #0A0C1A;/);
+    expect(css).toMatch(/--periwinkle-12: #303163;/);
+    expect(/\.site-footer \{[^}]*background: var\(--footer-bg\);/.test(footer)).toBe(true);
+    expect(/\.footer-bottom \{[^}]*background: var\(--footer-bar\);/.test(footer)).toBe(true);
+    expect(footer).not.toMatch(/--accent-deep|--on-deep/);
+    expect(css).not.toMatch(/\[data-service=[^\]]+\] \{[^}]*--footer-/);
   });
 });
 

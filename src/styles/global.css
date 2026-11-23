@@ -136,10 +136,12 @@
   --accent-line: var(--periwinkle-6);
   --accent-ink: var(--periwinkle-11);
   --accent-deep: var(--periwinkle-12);
-  --accent-deep-bar: var(--periwinkle-11);
   --on-accent: var(--midnight);
-  --on-deep: var(--canvas);
-  --on-deep-muted: var(--periwinkle-4);
+
+  --footer-bg: var(--midnight);
+  --footer-bar: var(--periwinkle-12);
+  --on-footer: var(--canvas);
+  --on-footer-muted: var(--periwinkle-4);
 
   --focus-ink: var(--periwinkle-11);
   --focus-halo: var(--canvas);
@@ -307,9 +309,6 @@
   --accent-line: var(--teal-6);
   --accent-ink: var(--teal-11);
   --accent-deep: var(--teal-12);
-  --accent-deep-bar: var(--teal-11);
-  --on-deep: var(--teal-2);
-  --on-deep-muted: var(--teal-5);
 }
 
 [data-service='squai-learn'] {
@@ -320,9 +319,6 @@
   --accent-line: var(--gold-6);
   --accent-ink: var(--gold-11);
   --accent-deep: var(--gold-12);
-  --accent-deep-bar: var(--gold-11);
-  --on-deep: var(--gold-2);
-  --on-deep-muted: var(--gold-5);
 }
 
 .one-hero-band {
