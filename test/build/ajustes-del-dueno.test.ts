@@ -80,3 +80,19 @@ describe('fondo del formulario de inscripcion', () => {
     expect(read('src/components/Checkout.astro')).toContain(`<OneBackdrop shape="signup" colors={['#e1e4fd']} opacities={[1]}`);
   });
 });
+
+describe('boton Pausar animaciones', () => {
+  const css = read('src/styles/motion.css');
+  const rule = /\n\.motion-toggle \{([^}]*)\}/.exec(css)?.[1] ?? '';
+
+  it('no tiene borde ni contorno en reposo y se separa del fondo con la misma sombra que volver arriba', () => {
+    expect(rule).toContain('border: 0;');
+    expect(rule).not.toMatch(/border: \d+px|outline:/);
+    expect(rule).toContain('box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);');
+  });
+
+  it('conserva el foco visible por teclado', () => {
+    expect(css).not.toMatch(/\.motion-toggle:focus(-visible)? \{[^}]*outline: (none|0)/);
+    expect(read('src/styles/global.css')).toMatch(/:focus-visible \{[^}]*outline: 2px solid/);
+  });
+});

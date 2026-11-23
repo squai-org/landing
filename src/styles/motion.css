@@ -143,9 +143,10 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
   gap: 8px;
   min-height: var(--control-height-compact);
   padding: 0 18px 0 14px;
-  border: 2px solid var(--midnight);
+  border: 0;
   border-radius: var(--radius-pill);
   background: var(--canvas);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   color: var(--midnight);
   font-family: var(--font-body);
   font-weight: 700;
