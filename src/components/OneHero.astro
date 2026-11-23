@@ -61,24 +61,16 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
 
 <script>
   import { showCohort } from '../lib/cohort-client';
-  import { scrollLinked } from '../lib/one-motion';
+  import { scrollRange } from '../lib/motion';
 
   void showCohort();
 
   const person = document.querySelector<HTMLElement>('[data-hero-person]');
   const hero = person?.closest<HTMLElement>('section');
   if (person && hero) {
-    scrollLinked([
-      {
-        target: hero,
-        offset: 'start-start',
-        from: 0,
-        to: 40,
-        apply: (value) => {
-          person.style.setProperty('--person-y', `${value.toFixed(2)}px`);
-        },
-      },
-    ]);
+    scrollRange(hero, 'start-start', [0, 40], (value) => {
+      person.style.setProperty('--person-y', `${value.toFixed(2)}px`);
+    });
   }
 </script>
 

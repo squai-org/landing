@@ -189,12 +189,12 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 </section>
 
 <script>
-  import { enterOnView } from '../lib/one-motion';
+  import { revealOnView, tweens } from '../lib/motion';
 
   const intro = document.querySelector<HTMLElement>('[data-signup-enter="intro"]');
   const formColumn = document.querySelector<HTMLElement>('[data-signup-enter="form"]');
-  if (intro) enterOnView(intro, { from: { opacity: 0, y: 24 }, duration: 0.38, amount: 0.25 });
-  if (formColumn) enterOnView(formColumn, { from: { opacity: 0, y: 28 }, duration: 0.4, delay: 0.08, amount: 0.2 });
+  if (intro) revealOnView(intro, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, tweens.formReveal, 0.25);
+  if (formColumn) revealOnView(formColumn, { opacity: 0, y: 28 }, { opacity: 1, y: 0 }, tweens.formCardReveal, 0.2);
 </script>
 
 <script>

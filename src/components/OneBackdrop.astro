@@ -31,22 +31,14 @@ const data = oneBackdropShapes[shape];
 </div>
 
 <script>
-  import { breatheWhileVisible, scrollLinked } from '../lib/one-motion';
+  import { flagWhileInView, scrollRange } from '../lib/motion';
 
-  breatheWhileVisible(Array.from(document.querySelectorAll<HTMLElement>('[data-one-backdrop]')));
+  flagWhileInView(Array.from(document.querySelectorAll<HTMLElement>('[data-one-backdrop]')), 'breathing');
 
-  scrollLinked(
-    Array.from(document.querySelectorAll<HTMLElement>('[data-one-backdrop] [data-scroll-y]')).map((frame) => {
-      const [from, to] = frame.dataset.scrollY!.split(',').map(Number);
-      return {
-        target: frame.closest('section') ?? frame,
-        offset: 'start-start' as const,
-        from: from!,
-        to: to!,
-        apply: (value: number) => {
-          frame.style.translate = `0 ${value.toFixed(2)}px`;
-        },
-      };
-    }),
-  );
+  document.querySelectorAll<HTMLElement>('[data-one-backdrop] [data-scroll-y]').forEach((frame) => {
+    const [from, to] = frame.dataset.scrollY!.split(',').map(Number);
+    scrollRange(frame.closest('section') ?? frame, 'start-start', [from!, to!], (value) => {
+      frame.style.translate = `0 ${value.toFixed(2)}px`;
+    });
+  });
 </script>

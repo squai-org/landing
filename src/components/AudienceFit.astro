@@ -128,7 +128,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
 </section>
 
 <script>
-  import { easeSmooth, prefersReducedMotion, springTiming } from '../lib/one-motion';
+  import { animate, prefersReducedMotion, springs, tweens } from '../lib/motion';
 
   const section = document.querySelector<HTMLElement>('[data-fit]');
   if (section) {
@@ -138,12 +138,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-preview]'));
     const list = section.querySelector<HTMLElement>('[data-fit-list]');
     const reduced = prefersReducedMotion();
-    const spring = springTiming({ stiffness: 240, damping: 22 });
-
-    previews.forEach((preview) => {
-      if (reduced) return;
-      preview.style.transition = `transform ${spring.duration}ms ${spring.easing}, opacity ${spring.duration}ms ${spring.easing}`;
-    });
+    let settled = false;
 
     let hovered: number | null = null;
     let selected = 0;
@@ -157,13 +152,13 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       shownExample = next;
       const reveal = () => {
         examples.forEach((example) => (example.hidden = example !== incoming));
-        if (!reduced) incoming.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 180, easing: easeSmooth });
+        if (!reduced) animate(incoming, { opacity: [0, 1], y: [8, 0] }, tweens.audienceExample);
       };
       if (reduced) {
         reveal();
         return;
       }
-      current.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 180, easing: easeSmooth }).finished.then(() => {
+      animate(current, { opacity: 0, y: -6 }, tweens.audienceExample).finished.then(() => {
         if (shownExample === next) reveal();
       });
     };
@@ -182,8 +177,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
         const rotate = left ? (isHovering ? -8 : -14) : (isHovering ? 7 : 13);
         const x = left ? pointer.x * -0.7 : pointer.x * 0.85;
         const y = left ? rowY * 0.5 + pointer.y * -0.5 : rowY * 0.5 + 32 + pointer.y * 0.65;
-        preview.style.opacity = String(isHovering ? 1 : 0.42);
-        preview.style.transform = `translateX(${x}px) translateY(${y}px) scale(${scale}) rotate(${rotate}deg)`;
+        animate(preview, { opacity: isHovering ? 1 : 0.42, x, y, scale, rotate }, reduced || !settled ? { duration: 0 } : springs.audienceSwap);
         preview.querySelectorAll<HTMLElement>('[data-fit-photo]').forEach((photo) => {
           photo.hidden = Number(photo.dataset.fitPhoto) !== active;
         });
@@ -222,6 +216,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       render();
     });
     render();
+    settled = true;
   }
 </script>
 
