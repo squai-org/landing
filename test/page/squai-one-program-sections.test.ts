@@ -59,3 +59,14 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     expect(images.every((tag) => /\balt="[^"]+"/.test(tag))).toBe(true);
   });
 });
+
+describe('Squai One: franja de datos', () => {
+  it('ninguna cinta lleva precios ni monedas, solo datos de la cohorte y textos editables', async () => {
+    const page = await readFile(path.join(dist, 'servicios/squai-one.html'), 'utf8');
+    const start = page.indexOf('class="one-marquee"');
+    const strip = page.slice(start, page.indexOf('</section>', start)).replace(/<[^>]+>/g, ' ');
+
+    expect(strip).toContain('8 sesiones en vivo');
+    expect(strip).not.toMatch(/COP|USD|\$|\d[.,]\d{3}/);
+  });
+});
