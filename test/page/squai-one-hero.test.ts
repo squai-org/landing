@@ -27,14 +27,30 @@ describe('hero y datos clave de Squai One', () => {
     expect(ctas.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('dice fechas y horario por confirmar mientras la base no responde', () => {
+  it('dice fechas y horario por confirmar mientras la base no responde, en el hero y en los datos clave', () => {
     expect(html).toMatch(/<dd[^>]*data-cohort-dates[^>]*>Fechas por confirmar<\/dd>/);
     expect(html).toMatch(/<dd[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/dd>/);
+    expect(html).toMatch(/<span[^>]*data-cohort-dates[^>]*>Fechas por confirmar<\/span>/);
+    expect(html).toMatch(/<span[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/span>/);
   });
 
-  it('pide el estado y la cohorte al endpoint de lectura del Programa', () => {
+  it('pide la cohorte al endpoint de lectura del Programa', () => {
     expect(html).toContain('data-cohort-endpoint="/api/checkout/program/squai-one"');
-    expect(html).toContain('data-endpoint="/api/checkout/program/squai-one"');
+  });
+
+  it('el hero no lleva chip de estado ni formas detras de la persona', () => {
+    const hero = html.slice(html.indexOf('data-hero'), html.indexOf('id="datos-clave"'));
+    expect(hero).not.toContain('data-program-status');
+    expect(hero).not.toMatch(/Inscripciones abiertas/);
+    expect(hero).not.toMatch(/one-hero-(arch|block)/);
+  });
+
+  it('los datos clave van en las cuatro tarjetas con ilustracion, sin cuadricula aparte', () => {
+    const start = html.indexOf('id="datos-clave"');
+    const facts = html.slice(start, html.indexOf('</section>', start));
+    expect(facts.match(/<article\b/g)).toHaveLength(4);
+    expect(facts.match(/<dt\b/g)).toHaveLength(6);
+    expect(facts.match(/<img\b/g)).toHaveLength(4);
   });
 
   it('muestra 4 semanas y 8 sesiones de 2 horas y media', () => {

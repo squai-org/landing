@@ -33,25 +33,7 @@
       "seats": "Cupo"
     },
     "modality": "100% virtual y en vivo, con grabaciones por si la vida se interpone",
-    "seats": "Grupos pequeños y cupos limitados para que tus preguntas se escuchen",
-    "includes": [
-      {
-        "t": "Sesiones en vivo",
-        "d": "Aprendes con mentores que enseñan y aplican la IA, con tiempo para resolver tus dudas en cada sesión."
-      },
-      {
-        "t": "Grabación de cada sesión",
-        "d": "Si un día no puedes conectarte, la ves después y nos escribes tus preguntas."
-      },
-      {
-        "t": "Guías y comunidad",
-        "d": "Guías y recursos para practicar, y un grupo de WhatsApp para preguntar entre sesiones."
-      },
-      {
-        "t": "Certificado",
-        "d": "Al terminar recibes un certificado que respalda tus nuevas habilidades."
-      }
-    ]
+    "seats": "Grupos pequeños y cupos limitados para que tus preguntas se escuchen"
   },
   "menuAudience": "Personas",
   "cardCopy": "Un programa en vivo para entender la IA, en lugar de seguir guardando tutoriales que nunca vas a ver.",
@@ -238,6 +220,27 @@
   "team": {
     "title": "Quiénes te enseñan",
     "closing": "Uno de los dos será tu mentor."
+  },
+  "testimonials": {
+    "title": "Lo que dicen después de una charla.",
+    "lead": "Frases de personas que asistieron a nuestras charlas, publicadas con su permiso.",
+    "quotes": [
+      {
+        "text": "Por fin entendí por qué la IA me inventaba datos, y ahora reviso cada respuesta antes de enviarla.",
+        "name": "Carolina M.",
+        "context": "Coordinadora administrativa"
+      },
+      {
+        "text": "Salí con tres plantillas que uso cada semana para mis informes.",
+        "name": "Andrés P.",
+        "context": "Analista financiero"
+      },
+      {
+        "text": "Nadie me hizo sentir que preguntaba algo obvio, y pregunté mucho.",
+        "name": "Marcela R.",
+        "context": "Docente de secundaria"
+      }
+    ]
   },
   "faqs": [
     {

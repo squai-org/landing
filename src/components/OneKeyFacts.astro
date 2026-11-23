@@ -1,14 +1,15 @@
 ---
 import type { ImageMetadata } from 'astro';
 import Button from './Button.astro';
-import CornerBlocks from './CornerBlocks.astro';
-import type { CornerPreset } from '../lib/corner-presets';
+import OneCornerBlocks from './OneCornerBlocks.astro';
+import type { OneCornerPreset } from '../lib/one-corner-presets';
 import { durationInHours, sessionLength, totalSessions } from '../lib/course-load';
 import type { Service } from '../lib/content';
 import live from '../assets/one/incluye/incluye-1.svg';
 import recordings from '../assets/one/incluye/incluye-2.svg';
 import guides from '../assets/one/incluye/incluye-3.svg';
 import certificate from '../assets/one/incluye/incluye-4.svg';
+import '../styles/one-sections.css';
 
 interface Props {
   service: Service;
@@ -19,149 +20,252 @@ const facts = service.keyFacts!;
 const hero = service.hero!;
 const { load, labels } = facts;
 
-const tiles = [
-  { label: labels.duration, value: `${load.weeks} semanas · ${durationInHours(load)} horas` },
-  { label: labels.sessions, value: `${totalSessions(load)} sesiones de ${sessionLength(load.sessionMinutes)}, ${load.sessionsPerWeek} por semana` },
-  { label: labels.dates, value: hero.datesPending, cohort: 'dates' },
-  { label: labels.schedule, value: hero.schedulePending, cohort: 'schedule' },
-  { label: labels.modality, value: facts.modality },
-  { label: labels.seats, value: facts.seats },
-];
+interface Fact {
+  label: string;
+  value: string;
+  cohort?: 'dates' | 'schedule';
+}
 
-const cards: { image: ImageMetadata; corners: CornerPreset; tilt: string; tone: string }[] = [
-  { image: live, corners: 'diagonal-a', tilt: '-2deg', tone: 'one-card-soft' },
-  { image: recordings, corners: 'diagonal-b', tilt: '1.8deg', tone: 'one-card-strong' },
-  { image: guides, corners: 'left-pair', tilt: '-1.6deg', tone: 'one-card-mid' },
-  { image: certificate, corners: 'right-pair', tilt: '2deg', tone: 'one-card-solid' },
+interface Card {
+  image: ImageMetadata;
+  facts: Fact[];
+  bg: string;
+  block: string;
+  preset: OneCornerPreset;
+  tilt: string;
+  stagger: string;
+}
+
+const cards: Card[] = [
+  {
+    image: live,
+    facts: [
+      { label: labels.duration, value: `${load.weeks} semanas · ${durationInHours(load)} horas` },
+      { label: labels.sessions, value: `${totalSessions(load)} sesiones de ${sessionLength(load.sessionMinutes)}, ${load.sessionsPerWeek} por semana` },
+    ],
+    bg: 'var(--periwinkle-2)',
+    block: 'var(--periwinkle-6)',
+    preset: 'mod-1',
+    tilt: '-2deg',
+    stagger: '0',
+  },
+  {
+    image: recordings,
+    facts: [{ label: labels.modality, value: facts.modality }],
+    bg: 'var(--periwinkle-4)',
+    block: 'var(--periwinkle-7)',
+    preset: 'mod-2',
+    tilt: '1.8deg',
+    stagger: '1.5rem',
+  },
+  {
+    image: guides,
+    facts: [
+      { label: labels.dates, value: hero.datesPending, cohort: 'dates' },
+      { label: labels.schedule, value: hero.schedulePending, cohort: 'schedule' },
+    ],
+    bg: 'var(--periwinkle-3)',
+    block: 'var(--periwinkle-8)',
+    preset: 'mod-3',
+    tilt: '-1.6deg',
+    stagger: '0.25rem',
+  },
+  {
+    image: certificate,
+    facts: [{ label: labels.seats, value: facts.seats }],
+    bg: 'var(--periwinkle-9)',
+    block: 'var(--periwinkle-11)',
+    preset: 'mod-4',
+    tilt: '2deg',
+    stagger: '1.75rem',
+  },
 ];
 ---
 
-<section class="section one-facts" id="datos-clave" aria-labelledby="one-facts-title">
-  <div class="shell">
-    <header class="one-facts-heading">
-      <h2 id="one-facts-title" class="display d-h2 one-facts-title">{facts.title}</h2>
-      <p class="lead one-facts-lead">{facts.lead}</p>
-      <p class="one-facts-handwritten">{facts.handwritten}</p>
-    </header>
-
-    <dl class="one-facts-strip">
-      {
-        tiles.map((tile) => (
-          <div class="one-facts-tile">
-            <dt>{tile.label}</dt>
-            <dd data-cohort-dates={tile.cohort === 'dates' ? '' : undefined} data-cohort-schedule={tile.cohort === 'schedule' ? '' : undefined}>{tile.value}</dd>
-          </div>
-        ))
-      }
-    </dl>
-
-    <ul class="one-facts-cards">
-      {
-        facts.includes.map((item, index) => (
-          <li class="one-facts-card-host corner-host" style={`--card-tilt:${cards[index].tilt}`}>
-            <CornerBlocks preset={cards[index].corners} hoverOnly />
-            <article class={`one-facts-card ${cards[index].tone}`}>
-              <img src={cards[index].image.src} alt="" width={cards[index].image.width} height={cards[index].image.height} loading="lazy" decoding="async" />
-              <h3 class="display d-h3">{item.t}</h3>
-              <p class="body">{item.d}</p>
-            </article>
-          </li>
-        ))
-      }
-    </ul>
-
-    <div class="one-facts-action">
-      <Button variant="dark" arrow href={`#${service.cta.target}`} data-scroll-to={service.cta.target}>{service.cta.label}</Button>
-    </div>
+<section class="one-facts one-u" id="datos-clave" aria-labelledby="one-facts-title">
+  <div class="one-facts-heading">
+    <h2 id="one-facts-title" class="one-h2">{facts.title}</h2>
+    <p class="one-lead one-facts-lead">{facts.lead}</p>
   </div>
+
+  <div class="one-facts-note">
+    <span class="one-hand">{facts.handwritten}</span>
+  </div>
+
+  <ul class="one-facts-cards">
+    {
+      cards.map((card, index) => (
+        <li class="one-facts-item one-card-host" style={`--stagger:${card.stagger}`} data-one-enter={index}>
+          <div class="one-facts-inner" style={`--tilt:${card.tilt}`}>
+            <OneCornerBlocks preset={card.preset} color={card.block} hoverOnly />
+            <article class="one-facts-card" style={`--card-bg:${card.bg}`}>
+              <div class="one-facts-body">
+                <div class="one-facts-art">
+                  <img src={card.image.src} alt="" width="1400" height="1365" loading="lazy" decoding="async" draggable="false" />
+                </div>
+                <dl class="one-facts-list">
+                  {card.facts.map((fact) => (
+                    <div>
+                      <dt class="one-h3">{fact.label}</dt>
+                      <dd
+                        class="one-small"
+                        data-cohort-dates={fact.cohort === 'dates' ? '' : undefined}
+                        data-cohort-schedule={fact.cohort === 'schedule' ? '' : undefined}
+                      >{fact.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+              <span class="one-facts-bottom" aria-hidden="true"></span>
+            </article>
+            <a
+              class="one-facts-link"
+              href={`#${service.cta.target}`}
+              data-scroll-to={service.cta.target}
+              aria-label={`${service.cta.label}: ${card.facts.map((fact) => fact.label).join(' y ')}`}
+            ></a>
+            <div class="one-card-cta" aria-hidden="true">
+              <Button variant="dark" arrow tabindex="-1">{service.cta.label}</Button>
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
 </section>
 
+<script>
+  import { enterOnView } from '../lib/one-motion';
+
+  document.querySelectorAll<HTMLElement>('.one-facts-item[data-one-enter]').forEach((item) => {
+    enterOnView(item, { from: { opacity: 0, y: 36 }, duration: 0.48, delay: Number(item.dataset.oneEnter) * 0.07 });
+  });
+</script>
+
 <style>
-  .one-facts { background: var(--canvas); }
+  .one-facts {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding: var(--section-py) var(--gutter);
+    background: #fff;
+    color: var(--midnight);
+  }
   .one-facts-heading {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: clamp(14px, 2vw, 24px);
-    max-width: 760px;
-    margin: 0 auto clamp(28px, 4vw, 56px);
+    gap: calc(var(--u) * 24);
+    max-width: calc(var(--u) * 1280);
+    margin: 0 auto calc(var(--u) * 24);
     text-align: center;
   }
-  .one-facts-title { margin: 0; color: var(--ink); }
-  .one-facts-lead { color: var(--ink-body); }
-  .one-facts-handwritten {
-    margin: 0;
-    font-family: var(--font-hand);
-    font-size: clamp(20px, 2vw, 28px);
-    line-height: 1.35;
-    color: var(--accent-ink);
-    rotate: -1.6deg;
-  }
-  .one-facts-strip {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin: 0 0 clamp(36px, 5vw, 72px);
-  }
-  .one-facts-tile {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 18px 22px;
-    background: var(--accent-soft);
-    color: var(--midnight);
-    border-radius: var(--radius-lg);
-  }
-  .one-facts-tile dt {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-  .one-facts-tile dd {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: clamp(19px, 1.7vw, 24px);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-  }
+  .one-facts-heading h2 { color: var(--midnight); }
+  .one-facts-lead { max-width: calc(var(--u) * 640); margin-inline: auto; color: var(--neutral-11); }
+  .one-facts-note { margin-bottom: calc(var(--u) * 56); text-align: center; }
+  .one-facts-note .one-hand { display: inline-block; color: var(--periwinkle-11); rotate: -1.6deg; }
   .one-facts-cards {
     display: grid;
     grid-template-columns: 1fr;
-    gap: clamp(28px, 3vw, 44px);
+    align-items: stretch;
+    gap: 3rem;
     margin: 0;
-    padding: 0 0 8px;
+    padding: 1.5rem 0 2rem;
     list-style: none;
   }
-  .one-facts-card-host { position: relative; rotate: var(--card-tilt, 0deg); }
+  .one-facts-item {
+    position: relative;
+    display: flex;
+    padding-top: 2rem;
+    user-select: none;
+  }
+  .one-facts-inner {
+    position: relative;
+    display: grid;
+    width: 100%;
+    rotate: var(--tilt);
+    transition: transform 0.35s var(--ease-bounce);
+  }
   .one-facts-card {
+    position: relative;
+    z-index: 10;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    justify-content: space-between;
     height: 100%;
-    padding: clamp(20px, 2vw, 28px);
-    border-radius: var(--radius-xl);
-    color: var(--midnight);
-    box-shadow: var(--shadow-float);
+    min-height: 480px;
+    border-radius: var(--card-r);
+    background: var(--card-bg);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
-  .one-facts-card img { display: block; width: 100%; height: auto; aspect-ratio: 1400 / 1365; }
-  .one-facts-card h3 { margin: 0; color: var(--midnight); }
-  .one-facts-card p { color: var(--midnight); }
-  .one-card-soft { background: var(--periwinkle-2); }
-  .one-card-strong { background: var(--periwinkle-4); }
-  .one-card-mid { background: var(--periwinkle-3); }
-  .one-card-solid { background: var(--periwinkle-9); }
-  .one-facts-action { display: flex; justify-content: center; margin-top: clamp(32px, 4vw, 56px); }
+  .one-facts-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: calc(var(--u) * 20);
+    padding: calc(var(--u) * 28);
+  }
+  .one-facts-art {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+    padding-top: 0.5rem;
+  }
+  .one-facts-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1400 / 1365;
+    user-select: none;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .one-facts-list { display: flex; flex-direction: column; gap: calc(var(--u) * 20); margin: 0; }
+  .one-facts-list div { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
+  .one-facts-list dt { color: var(--midnight); }
+  .one-facts-list dd { color: var(--neutral-12); }
+  .one-facts-bottom {
+    position: relative;
+    z-index: -10;
+    display: block;
+    width: 100%;
+    height: max(56px, calc(var(--u) * 88));
+    margin-top: -3rem;
+    background: var(--card-bg);
+    border-bottom-left-radius: var(--card-r);
+    border-bottom-right-radius: var(--card-r);
+    transition: translate 0.3s var(--ease-smooth);
+  }
+  .one-facts-link {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    border-radius: var(--card-r);
+  }
+  .one-facts-link:focus-visible { outline-offset: 4px; }
 
-  @media (min-width: 640px) {
-    .one-facts-strip { grid-template-columns: repeat(2, 1fr); }
-    .one-facts-cards { grid-template-columns: repeat(2, 1fr); }
+  @media (hover: hover) and (pointer: fine) {
+    .one-facts-item:hover .one-facts-art img { transform: scale(1.03); }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .one-facts-item:is(:hover, :focus-within) .one-facts-inner { transform: rotate(0deg) translateY(-8px); }
+    .one-facts-item:is(:hover, :focus-within) .one-facts-bottom {
+      translate: 0 calc(var(--btn-h) * 0.55) 0;
+      transition: translate 0.35s 0.1s var(--ease-bounce);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .one-facts-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (min-width: 1024px) {
-    .one-facts-strip { grid-template-columns: repeat(3, 1fr); }
-    .one-facts-cards { grid-template-columns: repeat(4, 1fr); }
-    .one-facts-card-host:nth-child(2) { translate: 0 24px; }
-    .one-facts-card-host:nth-child(4) { translate: 0 28px; }
+    .one-facts-cards {
+      display: flex;
+      justify-content: center;
+      gap: calc(var(--u) * 48);
+    }
+    .one-facts-item { flex-shrink: 0; width: calc(var(--u) * 372); translate: 0 var(--stagger); }
+    .one-facts-card { min-height: calc(var(--u) * 660); }
+    .one-facts-body { padding: calc(var(--u) * 32); }
   }
 </style>

@@ -47,6 +47,20 @@ describe('Squai One: equipo y JSON-LD generado', () => {
     expect(html).toContain('id="equipo-one"');
   });
 
+  it('muestra los testimonios del CMS como citas con autor', async () => {
+    const html = await readDist('servicios/squai-one.html');
+    const service = JSON.parse(await readFile(path.join(root, 'src/content/services/squai-one.json'), 'utf8')) as {
+      testimonials: { quotes: { name: string }[] };
+    };
+    const start = html.indexOf('<section id="testimonios"');
+    const section = html.slice(start, html.indexOf('</section>', start));
+
+    expect(start).toBeGreaterThan(-1);
+    expect(section.match(/<figure\b/g)).toHaveLength(service.testimonials.quotes.length);
+    expect(section.match(/<blockquote\b/g)).toHaveLength(service.testimonials.quotes.length);
+    for (const quote of service.testimonials.quotes) expect(section).toContain(quote.name);
+  });
+
   it('no declara resenas, calificaciones, precios, fechas ni capacidad', async () => {
     const html = await readDist('servicios/squai-one.html');
     const serialized = JSON.stringify(jsonLdNodes(html));

@@ -1,0 +1,52 @@
+---
+import { oneBackdropShapes, type OneBackdropShape } from '../lib/one-backdrops';
+import '../styles/one-sections.css';
+
+interface Props {
+  shape: OneBackdropShape;
+  colors: string[];
+  opacities?: number[];
+  align?: `x${'Min' | 'Mid' | 'Max'}Y${'Min' | 'Mid' | 'Max'}`;
+  small?: boolean;
+  flip?: 'x' | 'y' | 'xy';
+  frameClass?: string;
+  scrollY?: [number, number];
+}
+
+const { shape, colors, opacities = [], align = 'xMidYMid', small = false, flip, frameClass = '', scrollY } = Astro.props;
+const data = oneBackdropShapes[shape];
+---
+
+<div class="one-backdrop" aria-hidden="true" data-one-backdrop data-flip={flip} data-small={small ? '' : undefined} data-breathing="off">
+  <div class:list={['one-backdrop-frame', frameClass]} data-scroll-y={scrollY?.join(',')}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox={data.viewBox} preserveAspectRatio={`${align} slice`} focusable="false">
+      {
+        data.paths.map((d, index) => {
+          const color = colors[Math.min(index, colors.length - 1)];
+          return <path d={d} fill={color} stroke={color} stroke-linejoin="round" opacity={opacities[index] ?? 1} />;
+        })
+      }
+    </svg>
+  </div>
+</div>
+
+<script>
+  import { breatheWhileVisible, scrollLinked } from '../lib/one-motion';
+
+  breatheWhileVisible(Array.from(document.querySelectorAll<HTMLElement>('[data-one-backdrop]')));
+
+  scrollLinked(
+    Array.from(document.querySelectorAll<HTMLElement>('[data-one-backdrop] [data-scroll-y]')).map((frame) => {
+      const [from, to] = frame.dataset.scrollY!.split(',').map(Number);
+      return {
+        target: frame.closest('section') ?? frame,
+        offset: 'start-start' as const,
+        from: from!,
+        to: to!,
+        apply: (value: number) => {
+          frame.style.translate = `0 ${value.toFixed(2)}px`;
+        },
+      };
+    }),
+  );
+</script>

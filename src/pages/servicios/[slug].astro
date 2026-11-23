@@ -84,9 +84,13 @@ const schemas = [
     )
   }
 
+  </div>
+
   {service.audienceFit && <AudienceFit fit={service.audienceFit} cta={service.cta} />}
 
-  {service.howItWorks && <HowItWorks flow={service.howItWorks} />}
+  {service.howItWorks && <HowItWorks flow={service.howItWorks} cta={service.cta} />}
+
+  <div class="content-shell content-shell-joined">
 
   {service.syllabus && <Syllabus syllabus={service.syllabus} cta={service.cta} />}
 
@@ -94,12 +98,15 @@ const schemas = [
 
   {service.capabilities && <ServiceCapabilities headline={service.capabilities.headline} groups={service.capabilities.groups} />}
 
-  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} />}
+  </div>
 
-  {service.testimonials && <OneTestimonials title={service.testimonials.title} quotes={service.testimonials.quotes} />}
+  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} cta={service.cta} />}
+
+  {service.testimonials && <OneTestimonials title={service.testimonials.title} lead={service.testimonials.lead} quotes={service.testimonials.quotes} />}
 
   {
     service.cta.modal ? (
+      <div class="content-shell content-shell-joined">
       <section class="section tint">
         <div class="shell service-contact-shell">
           <h2 class="display d-h2 service-contact-title">
@@ -109,11 +116,13 @@ const schemas = [
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.contactCta ?? service.cta.label}</Button>
         </div>
       </section>
+      </div>
     ) : (
       <Checkout investment={service.investment} />
     )
   }
 
+  <div class="content-shell content-shell-joined">
   <Faq items={service.faqs} intro={service.faqIntro} />
   </div>
   </main>
@@ -127,6 +136,8 @@ const schemas = [
 <style>
   .page-frame { background: var(--canvas); }
   .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
+  .content-shell-joined { margin-top: clamp(16px, 1.6vw, 28px); }
+  .content-shell-joined:empty { display: none; }
   .service-contact-shell { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(20px, 2.4vw, 36px); }
   .service-contact-title { max-width: 22ch; color: var(--ink); }
   .service-contact-aside {
