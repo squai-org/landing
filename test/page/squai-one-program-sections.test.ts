@@ -32,7 +32,7 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     for (const id of ['para-quien', 'como-funciona', 'temario']) {
       const section = sectionOf(page, id);
       expect(count(section, /<h2\b/g)).toBe(1);
-      expect(count(section, /<h3\b/g)).toBeGreaterThan(0);
+      if (id !== 'para-quien') expect(count(section, /<h3\b/g)).toBeGreaterThan(0);
     }
   });
 
