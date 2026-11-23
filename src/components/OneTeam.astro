@@ -10,9 +10,11 @@ interface Props {
   title: string;
   closing: string;
   cta: Service['cta'];
+  profiles?: { name: string; badge: string; quote: string }[];
+  stats?: { value: string; label: string }[];
 }
 
-const { title, closing, cta } = Astro.props;
+const { title, closing, cta, profiles = [], stats = [] } = Astro.props;
 const { squadGrid, ui } = await getSiteContent();
 
 const mentors = await Promise.all(
@@ -20,13 +22,14 @@ const mentors = await Promise.all(
     .filter((member) => member.founder)
     .map(async (member) => {
       const photo = await getImage({ src: teamImages[member.img], width: 360, height: 360, fit: 'cover', position: 'top', format: 'webp', quality: 90 });
-      return { ...member, photo, alt: ui.team.memberAlt.replace('{name}', member.name).replace('{role}', member.role) };
+      const profile = profiles.find((item) => item.name === member.name);
+      return { ...member, profile, photo, alt: ui.team.memberAlt.replace('{name}', member.name).replace('{role}', member.role) };
     }),
 );
 
 const cardStyles = [
-  { frame: 'var(--gold-3)', inner: '#fff', tilt: '-1.8deg', enter: -3, crop: false },
-  { frame: '#fff', inner: 'var(--periwinkle-2)', tilt: '1.8deg', enter: 3, crop: true },
+  { frame: 'var(--gold-3)', inner: '#fff', tilt: '-1.8deg', enter: -3, crop: false, stamp: 'var(--periwinkle-9)', stampInk: 'var(--midnight)', quoteMark: '#fde4b5' },
+  { frame: '#fff', inner: 'var(--periwinkle-2)', tilt: '1.8deg', enter: 3, crop: true, stamp: 'var(--midnight)', stampInk: 'var(--gold-9)', quoteMark: '#d2d7fc' },
 ];
 ---
 
@@ -50,6 +53,11 @@ const cardStyles = [
               return (
                 <li class="mentor-card" data-mentor-enter={index} data-enter-rotate={style.enter}>
                   <article class="mentor-card-tilt" style={`--tilt:${style.tilt}`} aria-labelledby={nameId}>
+                    {mentor.profile && (
+                      <div class="mentor-stamp" style={`--stamp-bg:${style.stamp};--stamp-ink:${style.stampInk}`}>
+                        {mentor.profile.badge}
+                      </div>
+                    )}
                     <div class="mentor-avatar">
                       <img
                         class:list={[style.crop && 'is-tight']}
@@ -67,9 +75,24 @@ const cardStyles = [
                           <h3 id={nameId} class="one-h3">{mentor.name}</h3>
                           <p class="mentor-role">{mentor.role}</p>
                         </div>
-                        <div class="mentor-body">
-                          <p class="one-body mentor-bio">{mentor.d}</p>
-                        </div>
+                        {mentor.profile ? (
+                          <>
+                            <div class="mentor-body">
+                              <svg class="mentor-quote-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false" style={`color:${style.quoteMark}`}>
+                                <path
+                                  fill="currentColor"
+                                  d="M14 14h14v16c0 10.5-5.2 17.6-14 21l-3.6-6.8c5.2-2.2 7.8-6.2 8.2-11.2H14V14Zm28 0h14v16c0 10.5-5.2 17.6-14 21l-3.6-6.8c5.2-2.2 7.8-6.2 8.2-11.2H42V14Z"
+                                />
+                              </svg>
+                              <blockquote class="mentor-quote">“{mentor.profile.quote}”</blockquote>
+                            </div>
+                            <p class="one-body mentor-bio">{mentor.d}</p>
+                          </>
+                        ) : (
+                          <div class="mentor-body">
+                            <p class="one-body mentor-bio">{mentor.d}</p>
+                          </div>
+                        )}
                         {mentor.linkedin && (
                           <a class="mentor-link" href={mentor.linkedin} rel="noopener noreferrer" target="_blank">
                             LinkedIn de {mentor.name}
@@ -83,6 +106,17 @@ const cardStyles = [
             })
           }
         </ul>
+
+        {stats.length > 0 && (
+          <dl class="mentor-stats">
+            {stats.map((stat) => (
+              <div class="mentor-stat">
+                <dt>{stat.label}</dt>
+                <dd>{stat.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </div>
     </section>
   )
@@ -214,6 +248,70 @@ const cardStyles = [
   }
   .mentor-body { position: relative; margin-block: auto; padding: 0.5rem 0 0.5rem 64px; }
   .mentor-bio { line-height: 1.375; color: var(--neutral-12); }
+  .mentor-stamp {
+    position: absolute;
+    top: -1.25rem;
+    right: -1.25rem;
+    z-index: 30;
+    padding: 0.5rem 1rem;
+    border-radius: 16px;
+    background: var(--stamp-bg);
+    color: var(--stamp-ink);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    rotate: 6deg;
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+    letter-spacing: -0.025em;
+    pointer-events: none;
+  }
+  .mentor-quote-mark {
+    position: absolute;
+    top: -0.5rem;
+    left: 48px;
+    width: 3.5rem;
+    height: 3.5rem;
+    pointer-events: none;
+    user-select: none;
+  }
+  .mentor-quote {
+    position: relative;
+    z-index: 10;
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 15px;
+    line-height: 1.35;
+    color: #303163;
+  }
+  .mentor-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .mentor-stat {
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 20px 24px;
+    border-radius: 28px;
+    background: #fff;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    text-align: center;
+  }
+  .mentor-stat dt { font-size: 1rem; line-height: 1.5rem; color: var(--midnight); }
+  .mentor-stat dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--midnight);
+  }
   .mentor-link {
     align-self: flex-start;
     font-family: var(--font-display);
@@ -227,6 +325,7 @@ const cardStyles = [
 
   @media (min-width: 380px) {
     .mentor-body { padding-left: 72px; }
+    .mentor-quote-mark { left: 56px; }
   }
   @media (max-width: 379px) {
     .mentor-avatar { top: 10rem; }
@@ -244,6 +343,21 @@ const cardStyles = [
     .mentor-head h3 { font-size: calc(clamp(1.7rem, 2.15vw, 2.3rem) * var(--mc-text-scale)); }
     .mentor-role { font-size: 18px; }
     .mentor-body { padding-left: 88px; }
+    .mentor-stamp {
+      top: -26px;
+      right: -26px;
+      padding: 10px 21px;
+      border-radius: 21px;
+      font-size: 21px;
+    }
+    .mentor-quote-mark { left: 68px; width: 4rem; height: 4rem; }
+    .mentor-quote { font-size: 19px; }
+    .mentor-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+    .mentor-stat:nth-child(1) { rotate: 1deg; }
+    .mentor-stat:nth-child(2) { rotate: -1.5deg; }
+    .mentor-stat:nth-child(3) { rotate: 1.8deg; }
+    .mentor-stat dt { font-size: 1.125rem; line-height: 1.75rem; }
+    .mentor-stat dd { font-size: 3.75rem; }
     .mentor-bio { font-size: calc(clamp(1.02rem, 1.18vw, 1.2rem) * var(--mc-text-scale)); }
   }
   @media (min-width: 768px) {
