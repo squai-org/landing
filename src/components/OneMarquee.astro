@@ -22,18 +22,10 @@ const lineA = marquee.lineA.map((item) => ({ text: item.text ?? (item.cohort ? f
 
 <style>
   .one-marquee {
-    --fs-badge: calc(var(--u) * 18);
     width: 100%;
     padding-block: calc(var(--u) * 96);
     overflow-x: clip;
     background: #fff;
     user-select: none;
-  }
-
-  @media (min-width: 768px) {
-    .one-marquee { --fs-badge: calc(var(--u) * 32); }
-  }
-  @media (min-width: 992px) {
-    .one-marquee { --fs-badge: calc(var(--u) * 64); }
   }
 </style>

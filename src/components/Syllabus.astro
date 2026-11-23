@@ -251,15 +251,6 @@ const slideStyles: SlideStyle[] = [
 
 <style>
   .syllabus {
-    --books-header-pt: calc(var(--u) * 72);
-    --books-header-pb: calc(var(--u) * 24);
-    --books-header-gap: calc(var(--u) * 12);
-    --books-pb: calc(var(--u) * 40);
-    --books-list-px: calc(var(--u) * 8);
-    --books-list-py: calc(var(--u) * 40);
-    --books-item-w: calc(var(--u) * 380);
-    --books-item-px: calc(var(--u) * 12);
-    --slider-btn: max(44px, calc(var(--u) * 56));
     position: relative;
     width: 100%;
     padding-bottom: var(--books-pb);
@@ -532,24 +523,9 @@ const slideStyles: SlideStyle[] = [
   .syllabus-cta { display: flex; }
 
   @media (min-width: 768px) {
-    .syllabus {
-      --books-item-w: calc(var(--u) * 401);
-      --books-item-px: calc(var(--u) * 16);
-    }
     .syllabus-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (min-width: 992px) {
-    .syllabus {
-      --books-header-pt: calc(var(--u) * 220);
-      --books-header-pb: calc(var(--u) * 80);
-      --books-header-gap: calc(var(--u) * 32);
-      --books-pb: calc(var(--u) * 125);
-      --books-list-px: calc(var(--u) * 16);
-      --books-list-py: calc(var(--u) * 56);
-      --books-item-w: calc(var(--u) * 420);
-      --books-item-px: calc(var(--u) * 24);
-      --slider-btn: calc(var(--u) * 72);
-    }
     .syllabus-arrows { padding-right: calc(var(--u) * 40); }
     .syllabus-modules { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .session-slide-bg,

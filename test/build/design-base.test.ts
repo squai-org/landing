@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -139,5 +139,19 @@ describe('solape del pie con la curva de la seccion anterior', () => {
   it('las paginas de servicio usan el pie solapado y el marco blanco', () => {
     expect(page).toMatch(/<Footer overlap/);
     expect(page).toMatch(/\.page-frame \{ background: var\(--surface\); \}/);
+  });
+});
+
+describe('una sola definicion de los tokens de landing-design', () => {
+  const owned = /^\s*--(faq-r|faq-py|faq-px|books-[a-z-]+|slider-btn|fs-label|label-r|label-px|label-py|fs-badge|frame-[a-z]+|hero-note-[a-z]+):/m;
+
+  it('ningun componente ni hoja de estilos distinta de global.css los redefine', () => {
+    const files = [
+      ...readdirSync(path.join(import.meta.dirname, '../../src/components')).map((name) => `src/components/${name}`),
+      'src/styles/one-sections.css',
+      'src/styles/motion.css',
+    ];
+    const redefining = files.filter((file) => owned.test(read(file)));
+    expect(redefining).toEqual([]);
   });
 });

@@ -23,13 +23,14 @@ describe('preguntas frecuentes como landing-design', () => {
     expect(section).toMatch(/padding: var\(--section-py\) var\(--gutter\)/);
   });
 
-  it('define los tokens de la pregunta con las medidas del diseno', () => {
-    const tokens = rule(faqCss, '.faq-one');
+  it('los tokens de la pregunta viven solo en global.css con las medidas del diseno', () => {
+    const global = read('src/styles/global.css');
 
-    expect(tokens).toContain('--faq-r: calc(var(--u) * 16)');
-    expect(tokens).toContain('--faq-py: calc(var(--u) * 23)');
-    expect(tokens).toContain('--faq-px: calc(var(--u) * 20)');
-    expect(faqCss).toMatch(/--faq-r: calc\(var\(--u\) \* 24\);[\s\S]*--faq-py: calc\(var\(--u\) \* 28\.8\);[\s\S]*--faq-px: calc\(var\(--u\) \* 32\)/);
+    expect(faqCss).not.toMatch(/--faq-(r|py|px):/);
+    expect(global).toContain('--faq-r: calc(var(--u) * 16)');
+    expect(global).toContain('--faq-py: calc(var(--u) * 23)');
+    expect(global).toContain('--faq-px: calc(var(--u) * 20)');
+    expect(global).toMatch(/--faq-r: calc\(var\(--u\) \* 24\);[\s\S]*--faq-py: calc\(var\(--u\) \* 28\.8\);[\s\S]*--faq-px: calc\(var\(--u\) \* 32\)/);
   });
 
   it('el item usa --faq-r y el signo gira 45 grados en 0.3 s', () => {

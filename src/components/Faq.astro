@@ -239,9 +239,6 @@ const filters = grouped && intro
 
 <style>
   .faq-one {
-    --faq-r: calc(var(--u) * 16);
-    --faq-py: calc(var(--u) * 23);
-    --faq-px: calc(var(--u) * 20);
     position: relative;
     z-index: 20;
     width: 100%;
@@ -348,13 +345,6 @@ const filters = grouped && intro
 
   @media (min-width: 640px) {
     .faq-categories-label { font-size: 1.125rem; }
-  }
-  @media (min-width: 992px) {
-    .faq-one {
-      --faq-r: calc(var(--u) * 24);
-      --faq-py: calc(var(--u) * 28.8);
-      --faq-px: calc(var(--u) * 32);
-    }
   }
   @media (min-width: 1024px) {
     .faq-shell.is-grouped { grid-template-columns: repeat(12, minmax(0, 1fr)); }
