@@ -19,13 +19,14 @@ El servicio activo se declara con `data-service="<slug>"` en `<html>` (la prop `
 | `--accent-line` | Bordes decorativos (paso 6) | `--periwinkle-6` | `--teal-6` | `--gold-6` |
 | `--accent-ink` | Texto y enlaces de acento sobre claro (paso 11) | `--periwinkle-11` | `--teal-11` | `--gold-11` |
 | `--accent-deep` | Superficie oscura (paso 12): pie | `--periwinkle-12` | `--teal-12` | `--gold-12` |
+| `--accent-deep-bar` | Barra legal del pie (paso 11) | `--periwinkle-11` | `--teal-11` | `--gold-11` |
 | `--on-accent` | Texto sobre `--accent` | `--midnight` | `--midnight` | `--midnight` |
 | `--on-deep` | Texto sobre `--accent-deep` | `--canvas` | `--teal-2` | `--gold-2` |
 | `--on-deep-muted` | Texto secundario sobre `--accent-deep` | `--periwinkle-4` | `--teal-5` | `--gold-5` |
 
 Reglas: el texto sobre un paso 9 es siempre Midnight, nunca blanco; el paso 9 nunca es texto sobre claro (para eso está `--accent-ink`). Gold solo se usa como acento donde pasa AA: relleno con texto Midnight, lema y enlaces en hover sobre superficies oscuras, y paso 11 como texto en Squai Learn.
 
-Para añadir un servicio: un bloque `[data-service='<slug>'] { ... }` con esos diez tokens y filas nuevas en la tabla de contraste (la prueba falla si una fila no cumple).
+Para añadir un servicio: un bloque `[data-service='<slug>'] { ... }` con esos once tokens y filas nuevas en la tabla de contraste (la prueba falla si una fila no cumple).
 
 ## Escala del diseño
 
@@ -55,7 +56,7 @@ Tipografía: el diseño carga Familjen Grotesk 500–700 y Atkinson Hyperlegible
 
 ## Superficies oscuras
 
-El pie es P12 (`--periwinkle-12`, `#303163`) en todas las páginas, con la barra legal en Midnight, como en `landing-design`: ya no depende del tema del servicio (`--accent-deep`). Texto principal Canvas, secundario P4 y enlaces en hover Gold. Las tarjetas oscuras usan Midnight o `--night-surface`. `data-surface="deep"` invierte los tokens de foco para esa superficie.
+El pie vuelve a usar `--accent-deep` (paso 12 del servicio: P12 `#303163` en Squai One y en la marca madre, Teal 12 en Grow y Gold 12 en Learn) con texto `--on-deep` y secundario `--on-deep-muted`. La barra legal usa `--accent-deep-bar` (paso 11 del mismo servicio: P11, Teal 11 o Gold 11), un tono más claro que el resto del pie, con texto `--on-deep`; el hover de sus enlaces solo engrosa el subrayado porque Gold 9 no llega a 4,5:1 sobre el paso 11. Enlaces en hover del resto del pie, Gold. `data-surface="deep"` invierte los tokens de foco para esa superficie. Las tarjetas oscuras usan Midnight o `--night-surface`.
 
 ## Foco visible
 
@@ -95,8 +96,9 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Franja dorada animada (marquee) | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Franja oscura animada (marquee) | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |
-| base | Pie: barra legal | `--periwinkle-4` | `--midnight` | 13.76 | 4.5 |
-| base | Pie: enlaces de la barra legal en hover | `--gold-9` | `--midnight` | 11.90 | 4.5 |
+| base | Pie: barra legal | `--on-deep` | `--accent-deep-bar` | 5.40 | 4.5 |
+| grow | Pie: barra legal | `--on-deep` | `--accent-deep-bar` | 4.90 | 4.5 |
+| learn | Pie: barra legal | `--on-deep` | `--accent-deep-bar` | 4.82 | 4.5 |
 | base | Foco: anillo sobre superficie clara | `--focus-ink` | `--canvas` | 5.40 | 3 |
 | base | Foco: anillo Midnight sobre el hero Periwinkle | `--midnight` | `--periwinkle-9` | 6.77 | 3 |
 | base | Foco: halo sobre superficie oscura | `--canvas` | `--midnight` | 18.02 | 3 |
@@ -110,6 +112,12 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Pie, texto secundario | `--periwinkle-4` | `--periwinkle-12` | 8.52 | 4.5 |
 | base | Pie, enlace de WhatsApp y enlaces en hover | `--gold-9` | `--periwinkle-12` | 7.36 | 4.5 |
 | base | Foco sobre el pie | `--canvas` | `--periwinkle-12` | 11.16 | 3 |
+| grow | Pie, texto principal y enlaces | `--on-deep` | `--accent-deep` | 10.12 | 4.5 |
+| grow | Pie, texto secundario | `--on-deep-muted` | `--accent-deep` | 8.40 | 4.5 |
+| grow | Pie, enlace de WhatsApp y enlaces en hover | `--gold-9` | `--accent-deep` | 6.75 | 4.5 |
+| learn | Pie, texto principal y enlaces | `--on-deep` | `--accent-deep` | 9.99 | 4.5 |
+| learn | Pie, texto secundario | `--on-deep-muted` | `--accent-deep` | 8.68 | 4.5 |
+| learn | Pie, enlace de WhatsApp y enlaces en hover | `--gold-9` | `--accent-deep` | 6.58 | 4.5 |
 | base | Botón Conoce Squai junto a las redes | `--midnight` | `--canvas` | 18.02 | 4.5 |
 | base | Menú móvil: elementos sobre blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
 | base | Menú móvil: panel | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |

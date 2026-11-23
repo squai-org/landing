@@ -67,7 +67,7 @@ describe('tabla de contraste de docs/diseno/tokens-y-contraste.md', () => {
 });
 
 describe('tema por servicio', () => {
-  const roleTokens = ['--accent', '--accent-hover', '--accent-soft', '--accent-soft-strong', '--accent-line', '--accent-ink', '--accent-deep', '--on-accent', '--on-deep', '--on-deep-muted'];
+  const roleTokens = ['--accent', '--accent-hover', '--accent-soft', '--accent-soft-strong', '--accent-line', '--accent-ink', '--accent-deep', '--accent-deep-bar', '--on-accent', '--on-deep', '--on-deep-muted'];
 
   it('Squai One usa Periwinkle por defecto', () => {
     expect(resolve('--accent', 'base').toLowerCase()).toBe('#8a8ef9');

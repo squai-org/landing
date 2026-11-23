@@ -111,8 +111,8 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     margin-top: clamp(24px, 3vw, 48px);
     padding-top: var(--section-py);
     overflow: hidden;
-    background: var(--periwinkle-12);
-    color: var(--canvas);
+    background: var(--accent-deep);
+    color: var(--on-deep);
   }
   .site-footer--overlap {
     margin-top: calc(var(--edge-r) * -1);
@@ -128,11 +128,11 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
   }
   .footer-brand { display: flex; flex-direction: column; gap: 32px; }
   .footer-intro { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-  .footer-logo { --wordmark-color: var(--canvas); color: var(--canvas); }
+  .footer-logo { --wordmark-color: var(--on-deep); color: var(--on-deep); }
   .footer-blurb {
     max-width: 28rem;
     margin: 0;
-    color: var(--periwinkle-4);
+    color: var(--on-deep-muted);
     font-size: 16px;
     line-height: 1.625;
   }
@@ -140,12 +140,12 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    color: var(--periwinkle-4);
+    color: var(--on-deep-muted);
     font-size: 16px;
     font-style: normal;
     line-height: 1.625;
   }
-  .footer-company-name { color: var(--canvas); font-family: var(--font-display); font-weight: 700; }
+  .footer-company-name { color: var(--on-deep); font-family: var(--font-display); font-weight: 700; }
   .footer-mail,
   .footer-legal-link {
     color: inherit;
@@ -166,7 +166,7 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     line-height: 1.5;
     transition: color .15s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .footer-whatsapp:hover { color: var(--canvas); }
+  .footer-whatsapp:hover { color: var(--on-deep); }
   .footer-nav {
     display: flex;
     flex-wrap: wrap;
@@ -179,13 +179,13 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     font-weight: 700;
     line-height: 1.5;
   }
-  .footer-nav-link { color: var(--canvas); transition: color .15s cubic-bezier(0.4, 0, 0.2, 1); }
+  .footer-nav-link { color: var(--on-deep); transition: color .15s cubic-bezier(0.4, 0, 0.2, 1); }
   .footer-nav-link:hover { color: var(--gold-9); }
   .footer-aside { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
   .footer-aside-head { display: flex; flex-direction: column; gap: 12px; }
   .footer-aside-title {
     margin: 0;
-    color: var(--canvas);
+    color: var(--on-deep);
     font-family: var(--font-display);
     font-size: calc(var(--u) * 30);
     font-weight: 700;
@@ -198,11 +198,11 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
   .footer-aside-copy {
     max-width: 32rem;
     margin: 0;
-    color: var(--periwinkle-4);
+    color: var(--on-deep-muted);
     font-size: 16px;
     line-height: 1.625;
   }
-  .footer-bottom { width: 100%; padding: 20px var(--gutter) calc(20px + var(--float-clearance, 0px)); background: var(--midnight); color: var(--periwinkle-4); }
+  .footer-bottom { width: 100%; padding: 20px var(--gutter) calc(20px + var(--float-clearance, 0px)); background: var(--accent-deep-bar); color: var(--on-deep); }
   .footer-bottom-inner {
     display: flex;
     flex-direction: column;
@@ -213,6 +213,7 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     font-size: 14px;
     line-height: 1.43;
   }
+  .footer-bottom .footer-legal-link:hover { color: inherit; text-decoration-thickness: 2px; }
   .footer-company-mark { white-space: nowrap; }
   .footer-legal-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
 

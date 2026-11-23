@@ -126,6 +126,16 @@ describe('base visual de landing-design', () => {
   });
 });
 
+describe('colores del pie', () => {
+  const footer = read('src/components/Footer.astro');
+
+  it('el cuerpo usa la superficie oscura del servicio y la barra legal un paso mas claro', () => {
+    expect(/\.site-footer \{[^}]*background: var\(--accent-deep\);/.test(footer)).toBe(true);
+    expect(/\.footer-bottom \{[^}]*background: var\(--accent-deep-bar\);/.test(footer)).toBe(true);
+    expect(footer).not.toMatch(/\.footer-bottom \{[^}]*background: var\(--midnight\)/);
+  });
+});
+
 describe('solape del pie con la curva de la seccion anterior', () => {
   const footer = read('src/components/Footer.astro');
   const page = read('src/pages/servicios/[slug].astro');
