@@ -38,6 +38,7 @@ export const tweens = {
   formCardReveal: { duration: 0.4, delay: 0.08, ease: easing.smooth },
   faqItem: { duration: 0.36, ease: easing.smooth },
   faqPanel: { duration: 0.28, ease: easing.smooth },
+  faqFilter: { duration: 0.22, ease: easing.smooth },
   audienceExample: { duration: 0.18 },
 } as const satisfies Record<string, AnimationOptions>;
 

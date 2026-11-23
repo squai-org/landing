@@ -1,11 +1,14 @@
 ---
-import BackdropShape from './BackdropShape.astro';
+import DriftBlock from './DriftBlock.astro';
+import OneBackdrop from './OneBackdrop.astro';
 import { getSiteContent, type Faq } from '../lib/content';
+import { pillBlockPresets } from '../lib/pill-blocks';
+import '../styles/one-sections.css';
 
 interface Props {
   items: Faq[];
   title?: string;
-  intro?: { lead: string; categoriesLabel: string };
+  intro?: { lead: string; categoriesLabel: string; allLabel: string };
 }
 
 const { labels, services } = await getSiteContent();
@@ -24,63 +27,123 @@ const groups = grouped
     }))
   : [{ name: '', id: '', entries }];
 const Question = grouped ? 'h4' : 'h3';
+
+interface PillTheme {
+  preset: number;
+  idle: string;
+  active: string;
+  blocks: string;
+}
+
+const allTheme: PillTheme = { preset: 0, idle: '#eef0fd', active: '#d2d7fc', blocks: '#969bfc' };
+const categoryThemes: { match: RegExp; theme: PillTheme }[] = [
+  { match: /programa/i, theme: { preset: 1, idle: '#fcf0db', active: '#fde4b5', blocks: '#ffd688' } },
+  { match: /pago|inscrip/i, theme: { preset: 2, idle: '#e1e4fd', active: '#c3c9fc', blocks: '#8A8EF9' } },
+  { match: /requisito/i, theme: { preset: 3, idle: '#f2f3f6', active: '#d9dcea', blocks: '#b4bafc' } },
+];
+const themeFor = (name: string, position: number) => (categoryThemes.find(({ match }) => match.test(name)) ?? categoryThemes[position % categoryThemes.length]!).theme;
+
+const filters = grouped && intro
+  ? [
+      { id: 'all', label: intro.allLabel, theme: allTheme },
+      ...groups.map((group, position) => ({ id: group.id, label: group.name, theme: themeFor(group.name, position) })),
+    ]
+  : [];
 ---
 
-<section id="faq" class:list={['section', 'tint', { 'faq-grouped': grouped }]}>
-  {grouped && <BackdropShape shape="faq" still />}
-  <div class:list={['shell', 'faq-shell', { 'is-flat': !grouped }]}>
+<section
+  id="faq"
+  class:list={grouped ? ['faq-one', 'one-u'] : ['section', 'tint']}
+  aria-labelledby={grouped ? 'faq-title' : undefined}
+  data-faq-section
+>
+  {grouped && <OneBackdrop shape="faq" colors={['#eef0fd']} opacities={[0.9]} align="xMinYMin" />}
+  <div class:list={['shell', 'faq-shell', grouped ? 'is-grouped' : 'is-flat']}>
     <div class="faq-aside">
-      <h2 class:list={['display', grouped ? 'd-h2' : 'd-h1', 'faq-title']}>{title}</h2>
-      {grouped && intro && <p class="lead faq-lead">{intro.lead}</p>}
+      <div class="faq-heading">
+        <h2 id="faq-title" class:list={grouped ? ['one-h2', 'faq-title'] : ['display', 'd-h1', 'faq-title']}>{title}</h2>
+        {grouped && intro && <p class="one-lead faq-lead">{intro.lead}</p>}
+      </div>
       {
-        grouped && intro && (
-          <nav class="faq-categories" aria-label={intro.categoriesLabel}>
-            <p class="label faq-categories-label" aria-hidden="true">{intro.categoriesLabel}</p>
-            <ul>
-              {groups.map((group) => <li><a class="faq-category" href={`#${group.id}`}>{group.name}</a></li>)}
-            </ul>
-          </nav>
+        filters.length > 0 && intro && (
+          <div class="faq-categories">
+            <span class="faq-categories-label">{intro.categoriesLabel}</span>
+            <div class="faq-pills" role="group" aria-label={intro.categoriesLabel}>
+              {filters.map((filter) => {
+                const blocks = pillBlockPresets[filter.theme.preset]!;
+                return (
+                  <button
+                    type="button"
+                    class="pill-button faq-pill"
+                    data-faq-filter={filter.id}
+                    aria-pressed={filter.id === 'all' ? 'true' : 'false'}
+                    style={`--pill-idle:${filter.theme.idle};--pill-on:${filter.theme.active}`}
+                  >
+                    <span class="faq-pill-blocks" aria-hidden="true">
+                      {blocks.map((block) => <DriftBlock {...block} color={filter.theme.blocks} />)}
+                    </span>
+                    <span class="pill-button-bg" aria-hidden="true"></span>
+                    <span class="pill-button-label"><span data-split-text>{filter.label}</span></span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )
       }
     </div>
-    <div class="faq-groups">
+    <div class="faq-groups" data-faq-groups>
       {
         groups.map((group) => (
-          <div class="faq-group" id={group.id || undefined} role={group.name ? 'group' : undefined} aria-labelledby={group.name ? `${group.id}-title` : undefined}>
-            {group.name && <h3 id={`${group.id}-title`} class="display d-h2 faq-group-title">{group.name}</h3>}
+          <div
+            class="faq-group"
+            id={group.id || undefined}
+            data-faq-group={group.id || undefined}
+            role={group.name ? 'group' : undefined}
+            aria-labelledby={group.name ? `${group.id}-title` : undefined}
+          >
+            {group.name && <h3 id={`${group.id}-title`} class="one-h3 faq-group-title">{group.name}</h3>}
             <div class="faq-list">
               {
-                group.entries.map((f) => (
-                  <div class="bento-card faq-item">
-                    <Question class="faq-question">
-                      <button
-                        type="button"
-                        class="faq-toggle"
-                        data-faq-toggle={String(f.index)}
-                        aria-expanded="false"
-                        aria-controls={`faq-panel-${f.index}`}
-                      >
-                        <span class="display d-h3">{f.q}</span>
-                        <span data-faq-sign={String(f.index)} aria-hidden="true" class="faq-sign">
-                          +
-                        </span>
-                      </button>
-                    </Question>
-                    <div id={`faq-panel-${f.index}`} data-faq-panel={String(f.index)} hidden class="faq-panel">
-                      {
-                        f.a.map((paragraph) => (
-                          <p class="lead faq-answer">
-                            {
-                              paragraph
-                                .split(serviceNamePattern)
-                                .map((part) => serviceNames.has(part) ? <strong>{part}</strong> : part)
-                            }
-                          </p>
-                        ))
-                      }
+                group.entries.map((f) => {
+                  const open = grouped && f.index === 0;
+                  return (
+                    <div class:list={['faq-item', grouped ? 'is-one' : 'bento-card']}>
+                      <Question class="faq-question">
+                        <button
+                          type="button"
+                          class="faq-toggle"
+                          data-faq-toggle={String(f.index)}
+                          aria-expanded={open ? 'true' : 'false'}
+                          aria-controls={`faq-panel-${f.index}`}
+                        >
+                          <span class:list={['faq-q', { 'display d-h3': !grouped }]}>{f.q}</span>
+                          <span data-faq-sign={String(f.index)} aria-hidden="true" class="faq-sign">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                              <path d="M5 12h14" />
+                              <path d="M12 5v14" />
+                            </svg>
+                          </span>
+                        </button>
+                      </Question>
+                      <div id={`faq-panel-${f.index}`} data-faq-panel={String(f.index)} hidden={!open} class="faq-panel">
+                        <div class="faq-panel-inner">
+                          {
+                            f.a.map((paragraph) => (
+                              <p class:list={['faq-answer', grouped ? 'one-body' : 'lead']}>
+                                {
+                                  paragraph
+                                    .split(serviceNamePattern)
+                                    .map((part) => serviceNames.has(part) ? <strong>{part}</strong> : part)
+                                }
+                              </p>
+                            ))
+                          }
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               }
             </div>
           </div>
@@ -90,8 +153,103 @@ const Question = grouped ? 'h4' : 'h3';
   </div>
 </section>
 
+<script>
+  import { animate, prefersReducedMotion, revealOnView, tweens } from '../lib/motion';
+
+  const section = document.querySelector<HTMLElement>('[data-faq-section]');
+  if (section) {
+    const reduced = prefersReducedMotion();
+    const toggles = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-faq-toggle]'));
+    const filters = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-faq-filter]'));
+    const groups = Array.from(section.querySelectorAll<HTMLElement>('[data-faq-group]'));
+    const container = section.querySelector<HTMLElement>('[data-faq-groups]');
+    const running = new WeakMap<HTMLElement, { stop: () => void }>();
+
+    const panelOf = (toggle: HTMLButtonElement) => document.getElementById(toggle.getAttribute('aria-controls') ?? '')!;
+    const isOpen = (toggle: HTMLButtonElement) => toggle.getAttribute('aria-expanded') === 'true';
+
+    const settle = (panel: HTMLElement, open: boolean) => {
+      panel.hidden = !open;
+      panel.style.height = '';
+      panel.style.opacity = '';
+    };
+
+    const setOpen = (toggle: HTMLButtonElement, open: boolean, instant = false) => {
+      const panel = panelOf(toggle);
+      toggle.setAttribute('aria-expanded', String(open));
+      running.get(panel)?.stop();
+      if (reduced || instant) {
+        settle(panel, open);
+        return;
+      }
+      const from = panel.hidden ? 0 : panel.offsetHeight;
+      panel.hidden = false;
+      const to = open ? panel.scrollHeight : 0;
+      const controls = animate(panel, { height: [`${from}px`, `${to}px`], opacity: open ? [from === 0 ? 0 : 1, 1] : [1, 0] }, tweens.faqPanel);
+      running.set(panel, controls);
+      controls.finished.then(() => {
+        if (running.get(panel) === controls) settle(panel, open);
+      }, () => {});
+    };
+
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const next = !isOpen(toggle);
+        toggles.forEach((other) => {
+          if (other !== toggle && isOpen(other)) setOpen(other, false);
+        });
+        setOpen(toggle, next);
+      });
+    });
+
+    const applyFilter = (id: string) => {
+      groups.forEach((group) => (group.hidden = id !== 'all' && group.dataset.faqGroup !== id));
+      const visible = toggles.filter((toggle) => !toggle.closest<HTMLElement>('[data-faq-group]')?.hidden);
+      toggles.forEach((toggle) => {
+        if (isOpen(toggle)) setOpen(toggle, false, true);
+      });
+      if (visible[0]) setOpen(visible[0], true, true);
+    };
+
+    let activeFilter = 'all';
+    filters.forEach((button) => {
+      button.addEventListener('click', () => {
+        const id = button.dataset.faqFilter ?? 'all';
+        if (id === activeFilter || !container) return;
+        activeFilter = id;
+        filters.forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+        if (reduced) {
+          applyFilter(id);
+          return;
+        }
+        const leaving = animate(container, { opacity: 0, y: -8 }, tweens.faqFilter);
+        leaving.finished.then(() => {
+          if (activeFilter !== id) return;
+          applyFilter(id);
+          animate(container, { opacity: [0, 1], y: [12, 0] }, tweens.faqFilter);
+        }, () => {});
+      });
+    });
+
+    groups.forEach((group) => revealOnView(group, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, tweens.faqItem));
+  }
+</script>
+
 <style>
-  .faq-grouped { position: relative; overflow: clip; }
+  .faq-one {
+    --faq-r: calc(var(--u) * 16);
+    --faq-py: calc(var(--u) * 23);
+    --faq-px: calc(var(--u) * 20);
+    position: relative;
+    z-index: 20;
+    width: 100%;
+    overflow-x: clip;
+    padding: var(--section-py) var(--gutter);
+    border-radius: 0 0 var(--edge-r) var(--edge-r);
+    background: #fff;
+    color: var(--midnight);
+    scroll-margin-top: 2.5rem;
+  }
   .faq-shell { position: relative; z-index: 1; }
   .faq-title { color: var(--ink); }
   .faq-groups { display: flex; flex-direction: column; gap: clamp(32px, 4vw, 56px); }
@@ -111,37 +269,98 @@ const Question = grouped ? 'h4' : 'h3';
     cursor: pointer;
     text-align: left;
   }
-  .faq-sign { display: flex; width: 34px; height: 34px; flex: none; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font-size: 18px; line-height: 1; }
-  .faq-panel { padding: 0 clamp(22px, 2.2vw, 34px) clamp(22px, 2.2vw, 30px); }
+  .faq-sign {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    transition: rotate 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .faq-sign svg { display: block; width: 50%; height: 50%; }
+  .faq-toggle[aria-expanded='true'] .faq-sign { rotate: 45deg; }
+  .faq-panel { overflow: hidden; }
+  .faq-panel-inner { padding: 0 clamp(22px, 2.2vw, 34px) clamp(22px, 2.2vw, 30px); }
   .faq-answer { max-width: 70ch; color: var(--ink-body); }
   .faq-answer + .faq-answer { margin-top: 12px; }
 
-  .faq-grouped .faq-shell { display: grid; gap: clamp(28px, 4vw, 56px); align-items: start; }
-  .faq-aside { display: grid; gap: clamp(16px, 2vw, 24px); }
-  .faq-lead { max-width: 40ch; margin: 0; color: var(--ink-body); }
-  .faq-categories { display: grid; gap: 12px; }
-  .faq-categories-label { margin: 0; color: var(--ink); }
-  .faq-categories ul { display: flex; margin: 0; padding: 0; flex-wrap: wrap; gap: 10px; list-style: none; }
-  .faq-category {
-    display: inline-flex;
-    min-height: var(--control-height-compact);
-    padding: 0 20px;
-    align-items: center;
-    border-radius: var(--radius-pill);
-    background: var(--accent-soft);
-    color: var(--ink);
-    font-family: var(--font-display);
-    font-weight: 700;
-    text-decoration: none;
-    transition: background var(--duration-fast) var(--ease-out);
+  .faq-shell.is-grouped {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(var(--u) * 56);
+    align-items: start;
+    max-width: calc(var(--u) * 1680);
+    margin-inline: auto;
+    padding: 0;
   }
-  .faq-category:hover { background: var(--accent-soft-strong); }
+  .faq-aside { display: grid; gap: calc(var(--u) * 24); }
+  .faq-heading { display: grid; gap: calc(var(--u) * 16); }
+  .faq-lead { max-width: calc(var(--u) * 520); color: #525770; }
+  .faq-categories { display: grid; gap: 1rem; padding-top: 0.5rem; }
+  .faq-categories-label { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #303163; }
+  .faq-pills { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .faq-pill { --pill-bg: var(--pill-idle); }
+  .faq-pill[aria-pressed='true'] { --pill-bg: var(--pill-on); z-index: 10; }
+  .faq-pill-blocks { position: absolute; inset: 0; z-index: 0; display: none; pointer-events: none; user-select: none; }
+  .faq-pill[aria-pressed='true'] .faq-pill-blocks { display: block; }
   .faq-group { scroll-margin-top: 112px; }
-  .faq-group-title { margin: 0 0 clamp(14px, 1.6vw, 22px); color: var(--ink); }
+  .faq-group-title { margin: 0 0 calc(var(--u) * 16); color: var(--midnight); }
+  .faq-shell.is-grouped .faq-groups { width: 100%; max-width: calc(var(--u) * 960); gap: calc(var(--u) * 48); }
+  .faq-shell.is-grouped .faq-list { gap: calc(var(--u) * 14); }
 
+  .faq-item.is-one {
+    border-radius: var(--faq-r);
+    background: #f2f3f6;
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .faq-item.is-one:hover,
+  .faq-item.is-one:has(.faq-toggle[aria-expanded='true']) { background: #eef0fd; }
+  .faq-item.is-one .faq-toggle {
+    min-height: max(56px, calc(var(--u) * 92));
+    padding: var(--faq-py) var(--faq-px);
+    gap: 1rem;
+  }
+  .faq-q {
+    font-family: var(--font-display);
+    font-size: var(--fs-lead);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--midnight);
+    transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .faq-toggle:hover .faq-q { color: #303163; }
+  .faq-item.is-one .faq-sign {
+    width: max(32px, calc(var(--u) * 38));
+    height: max(32px, calc(var(--u) * 38));
+    background: #fff;
+    color: var(--midnight);
+  }
+  .faq-item.is-one .faq-toggle[aria-expanded='true'] .faq-sign { background: var(--midnight); color: var(--canvas); }
+  .faq-item.is-one .faq-panel-inner { padding: 0 var(--faq-px) var(--faq-py); padding-right: calc(var(--u) * 96); }
+  .faq-item.is-one .faq-answer { max-width: none; color: #525770; }
+
+  @media (min-width: 640px) {
+    .faq-categories-label { font-size: 1.125rem; }
+  }
+  @media (min-width: 992px) {
+    .faq-one {
+      --faq-r: calc(var(--u) * 24);
+      --faq-py: calc(var(--u) * 28.8);
+      --faq-px: calc(var(--u) * 32);
+    }
+  }
   @media (min-width: 1024px) {
-    .faq-grouped .faq-shell { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
-    .faq-grouped .faq-aside { position: sticky; top: 112px; }
-    .faq-categories ul { flex-direction: column; align-items: flex-start; }
+    .faq-shell.is-grouped { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .faq-shell.is-grouped .faq-aside { position: sticky; top: 7rem; grid-column: span 4; }
+    .faq-shell.is-grouped .faq-groups { grid-column: span 8; margin-left: auto; }
+    .faq-pills { flex-direction: column; align-items: flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-sign, .faq-item.is-one, .faq-q { transition: none; }
   }
 </style>
