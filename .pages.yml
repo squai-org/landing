@@ -780,6 +780,33 @@ content:
                     label: Nota
                     type: text
                     required: true
+      - name: one-logros
+        label: Qué vas a lograr
+        description: Etiquetas manuscritas entre Para quién es y Cómo funciona.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: outcomes
+            label: false
+            type: object
+            fields:
+              - name: title
+                label: Título
+                type: string
+                required: true
+              - name: lead
+                label: Bajada
+                type: string
+                required: true
+              - name: pills
+                label: Etiquetas
+                description: Una por línea. Los colores y las posiciones se reparten en orden; el diseño tiene cinco.
+                type: string
+                required: true
+                list:
+                  min: 1
+                  collapsible: false
       - name: one-como-funciona
         label: Cómo funciona
         description: Los pasos desde que te inscribes hasta que terminas.
@@ -944,6 +971,48 @@ content:
                           value: /illustrations/sesiones/sesion-8.svg
                   - name: alt
                     label: Texto alternativo de la ilustración
+      - name: one-franja
+        label: Franja de datos
+        description: Dos cintas con datos del programa, antes de Quiénes enseñan. Fecha y horario salen de la cohorte; en una cinta, un item con cohorte no lleva texto.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: marquee
+            label: false
+            type: object
+            fields:
+              - name: lineA
+                label: Cinta superior
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{text}{cohort}'
+                fields:
+                  - name: text
+                    label: Texto
+                    description: Déjalo vacío si el item toma su valor de la cohorte.
+                    type: string
+                  - name: cohort
+                    label: Dato de la cohorte
+                    type: select
+                    options:
+                      values:
+                        - label: Ninguno
+                          value: ''
+                        - label: Fechas
+                          value: dates
+                        - label: Horario
+                          value: schedule
+              - name: lineB
+                label: Cinta inferior
+                type: string
+                required: true
+                list:
+                  min: 1
+                  collapsible: false
       - name: one-equipo
         label: Equipo
         description: Quiénes enseñan son las personas marcadas como fundadoras en Inicio → Equipo.
@@ -963,6 +1032,43 @@ content:
                 label: Cierre
                 type: string
                 required: true
+              - name: mentors
+                label: Sello y cita de cada fundador
+                description: Se asocian por nombre con las personas marcadas como fundadoras en Inicio → Equipo.
+                type: object
+                list:
+                  collapsible:
+                    summary: '{name}'
+                fields:
+                  - name: name
+                    label: Nombre
+                    description: Tiene que coincidir con el nombre de la persona en Inicio → Equipo.
+                    type: string
+                    required: true
+                  - name: badge
+                    label: Sello de rol
+                    type: string
+                    required: true
+                  - name: quote
+                    label: Cita
+                    type: text
+                    required: true
+              - name: stats
+                label: Cifras
+                description: Fila de cifras bajo las tarjetas de mentores.
+                type: object
+                list:
+                  collapsible:
+                    summary: '{value}'
+                fields:
+                  - name: value
+                    label: Cifra
+                    type: string
+                    required: true
+                  - name: label
+                    label: Descripción
+                    type: string
+                    required: true
       - name: one-testimonios
         label: Testimonios
         type: file

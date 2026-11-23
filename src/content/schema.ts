@@ -84,7 +84,13 @@ const syllabus = z.object({
     alt: text,
   })).min(1),
 });
-const youtubeUrl = text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
+const outcomes = z.object({ title: text, lead: text, pills: z.array(text).min(1) });
+const marqueeItem = z.object({ text: optional(text), cohort: z.enum(['', 'dates', 'schedule']).default('') })
+  .refine((item) => Boolean(item.text || item.cohort), 'Provide text or a cohort');
+const marquee = z.object({ lineA: z.array(marqueeItem).min(1), lineB: z.array(text).min(1) });
+const mentorProfile = z.object({ name: text, badge: text, quote: text });
+const teamStat = z.object({ value: text, label: text });
+const youtubeUrl =text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
 const videoSchema = z.object({
   url: optional(youtubeUrl),
   title: text, playLabel: text, iframeTitle: text, caption: text, posterAlt: text,
@@ -124,7 +130,14 @@ export const serviceSchema = z.object({
   video: videoSchema.optional(),
   seoTitle: optional(text),
   seoDescription: optional(text),
-  team: z.object({ title: text, closing: text }).optional(),
+  team: z.object({
+    title: text,
+    closing: text,
+    mentors: z.array(mentorProfile).optional(),
+    stats: z.array(teamStat).optional(),
+  }).optional(),
+  outcomes: outcomes.optional(),
+  marquee: marquee.optional(),
   testimonials: z.object({
     title: text,
     lead: optional(text),
