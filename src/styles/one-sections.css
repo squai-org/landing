@@ -283,6 +283,15 @@
       transform 0.35s 0.18s var(--button-alt-ease-bounce);
     transition-delay: 0.12s;
   }
+  .one-card-host:is(:hover, :focus-within) .one-card-cta .btn-bg {
+    scale: 0.955 0.925;
+    transition:
+      scale 0.15s var(--ease-soft-overshoot),
+      transform 0.35s 0.15s var(--button-alt-ease-bounce);
+  }
+  .one-card-host:is(:hover, :focus-within) .one-card-cta :is(.btn-text, .btn-arrow) .btn-bg {
+    transform: scale(1.047, 1.081);
+  }
   .one-card-host:is(:hover, :focus-within) .one-card-cta .btn-text {
     rotate: -12deg;
   }
