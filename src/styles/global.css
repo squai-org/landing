@@ -247,6 +247,9 @@ body {
   overflow-x: hidden;
 }
 
+.page-frame,
+.legal-page-frame { overflow-x: clip; }
+
 a { color: var(--accent-ink); text-decoration: none; }
 a:hover { color: var(--accent-deep); }
 
@@ -539,6 +542,8 @@ textarea.field { min-height: 120px; resize: vertical; }
 
 :where(section, div)[id] { scroll-margin-top: 140px; }
 
+:is(a, button, input, select, textarea, summary):focus-visible { scroll-margin-top: 96px; }
+
 .js-reveal .reveal {
   opacity: 0;
   transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 24px), 0) rotate(var(--reveal-rotate, 0deg)) scale(var(--reveal-scale, 1));
@@ -602,4 +607,8 @@ textarea.field { min-height: 120px; resize: vertical; }
   .hero-actions .btn { width: auto; }
   .field-grid-2 { grid-template-columns: 1fr; }
   .field-grid-phone { grid-template-columns: 108px minmax(0, 1fr); }
+}
+
+@media (max-width: 440px) {
+  .field-grid-phone .field-label { min-height: 2.7em; }
 }
