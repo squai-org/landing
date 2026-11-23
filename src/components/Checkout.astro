@@ -590,7 +590,9 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   }
   .consent-label a:hover { color: var(--periwinkle-11); }
   .form-submit { margin: 0; padding-top: 0.25rem; }
-  :global(.form-submit .btn-text) { flex: 1; }
+  @media (min-width: 640px) {
+    :global(.form-submit .btn-block .btn-text) { flex: initial; }
+  }
 
   .sales-notice {
     display: flex;
