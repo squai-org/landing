@@ -23,7 +23,7 @@ import { checkout, CURRENCIES, type Currency } from '../config/checkout';
 import { endpoints } from '../config/endpoints';
 import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
-import { fillTemplate } from '../lib/reference-price';
+import { fillTemplate } from '../lib/template';
 
 interface Props {
   investment?: { referencePrice: Partial<Record<Currency, number>>; discountPercent?: number; discountDeadline?: string };
@@ -70,9 +70,9 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
               </div>
             )
           }
-          <h3 class="display price-line">
+          <p class="display price-line">
             <span class="price-amount" data-bold-price data-state="loading"></span> <span class="price-currency" data-bold-currency></span>
-          </h3>
+          </p>
           <fieldset class="currency-picker" data-currency-picker>
             <legend class="currency-legend">{ui.checkout.currency.label}</legend>
             {

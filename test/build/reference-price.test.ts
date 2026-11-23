@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { discountedReference, fillTemplate } from '../../src/lib/reference-price';
+import { discountedReference } from '../../src/lib/reference-price';
+import { fillTemplate } from '../../src/lib/template';
 
 const reference = { COP: 499000, USD: 159 };
 
