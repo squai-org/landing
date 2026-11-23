@@ -487,14 +487,29 @@ a.bento-card.dark:hover { color: var(--night-text); }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .btn:not(:disabled):is(:hover, :focus-visible) .btn-bg {
     scale: 0.955 0.925;
+  }
+  .btn:not(:disabled):is(:hover, :focus-visible) .btn-text {
+    translate: 0.25em 0.125em 0;
+    rotate: 4deg;
+  }
+  .btn:not(:disabled):is(:hover, :focus-visible) .btn-arrow {
+    translate: -0.5em 0.25em 0;
+    rotate: -18deg;
+  }
+  :is(.pill-button, .social-button):is(:hover, :focus-visible) :is(.pill-button-bg, .social-button-bg) {
+    scale: 0.955 0.925;
+  }
+  :is(.btn:not(:disabled), .pill-button, .social-button):is(:hover, :focus-visible) .split-char {
+    animation: split-char-wave .62s var(--ease-bounce) forwards;
+    animation-delay: calc(var(--char-i, 0) * 16ms);
+  }
+  .btn:not(:disabled):is(:hover, :focus-visible) .btn-bg {
     transform: scale(1.047, 1.081);
     transition:
       scale .15s var(--ease-soft-overshoot),
       transform .35s .15s var(--button-alt-ease-bounce);
   }
   .btn:not(:disabled):is(:hover, :focus-visible) .btn-text {
-    translate: 0.25em 0.125em 0;
-    rotate: 4deg;
     transform: rotate(-4deg) translate3d(-0.25em, -0.125em, 0);
     transition:
       translate .15s var(--ease-soft-overshoot),
@@ -502,20 +517,13 @@ a.bento-card.dark:hover { color: var(--night-text); }
       transform .35s .15s var(--button-alt-ease-bounce);
   }
   .btn:not(:disabled):is(:hover, :focus-visible) .btn-arrow {
-    translate: -0.5em 0.25em 0;
-    rotate: -18deg;
     transform: rotate(18deg) translate3d(0.5em, -0.25em, 0);
     transition:
       translate .15s var(--ease-soft-overshoot),
       rotate .15s var(--ease-soft-overshoot),
       transform .35s .15s var(--button-alt-ease-bounce);
   }
-  :is(.btn:not(:disabled), .pill-button, .social-button):is(:hover, :focus-visible) .split-char {
-    animation: split-char-wave .62s var(--ease-bounce) forwards;
-    animation-delay: calc(var(--char-i, 0) * 16ms);
-  }
   :is(.pill-button, .social-button):is(:hover, :focus-visible) :is(.pill-button-bg, .social-button-bg) {
-    scale: 0.955 0.925;
     transform: scale(1.047, 1.081);
     transition:
       scale .15s var(--ease-soft-overshoot),
