@@ -146,6 +146,9 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
   cursor: pointer;
 }
 .motion-toggle[hidden] { display: none; }
+@media (min-width: 768px) {
+  .motion-toggle { left: 80px; bottom: 22px; }
+}
 :root:has(.motion-toggle:not([hidden])) { --float-clearance: 76px; }
 .motion-toggle:hover { background: var(--surface); }
 .motion-toggle-play { display: none; }

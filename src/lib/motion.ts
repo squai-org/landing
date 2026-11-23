@@ -61,7 +61,7 @@ export function motionAllowed(): boolean {
   return !prefersReducedMotion() && !motionPaused();
 }
 
-function gestureTransition(target: DOMKeyframesDefinition): AnimationOptions {
+export function gestureTransition(target: DOMKeyframesDefinition): AnimationOptions {
   const keys = Object.keys(target);
   const perValue: Record<string, AnimationOptions> = {};
   for (const key of keys) {
