@@ -285,10 +285,14 @@
   }
   .one-card-host:is(:hover, :focus-within) .one-card-cta .btn-text {
     rotate: -12deg;
-    transform: rotate(12deg);
   }
   .one-card-host:is(:hover, :focus-within) .one-card-cta .btn-arrow {
     rotate: 12deg;
+  }
+  .one-card-host:is(:hover, :focus-within) .one-card-cta .btn-text {
+    transform: rotate(12deg);
+  }
+  .one-card-host:is(:hover, :focus-within) .one-card-cta .btn-arrow {
     transform: rotate(-12deg);
   }
 }

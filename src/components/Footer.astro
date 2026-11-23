@@ -5,6 +5,11 @@ import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
 import { whatsappUrl } from '../lib/whatsapp';
 
+interface Props {
+  overlap?: boolean;
+}
+
+const { overlap = false } = Astro.props;
 const { footerCols, footerServices, heroSubtitle, tagline, company, ui, labels } = await getSiteContent();
 const whatsappHref = whatsappUrl(company.phone, ui.whatsapp.message);
 const serviceHrefs = new Set(footerServices.links.map((link) => link.href));
@@ -12,7 +17,7 @@ const siteLinks = footerCols.flatMap((col) => col.links).filter((link) => !link.
 const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
 ---
 
-<footer class="site-footer" data-surface="deep">
+<footer class:list={['site-footer', { 'site-footer--overlap': overlap }]} data-surface="deep">
   <div class="footer-main">
     <div class="footer-grid">
       <div class="footer-brand">
@@ -108,6 +113,10 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     overflow: hidden;
     background: var(--periwinkle-12);
     color: var(--canvas);
+  }
+  .site-footer--overlap {
+    margin-top: calc(var(--edge-r) * -1);
+    padding-top: calc(var(--edge-r) + var(--section-py));
   }
   .footer-main { padding: 0 var(--gutter); }
   .footer-grid {
