@@ -4,7 +4,7 @@ Valores exactos de `squai-org/landing-design` (`src/index.css` y las props `tran
 
 ## Dónde vive
 
-- `src/lib/motion.ts`: constantes (`easing`, `springs`, `tweens`, `gestures`) y ayudas sobre la API sin React de `motion` (`animate`, `inView`, `hover`, `press`). Se importa desde el `<script>` de un componente Astro.
+- `src/lib/motion.ts`: constantes (`easing`, `springs`, `tweens`, `gestures`) y ayudas sobre la API sin React de `motion` (`animate`, `inView`, `scroll`, `hover`, `press`). Es el único módulo de animación del sitio y se importa desde el `<script>` de un componente Astro. Ayudas: `revealOnView` (entrada al entrar en pantalla), `scrollRange` (parallax con los offsets del diseño `start end` / `start start`) y `flagWhileInView` (marca `data-breathing` mientras el elemento está visible).
 - `src/styles/global.css`: las curvas como variables CSS (`--ease-smooth`, `--ease-soft-overshoot`, `--ease-bounce`, `--button-ease-bounce`, `--button-alt-ease-bounce`, `--ease-click`) y las animaciones de botones, pills y botones sociales, que en el diseño son CSS puro.
 
 Regla: si el diseño anima con CSS (hover y press de botones, onda de letras, bloques que flotan), se usa CSS. Si anima con `motion/react`, se usa `motion` con los mismos valores.
