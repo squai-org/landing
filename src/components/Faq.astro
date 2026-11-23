@@ -188,7 +188,9 @@ const filters = grouped && intro
       const controls = animate(panel, { height: [`${from}px`, `${to}px`], opacity: open ? [from === 0 ? 0 : 1, 1] : [1, 0] }, tweens.faqPanel);
       running.set(panel, controls);
       controls.finished.then(() => {
-        if (running.get(panel) === controls) settle(panel, open);
+        requestAnimationFrame(() => {
+          if (running.get(panel) === controls) settle(panel, open);
+        });
       }, () => {});
     };
 
@@ -303,7 +305,7 @@ const filters = grouped && intro
   .faq-categories { display: grid; gap: 1rem; padding-top: 0.5rem; }
   .faq-categories-label { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #303163; }
   .faq-pills { display: flex; flex-wrap: wrap; gap: 1rem; }
-  .faq-pill { --pill-bg: var(--pill-idle); }
+  .faq-pill { --pill-bg: var(--pill-idle); padding: 0; border: 0; background: none; }
   .faq-pill[aria-pressed='true'] { --pill-bg: var(--pill-on); z-index: 10; }
   .faq-pill-blocks { position: absolute; inset: 0; z-index: 0; display: none; pointer-events: none; user-select: none; }
   .faq-pill[aria-pressed='true'] .faq-pill-blocks { display: block; }
@@ -324,7 +326,7 @@ const filters = grouped && intro
     padding: var(--faq-py) var(--faq-px);
     gap: 1rem;
   }
-  .faq-q {
+  .faq-item.is-one .faq-q {
     font-family: var(--font-display);
     font-size: var(--fs-lead);
     font-weight: 700;
@@ -333,7 +335,7 @@ const filters = grouped && intro
     color: var(--midnight);
     transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .faq-toggle:hover .faq-q { color: #303163; }
+  .faq-item.is-one .faq-toggle:hover .faq-q { color: #303163; }
   .faq-item.is-one .faq-sign {
     width: max(32px, calc(var(--u) * 38));
     height: max(32px, calc(var(--u) * 38));
