@@ -47,6 +47,8 @@ export const stepIllustrations = [
 ] as const;
 export const moduleIllustrations = [
   '/illustrations/sesiones/sesion-1.svg',
+  '/illustrations/sesiones/sesion-2.svg',
+  '/illustrations/sesiones/sesion-3.svg',
   '/illustrations/sesiones/sesion-4.svg',
   '/illustrations/sesiones/sesion-5.svg',
   '/illustrations/sesiones/sesion-6.svg',
@@ -74,6 +76,8 @@ const syllabus = z.object({
   moduleLabel: text,
   sessionLabel: text,
   topicsLabel: text,
+  prevLabel: text.default('Ver sesiones anteriores'),
+  nextLabel: text.default('Ver sesiones siguientes'),
   outcome: z.object({ headline: text, body: paragraphs }).optional(),
   modules: z.array(z.object({
     t: text,
@@ -82,12 +86,20 @@ const syllabus = z.object({
     sessions: z.array(text).min(1),
     illustration: z.enum(moduleIllustrations),
     alt: text,
+    sessionArt: z.array(z.object({ illustration: z.enum(moduleIllustrations), alt: text })).optional(),
   })).min(1),
 });
 const youtubeUrl = text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
 const videoSchema = z.object({
   url: optional(youtubeUrl),
   title: text, playLabel: text, iframeTitle: text, caption: text, posterAlt: text,
+  lead: optional(text),
+  body: optional(text),
+  cta: z.object({ label: text, target: text }).optional(),
+  mediaTitle: optional(text),
+  mediaNote: optional(text),
+  logosLabel: optional(text),
+  logos: z.array(text).optional(),
 });
 // Un servicio por archivo en src/content/services/: el nombre del archivo es el
 // slug y `order` fija el orden en la retícula de la pagina principal.

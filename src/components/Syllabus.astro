@@ -1,6 +1,11 @@
 ---
 import Button from './Button.astro';
+import OneCornerBlocks from './OneCornerBlocks.astro';
+import { slideMotionAt } from '../lib/session-carousel';
+import { sessionsOf } from '../lib/syllabus-sessions';
+import type { OneCornerPreset } from '../lib/one-corner-presets';
 import type { Service } from '../lib/content';
+import '../styles/one-sections.css';
 
 interface Props {
   syllabus: NonNullable<Service['syllabus']>;
@@ -8,44 +13,130 @@ interface Props {
 }
 
 const { syllabus, cta } = Astro.props;
-const tones = ['is-accent', 'is-gold', 'is-soft', 'is-cream'];
-const firstSessionOf = syllabus.modules.map((_, index) =>
-  syllabus.modules.slice(0, index).reduce((total, module) => total + module.sessions.length, 1),
-);
+const sessions = sessionsOf(syllabus);
+const ctaHref = cta.modal ? undefined : `#${cta.target}`;
+
+interface SlideStyle {
+  bg: string;
+  block: string;
+  preset: OneCornerPreset;
+}
+
+const slideStyles: SlideStyle[] = [
+  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-12)', preset: 'mod-1' },
+  { bg: 'var(--gold-9)', block: 'var(--periwinkle-9)', preset: 'mod-2' },
+  { bg: 'var(--periwinkle-4)', block: 'var(--gold-9)', preset: 'mod-3' },
+  { bg: 'var(--gold-3)', block: 'var(--periwinkle-9)', preset: 'mod-4' },
+];
 ---
 
-<section id="temario" class="section syllabus" aria-labelledby="syllabus-title">
-  <div class="shell syllabus-shell">
-    <header class="syllabus-header">
-      <h2 id="syllabus-title" class="display d-h1 syllabus-title" data-reveal="heading">{syllabus.title}</h2>
-      <p class="syllabus-handwritten" data-reveal="copy">{syllabus.handwritten}</p>
-      <p class="label syllabus-summary" data-reveal="copy">{syllabus.summary}</p>
-    </header>
+<section id="temario" class="syllabus one-u" aria-labelledby="syllabus-title" data-sessions>
+  <header class="syllabus-header">
+    <p class="one-hand syllabus-note syllabus-note-wide">{syllabus.handwritten}</p>
+    <div class="syllabus-heading">
+      <h2 id="syllabus-title" class="one-h2 syllabus-title">{syllabus.title}</h2>
+      <p class="one-lead syllabus-lead">{syllabus.summary}</p>
+      <p class="one-hand syllabus-note syllabus-note-narrow">{syllabus.handwritten}</p>
+    </div>
+  </header>
 
+  <div class="syllabus-arrows">
+    {
+      (['prev', 'next'] as const).map((direction) => (
+        <button
+          type="button"
+          class={`slider-arrow slider-arrow-${direction}`}
+          aria-label={direction === 'prev' ? syllabus.prevLabel : syllabus.nextLabel}
+          disabled={direction === 'prev'}
+          data-sessions-step={direction}
+        >
+          <span class="slider-arrow-bg" aria-hidden="true"></span>
+          <span class="slider-arrow-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </span>
+        </button>
+      ))
+    }
+  </div>
+
+  <div
+    class="sessions-track"
+    role="region"
+    aria-roledescription="carrusel"
+    aria-label={`Las ${sessions.length} sesiones del programa`}
+    tabindex="0"
+    data-sessions-track
+  >
+    <ol class="sessions-list">
+      {
+        sessions.map((session, index) => {
+          const style = slideStyles[index % slideStyles.length]!;
+          const motion = slideMotionAt(index);
+          return (
+            <li class="session-slide syllabus-session" style={`--session-rot:${-motion.rotate}deg`} data-session-slide>
+              <article class="session-slide-inner" aria-labelledby={`session-${session.number}-title`}>
+                <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
+
+                <div class="session-slide-bg" style={`--card-bg:${style.bg}`} aria-hidden="true">
+                  <div class="session-slide-bottom"></div>
+                </div>
+
+                <div class="session-slide-body">
+                  <div class="session-slide-figure">
+                    <img
+                      class="session-slide-art"
+                      src={session.illustration}
+                      alt={session.alt}
+                      width="1400"
+                      height="1365"
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                  </div>
+
+                  <div class="session-slide-copy">
+                    <p class="one-small session-slide-meta">
+                      <span class="syllabus-session-tag">{syllabus.sessionLabel} {session.number}</span>
+                      <span class="session-slide-module">{syllabus.moduleLabel} {session.moduleNumber}</span>
+                    </p>
+                    <h3 id={`session-${session.number}-title`} class="one-h3">{session.focus}</h3>
+                    <ul class="one-small session-slide-topics" aria-label={syllabus.topicsLabel}>
+                      {session.topics.map((topic) => <li>{topic}</li>)}
+                    </ul>
+                  </div>
+                </div>
+
+                <a
+                  class="session-slide-link"
+                  href={ctaHref}
+                  data-scroll-to={cta.modal ? undefined : cta.target}
+                  data-open-modal={cta.modal || undefined}
+                  aria-label={`${cta.label}: sesión ${session.number}, ${session.focus}`}
+                ></a>
+
+                <div class="session-slide-cta" aria-hidden="true">
+                  <Button variant="dark" arrow tabindex="-1">{cta.label}</Button>
+                </div>
+              </article>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+
+  <div class="syllabus-extra">
     <ol class="syllabus-modules">
       {
         syllabus.modules.map((module, index) => (
-          <li class:list={['syllabus-module', tones[index % tones.length]]} data-reveal="card" data-reveal-delay={(index % 3) * 90}>
-            <p class="syllabus-module-number">{syllabus.moduleLabel} {index + 1}</p>
-            <img src={module.illustration} alt={module.alt} width="1400" height="1365" loading="lazy" decoding="async" />
-            <h3 class="display d-h3">{module.t}</h3>
-            <p class="body">{module.d}</p>
-            <div class="syllabus-topics">
-              <h4 class="label">{syllabus.topicsLabel}</h4>
-              <ul>
-                {module.topics.map((topic) => <li class="body">{topic}</li>)}
-              </ul>
-            </div>
-            <ul class="syllabus-sessions">
-              {
-                module.sessions.map((focus, offset) => (
-                  <li class="syllabus-session">
-                    <span class="syllabus-session-tag">{syllabus.sessionLabel} {firstSessionOf[index]! + offset}</span>
-                    <span class="body">{focus}</span>
-                  </li>
-                ))
-              }
-            </ul>
+          <li class="syllabus-module">
+            <p class="one-hand syllabus-module-number">{syllabus.moduleLabel} {index + 1}</p>
+            <h3 class="one-h3">{module.t}</h3>
+            <p class="one-small">{module.d}</p>
           </li>
         ))
       }
@@ -53,10 +144,10 @@ const firstSessionOf = syllabus.modules.map((_, index) =>
 
     {
       syllabus.outcome && (
-        <div class="syllabus-outcome" data-reveal="card">
-          <h3 class="display d-h2">{syllabus.outcome.headline}</h3>
+        <div class="syllabus-outcome">
+          <h3 class="one-h3 syllabus-outcome-title">{syllabus.outcome.headline}</h3>
           <div class="syllabus-outcome-copy">
-            {syllabus.outcome.body.map((paragraph) => <p class="lead">{paragraph}</p>)}
+            {syllabus.outcome.body.map((paragraph) => <p class="one-body">{paragraph}</p>)}
           </div>
         </div>
       )
@@ -67,98 +158,407 @@ const firstSessionOf = syllabus.modules.map((_, index) =>
         cta.modal ? (
           <Button variant="primary" arrow data-open-modal={cta.modal}>{cta.label}</Button>
         ) : (
-          <Button variant="primary" arrow href={`#${cta.target}`}>{cta.label}</Button>
+          <Button variant="primary" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
         )
       }
     </div>
   </div>
 </section>
 
+<script>
+  import { prefersReducedMotion } from '../lib/motion';
+  import { normalizedDistance, slideMotionAt, slideTransform } from '../lib/session-carousel';
+
+  const edgeTolerance = 4;
+  const dragThreshold = 5;
+
+  document.querySelectorAll<HTMLElement>('[data-sessions]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-sessions-track]');
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-session-slide]'));
+    const prev = root.querySelector<HTMLButtonElement>('[data-sessions-step="prev"]');
+    const next = root.querySelector<HTMLButtonElement>('[data-sessions-step="next"]');
+    if (!track || !prev || !next || slides.length === 0) return;
+
+    let frame = 0;
+    const drag = { active: false, moved: false, startX: 0, startScroll: 0 };
+
+    const update = () => {
+      frame = 0;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      prev.disabled = track.scrollLeft <= edgeTolerance;
+      next.disabled = track.scrollLeft >= maxScroll - edgeTolerance;
+
+      if (prefersReducedMotion()) return;
+      const wrap = track.getBoundingClientRect();
+      const center = wrap.left + wrap.width / 2;
+      const maxDistance = wrap.width / 2;
+      slides.forEach((slide, index) => {
+        const rect = slide.getBoundingClientRect();
+        const norm = normalizedDistance({ itemCenter: rect.left + rect.width / 2, center, maxDistance });
+        const { rotate, y } = slideTransform(norm, slideMotionAt(index));
+        slide.style.transform = `translateY(${y.toFixed(2)}%) rotate(${rotate.toFixed(2)}deg)`;
+      });
+    };
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    const step = (direction: 1 | -1) => {
+      track.scrollBy({ left: direction * slides[0]!.offsetWidth, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    };
+
+    prev.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    track.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+
+    track.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      Object.assign(drag, { active: true, moved: false, startX: event.clientX, startScroll: track.scrollLeft });
+    });
+    track.addEventListener('pointermove', (event) => {
+      if (!drag.active) return;
+      const delta = event.clientX - drag.startX;
+      if (!drag.moved && Math.abs(delta) > dragThreshold) {
+        drag.moved = true;
+        track.setPointerCapture(event.pointerId);
+        track.dataset.dragging = 'true';
+      }
+      if (drag.moved) track.scrollLeft = drag.startScroll - delta;
+    });
+    const endDrag = (event: PointerEvent) => {
+      drag.active = false;
+      if (track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
+      delete track.dataset.dragging;
+    };
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+    track.addEventListener(
+      'click',
+      (event) => {
+        if (!drag.moved) return;
+        event.preventDefault();
+        event.stopPropagation();
+        drag.moved = false;
+      },
+      true
+    );
+
+    update();
+  });
+</script>
+
 <style>
-  .syllabus { background: var(--canvas); }
-  .syllabus-shell { display: grid; gap: clamp(32px, 4vw, 64px); }
-  .syllabus-header { display: grid; justify-items: start; gap: 14px; }
-  .syllabus-title { color: var(--ink); max-width: 16ch; }
-  .syllabus-handwritten {
-    margin: 0;
-    color: var(--accent-ink);
-    font-family: var(--font-hand);
-    font-size: clamp(20px, 2vw, 30px);
-    line-height: 1.3;
-    rotate: -1.2deg;
-    transform-origin: left center;
+  .syllabus {
+    --books-header-pt: calc(var(--u) * 72);
+    --books-header-pb: calc(var(--u) * 24);
+    --books-header-gap: calc(var(--u) * 12);
+    --books-pb: calc(var(--u) * 40);
+    --books-list-px: calc(var(--u) * 8);
+    --books-list-py: calc(var(--u) * 40);
+    --books-item-w: calc(var(--u) * 380);
+    --books-item-px: calc(var(--u) * 12);
+    --slider-btn: max(44px, calc(var(--u) * 56));
+    position: relative;
+    width: 100%;
+    padding-bottom: var(--books-pb);
+    overflow: clip;
+    background: #fff;
+    color: var(--midnight);
+    scroll-margin-top: 2.5rem;
   }
-  .syllabus-summary {
-    padding: 8px 18px;
-    border-radius: var(--radius-pill);
-    background: var(--gold-9);
-    color: var(--ink);
+  .syllabus-header {
+    position: relative;
+    z-index: 10;
+    padding: var(--books-header-pt) var(--gutter) var(--books-header-pb);
+    text-align: center;
+  }
+  .syllabus-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--books-header-gap);
+  }
+  .syllabus-title { max-width: 18ch; color: var(--midnight); }
+  .syllabus-lead { max-width: 34ch; color: var(--midnight); }
+  .syllabus-note { color: var(--periwinkle-11); }
+  .syllabus-note-narrow { rotate: -2deg; }
+  .syllabus-note-wide {
+    display: none;
+    position: absolute;
+    top: calc(var(--u) * 150);
+    left: calc(var(--u) * 116);
+    max-width: 18ch;
+    rotate: -10deg;
+    text-align: left;
+  }
+  .syllabus-arrows {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(var(--u) * 8);
+    padding: 0 var(--gutter);
+  }
+  .slider-arrow {
+    display: inline-grid;
+    width: var(--slider-btn);
+    height: var(--slider-btn);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: scale 0.15s var(--ease-click), opacity 0.25s ease-out;
+  }
+  .slider-arrow-prev { rotate: 180deg; }
+  .slider-arrow:active { scale: 0.9; }
+  .slider-arrow:disabled { opacity: 0.25; cursor: default; pointer-events: none; }
+  .slider-arrow:focus-visible { outline-offset: 3px; }
+  .slider-arrow-bg {
+    grid-area: 1 / 1;
+    border-radius: 50%;
+    background-color: var(--midnight);
+    scale: var(--arrow-squash, 1);
+    transition: scale 0.15s var(--ease-soft-overshoot), transform 0.15s var(--ease-soft-overshoot);
+  }
+  .slider-arrow-icon {
+    grid-area: 1 / 1;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slider-arrow-icon svg { width: max(16px, calc(var(--u) * 18)); height: max(16px, calc(var(--u) * 18)); }
+
+  .sessions-track {
+    position: relative;
+    z-index: 10;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline-start: var(--books-list-px);
+    scrollbar-width: none;
+    cursor: grab;
+  }
+  .sessions-track::-webkit-scrollbar { display: none; }
+  .sessions-track:focus-visible { outline-offset: -6px; }
+  .sessions-track[data-dragging='true'] { cursor: grabbing; scroll-snap-type: none; }
+  .sessions-track[data-dragging='true'] .session-slide-link { pointer-events: none; }
+  .sessions-list {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    margin: 0;
+    padding: calc(var(--books-list-py) + var(--u) * 24) var(--books-list-px) calc(var(--books-list-py) + var(--u) * 64);
+    list-style: none;
+  }
+  .session-slide {
+    flex-shrink: 0;
+    width: var(--books-item-w);
+    padding: 0 var(--books-item-px);
+    list-style: none;
+    scroll-snap-align: start;
+    user-select: none;
+    will-change: transform;
+  }
+  .session-slide-inner {
+    position: relative;
+    display: grid;
+    transition: rotate 0.35s var(--ease-bounce);
+  }
+  .session-slide-inner > * { grid-area: 1 / 1; }
+  .session-slide-inner > .session-slide-cta,
+  .session-slide-inner > .session-slide-link { grid-area: auto; }
+  .session-slide-bg {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 100%;
+    min-height: 480px;
+    border-radius: var(--card-r);
+    background: var(--card-bg);
+  }
+  .session-slide-bottom {
+    width: 100%;
+    height: max(56px, calc(var(--u) * 88));
+    border-bottom-left-radius: var(--card-r);
+    border-bottom-right-radius: var(--card-r);
+    background: var(--card-bg);
+    transition: translate 0.4s var(--ease-smooth);
+  }
+  .session-slide-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: calc(var(--u) * 20);
+    min-height: 480px;
+    padding: calc(var(--u) * 28);
+    color: var(--midnight);
+  }
+  .session-slide-figure {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+    padding-top: 0.5rem;
+  }
+  .session-slide-art {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1400 / 1365;
+    user-select: none;
+  }
+  .session-slide-copy { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
+  .session-slide-copy :is(p, ul) { color: var(--neutral-12); }
+  .session-slide-meta { display: flex; flex-wrap: wrap; gap: 0 0.6em; font-weight: 700; }  .session-slide-topics { display: grid; margin: 0; padding-left: 1.1em; gap: 0.15em; }
+  .session-slide-link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: var(--card-r);
+    cursor: pointer;
+  }
+  .session-slide-link:focus-visible { outline-offset: 4px; }
+  .session-slide-cta {
+    position: absolute;
+    right: 0;
+    bottom: calc(var(--btn-h) * -0.85);
+    left: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .session-slide-cta :global(:is(.btn-text, .btn-arrow)) {
+    opacity: 0;
+    translate: 0 -1.5em 0;
+    rotate: var(--cta-turn, 0deg);
+    transition:
+      opacity 0.1s var(--ease-smooth),
+      translate 0.35s var(--button-alt-ease-bounce),
+      rotate 0.35s var(--button-alt-ease-bounce),
+      transform 0.35s var(--button-alt-ease-bounce);
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-inner {
+      rotate: calc(var(--session-rot, 0deg) * 1.3);
+      transition: rotate 0.35s 0.1s var(--ease-bounce);
+    }
+    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-bottom {
+      translate: 0 calc(var(--btn-h) * 0.5) 0;
+      transition: translate 0.35s 0.1s var(--ease-bounce);
+    }
+    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) :global(.one-corner-blocks--hover) {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-cta :global(:is(.btn-text, .btn-arrow)) {
+      opacity: 1;
+      translate: 0 0 0;
+      transition:
+        opacity 0.2s var(--ease-smooth),
+        translate 0.35s var(--button-alt-ease-bounce),
+        rotate 0.15s var(--button-alt-ease-bounce),
+        transform 0.35s 0.2s var(--button-alt-ease-bounce);
+      transition-delay: 0.15s;
+    }
+    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-cta :global(.btn-text) {
+      --cta-turn: -16deg;
+      transform: rotate(16deg);
+    }
+    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-cta :global(.btn-arrow) {
+      --cta-turn: 16deg;
+      transform: rotate(-16deg);
+    }
+    .slider-arrow:is(:hover, :focus-visible) .slider-arrow-bg {
+      --arrow-squash: 0.955 0.925;
+      transform: scale(1.047, 1.081);
+      transition: scale 0.15s var(--ease-soft-overshoot), transform 0.35s 0.15s var(--ease-bounce);
+    }
+  }
+
+  .syllabus-extra {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    width: 100%;
+    max-width: calc(var(--u) * 1760);
+    margin: calc(var(--u) * 24) auto 0;
+    padding: 0 var(--gutter);
+    gap: calc(var(--u) * 56);
   }
   .syllabus-modules {
     display: grid;
+    grid-template-columns: 1fr;
     margin: 0;
     padding: 0;
-    grid-template-columns: 1fr;
-    gap: clamp(14px, 1.4vw, 22px);
+    gap: calc(var(--u) * 20);
     list-style: none;
   }
   .syllabus-module {
     display: flex;
-    min-width: 0;
-    padding: clamp(24px, 2.4vw, 40px);
     flex-direction: column;
-    gap: 14px;
-    border-radius: var(--radius-xl);
-    color: var(--ink);
+    gap: calc(var(--u) * 10);
+    padding: calc(var(--u) * 28);
+    border-radius: var(--card-r);
+    background: var(--periwinkle-2);
+    color: var(--midnight);
   }
-  .syllabus-module.is-accent { background: var(--accent); }
-  .syllabus-module.is-gold { background: var(--gold-9); }
-  .syllabus-module.is-soft { background: var(--accent-soft); }
-  .syllabus-module.is-cream { background: var(--gold-3); }
-  .syllabus-module-number { margin: 0; font-family: var(--font-hand); font-size: clamp(20px, 1.6vw, 26px); line-height: 1.2; }
-  .syllabus-module img {
-    display: block;
-    width: min(100%, 260px);
-    height: auto;
-    align-self: center;
-    aspect-ratio: 1400 / 1365;
-  }
-  .syllabus-module .body { color: var(--ink); }
-  .syllabus-topics { display: grid; gap: 8px; }
-  .syllabus-topics h4 { margin: 0; }
-  .syllabus-topics ul { display: grid; margin: 0; padding-left: 1.2em; gap: 4px; }
-  .syllabus-sessions {
-    display: grid;
-    margin: auto 0 0;
-    padding: 0;
-    gap: 8px;
-    list-style: none;
-  }
-  .syllabus-session {
-    display: grid;
-    padding: 12px 14px;
-    gap: 4px;
-    border-radius: var(--radius-md);
-    background: var(--canvas);
-  }
-  .syllabus-session-tag { font-family: var(--font-display); font-size: var(--t-label); font-weight: 700; color: var(--ink); }
+  .syllabus-module-number { color: var(--periwinkle-11); }
+  .syllabus-module p:last-child { color: var(--neutral-12); }
   .syllabus-outcome {
     display: grid;
-    padding: clamp(24px, 3vw, 48px);
-    gap: clamp(14px, 1.6vw, 24px);
-    border-radius: var(--radius-xl);
-    background: var(--accent-soft);
-    color: var(--ink);
+    padding: calc(var(--u) * 40);
+    gap: calc(var(--u) * 20);
+    border-radius: var(--card-r);
+    background: var(--periwinkle-4);
+    color: var(--midnight);
   }
-  .syllabus-outcome h3 { max-width: 28ch; }
-  .syllabus-outcome-copy { display: grid; max-width: 74ch; gap: 14px; }
-  .syllabus-outcome .lead { margin: 0; color: var(--ink-body); }
+  .syllabus-outcome-title { max-width: 28ch; font-size: calc(var(--fs-h3) * 1.4); }
+  .syllabus-outcome-copy { display: grid; max-width: 74ch; gap: calc(var(--u) * 14); }
+  .syllabus-outcome-copy p { color: var(--neutral-12); }
   .syllabus-cta { display: flex; }
 
   @media (min-width: 768px) {
+    .syllabus {
+      --books-item-w: calc(var(--u) * 401);
+      --books-item-px: calc(var(--u) * 16);
+    }
     .syllabus-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (min-width: 1200px) {
+  @media (min-width: 992px) {
+    .syllabus {
+      --books-header-pt: calc(var(--u) * 220);
+      --books-header-pb: calc(var(--u) * 80);
+      --books-header-gap: calc(var(--u) * 32);
+      --books-pb: calc(var(--u) * 125);
+      --books-list-px: calc(var(--u) * 16);
+      --books-list-py: calc(var(--u) * 56);
+      --books-item-w: calc(var(--u) * 420);
+      --books-item-px: calc(var(--u) * 24);
+      --slider-btn: calc(var(--u) * 72);
+    }
+    .syllabus-arrows { padding-right: calc(var(--u) * 40); }
     .syllabus-modules { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .session-slide-bg,
+    .session-slide-body { min-height: calc(var(--u) * 660); }
+    .session-slide-body { padding: calc(var(--u) * 32); }
+  }
+  @media (min-width: 1024px) {
+    .syllabus-note-wide { display: block; }
+    .syllabus-note-narrow { display: none; }
+    .sessions-track { scroll-snap-type: none; }
   }
 </style>

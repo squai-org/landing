@@ -70,29 +70,27 @@ const schemas = [
   {service.hero ? <OneHero service={service} /> : <ServiceHero service={service} />}
   {service.keyFacts && <OneKeyFacts service={service} />}
 
-  <div class="content-shell content-shell-spaced">
-
   {service.video && <VideoSection video={service.video} />}
 
   {
     service.payback && (
-      <ServicePayback
-        headline={service.payback.headline}
-        body={service.payback.body}
-        cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
-      />
+      <div class="content-shell content-shell-spaced">
+        <ServicePayback
+          headline={service.payback.headline}
+          body={service.payback.body}
+          cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
+        />
+      </div>
     )
   }
-
-  </div>
 
   {service.audienceFit && <AudienceFit fit={service.audienceFit} cta={service.cta} />}
 
   {service.howItWorks && <HowItWorks flow={service.howItWorks} cta={service.cta} />}
 
-  <div class="content-shell content-shell-joined">
-
   {service.syllabus && <Syllabus syllabus={service.syllabus} cta={service.cta} />}
+
+  <div class="content-shell content-shell-joined">
 
   {service.challenge && <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />}
 

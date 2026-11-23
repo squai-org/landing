@@ -116,6 +116,20 @@ export function hoverPress(
   }
 }
 
+export function hoverBetween(
+  element: HTMLElement,
+  { rest, hovered }: { rest: DOMKeyframesDefinition; hovered: DOMKeyframesDefinition },
+  transition: AnimationOptions
+): void {
+  if (prefersReducedMotion() || !window.matchMedia(finePointerQuery).matches) return;
+  hover(element, () => {
+    animate(element, hovered, transition);
+    return () => {
+      animate(element, rest, transition);
+    };
+  });
+}
+
 export function revealOnView(
   element: Element,
   from: DOMKeyframesDefinition,

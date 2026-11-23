@@ -1,8 +1,10 @@
 ---
-import BackdropShape from './BackdropShape.astro';
+import Button from './Button.astro';
+import OneBackdrop from './OneBackdrop.astro';
 import presentation from '../assets/illustrations/presentacion-video.svg';
 import { youtubeEmbedUrl, youtubeVideoId } from '../lib/youtube';
 import type { Service } from '../lib/content';
+import '../styles/one-sections.css';
 
 interface Props {
   video: NonNullable<Service['video']>;
@@ -11,47 +13,86 @@ interface Props {
 const { video } = Astro.props;
 const videoId = video.url ? youtubeVideoId(video.url) : undefined;
 const embedUrl = videoId ? youtubeEmbedUrl(videoId) : undefined;
+const mediaNote = embedUrl ? video.mediaNoteReady : video.mediaNote;
 ---
 
-<section class="section video-section" aria-labelledby="video-title">
-  <BackdropShape shape="faq" flip="x" align="xMaxYMin" />
-  <div class="shell video-shell">
-    <h2 id="video-title" class="display d-h2 video-title" data-reveal="heading">{video.title}</h2>
-    <figure class="video-card" data-reveal="tilt">
-      <div class="video-frame" data-video-frame>
-        <img
-          class="video-poster"
-          src={presentation.src}
-          width={presentation.width}
-          height={presentation.height}
-          alt={video.posterAlt}
-          loading="lazy"
-          decoding="async"
-        />
+<section id="presentacion" class="video-section one-u" aria-labelledby="video-title">
+  <OneBackdrop shape="faq" colors={['#FFFFFF']} opacities={[0.7]} flip="x" align="xMaxYMin" />
+
+  <div class="video-heading">
+    <h2 id="video-title" class="one-h2 video-title">{video.title}</h2>
+  </div>
+
+  <div class="video-grid">
+    <div class="video-copy" data-video-copy>
+      <span class="one-hand video-hand">{video.caption}</span>
+      {video.lead && <p class="video-lead">{video.lead}</p>}
+      {video.body && <p class="one-small video-body">{video.body}</p>}
+      {
+        video.cta && (
+          <div class="video-cta">
+            <Button variant="dark" arrow href={`#${video.cta.target}`} data-scroll-to={video.cta.target}>{video.cta.label}</Button>
+          </div>
+        )
+      }
+      {
+        video.logos && video.logos.length > 0 && (
+          <div class="video-logos">
+            {video.logosLabel && <span class="one-hand video-hand video-logos-label">{video.logosLabel}</span>}
+            <ul class="video-logo-list" aria-label={video.logosLabel}>
+              {video.logos.map((logo) => <li class="video-logo">{logo}</li>)}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+
+    <div class="video-figure-col">
+      <figure class="video-card" data-video-figure>
+        <div class="video-frame" data-video-frame>
+          <img
+            class="video-poster"
+            src={presentation.src}
+            width={presentation.width}
+            height={presentation.height}
+            alt={video.posterAlt}
+            loading="lazy"
+            decoding="async"
+          />
+          {
+            embedUrl && (
+              <button
+                type="button"
+                class="video-play"
+                data-video-play
+                data-embed-url={embedUrl}
+                data-video-title={video.iframeTitle}
+                aria-label={`${video.playLabel}: ${video.iframeTitle}`}
+              >
+                <span class="video-play-pill" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"></path></svg>
+                  {video.playLabel}
+                </span>
+              </button>
+            )
+          }
+        </div>
         {
-          embedUrl && (
-            <button
-              type="button"
-              class="video-play"
-              data-video-play
-              data-embed-url={embedUrl}
-              data-video-title={video.iframeTitle}
-              aria-label={`${video.playLabel}: ${video.iframeTitle}`}
-            >
-              <span class="video-play-pill" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"></path></svg>
-                {video.playLabel}
-              </span>
-            </button>
+          (video.mediaTitle || mediaNote) && (
+            <figcaption class="video-caption">
+              {video.mediaTitle && <span class="one-h3 video-media-title">{video.mediaTitle}</span>}
+              {mediaNote && <span class="one-hand video-media-note">{mediaNote}</span>}
+            </figcaption>
           )
         }
-      </div>
-      <figcaption class="video-caption">{video.caption}</figcaption>
-    </figure>
+      </figure>
+    </div>
   </div>
 </section>
 
 <script>
+  import { hoverBetween, revealOnView, springs, tweens } from '../lib/motion';
+
   document.querySelectorAll<HTMLButtonElement>('[data-video-play]').forEach((button) => {
     button.addEventListener('click', () => {
       const frame = button.closest('[data-video-frame]');
@@ -68,55 +109,114 @@ const embedUrl = videoId ? youtubeEmbedUrl(videoId) : undefined;
       player.focus();
     });
   });
+
+  document.querySelectorAll<HTMLElement>('[data-video-copy]').forEach((copy) => {
+    revealOnView(copy, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, tweens.sectionReveal, 0.25);
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-video-figure]').forEach((figure) => {
+    revealOnView(figure, { opacity: 0, rotate: 6, scale: 0.9 }, { opacity: 1, rotate: 2.5, scale: 1 }, springs.presentationMedia, 0.2);
+    hoverBetween(figure, { rest: { rotate: 2.5, scale: 1 }, hovered: { rotate: 0, scale: 1.02 } }, springs.presentationMedia);
+  });
 </script>
 
 <style>
   .video-section {
     position: relative;
+    z-index: 0;
+    width: 100%;
+    padding-top: var(--section-py);
+    padding-bottom: calc(var(--section-py) + var(--edge-r));
     overflow: hidden;
-    background: var(--accent-soft);
-    --shape-1: var(--surface);
-    --shape-2: var(--surface);
-    --shape-1-opacity: 0.7;
-    --shape-2-opacity: 0.5;
+    border-radius: var(--edge-r) var(--edge-r) 0 0;
+    background: var(--periwinkle-2);
+    color: var(--midnight);
+    scroll-margin-top: 4rem;
   }
-  .video-shell {
+  .video-heading {
     position: relative;
-    z-index: 1;
-    display: grid;
-    justify-items: center;
-    gap: clamp(32px, 4vw, 56px);
+    z-index: 10;
+    max-width: calc(var(--u) * 1280);
+    margin: 0 auto calc(var(--u) * 56);
+    padding: 0 var(--gutter);
+    text-align: center;
   }
-  .video-title { max-width: 22ch; color: var(--ink); text-align: center; }
+  .video-title { color: var(--midnight); }
+  .video-grid {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: calc(var(--u) * 56);
+    max-width: calc(var(--u) * 1760);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+  .video-copy { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 28); }
+  .video-hand { display: inline-block; color: var(--periwinkle-11); rotate: -1.5deg; }
+  .video-lead {
+    max-width: calc(var(--u) * 720);
+    margin: 0;
+    color: var(--midnight);
+    font-size: var(--fs-medium);
+    line-height: 1.3;
+  }
+  .video-body { max-width: calc(var(--u) * 660); color: var(--neutral-11); }
+  .video-cta { padding-top: 0.25rem; }
+  .video-logos { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 12); padding-top: calc(var(--u) * 24); }
+  .video-logos-label { rotate: -4deg; }
+  .video-logo-list { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 12); margin: 0; padding: 0; list-style: none; }
+  .video-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: max(56px, calc(var(--u) * 104));
+    height: max(56px, calc(var(--u) * 104));
+    padding: 0 calc(var(--u) * 16);
+    border-radius: calc(var(--u) * 26);
+    background: var(--neutral-1);
+    color: var(--periwinkle-12);
+    font-family: var(--font-display);
+    font-size: max(14px, calc(var(--u) * 20));
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .video-figure-col { display: flex; justify-content: center; }
   .video-card {
     width: 100%;
-    max-width: 880px;
+    max-width: calc(var(--u) * 760);
     margin: 0;
-    padding: clamp(10px, 1.4vw, 20px);
-    border-radius: var(--radius-xl);
-    background: var(--surface);
-    box-shadow: var(--shadow-float);
+    padding: calc(var(--u) * 20);
+    border-radius: calc(var(--u) * 48);
+    background: #fff;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    transform: rotate(2.5deg);
   }
   .video-frame {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 4.2;
     overflow: hidden;
-    border-radius: var(--radius-lg);
-    background: var(--accent-soft);
+    border-radius: var(--card-r);
+    background: var(--periwinkle-4);
   }
+  .video-frame:has(iframe) { background: var(--midnight); }
   .video-poster {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
     padding: clamp(4px, 1vw, 12px);
+    object-fit: contain;
   }
   .video-frame :global(iframe) {
     position: absolute;
-    inset: 0;
+    top: 50%;
+    left: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
     border: 0;
+    translate: 0 -50%;
   }
   .video-play {
     position: absolute;
@@ -147,12 +247,20 @@ const embedUrl = videoId ? youtubeEmbedUrl(videoId) : undefined;
   }
   .video-play:hover .video-play-pill { background: var(--accent-hover); transform: scale(1.06); }
   .video-caption {
-    padding: clamp(14px, 1.6vw, 22px) clamp(8px, 1vw, 14px) clamp(6px, 0.8vw, 10px);
-    color: var(--accent-ink);
-    font-family: var(--font-hand);
-    font-size: clamp(18px, 1.6vw, 24px);
-    line-height: 1.3;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: calc(var(--u) * 20) calc(var(--u) * 12) calc(var(--u) * 8);
+  }
+  .video-media-title { color: var(--midnight); }
+  .video-media-note { color: var(--periwinkle-11); }
+
+  @media (min-width: 1024px) {
+    .video-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .video-copy { grid-column: span 6 / span 6; }
+    .video-figure-col { grid-column: span 6 / span 6; justify-content: flex-end; }
   }
   @media (prefers-reduced-motion: reduce) {
     .video-play-pill { transition: none; }

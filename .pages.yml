@@ -707,6 +707,50 @@ content:
                 label: Descripción de la ilustración
                 type: string
                 required: true
+              - name: lead
+                label: Texto principal
+                description: Opcional. Aparece junto al video.
+                type: string
+              - name: body
+                label: Texto de apoyo
+                description: Opcional. Aparece bajo el texto principal.
+                type: text
+              - name: cta
+                label: Botón
+                description: Opcional. Lleva a una sección de la página.
+                type: object
+                fields:
+                  - name: label
+                    label: Texto del botón
+                    type: string
+                    required: true
+                  - name: target
+                    label: Identificador de la sección
+                    description: Por ejemplo, equipo-one.
+                    type: string
+                    required: true
+              - name: mediaTitle
+                label: Título bajo el video
+                description: Opcional.
+                type: string
+              - name: mediaNote
+                label: Apunte bajo el video mientras no hay video
+                description: Opcional.
+                type: string
+              - name: mediaNoteReady
+                label: Apunte bajo el video cuando ya hay video
+                description: Opcional.
+                type: string
+              - name: logosLabel
+                label: Apunte sobre los logos
+                description: Opcional.
+                type: string
+              - name: logos
+                label: Logos
+                description: Opcional. Nombres de organizaciones autorizadas. Sin ninguno, no se muestra el bloque.
+                type: string
+                list:
+                  collapsible: false
       - name: one-para-quien
         label: Para quién es
         description: Perfiles, a quién no le sirve y qué necesita quien se inscribe.
@@ -876,6 +920,14 @@ content:
                 label: Título de la lista de temas
                 type: string
                 required: true
+              - name: prevLabel
+                label: Etiqueta de la flecha anterior
+                description: Opcional. Por defecto, "Ver sesiones anteriores".
+                type: string
+              - name: nextLabel
+                label: Etiqueta de la flecha siguiente
+                description: Opcional. Por defecto, "Ver sesiones siguientes".
+                type: string
               - name: outcome
                 label: Qué te llevas
                 description: Cierre del temario, antes del botón de inscripción.
@@ -932,6 +984,10 @@ content:
                       values:
                         - label: Chip con chispa
                           value: /illustrations/sesiones/sesion-1.svg
+                        - label: Globos con error y acierto
+                          value: /illustrations/sesiones/sesion-2.svg
+                        - label: Mensaje a medio escribir
+                          value: /illustrations/sesiones/sesion-3.svg
                         - label: Documentos y formato
                           value: /illustrations/sesiones/sesion-4.svg
                         - label: Lupa
@@ -944,6 +1000,40 @@ content:
                           value: /illustrations/sesiones/sesion-8.svg
                   - name: alt
                     label: Texto alternativo de la ilustración
+                  - name: sessionArt
+                    label: Ilustración por sesión
+                    description: Opcional. Una por cada sesión del módulo, en orden. Sin ellas, todas las sesiones usan la ilustración del módulo.
+                    type: object
+                    list:
+                      collapsible:
+                        summary: '{alt}'
+                    fields:
+                      - name: illustration
+                        label: Ilustración
+                        type: select
+                        required: true
+                        options:
+                          values:
+                            - label: Chip con chispa
+                              value: /illustrations/sesiones/sesion-1.svg
+                            - label: Globos con error y acierto
+                              value: /illustrations/sesiones/sesion-2.svg
+                            - label: Mensaje a medio escribir
+                              value: /illustrations/sesiones/sesion-3.svg
+                            - label: Documentos y formato
+                              value: /illustrations/sesiones/sesion-4.svg
+                            - label: Lupa
+                              value: /illustrations/sesiones/sesion-5.svg
+                            - label: Escudo con candado
+                              value: /illustrations/sesiones/sesion-6.svg
+                            - label: Correo y reloj
+                              value: /illustrations/sesiones/sesion-7.svg
+                            - label: Camino con bandera
+                              value: /illustrations/sesiones/sesion-8.svg
+                      - name: alt
+                        label: Texto alternativo de la ilustración
+                        type: string
+                        required: true
       - name: one-equipo
         label: Equipo
         description: Quiénes enseñan son las personas marcadas como fundadoras en Inicio → Equipo.
