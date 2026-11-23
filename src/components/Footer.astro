@@ -93,7 +93,7 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
         <li><a href={legalPaths.terms} class="footer-legal-link">{labels.terms}</a></li>
         <li><a href={legalPaths.privacy} class="footer-legal-link">{labels.privacy}</a></li>
       </ul>
-      <span>{company.legalName}</span>
+      <span class="footer-company-mark">{company.legalName}</span>
     </div>
   </div>
 </footer>
@@ -204,6 +204,7 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     font-size: 14px;
     line-height: 1.43;
   }
+  .footer-company-mark { white-space: nowrap; }
   .footer-legal-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
 
   @media (min-width: 640px) {

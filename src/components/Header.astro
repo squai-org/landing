@@ -463,9 +463,12 @@ const pagePills = serviceNav
       navMenu.classList.remove('nav-open');
       return;
     }
-    const pending = Promise.all([
-      animateOut(navMenu, { opacity: 0 }, tweens.menuOverlay),
-      navPanel ? animateOut(navPanel, { opacity: 0, scale: 0.94, y: -12 }, tweens.menuPanel) : Promise.resolve(),
+    const pending = Promise.race([
+      Promise.all([
+        animateOut(navMenu, { opacity: 0 }, tweens.menuOverlay),
+        navPanel ? animateOut(navPanel, { opacity: 0, scale: 0.94, y: -12 }, tweens.menuPanel) : Promise.resolve(),
+      ]),
+      new Promise((resolve) => setTimeout(resolve, (tweens.menuPanel.duration + 0.05) * 1000)),
     ]);
     closing = pending;
     pending.then(() => {

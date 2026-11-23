@@ -27,9 +27,35 @@ Reglas: el texto sobre un paso 9 es siempre Midnight, nunca blanco; el paso 9 nu
 
 Para añadir un servicio: un bloque `[data-service='<slug>'] { ... }` con esos diez tokens y filas nuevas en la tabla de contraste (la prueba falla si una fila no cumple).
 
+## Escala del diseño
+
+Los tamaños de controles, radios y márgenes laterales vienen de `src/index.css` de `landing-design`, que copia la escala de la referencia: `--u` es 1 px del diseño ajustado al ancho de pantalla (402 px de diseño en móvil, 834 desde 768 px y 1920 desde 992 px). Valores exactos:
+
+| Token | Móvil (< 768) | 768–991 | Desde 992 |
+| --- | --- | --- | --- |
+| `--gutter` (margen lateral) | 16u | 24u | 40u |
+| `--section-py` | 70u | 70u | 140u |
+| `--btn-h` (alto de botón) | máx(44 px, 48u) | máx(44 px, 48u) | 56u |
+| `--btn-fs` | máx(16 px, 17u) | máx(16 px, 17u) | máx(16 px, 20u) |
+| `--btn-px` | 14u | 14u | 20u |
+| `--btn-r` (radio de botón) | 8u | 8u | 8u |
+| `--btn-icon` | máx(16 px, 20u) | máx(16 px, 20u) | máx(16 px, 20u) |
+| `--pill-h` (pill del menú) | máx(44 px, 40u) | máx(44 px, 40u) | 56u |
+| `--pill-fs` | máx(16 px, 17u) | máx(16 px, 17u) | máx(16 px, 24u) |
+| `--pill-px` | 16u | 16u | 16u |
+| `--social` (botón circular) | máx(44 px, 24u) | máx(44 px, 24u) | 48u |
+| `--card-r`, `--band-r`, `--edge-r` | 32u, 32u, 40u | 32u, 32u, 40u | 32u, 160u, 160u |
+| `--header-pt` | máx(20 px, 32u) | máx(20 px, 32u) | máx(20 px, 32u) |
+
+Medidas fijas del diseño: logo de la cabecera a 46 px de cuerpo en píldora Canvas con 8 px × 16 px de relleno; logo del pie a 38 px; botón de WhatsApp de 64 px a 20 px de los bordes; menú móvil con panel P2 de radio 32 px y relleno 20 px, elementos de 20 px en blanco con radio 16 px.
+
+Desviaciones conscientes: a ≥ 992 px los controles no tienen el mínimo de 44 px (el diseño solo lo exige en móvil; el mínimo de WCAG 2.5.8 es 24 px y la escala da 30 px a 1024). Los huecos de 240 px a los lados del menú solo se aplican desde 1280 px: entre 1024 y 1279 el menú del diseño no cabe con ellos, y las redes se ocultan en ese tramo como antes.
+
+Tipografía: el diseño carga Familjen Grotesk 500–700 y Atkinson Hyperlegible Next 400–700 (más la cursiva 400, que no usa ningún componente) y Gloria Hallelujah 400. Las fuentes de `public/fonts` son variables (Familjen 400–700, Atkinson 200–800) y cubren todos los pesos usados.
+
 ## Superficies oscuras
 
-El pie usa `--accent-deep`: en Squai One es P12 (`#303163`), que pasa AA con `--on-deep`, así que no hizo falta el valor de paleta más cercano. La barra legal bajo el pie y las tarjetas oscuras usan Midnight o `--night-surface`. `data-surface="deep"` invierte los tokens de foco para esa superficie.
+El pie es P12 (`--periwinkle-12`, `#303163`) en todas las páginas, con la barra legal en Midnight, como en `landing-design`: ya no depende del tema del servicio (`--accent-deep`). Texto principal Canvas, secundario P4 y enlaces en hover Gold. Las tarjetas oscuras usan Midnight o `--night-surface`. `data-surface="deep"` invierte los tokens de foco para esa superficie.
 
 ## Foco visible
 
@@ -55,17 +81,12 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Tarjeta oscura: texto | `--night-text` | `--night-surface` | 10.40 | 4.5 |
 | base | Tarjeta oscura: títulos | `--canvas` | `--night-surface` | 16.59 | 4.5 |
 | base | Pill de navegación | `--midnight` | `--canvas` | 18.02 | 4.5 |
-| base | Pill de navegación en hover | `--midnight` | `--surface` | 19.44 | 4.5 |
 | base | Wordmark en la píldora del logo | `--midnight` | `--canvas` | 18.02 | 4.5 |
-| base | Wordmark plano sobre Periwinkle (hero claro) | `--midnight` | `--periwinkle-9` | 6.77 | 4.5 |
 | base | Botón dorado | `--midnight` | `--gold-9` | 11.90 | 4.5 |
-| base | Botón dorado en hover | `--midnight` | `--gold-10` | 9.47 | 4.5 |
 | base | Botón teal | `--midnight` | `--teal-9` | 10.64 | 4.5 |
-| base | Botón teal en hover | `--midnight` | `--teal-10` | 8.49 | 4.5 |
 | base | Botón oscuro | `--canvas` | `--midnight` | 18.02 | 4.5 |
-| base | Botón oscuro en hover | `--canvas` | `--neutral-12` | 15.28 | 4.5 |
 | base | Flecha del botón oscuro | `--gold-9` | `--midnight` | 11.90 | 3 |
-| base | Botón blanco | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Botón blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
 | base | Botón de pausa de animaciones | `--midnight` | `--canvas` | 18.02 | 4.5 |
 | base | Equipo y testimonios: texto sobre la sección dorada | `--ink` | `--gold-9` | 11.90 | 4.5 |
 | base | Equipo y testimonios: texto sobre tarjeta suave | `--ink` | `--accent-soft` | 15.47 | 4.5 |
@@ -74,43 +95,35 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Franja dorada animada (marquee) | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Franja oscura animada (marquee) | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Botón fantasma sobre Midnight | `--canvas` | `--midnight` | 18.02 | 4.5 |
-| base | Pie: barra legal | `--on-deep-muted` | `--midnight` | 13.76 | 4.5 |
+| base | Pie: barra legal | `--periwinkle-4` | `--midnight` | 13.76 | 4.5 |
 | base | Pie: enlaces de la barra legal en hover | `--gold-9` | `--midnight` | 11.90 | 4.5 |
 | base | Foco: anillo sobre superficie clara | `--focus-ink` | `--canvas` | 18.02 | 3 |
 | base | Foco: anillo sobre Periwinkle (hero claro) | `--focus-ink` | `--periwinkle-9` | 6.77 | 3 |
 | base | Foco: halo sobre superficie oscura | `--canvas` | `--midnight` | 18.02 | 3 |
 | base | Texto del botón principal | `--on-accent` | `--accent` | 6.77 | 4.5 |
-| base | Botón principal en hover | `--on-accent` | `--accent-hover` | 5.25 | 4.5 |
 | base | Enlaces y texto de acento sobre Canvas | `--accent-ink` | `--canvas` | 5.40 | 4.5 |
 | base | Texto de acento sobre blanco | `--accent-ink` | `--surface` | 5.82 | 4.5 |
 | base | Texto de acento sobre fondo suave | `--accent-ink` | `--accent-soft` | 4.64 | 4.5 |
 | base | Texto oscuro sobre fondo suave | `--midnight` | `--accent-soft` | 15.47 | 4.5 |
 | base | Temario: texto oscuro sobre tarjeta crema | `--midnight` | `--gold-3` | 17.24 | 4.5 |
-| base | Pie, texto principal | `--on-deep` | `--accent-deep` | 11.16 | 4.5 |
-| base | Pie, texto secundario y títulos | `--on-deep-muted` | `--accent-deep` | 8.52 | 4.5 |
-| base | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 7.36 | 4.5 |
-| base | Foco sobre el pie | `--canvas` | `--accent-deep` | 11.16 | 3 |
+| base | Pie, texto principal y enlaces | `--canvas` | `--periwinkle-12` | 11.16 | 4.5 |
+| base | Pie, texto secundario | `--periwinkle-4` | `--periwinkle-12` | 8.52 | 4.5 |
+| base | Pie, enlace de WhatsApp y enlaces en hover | `--gold-9` | `--periwinkle-12` | 7.36 | 4.5 |
+| base | Foco sobre el pie | `--canvas` | `--periwinkle-12` | 11.16 | 3 |
+| base | Botón Conoce Squai junto a las redes | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Menú móvil: elementos sobre blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
+| base | Menú móvil: panel | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
+| base | Botones sociales | `--midnight` | `--canvas` | 18.02 | 3 |
 | grow | Texto del botón principal | `--on-accent` | `--accent` | 10.64 | 4.5 |
-| grow | Botón principal en hover | `--on-accent` | `--accent-hover` | 8.49 | 4.5 |
 | grow | Enlaces y texto de acento sobre Canvas | `--accent-ink` | `--canvas` | 4.96 | 4.5 |
 | grow | Texto de acento sobre blanco | `--accent-ink` | `--surface` | 5.34 | 4.5 |
 | grow | Texto de acento sobre fondo suave | `--accent-ink` | `--accent-soft` | 4.63 | 4.5 |
 | grow | Texto oscuro sobre fondo suave | `--midnight` | `--accent-soft` | 16.86 | 4.5 |
-| grow | Pie, texto principal | `--on-deep` | `--accent-deep` | 10.12 | 4.5 |
-| grow | Pie, texto secundario y títulos | `--on-deep-muted` | `--accent-deep` | 8.40 | 4.5 |
-| grow | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 6.75 | 4.5 |
-| grow | Foco sobre el pie | `--canvas` | `--accent-deep` | 10.23 | 3 |
 | learn | Texto del botón principal | `--on-accent` | `--accent` | 11.90 | 4.5 |
-| learn | Botón principal en hover | `--on-accent` | `--accent-hover` | 9.47 | 4.5 |
 | learn | Enlaces y texto de acento sobre Canvas | `--accent-ink` | `--canvas` | 4.81 | 4.5 |
 | learn | Texto de acento sobre blanco | `--accent-ink` | `--surface` | 5.19 | 4.5 |
 | learn | Texto de acento sobre fondo suave | `--accent-ink` | `--accent-soft` | 4.60 | 4.5 |
 | learn | Texto oscuro sobre fondo suave | `--midnight` | `--accent-soft` | 17.24 | 4.5 |
-| learn | Pie, texto principal | `--on-deep` | `--accent-deep` | 9.99 | 4.5 |
-| learn | Pie, texto secundario y títulos | `--on-deep-muted` | `--accent-deep` | 8.68 | 4.5 |
-| learn | Pie, lema y enlaces en hover | `--gold-9` | `--accent-deep` | 6.58 | 4.5 |
-| base | Ícono del botón de WhatsApp | `--midnight` | `#25D366` | 9.80 | 4.5 |
-| learn | Foco sobre el pie | `--canvas` | `--accent-deep` | 9.97 | 3 |
 | base | Hero de Squai One: texto sobre Periwinkle | `--midnight` | `--periwinkle-9` | 6.77 | 4.5 |
 | base | Datos clave: texto en tarjeta clara | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
 | base | Datos clave: texto en tarjeta intermedia | `--midnight` | `--periwinkle-4` | 13.76 | 4.5 |
@@ -118,7 +131,8 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 
 ## Fuera de la tabla, a propósito
 
-- **Logo.** Los logotipos están exentos de contraste (WCAG 1.4.3 y 1.4.11). El isotipo conserva `#8A8EF9` y `#F9C24D` exactos. El texto "Squai" sí cumple: Midnight sobre Canvas, o sobre Periwinkle en el encabezado claro.
+- **Logo.** Los logotipos están exentos de contraste (WCAG 1.4.3 y 1.4.11). El isotipo conserva `#8A8EF9` y `#F9C24D` exactos. El texto "Squai" sí cumple: Midnight sobre la píldora Canvas de la cabecera y Canvas sobre P12 en el pie.
+- **Botón de WhatsApp.** Como en `landing-design`, es el logotipo de WhatsApp en blanco sobre el bloque `#25D366` (1,98:1). Se trata como logotipo de marca; el botón tiene nombre accesible propio. Está anotado en `docs/research/squai-one-redesign/04-cambios-a-revisar.md` por si el dueño prefiere el ícono en Midnight (9,80:1).
 - **Bloques decorativos** detrás del enlace activo del menú (`--accent-soft-strong`): son `aria-hidden` y no transmiten información; el estado activo se anuncia con `aria-current`.
 - **Bordes decorativos** de pills y tarjetas (`--line-soft`, `--line`): el control se distingue por su relleno y su texto.
 - **Texto sobre fotografías e ilustraciones** y el resto de secciones de la página lo documenta el ticket que las diseña, añadiendo filas a esta tabla.
