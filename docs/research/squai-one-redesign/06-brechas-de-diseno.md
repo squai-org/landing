@@ -173,3 +173,53 @@ Regla para cualquier duda de diseño: igual que `landing-design`.
 | "Pausar animaciones" y "Volver arriba" | Conviven: el botón de volver va al lado del de pausar. |
 | Fondo base | Igual que `landing-design`. |
 | Solape del footer con la curva de la FAQ | Igual que `landing-design`. |
+
+## Estado tras la ronda 3
+
+Rama `feat/63-rediseno-squai-one` con las siete ramas `feat/63-r3-*` fusionadas y los commits de consolidación. Medición con Chrome headless (CDP) sobre `astro build` servido con `docs/scripts/serve-dist.mjs`; el diseño se levantó con vite desde una copia de `landing-design` (HEAD `81cef34`) y se midió igual, a 375, 768, 1024, 1440, 1920 y 2560 px de viewport (el ancho útil es el del viewport menos 15 px de barra de desplazamiento, en ambos sitios).
+
+### Brechas cerradas
+
+| Brecha | Cómo se cerró |
+|---|---|
+| B1 hover roto por el minificador | `26b61bd`. Verificado en el build: en reposo, en hover y otra vez en reposo al salir; texto, flecha y fondo vuelven a `none`. |
+| B2, B3, D1 header | `3c20447`, `c5ae4a9`. Una sola fila, redes en horizontal y nav a la misma altura que en el resto de páginas, medido a 1024, 1440 y 1920 px. |
+| D2, D12 presentación | `f00a196` y el fondo `OneBackdrop`. Rejilla con texto a la izquierda y figura inclinada a la derecha. Esta ronda: la figura respeta el movimiento reducido en vivo. |
+| D3 sesiones | `f00a196`, `3259b55`, `a02fbc9`. Carrusel de las ocho sesiones con flechas y la lista de los seis módulos debajo. |
+| D4 preguntas frecuentes | `20bedc4`, `db14eaf`, `3f6d23b`. Filtro por categoría, altura animada, signo que gira y esquina inferior curva. Esta ronda: ancho completo (ver abajo). |
+| D5, D6 formas, solapes y pie | `37d3cb9`, `92f2235`. Base blanca, esquinas con `--edge-r` y pie solapado. |
+| D7, D8 logros y franja | `9094b87`, `41c9eb6`, `d1b2cb1`, `98c4ab0`. Etiquetas con resorte y empuje, y dos cintas inclinadas. Esta ronda: tamaño de las etiquetas igual que el diseño y comprobación de que ninguna cinta lleva precios. |
+| D9 mentores | `729a689`. Sello de rol, cita y tres cifras. |
+| D10, D11 flotantes | `3ba645a`, `8e1a50f`. Panel de WhatsApp, volver arriba y pausa lado a lado; medidos sin solaparse a 375, 768, 1024, 1440 y 1920 px. |
+| D13 escala tipográfica | `f00a196`, `92f2235`. Secciones antiguas en la escala `--u`. |
+| M1 a M4, M6, M9 | `ed8d7a6`, `92f2235`, `3c20447`, `37d3cb9`. |
+| M7 tokens duplicados | Esta ronda: una sola definición en `:root` de `--faq-*`, `--books-*`, `--slider-btn`, `--fs-label`, `--label-*` y `--fs-badge`; se quitaron las copias de FAQ, Sesiones, Qué vas a lograr y la franja. Una prueba falla si un componente vuelve a definirlos. |
+| M8 movimiento reducido en vivo | Esta ronda: Es para ti, FAQ y Qué vas a lograr se suscriben a `onReducedMotionChange`, y `hoverBetween` (figura de Presentación) comprueba la preferencia en cada hover. Sesiones y el empuje de las etiquetas ya la leían en el momento del evento. |
+
+### Cambios de esta ronda frente al diseño
+
+| Tema | Resultado |
+|---|---|
+| Ancho completo | La única sección fuera de medida era la FAQ: iba dentro de `.content-shell` (máximo 1600 px y relleno lateral), así que a 1920 y 2560 px medía 1600 px y en pantallas menores quedaba hundida entre 14 y 32 px. Ahora, en Squai One, va sin contenedor. Las 13 piezas de la página (hero, datos clave, presentación, es para ti, logros, cómo funciona, sesiones, franja, mentores, testimonios, inscripción, FAQ y pie) dan `x = 0` y el mismo ancho en ambos sitios a 375, 768, 1024, 1440, 1920 y 2560 px. Grow, Learn y el inicio conservan su contenedor. |
+| Etiquetas de "Qué vas a lograr" | `font-size: var(--fs-h2)`, como la regla sin capa del diseño: 37,3 px a 375, 36,8 px a 768, 78 px a 1440 y 104 px a 1920, iguales en ambos sitios (medido). |
+| Formulario | Placeholders, línea con candado ("Pago seguro en línea · Confirmación por correo") y espaciado vertical: se eliminó el hueco que dejaban los mensajes de error vacíos. Las píldoras de moneda ya no se apilan a 375 px. Los textos se editan en el CMS (`ui.forms.placeholders` y `ui.checkout.secureNote`, ambos opcionales, con `.pages.yml` en el mismo commit). No se añadió la fila "Valor del programa". |
+| Etiquetas del hero en móvil | Con el texto de producción ("100% en vivo, sin clases pregrabadas") la etiqueta salía 51 px por la izquierda de la pantalla a 375 px. Ahora su ancho se limita con unidades de contenedor. El diseño tiene el mismo defecto con menos texto (16 px fuera). |
+
+### Brechas que no se cerraron o difieren, y por qué
+
+| Tema | Estado |
+|---|---|
+| Etiquetas del hero a 375 px | Queda una palabra ("pregrabadas") unos píxeles más ancha que su etiqueta, y a 320 px las etiquetas quedan muy estrechas. Resolverlo del todo exige acortar el texto en el CMS o mover la etiqueta, y el diseño no lo define. |
+| Pie solapado en Grow y Learn | El pie solapado (decisión del dueño, igual que el diseño) también se aplica a Grow y Learn: su FAQ queda con las esquinas redondeadas sobre el pie. Es una diferencia nueva respecto a antes de la ronda, no una regresión; no se pudo comparar con el diseño porque este no tiene esas páginas. |
+| Cinta con "Fechas por confirmar" | Mientras la cohorte no tenga fecha y horario, la cinta amarilla repite "Fechas por confirmar" y "Horario por confirmar". Es el contenido real del CMS. |
+| Diferencias de contenido entre sitios | A 375 y 1440 px la lista de Es para ti tiene 3 filas frente a 6 del diseño y las tarjetas de datos clave tienen otro texto. Son datos, no medidas: las cajas coinciden. |
+| `Hero.astro` (inicio) | Lee `prefers-reduced-motion` una sola vez. No es de Squai One y no se tocó. |
+
+### Lo que no se pudo verificar
+
+- Flujo de inscripción y pago de punta a punta (Bold, Turnstile, D1): requiere el entorno de pruebas. En esta ronda solo se cambió la presentación; el envío no se tocó.
+- Cambio real de la preferencia de movimiento reducido con la página abierta: cubierto con pruebas del módulo y de las fuentes, no con el panel del sistema operativo.
+- Lector de pantalla con la línea del candado y los placeholders.
+- Hover con mouse real sobre las tarjetas de Datos clave: se probó el botón del hero y el CTA primario, y la tarjeta no tuvo un selector estable.
+- 768 y 1024 px de Grow, Learn y las páginas legales: solo desplazamiento horizontal y botones flotantes. 375 y 1440 px se revisaron a ojo.
+- `pnpm build` con pnpm 9.10.0 y el Node de `.node-version` en un clon limpio: se usó `astro build` directo. No se cambió ningún script, dependencia ni archivo de la raíz, pero no se ejecutó.
