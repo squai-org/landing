@@ -14,7 +14,7 @@
  * vez lo lee de la base. Lo que se muestra y lo que se cobra son el mismo dato.
  * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
  */
-import BackdropShape from './BackdropShape.astro';
+import OneBackdrop from './OneBackdrop.astro';
 import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
 import CustomSelect from './CustomSelect.astro';
@@ -24,6 +24,7 @@ import { endpoints } from '../config/endpoints';
 import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
 import { fillTemplate } from '../lib/template';
+import '../styles/one-sections.css';
 
 interface Props {
   investment?: { referencePrice: Partial<Record<Currency, number>>; discountPercent?: number; discountDeadline?: string };
@@ -38,63 +39,63 @@ const deadlineText = investment?.discountDeadline ? fillTemplate(ui.checkout.inv
 const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop, USD: ui.checkout.currency.usd };
 ---
 
-<section class="section tint signup">
-  <BackdropShape shape="signup" />
-  <div id="inscripcion" class="shell signup-grid">
-    <div class="checkout-column">
-      <h2 class="display d-h2 checkout-title">{ui.checkout.title}</h2>
+<section id="inscripcion" class="one-signup one-u" aria-labelledby="one-signup-title">
+  <OneBackdrop shape="signup" colors={['#fdebc9']} opacities={[0.68]} align="xMidYMid" />
+  <div class="one-signup-grid">
+    <div class="checkout-column" data-signup-enter="intro">
+      <h2 id="one-signup-title" class="one-h2">{ui.checkout.title}</h2>
       <div class="checkout-copy">
-        {
-          ui.checkout.copy.map((paragraph, index) => (
-            <p class={`lead${index === ui.checkout.copy.length - 1 ? ' checkout-promise' : ''}`}>{paragraph}</p>
-          ))
-        }
+        {ui.checkout.copy.map((paragraph) => <p class="one-lead">{paragraph}</p>)}
       </div>
 
-      <div class="investment-card">
-        <span class="service-eyebrow investment-eyebrow">
-          <span class="service-eyebrow-dot" aria-hidden="true"></span>
-          <span class="service-eyebrow-text">{ui.checkout.investment.eyebrow}</span>
-        </span>
-        {ui.checkout.investment.copy.map((paragraph) => <p class="body investment-copy">{paragraph}</p>)}
-        <div class="investment-price">
+      <fieldset class="currency-picker" data-currency-picker>
+        <legend class="one-signup-label">{ui.checkout.currency.label}</legend>
+        <div class="currency-options">
           {
-            hasReference && (
-              <div class="reference-offer" data-reference-offer data-reference-prices={JSON.stringify(referencePrices)} hidden>
-                <s class="reference-price">
-                  <span class="sr-only">{ui.checkout.investment.referenceLabel}: </span>
-                  <span data-reference-amount />
-                </s>
-                {discountText && <span class="discount-badge">{discountText}</span>}
-                {deadlineText && <span class="discount-deadline">{deadlineText}</span>}
-              </div>
-            )
+            CURRENCIES.map((currency, index) => (
+              <label class="currency-option" data-currency-option={currency}>
+                <input type="radio" name="currency" value={currency} form="checkout-form" checked={index === 0} />
+                <span>{currencyLabels[currency]}</span>
+              </label>
+            ))
           }
-          <p class="display price-line">
+        </div>
+      </fieldset>
+
+      <div class="investment-price">
+        <div class="price-row">
+          <span class="one-small price-label">{ui.checkout.investment.eyebrow}</span>
+          <p class="one-h3 price-line">
             <span class="price-amount" data-bold-price data-state="loading"></span> <span class="price-currency" data-bold-currency></span>
           </p>
-          <fieldset class="currency-picker" data-currency-picker>
-            <legend class="currency-legend">{ui.checkout.currency.label}</legend>
-            {
-              CURRENCIES.map((currency, index) => (
-                <label class="currency-option" data-currency-option={currency}>
-                  <input type="radio" name="currency" value={currency} form="checkout-form" checked={index === 0} />
-                  <span>{currencyLabels[currency]}</span>
-                </label>
-              ))
-            }
-          </fieldset>
         </div>
+        {
+          hasReference && (
+            <div class="reference-offer" data-reference-offer data-reference-prices={JSON.stringify(referencePrices)} hidden>
+              <s class="reference-price">
+                <span class="sr-only">{ui.checkout.investment.referenceLabel}: </span>
+                <span data-reference-amount />
+              </s>
+              {discountText && <span class="discount-badge">{discountText}</span>}
+              {deadlineText && <span class="one-small discount-deadline">{deadlineText}</span>}
+            </div>
+          )
+        }
+        {
+          ui.checkout.investment.copy.map((paragraph, index) => (
+            <p class={index === 0 ? 'price-note' : 'one-small price-detail'}>{paragraph}</p>
+          ))
+        }
         <div class="payment-methods">
-          <p class="payment-label" id="payment-methods-label">{ui.checkout.paymentMethods.label}</p>
+          <p class="one-small price-detail" id="payment-methods-label">{ui.checkout.paymentMethods.label}</p>
           <ul class="payment-list" aria-labelledby="payment-methods-label">
-            {ui.checkout.paymentMethods.items.map((method) => <li>{method}</li>)}
+            {ui.checkout.paymentMethods.items.map((method) => <li class="one-small">{method}</li>)}
           </ul>
         </div>
       </div>
     </div>
 
-    <div class="checkout-form-column" data-reveal="card">
+    <div class="checkout-form-column" data-signup-enter="form">
       <div
         class="checkout-card"
         data-bold-checkout
@@ -107,45 +108,43 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
         data-retry-label={ui.checkout.button.retry}
       >
         <div class="checkout-card-heading">
-          <h3 class="display checkout-card-title">{ui.checkout.formTitle}</h3>
-          <p class="body checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
+          <h3 class="one-h3">{ui.checkout.formTitle}</h3>
+          <p class="one-small checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
         </div>
 
         <form id="checkout-form" data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
           <input type="hidden" name="program" value={checkout.program} />
           <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
 
-          <div class="field-grid-2">
-            <label class="field-group" for="checkout-full-name">
-              <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
-              <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="checkout-full-name-error" />
-              <span id="checkout-full-name-error" role="alert" class="field-error" data-field-error="full_name"></span>
-            </label>
+          <label class="field-group" for="checkout-full-name">
+            <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
+            <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="checkout-full-name-error" />
+            <span id="checkout-full-name-error" role="alert" class="field-error" data-field-error="full_name"></span>
+          </label>
+
+          <div class="one-signup-row">
             <label class="field-group" for="checkout-email">
               <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
               <input id="checkout-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="checkout-email-error" />
               <span id="checkout-email-error" role="alert" class="field-error" data-field-error="email"></span>
             </label>
+            <div class="one-signup-phone">
+              <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} />
+              <label class="field-group" for="checkout-phone">
+                <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
+                <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="checkout-phone-error" />
+                <span id="checkout-phone-error" role="alert" class="field-error" data-field-error="phone"></span>
+              </label>
+            </div>
           </div>
 
-          <div class="field-grid-phone">
-            <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} />
-            <label class="field-group" for="checkout-phone">
-              <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
-              <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="checkout-phone-error" />
-              <span id="checkout-phone-error" role="alert" class="field-error" data-field-error="phone"></span>
-            </label>
-          </div>
-
-          <div class="field-group-spaced">
-            <CustomSelect
-              idPrefix="checkout"
-              name="referral_source"
-              label={ui.forms.referralSourceProgram}
-              placeholder={ui.forms.select}
-              options={ui.forms.referralSources}
-            />
-          </div>
+          <CustomSelect
+            idPrefix="checkout"
+            name="referral_source"
+            label={ui.forms.referralSourceProgram}
+            placeholder={ui.forms.select}
+            options={ui.forms.referralSources}
+          />
 
           <Turnstile action="checkout" />
 
@@ -175,11 +174,11 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
           <div class="sales-notice" data-sales-panel="upcoming" hidden>
             <p class="sales-notice-title">{ui.checkout.status.upcomingTitle}</p>
-            <p class="body">{ui.checkout.status.upcomingBody}</p>
+            <p class="one-small">{ui.checkout.status.upcomingBody}</p>
           </div>
           <div class="sales-notice" data-sales-panel="closed" hidden>
             <p class="sales-notice-title">{ui.checkout.status.closedTitle}</p>
-            <p class="body">{ui.checkout.status.closedBody}</p>
+            <p class="one-small">{ui.checkout.status.closedBody}</p>
           </div>
 
           <div class="form-status" data-form-status role="status" aria-live="polite"></div>
@@ -188,6 +187,15 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     </div>
   </div>
 </section>
+
+<script>
+  import { enterOnView } from '../lib/one-motion';
+
+  const intro = document.querySelector<HTMLElement>('[data-signup-enter="intro"]');
+  const formColumn = document.querySelector<HTMLElement>('[data-signup-enter="form"]');
+  if (intro) enterOnView(intro, { from: { opacity: 0, y: 24 }, duration: 0.38, amount: 0.25 });
+  if (formColumn) enterOnView(formColumn, { from: { opacity: 0, y: 28 }, duration: 0.4, delay: 0.08, amount: 0.2 });
+</script>
 
 <script>
   import { openBoldCheckout } from '../lib/bold-library';
@@ -446,187 +454,179 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 </script>
 
 <style>
-  .signup {
+  .one-signup {
     position: relative;
+    z-index: 10;
+    width: 100%;
     overflow: hidden;
-    --shape-1: var(--accent-soft-strong);
-    --shape-2: var(--accent-soft);
-  }
-  .signup-grid {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: clamp(32px, 4vw, 72px);
-    align-items: start;
-  }
-  .checkout-column { display: flex; flex-direction: column; min-width: 0; position: sticky; top: calc(var(--nav-space) + 24px); }
-  .checkout-form-column { min-width: 0; }
-  .checkout-title { color: var(--ink); }
-  .checkout-copy {
-    max-width: 60ch;
-    margin: clamp(16px, 1.6vw, 24px) 0 clamp(24px, 2.4vw, 36px);
-    color: var(--ink-body);
-  }
-  .checkout-copy p + p { margin-top: 12px; }
-  .checkout-promise { font-family: var(--font-hand); font-weight: 100; color: var(--accent-ink); }
-
-  .investment-card {
-    --focus-ink: var(--canvas);
-    --focus-halo: var(--accent-deep);
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: clamp(24px, 2.4vw, 36px);
-    border-radius: var(--radius-xl);
-    background: var(--accent-deep);
-    color: var(--on-deep);
-  }
-  .investment-copy { max-width: 36ch; color: var(--on-deep); }
-  .investment-eyebrow {
-    display: inline-flex;
-    align-self: flex-start;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 20px;
-    background: var(--canvas);
-    border-radius: var(--radius-pill);
-  }
-  .service-eyebrow-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
-  .service-eyebrow-text {
+    padding: var(--section-py) var(--gutter);
+    background: #fff;
     color: var(--midnight);
-    font-family: var(--font-body);
+  }
+  .one-signup-grid {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: calc(var(--u) * 56);
+    max-width: calc(var(--u) * 1560);
+    margin: 0 auto;
+  }
+  .checkout-column,
+  .checkout-form-column { min-width: 0; }
+  .checkout-column { display: flex; flex-direction: column; gap: calc(var(--u) * 24); }
+  .checkout-column h2 { color: var(--midnight); }
+  .checkout-copy { display: flex; flex-direction: column; gap: 0.75rem; max-width: calc(var(--u) * 620); color: var(--neutral-11); }
+
+  .one-signup-label {
+    display: block;
+    margin-bottom: 0.75rem;
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    color: var(--periwinkle-12);
+  }
+  .currency-picker { margin: 0; padding: 0.25rem 0 0; border: 0; min-width: 0; }
+  .currency-options { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .currency-option { position: relative; display: inline-flex; cursor: pointer; }
+  .currency-option span {
+    padding: 0.625rem 1.5rem;
+    border: 2px solid var(--periwinkle-12);
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--periwinkle-12);
+    font-family: var(--font-display);
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
+    line-height: 1.43;
+    white-space: nowrap;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .investment-price { display: flex; flex-direction: column; gap: 12px; padding-top: 6px; border-top: 1px solid var(--on-deep-muted); }
-  .reference-offer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-top: 14px; }
-  .reference-price { color: var(--on-deep-muted); font-family: var(--font-display); font-size: clamp(20px, 1.8vw, 28px); font-weight: 700; }
+  .currency-option:hover span { background: var(--periwinkle-3); }
+  .currency-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .currency-option input:checked + span { background: var(--periwinkle-12); color: var(--canvas); }
+  .currency-option input:focus-visible + span { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
+
+  .investment-price { display: flex; flex-direction: column; gap: calc(var(--u) * 12); padding-top: 0.5rem; }
+  .price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem; }
+  .price-label { font-weight: 500; color: var(--neutral-11); }
+  .price-line { display: flex; align-items: baseline; gap: 0.22em; color: var(--midnight); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .price-currency { font-size: 0.6em; }
+  .price-amount[data-state='loading'] {
+    display: inline-block;
+    min-width: 4.2em;
+    height: 0.9em;
+    border-radius: 8px;
+    background: var(--periwinkle-4);
+    animation: price-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes price-pulse { 50% { opacity: 0.4; } }
+  .reference-offer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+  .reference-price { color: var(--neutral-11); font-family: var(--font-display); font-size: var(--fs-small); font-weight: 700; }
   .discount-badge {
     padding: 4px 12px;
-    border-radius: var(--radius-pill);
+    border-radius: 9999px;
     background: var(--gold-9);
     color: var(--midnight);
     font-family: var(--font-display);
     font-size: 15px;
     font-weight: 700;
   }
-  .discount-deadline { color: var(--on-deep-muted); font-size: 15px; }
-  .price-line {
-    display: flex;
-    align-items: baseline;
-    gap: .22em;
-    color: var(--on-deep);
-    font-size: clamp(36px, 3.4vw, 56px);
-    line-height: 1;
-    white-space: nowrap;
-  }
-  .price-currency { font-size: .5em; color: var(--on-deep-muted); }
-  .price-amount[data-state='loading'] {
-    display: inline-block;
-    min-width: 4.2em;
-    height: .9em;
-    border-radius: var(--radius-sm);
-    background: var(--on-deep-muted);
-    opacity: .35;
-    animation: price-pulse 1.4s ease-in-out infinite;
-  }
-  @keyframes price-pulse { 50% { opacity: .15; } }
+  .discount-deadline { color: var(--neutral-11); }
+  .price-note { margin: 0; font-family: var(--font-display); font-size: 16px; font-weight: 700; line-height: 1.5; color: var(--midnight); }
+  .price-detail { color: var(--neutral-11); }
+  .payment-methods { display: flex; flex-direction: column; gap: 0.25rem; }
+  .payment-list { display: flex; flex-wrap: wrap; gap: 0 0.5rem; margin: 0; padding: 0; list-style: none; color: var(--neutral-11); }
+  .payment-list li:not(:last-child)::after { content: ' ·'; }
 
-  .currency-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; min-width: 0; }
-  .currency-legend { width: 100%; margin-bottom: 4px; padding: 0; color: var(--on-deep); font-size: 14px; }
-  .currency-option { display: inline-flex; align-items: center; cursor: pointer; }
-  .currency-option[hidden] { display: none; }
-  .currency-option span {
-    padding: 8px 16px;
-    border: 1px solid var(--on-deep);
-    border-radius: var(--radius-pill);
-    color: var(--on-deep);
-    font-size: 14px;
-    transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease;
-  }
-  .currency-option:hover span { background: rgba(244, 246, 255, .12); }
-  .currency-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-  .currency-option input:checked + span { background: var(--canvas); color: var(--midnight); font-weight: 700; }
-  .currency-option input:focus-visible + span { outline: 3px solid var(--focus-ink); outline-offset: 3px; box-shadow: 0 0 0 3px var(--focus-halo); }
+  .checkout-card { display: flex; flex-direction: column; gap: 1.5rem; text-align: left; }
+  .checkout-card-heading { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
+  .checkout-card-heading h3 { color: var(--midnight); }
+  .checkout-card-subtitle { color: var(--neutral-11); }
+  .checkout-card form { display: flex; flex-direction: column; gap: 1.5rem; }
+  .checkout-card form > .form-instructions { margin: 0; font-size: 14px; color: var(--neutral-11); }
+  .one-signup-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .one-signup-phone { display: grid; grid-template-columns: minmax(96px, auto) minmax(0, 1fr); gap: 0.5rem; }
 
-  .payment-methods { display: flex; flex-direction: column; gap: 8px; }
-  .payment-label { margin: 0; color: var(--on-deep); font-size: 14px; }
-  .payment-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .payment-list li {
-    padding: 6px 14px;
-    border-radius: var(--radius-pill);
-    background: var(--canvas);
+  .one-signup :global(.field-group) { gap: calc(var(--u) * 10); }
+  .one-signup :global(.field-label) {
+    font-family: var(--font-display);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    line-height: 1.35;
     color: var(--midnight);
-    font-size: 14px;
-    font-weight: 600;
   }
+  .one-signup :global(.field) {
+    height: var(--input-h);
+    min-height: var(--input-h);
+    padding: 0 var(--input-px);
+    border: 0;
+    border-radius: var(--input-r);
+    background: var(--periwinkle-3);
+    color: var(--midnight);
+    font-size: var(--input-fs);
+    box-shadow: none;
+    outline: none;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .one-signup :global(.field::placeholder) { color: var(--neutral-11); }
+  .one-signup :global(.field:focus) { background: var(--periwinkle-4); }
+  .one-signup :global(.field:focus-visible) { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
+  .one-signup :global(.field[aria-invalid='true']) { box-shadow: inset 0 0 0 2px #B3261E; }
 
-  .checkout-card {
-    padding: clamp(22px, 3vw, 40px);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-xl);
-    background: var(--surface);
-    box-shadow: var(--shadow-float);
-    text-align: left;
-  }
-  .checkout-card-heading { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-  .checkout-card-title { color: var(--ink); font-size: clamp(22px, 2vw, 32px); line-height: 1.05; }
-  .checkout-card-subtitle { color: var(--ink-body); }
-  .consent-field { gap: 7px; margin: 10px 0 14px; }
+  .consent-field { gap: 7px; }
   .consent-row { display: flex; align-items: flex-start; gap: 10px; }
-  .consent-checkbox {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    accent-color: var(--accent-ink);
+  .consent-checkbox { flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--periwinkle-12); }
+  .consent-label { font-size: 14px; line-height: 1.625; color: var(--neutral-11); }
+  .consent-label a {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--periwinkle-12);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
   }
-  .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
-  .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
-  .consent-label a:hover { color: var(--accent-ink); }
+  .consent-label a:hover { color: var(--periwinkle-11); }
+  .form-submit { margin: 0; padding-top: 0.25rem; }
+  :global(.form-submit .btn-text) { flex: 1; }
+
   .sales-notice {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 18px 20px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    background: var(--canvas);
-    color: var(--ink-body);
+    padding: max(24px, calc(var(--u) * 40));
+    border-radius: var(--card-r);
+    background: var(--periwinkle-3);
+    color: var(--neutral-11);
   }
-  .sales-notice[hidden] { display: none; }
-  .sales-notice-title { margin: 0; color: var(--ink); font-weight: 700; }
-  .sales-notice .body { margin: 0; }
+  .sales-notice-title { margin: 0; font-family: var(--font-display); font-weight: 700; color: var(--midnight); }
 
   .form-status { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; font-size: 16px; }
-  .form-status:not(:empty) { padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--canvas); }
+  .form-status:not(:empty) { padding: 1rem; border-radius: 1rem; background: var(--periwinkle-2); }
   .form-status:not(:empty):not([data-state='error']):not([data-state='ok'])::before {
     content: '';
     flex: none;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--ink-muted);
+    border: 2px solid var(--neutral-11);
     border-top-color: transparent;
     border-radius: 50%;
-    animation: status-spin .8s linear infinite;
+    animation: status-spin 0.8s linear infinite;
   }
-  .form-status[data-state='error'] { border-color: #B3261E; }
-  .form-status[data-state='ok'] { border-color: var(--teal-ink); }
+  .form-status[data-state='error'] { background: #fde2e2; color: #9b1c1c; font-weight: 500; }
   @keyframes status-spin { to { rotate: 360deg; } }
 
-  :global(.form-submit .btn-text) { flex: 1; }
-  :global(.field) { background: var(--canvas); }
-  :global(.field:focus) { background: var(--surface); }
-
-  @media (max-width: 1100px) {
-    .signup-grid { grid-template-columns: minmax(0, 1fr); }
-    .checkout-column { position: static; }
+  @media (min-width: 640px) {
+    .one-signup-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .currency-option span { font-size: 16px; line-height: 1.5; }
   }
-  @media (max-width: 400px) {
-    :global(.field) { padding-inline: 14px; }
+  @media (min-width: 1024px) {
+    .one-signup { padding-inline: calc(var(--u) * 112); }
+    .one-signup-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .checkout-column { grid-column: span 5 / span 5; }
+    .checkout-form-column { grid-column: span 7 / span 7; }
   }
   @media (prefers-reduced-motion: reduce) {
     .price-amount[data-state='loading'], .form-status::before { animation: none; }
