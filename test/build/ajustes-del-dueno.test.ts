@@ -96,3 +96,17 @@ describe('boton Pausar animaciones', () => {
     expect(read('src/styles/global.css')).toMatch(/:focus-visible \{[^}]*outline: 2px solid/);
   });
 });
+
+describe('union entre Mentores y Testimonios', () => {
+  const quotes = styleOf(read('src/components/OneTestimonials.astro'));
+  const team = styleOf(read('src/components/OneTeam.astro'));
+
+  it('Testimonios sube --edge-r sobre Mentores a cualquier ancho', () => {
+    expect(/\.one-quotes \{[^}]*margin-top: calc\(var\(--edge-r\) \* -1\);/.test(quotes)).toBe(true);
+    expect(quotes).not.toMatch(/margin-top: -\d/);
+  });
+
+  it('Mentores suma --edge-r a su padding inferior para quedar detras de las esquinas', () => {
+    expect(/\.one-team \{[^}]*padding: var\(--section-py\) var\(--gutter\) calc\(var\(--section-py\) \+ var\(--edge-r\)\);/.test(team)).toBe(true);
+  });
+});

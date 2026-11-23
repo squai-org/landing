@@ -71,7 +71,7 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
     z-index: 20;
     width: 100%;
     overflow: hidden;
-    margin-top: -2.5rem;
+    margin-top: calc(var(--edge-r) * -1);
     padding: var(--section-py) var(--gutter);
     border-radius: var(--edge-r);
     background: var(--gold-2);
@@ -135,14 +135,8 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
   .one-quote-name { font-weight: 700; font-size: max(16px, calc(var(--u) * 20)); line-height: 1.375; color: var(--midnight); }
   .one-quote-context { font-size: max(15px, calc(var(--u) * 17)); line-height: 1.375; color: var(--neutral-11); }
 
-  @media (min-width: 640px) {
-    .one-quotes { margin-top: -4rem; }
-  }
   @media (min-width: 768px) {
     .one-quotes-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(var(--u) * 36); }
-  }
-  @media (min-width: 1024px) {
-    .one-quotes { margin-top: -6rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     .one-quote-tilt { transition: none; }
