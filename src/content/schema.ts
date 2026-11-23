@@ -116,7 +116,6 @@ export const serviceSchema = z.object({
     }),
     labels: z.object({ duration: text, sessions: text, dates: text, schedule: text, modality: text, seats: text }),
     modality: text, seats: text,
-    includes: z.array(card).length(4),
   }).optional(),
   ctaSecondary: optional(text),
   contactCta: optional(text),

@@ -1,0 +1,25 @@
+---
+import Block from './Block.astro';
+import { cornerBlockStyle, oneCornerPresets, type OneCornerPreset } from '../lib/one-corner-presets';
+import '../styles/one-sections.css';
+
+interface Props {
+  preset: OneCornerPreset;
+  color: string;
+  hoverOnly?: boolean;
+}
+
+const { preset, color, hoverOnly = false } = Astro.props;
+---
+
+<span class:list={['one-corner-blocks', hoverOnly && 'one-corner-blocks--hover']} style={`color:${color}`} aria-hidden="true">
+  {
+    oneCornerPresets[preset].map((block) => (
+      <span class="one-corner-block" style={cornerBlockStyle(block)}>
+        <span class="one-corner-block-drift">
+          <Block />
+        </span>
+      </span>
+    ))
+  }
+</span>
