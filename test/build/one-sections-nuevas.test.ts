@@ -137,14 +137,11 @@ describe('Que vas a lograr: componente', () => {
     expect(source).toContain("'0px 0px -75% 0px'");
   });
 
-  it('define los tokens de etiqueta con los valores del diseno', async () => {
+  it('el texto de la etiqueta usa --fs-h2 como la regla sin capa del diseno y no redefine tokens', async () => {
     const source = await read('src/components/OneOutcomes.astro');
-    for (const token of ['--fs-label: calc(var(--u) * 30)', '--fs-label: calc(var(--u) * 52)', '--fs-label: calc(var(--u) * 84)']) {
-      expect(source).toContain(token);
-    }
-    for (const token of ['--label-r: calc(var(--u) * 70)', '--label-px: calc(var(--u) * 32)', '--label-py: calc(var(--u) * 22)']) {
-      expect(source).toContain(token);
-    }
+    const text = source.slice(source.indexOf('.outcome-text {'), source.indexOf('}', source.indexOf('.outcome-text {')));
+    expect(text).toContain('font-size: var(--fs-h2)');
+    expect(source).not.toMatch(/--(fs-label|label-r|label-px|label-py):/);
   });
 
   it('respeta el movimiento reducido y solo empuja con puntero fino', async () => {

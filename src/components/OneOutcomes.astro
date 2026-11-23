@@ -110,10 +110,6 @@ const { outcomes } = Astro.props;
     border-radius: var(--edge-r);
     background: #fcf6ea;
     color: var(--midnight);
-    --fs-label: calc(var(--u) * 30);
-    --label-r: calc(var(--u) * 22);
-    --label-px: calc(var(--u) * 12);
-    --label-py: calc(var(--u) * 9);
   }
   .one-outcomes-content { position: relative; z-index: 10; }
   .one-outcomes-heading {
@@ -159,7 +155,7 @@ const { outcomes } = Astro.props;
   .outcome-text {
     max-width: 12ch;
     font-family: var(--font-display);
-    font-size: var(--fs-label);
+    font-size: var(--fs-h2);
     font-weight: 700;
     line-height: 0.91;
     letter-spacing: -0.04em;
@@ -170,21 +166,7 @@ const { outcomes } = Astro.props;
   }
 
   @media (min-width: 768px) {
-    .one-outcomes {
-      --fs-label: calc(var(--u) * 52);
-      --label-r: calc(var(--u) * 40);
-      --label-px: calc(var(--u) * 20);
-      --label-py: calc(var(--u) * 12);
-    }
     .one-outcomes-stage { aspect-ratio: 834 / 560; }
-  }
-  @media (min-width: 992px) {
-    .one-outcomes {
-      --fs-label: calc(var(--u) * 84);
-      --label-r: calc(var(--u) * 70);
-      --label-px: calc(var(--u) * 32);
-      --label-py: calc(var(--u) * 22);
-    }
   }
   @media (min-width: 1024px) {
     .one-outcomes-stage { margin-top: calc(var(--u) * 56); aspect-ratio: 1840 / 760; }
