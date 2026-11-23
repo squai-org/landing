@@ -7,7 +7,7 @@
     "label": "Inscribirme al programa"
   },
   "hero": {
-    "title": "Aprende IA sin sentirte perdido.",
+    "title": "Haz que la IA sí te ahorre tiempo en el trabajo.",
     "lead": "Entiende la IA desde las bases y conviértela en una herramienta para tu trabajo, en vivo, con práctica guiada y mentores que la usan todos los días.",
     "note": "100% en vivo, sin clases pregrabadas",
     "sticker": "Sin saber programar",
@@ -43,7 +43,6 @@
   "tone": "peri",
   "order": 1,
   "video": {
-    "url": "",
     "title": "En menos de 2 minutos, conoce el programa y a quienes lo imparten",
     "playLabel": "Reproducir",
     "iframeTitle": "Video de presentación de Squai One con Laura y Sebastián",
@@ -247,8 +246,12 @@
   "marquee": {
     "title": "Fecha, horario y datos del programa",
     "lineA": [
-      { "cohort": "dates" },
-      { "cohort": "schedule" }
+      {
+        "cohort": "dates"
+      },
+      {
+        "cohort": "schedule"
+      }
     ],
     "lineB": [
       "8 sesiones en vivo",
@@ -274,9 +277,18 @@
       }
     ],
     "stats": [
-      { "value": "1.200+", "label": "personas formadas" },
-      { "value": "85", "label": "charlas dictadas" },
-      { "value": "30", "label": "organizaciones atendidas" }
+      {
+        "value": "1.200+",
+        "label": "personas formadas"
+      },
+      {
+        "value": "85",
+        "label": "charlas dictadas"
+      },
+      {
+        "value": "30",
+        "label": "organizaciones atendidas"
+      }
     ]
   },
   "testimonials": {
