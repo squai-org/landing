@@ -320,25 +320,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     });
   }
 
-  let openFaq: string | null = null;
-
-  document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((toggle) => {
-    toggle.addEventListener('click', () => {
-      const index = toggle.dataset.faqToggle!;
-      openFaq = openFaq === index ? null : index;
-
-      document.querySelectorAll<HTMLElement>('[data-faq-panel]').forEach((panel) => {
-        panel.hidden = panel.dataset.faqPanel !== openFaq;
-      });
-      document.querySelectorAll<HTMLElement>('[data-faq-sign]').forEach((sign) => {
-        sign.textContent = sign.dataset.faqSign === openFaq ? '−' : '+';
-      });
-      document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((btn) => {
-        btn.setAttribute('aria-expanded', String(btn.dataset.faqToggle === openFaq));
-      });
-    });
-  });
-
   const modal = document.querySelector<HTMLElement>('[data-modal]');
   const modalPanel = document.querySelector<HTMLElement>('[data-modal-panel]');
   const modalForm = document.querySelector<HTMLFormElement>('[data-form="contact"]');

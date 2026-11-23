@@ -332,7 +332,8 @@
   "seoDescription": "Programa de inteligencia artificial en vivo: 4 semanas, 20 horas, práctica guiada y certificado. Aprende a usar IA en situaciones reales.",
   "faqIntro": {
     "lead": "Lo que más nos preguntan antes de inscribirse, con respuestas cortas.",
-    "categoriesLabel": "Categorías"
+    "categoriesLabel": "Categorías",
+    "allLabel": "Todas"
   },
   "nav": {
     "items": [

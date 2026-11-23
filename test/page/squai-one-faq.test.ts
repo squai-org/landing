@@ -49,12 +49,38 @@ describe('Squai One: preguntas frecuentes por categoria', () => {
     expect(panels.sort()).toEqual(toggles.map((match) => match[1]).sort());
   });
 
-  it('enlaza cada categoria desde la lista lateral', () => {
+  it('filtra por categoria con botones, empezando por Todas', () => {
     const section = faqSection(page);
-    const links = [...section.matchAll(/<a class="[^"]*faq-category[^"]*" href="#(faq-group-\d+)"/g)].map((match) => match[1]);
+    const filters = [...section.matchAll(/<button[^>]*data-faq-filter="([^"]*)"[^>]*aria-pressed="(true|false)"[^>]*>/g)];
 
-    expect(links).toHaveLength(3);
-    links.forEach((id) => expect(section).toContain(`id="${id}"`));
+    expect(filters.map((match) => match[1])).toEqual(['all', 'faq-group-0', 'faq-group-1', 'faq-group-2']);
+    expect(filters.map((match) => match[2])).toEqual(['true', 'false', 'false', 'false']);
+    expect(section).not.toMatch(/<a class="[^"]*faq-category/);
+    filters.slice(1).forEach((match) => expect(section).toContain(`id="${match[1]}"`));
+  });
+
+  it('la primera pregunta llega abierta y las demas cerradas', () => {
+    const section = faqSection(page);
+    const states = [...section.matchAll(/data-faq-toggle="\d+"[^>]*aria-expanded="(true|false)"/g)].map((match) => match[1]);
+
+    expect(states[0]).toBe('true');
+    expect(states.slice(1).every((state) => state === 'false')).toBe(true);
+    expect(section.match(/data-faq-panel="\d+"[^>]*\bhidden\b/g)?.length).toBe(states.length - 1);
+  });
+
+  it('el signo es un icono que gira y no cambia de caracter', () => {
+    const section = faqSection(page);
+
+    expect(section).not.toMatch(/data-faq-sign="\d+"[^>]*>\s*[+−]\s*</);
+    expect(section.match(/data-faq-sign=/g)?.length).toBe(section.match(/data-faq-toggle=/g)?.length);
+  });
+
+  it('la seccion lleva el fondo que respira y la escala de la pagina', () => {
+    const start = page.indexOf('<section id="faq"');
+    const open = page.slice(start, page.indexOf('>', start));
+
+    expect(open).toContain('one-u');
+    expect(faqSection(page)).toContain('data-one-backdrop');
   });
 
   it('la pregunta de las clases ya no dice 5 horas semanales ni escribe fechas', () => {
@@ -90,7 +116,7 @@ describe('Inicio: preguntas frecuentes sin categorias', () => {
     const section = faqSection(await readDist('index.html'));
 
     expect(section).not.toContain('faq-group-');
-    expect(section).not.toContain('faq-categories');
+    expect(section).not.toContain('data-faq-filter');
     expect(section.match(/data-faq-toggle=/g)?.length).toBeGreaterThan(3);
   });
 });

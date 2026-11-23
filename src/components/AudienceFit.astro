@@ -226,8 +226,9 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     z-index: 10;
     width: 100%;
     overflow: hidden;
-    padding: var(--section-py) var(--gutter);
-    border-radius: var(--edge-r);
+    margin-top: calc(var(--edge-r) * -1);
+    padding: var(--section-py) var(--gutter) calc(var(--section-py) + var(--edge-r));
+    border-radius: var(--edge-r) var(--edge-r) 0 0;
     background: var(--periwinkle-12);
     color: var(--canvas);
   }
@@ -328,8 +329,10 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
   .one-fit-item[data-selected='true'] .one-fit-label { opacity: 0; scale: 0.75 1.25; filter: blur(2px); }
   .one-fit-item:hover .one-fit-label-hover,
   .one-fit-item[data-selected='true'] .one-fit-label-hover { opacity: 1; scale: 1 1; filter: blur(0); }
-  .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(0.35rem); }
-  .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-0.35rem); }
+  .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(1.5rem); }
+  .one-fit-item:hover + .one-fit-item + .one-fit-item .one-fit-button { transform: translateY(0.6rem); }
+  .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-1.5rem); }
+  .one-fit-item:has(+ .one-fit-item + .one-fit-item:hover) .one-fit-button { transform: translateY(-0.6rem); }
 
   .one-fit-bottom {
     position: relative;
@@ -370,11 +373,9 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
   @media (min-width: 768px) {
     .one-fit-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (min-width: 992px) {
-    .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(1.5rem); }
-    .one-fit-item:hover + .one-fit-item + .one-fit-item .one-fit-button { transform: translateY(0.6rem); }
-    .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-1.5rem); }
-    .one-fit-item:has(+ .one-fit-item + .one-fit-item:hover) .one-fit-button { transform: translateY(-0.6rem); }
+  @media (max-width: 991px) {
+    .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(0.35rem); }
+    .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-0.35rem); }
   }
   @media (min-width: 1024px) {
     .one-fit-previews { display: block; }

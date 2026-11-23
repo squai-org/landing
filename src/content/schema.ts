@@ -130,7 +130,7 @@ export const serviceSchema = z.object({
     lead: optional(text),
     quotes: z.array(z.object({ text, name: text, context: text })).min(1),
   }).optional(),
-  faqIntro: z.object({ lead: text, categoriesLabel: text }).optional(),
+  faqIntro: z.object({ lead: text, categoriesLabel: text, allLabel: text.default('Todas') }).optional(),
   faqs: z.array(faq).min(1),
   nav: z.object({
     items: z.array(z.object({ label: text, target: text })).min(1),
