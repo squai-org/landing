@@ -221,6 +221,27 @@
     "title": "Quiénes te enseñan",
     "closing": "Uno de los dos será tu mentor."
   },
+  "testimonials": {
+    "title": "Lo que dicen después de una charla.",
+    "lead": "Frases de personas que asistieron a nuestras charlas, publicadas con su permiso.",
+    "quotes": [
+      {
+        "text": "Por fin entendí por qué la IA me inventaba datos, y ahora reviso cada respuesta antes de enviarla.",
+        "name": "Carolina M.",
+        "context": "Coordinadora administrativa"
+      },
+      {
+        "text": "Salí con tres plantillas que uso cada semana para mis informes.",
+        "name": "Andrés P.",
+        "context": "Analista financiero"
+      },
+      {
+        "text": "Nadie me hizo sentir que preguntaba algo obvio, y pregunté mucho.",
+        "name": "Marcela R.",
+        "context": "Docente de secundaria"
+      }
+    ]
+  },
   "faqs": [
     {
       "q": "¿En qué se diferencia Squai de los otros 500 programas de IA que he visto?",

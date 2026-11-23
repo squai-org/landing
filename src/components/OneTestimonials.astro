@@ -1,39 +1,48 @@
 ---
-import CornerBlocks from './CornerBlocks.astro';
+import OneCornerBlocks from './OneCornerBlocks.astro';
+import type { OneCornerPreset } from '../lib/one-corner-presets';
+import '../styles/one-sections.css';
 
 interface Props {
   title: string;
+  lead?: string;
   quotes: { text: string; name: string; context: string }[];
 }
 
-const { title, quotes } = Astro.props;
+const { title, lead, quotes } = Astro.props;
 
-const cardStyles = [
-  { surface: 'soft', corners: 'diagonal-a', tilt: '-1.6deg' },
-  { surface: 'surface', corners: 'diagonal-b', tilt: '1.2deg' },
-  { surface: 'strong', corners: 'left-pair', tilt: '1.8deg' },
-] as const;
+const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: number; tilt: string }[] = [
+  { bg: '#fff', block: 'var(--periwinkle-9)', preset: 'mod-2', rest: -2, tilt: '-1.6deg' },
+  { bg: 'var(--periwinkle-2)', block: 'var(--gold-9)', preset: 'mod-3', rest: 1.5, tilt: '1.2deg' },
+  { bg: 'var(--periwinkle-4)', block: 'var(--periwinkle-11)', preset: 'mod-4', rest: 2.2, tilt: '1.8deg' },
+];
 ---
 
-<section id="testimonios" class="one-quotes" aria-labelledby="one-quotes-title">
-  <div class="one-quotes-shell">
-    <h2 id="one-quotes-title" class="display d-h1 one-quotes-title" data-reveal="heading">{title}</h2>
+<section id="testimonios" class="one-quotes one-u" aria-labelledby="one-quotes-title">
+  <div class="one-quotes-content">
+    <div class="one-quotes-heading">
+      <h2 id="one-quotes-title" class="one-h2">{title}</h2>
+      {lead && <p class="one-lead one-quotes-lead">{lead}</p>}
+    </div>
+
     <ul class="one-quotes-list">
       {
         quotes.map((quote, index) => {
           const style = cardStyles[index % cardStyles.length]!;
           return (
-            <li class="corner-host one-quote-item" style={`--tilt:${style.tilt}`} data-reveal="tilt" data-reveal-delay={index * 90}>
-              <CornerBlocks preset={style.corners} color="var(--gold-9)" hoverOnly />
-              <figure class:list={['one-quote-card', `is-${style.surface}`]}>
-                <blockquote class="one-quote-text">
-                  <p>{quote.text}</p>
-                </blockquote>
-                <figcaption class="one-quote-author">
-                  <span class="one-quote-name">{quote.name}</span>
-                  <span class="one-quote-context">{quote.context}</span>
-                </figcaption>
-              </figure>
+            <li class="one-quote-item" data-quote-enter={index} data-enter-rotate={style.rest * 1.8}>
+              <div class="one-quote-tilt" style={`--tilt:${style.tilt}`}>
+                <OneCornerBlocks preset={style.preset} color={style.block} />
+                <figure class="one-quote-card" style={`--card-bg:${style.bg}`}>
+                  <blockquote class="one-quote-text">
+                    <p>“{quote.text}”</p>
+                  </blockquote>
+                  <figcaption class="one-quote-author">
+                    <span class="one-quote-name">{quote.name}</span>
+                    <span class="one-quote-context">{quote.context}</span>
+                  </figcaption>
+                </figure>
+              </div>
             </li>
           );
         })
@@ -42,44 +51,99 @@ const cardStyles = [
   </div>
 </section>
 
+<script>
+  import { enterOnView } from '../lib/one-motion';
+
+  document.querySelectorAll<HTMLElement>('[data-quote-enter]').forEach((item) => {
+    enterOnView(item, {
+      from: { opacity: 0, y: 40, rotate: Number(item.dataset.enterRotate) },
+      spring: { stiffness: 195, damping: 18 },
+      delay: Number(item.dataset.quoteEnter) * 0.08,
+      amount: 0.2,
+    });
+  });
+</script>
+
 <style>
-  .one-quotes { margin-top: var(--section-gap); padding-inline: var(--gutter); }
-  .one-quotes-shell { width: min(100%, 1200px); margin-inline: auto; display: grid; gap: clamp(32px, 4vw, 56px); }
-  .one-quotes-title { margin: 0; text-align: center; color: var(--ink); text-wrap: balance; }
+  .one-quotes {
+    position: relative;
+    z-index: 20;
+    width: 100%;
+    overflow: hidden;
+    margin-top: -2.5rem;
+    padding: var(--section-py) var(--gutter);
+    border-radius: var(--edge-r);
+    background: var(--gold-2);
+    color: var(--midnight);
+  }
+  .one-quotes-content { position: relative; z-index: 10; max-width: calc(var(--u) * 1520); margin-inline: auto; }
+  .one-quotes-heading {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 20);
+    max-width: calc(var(--u) * 1160);
+    margin: 0 auto calc(var(--u) * 56);
+    text-align: center;
+  }
+  .one-quotes-heading h2 { color: var(--midnight); }
+  .one-quotes-lead { max-width: calc(var(--u) * 760); margin-inline: auto; color: var(--neutral-11); }
   .one-quotes-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-    gap: clamp(32px, 3vw, 44px);
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 2.5rem;
     margin: 0;
-    padding: 0;
+    padding: 1rem 0 1.5rem;
     list-style: none;
   }
-  .one-quote-item { rotate: var(--tilt); transition: rotate var(--duration-base) var(--ease-out), translate var(--duration-base) var(--ease-out); }
-  .one-quote-item:hover { rotate: 0deg; translate: 0 -6px; }
+  .one-quote-item { position: relative; display: flex; }
+  .one-quote-tilt {
+    position: relative;
+    display: flex;
+    width: 100%;
+    rotate: var(--tilt);
+    transition-property: all;
+    transition-duration: 0.3s;
+    transition-timing-function: var(--ease-bounce);
+  }
+  .one-quote-item:hover .one-quote-tilt { rotate: 0deg; translate: 0 -0.5rem; }
   .one-quote-card {
+    position: relative;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 24px;
-    height: 100%;
+    gap: calc(var(--u) * 28);
+    width: 100%;
     margin: 0;
-    padding: clamp(24px, 2.6vw, 36px);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-float);
-    color: var(--ink);
+    padding: max(28px, calc(var(--u) * 42)) max(24px, calc(var(--u) * 34));
+    border-radius: var(--card-r);
+    background: var(--card-bg);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    text-align: center;
   }
-  .one-quote-card.is-surface { background: var(--surface); }
-  .one-quote-card.is-soft { background: var(--accent-soft); }
-  .one-quote-card.is-strong { background: var(--accent-soft-strong); }
-  .one-quote-text { margin: 0; }
-  .one-quote-text p { margin: 0; font-family: var(--font-hand); font-size: clamp(19px, 1.7vw, 23px); line-height: 1.45; }
-  .one-quote-text p::before { content: '\201C'; }
-  .one-quote-text p::after { content: '\201D'; }
-  .one-quote-author { display: grid; gap: 2px; }
-  .one-quote-name { font-weight: 700; }
-  .one-quote-context { font-size: 0.95em; }
+  .one-quote-text {
+    margin: auto 0;
+    font-family: var(--font-hand);
+    font-size: max(20px, calc(var(--u) * 26));
+    line-height: 1.35;
+    color: var(--midnight);
+  }
+  .one-quote-text p { margin: 0; }
+  .one-quote-author { display: flex; flex-direction: column; gap: 0.25rem; padding-top: 0.5rem; font-family: var(--font-body); }
+  .one-quote-name { font-weight: 700; font-size: max(16px, calc(var(--u) * 20)); line-height: 1.375; color: var(--midnight); }
+  .one-quote-context { font-size: max(15px, calc(var(--u) * 17)); line-height: 1.375; color: var(--neutral-11); }
+
+  @media (min-width: 640px) {
+    .one-quotes { margin-top: -4rem; }
+  }
+  @media (min-width: 768px) {
+    .one-quotes-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(var(--u) * 36); }
+  }
+  @media (min-width: 1024px) {
+    .one-quotes { margin-top: -6rem; }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .one-quote-item { transition: none; }
-    .one-quote-item:hover { translate: none; }
+    .one-quote-tilt { transition: none; }
   }
 </style>

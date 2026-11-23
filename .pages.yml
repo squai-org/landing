@@ -977,6 +977,9 @@ content:
                 label: Título
                 type: string
                 required: true
+              - name: lead
+                label: Bajada
+                type: text
               - name: quotes
                 label: Testimonios
                 type: object

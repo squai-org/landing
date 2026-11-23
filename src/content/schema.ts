@@ -127,6 +127,7 @@ export const serviceSchema = z.object({
   team: z.object({ title: text, closing: text }).optional(),
   testimonials: z.object({
     title: text,
+    lead: optional(text),
     quotes: z.array(z.object({ text, name: text, context: text })).min(1),
   }).optional(),
   faqIntro: z.object({ lead: text, categoriesLabel: text }).optional(),
