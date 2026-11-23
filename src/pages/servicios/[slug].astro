@@ -126,9 +126,15 @@ const schemas = [
     )
   }
 
-  <div class="content-shell content-shell-joined content-shell-over-footer">
-  <Faq items={service.faqs} intro={service.faqIntro} />
-  </div>
+  {
+    service.hero ? (
+      <Faq items={service.faqs} intro={service.faqIntro} />
+    ) : (
+      <div class="content-shell content-shell-joined content-shell-over-footer">
+        <Faq items={service.faqs} intro={service.faqIntro} />
+      </div>
+    )
+  }
   </main>
 
   <Footer overlap />

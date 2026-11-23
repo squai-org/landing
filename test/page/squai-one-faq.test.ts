@@ -30,6 +30,13 @@ describe('Squai One: preguntas frecuentes por categoria', () => {
     page = await readDist('servicios/squai-one.html');
   });
 
+  it('cubre todo el ancho: la seccion no va dentro de un contenedor con ancho maximo', () => {
+    const before = page.slice(0, page.indexOf('<section id="faq"'));
+    const opening = before.slice(before.lastIndexOf('<div'));
+
+    expect(opening).not.toContain('content-shell');
+  });
+
   it('agrupa las preguntas bajo un encabezado por categoria', () => {
     const section = faqSection(page);
     const groups = [...section.matchAll(/<h3 id="faq-group-\d+-title"[^>]*>([^<]+)</g)].map((match) => match[1]);
