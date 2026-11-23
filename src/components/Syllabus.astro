@@ -40,6 +40,7 @@ const slideStyles: SlideStyle[] = [
     </div>
   </header>
 
+  <div class="syllabus-carousel">
   <div class="syllabus-arrows">
     {
       (['prev', 'next'] as const).map((direction) => (
@@ -127,6 +128,7 @@ const slideStyles: SlideStyle[] = [
         })
       }
     </ol>
+  </div>
   </div>
 
 </section>
@@ -250,14 +252,16 @@ const slideStyles: SlideStyle[] = [
     rotate: -10deg;
     text-align: left;
   }
+  .syllabus-carousel { position: relative; margin-top: calc(var(--books-header-pb) * -1); }
   .syllabus-arrows {
-    position: relative;
-    z-index: 10;
+    position: absolute;
+    right: var(--gutter);
+    bottom: 0;
+    z-index: 11;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: calc(var(--u) * 8);
-    padding: 0 var(--gutter);
   }
   .slider-arrow {
     display: inline-grid;
@@ -447,7 +451,11 @@ const slideStyles: SlideStyle[] = [
   }
 
   @media (min-width: 992px) {
-    .syllabus-arrows { padding-right: calc(var(--u) * 40); }
+    .syllabus-arrows {
+      top: 0;
+      right: calc(var(--u) * 40);
+      bottom: auto;
+    }
     .session-slide-bg,
     .session-slide-body { min-height: calc(var(--u) * 660); }
     .session-slide-body { padding: calc(var(--u) * 32); }
