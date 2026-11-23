@@ -4,13 +4,13 @@ import { describe, expect, it } from 'vitest';
 const header = readFileSync('src/components/Header.astro', 'utf8');
 const socialLinks = readFileSync('src/components/SocialLinks.astro', 'utf8');
 
-const headerStyles = header.match(/<style>([\s\S]*?)<\/style>/)![1];
-const socialStyles = socialLinks.match(/<style>([\s\S]*?)<\/style>/)![1];
+const headerStyles = header.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? '';
+const socialStyles = socialLinks.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? '';
 
 const rule = (css: string, selector: string) =>
   [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-    .filter((match) => match[1].split(',').some((part) => part.trim() === selector))
-    .map((match) => match[2])
+    .filter((match) => (match[1] ?? '').split(',').some((part) => part.trim() === selector))
+    .map((match) => match[2] ?? '')
     .join(' ');
 
 const mediaBlock = (css: string, query: string) => {
@@ -35,17 +35,22 @@ describe('fila del header', () => {
 
   it('las dos ranuras laterales miden 240px desde 1024px, sin ocultar la ranura de redes', () => {
     const desktop = mediaBlock(headerStyles, '(min-width: 1024px)');
-    expect(rule(desktop, '.header-brand')).toContain('width: 240px');
-    expect(rule(desktop, '.site-header-social')).toContain('width: 240px');
-    expect(headerStyles).not.toMatch(/\(max-width: 1279px\)/);
+    expect(rule(desktop, '.header-brand')).toContain('flex: 0 1 240px');
+    expect(rule(desktop, '.site-header-social')).toContain('flex: 0 1 240px');
     const mobile = mediaBlock(headerStyles, '(max-width: 1023px)');
     const outsideMobile = headerStyles.replace(mobile, '');
     expect(rule(outsideMobile, '.site-header-social')).not.toContain('display: none');
   });
 
-  it('las ranuras de 240px no se encogen para que el nav quede centrado', () => {
-    expect(rule(headerStyles, '.header-brand')).toContain('flex-shrink: 0');
-    expect(rule(headerStyles, '.site-header-social')).toContain('flex-shrink: 0');
+  it('las ranuras ceden ancho a la vez si el nav no cabe, sin sacar las redes de la pantalla', () => {
+    expect(rule(headerStyles, '.header-brand')).not.toContain('flex-shrink: 0');
+    expect(rule(headerStyles, '.site-header-social')).not.toContain('flex-shrink: 0');
+    expect(rule(headerStyles, '.site-nav')).not.toContain('flex-shrink: 1');
+  });
+
+  it('desde 1280px la ranura derecha no crece con su contenido para que el nav quede centrado', () => {
+    const wide = mediaBlock(headerStyles, '(min-width: 1280px)');
+    expect(rule(wide, '.site-header-social')).toContain('min-width: 0');
   });
 
   it('la lista de la ranura derecha es una sola lista flex con 14px entre elementos', () => {
@@ -61,8 +66,10 @@ describe('fila del header', () => {
     expect(company).not.toContain('height');
   });
 
-  it('el nav usa el mismo espacio entre pildoras en todos los anchos de escritorio', () => {
+  it('el nav usa 14px entre pildoras y solo lo reduce entre 1024px y 1279px para que quepan las redes', () => {
     expect(rule(headerStyles, '.site-nav-list')).toContain('gap: 14px');
-    expect(mediaBlock(headerStyles, '(min-width: 1024px) and (max-width: 1279px)')).toBe('');
+    const tight = mediaBlock(headerStyles, '(min-width: 1024px) and (max-width: 1279px)');
+    expect(rule(tight, '.site-nav-list')).toContain('gap: 8px');
+    expect(tight).not.toContain('display: none');
   });
 });
