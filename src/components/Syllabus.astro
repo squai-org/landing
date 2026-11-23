@@ -129,17 +129,6 @@ const slideStyles: SlideStyle[] = [
     </ol>
   </div>
 
-  <div class="syllabus-extra">
-    <div class="syllabus-cta">
-      {
-        cta.modal ? (
-          <Button variant="primary" arrow data-open-modal={cta.modal}>{cta.label}</Button>
-        ) : (
-          <Button variant="primary" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
-        )
-      }
-    </div>
-  </div>
 </section>
 
 <script>
@@ -456,18 +445,6 @@ const slideStyles: SlideStyle[] = [
       transition: scale 0.15s var(--ease-soft-overshoot), transform 0.35s 0.15s var(--ease-bounce);
     }
   }
-
-  .syllabus-extra {
-    position: relative;
-    z-index: 10;
-    display: grid;
-    width: 100%;
-    max-width: calc(var(--u) * 1760);
-    margin: calc(var(--u) * 24) auto 0;
-    padding: 0 var(--gutter);
-    gap: calc(var(--u) * 56);
-  }
-  .syllabus-cta { display: flex; }
 
   @media (min-width: 992px) {
     .syllabus-arrows { padding-right: calc(var(--u) * 40); }
