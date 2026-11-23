@@ -72,8 +72,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   <body data-client-copy={JSON.stringify({ modal: ui.modal, feedback: ui.feedback })}>
     <a class="skip-link" href="#contenido">{ui.skip}</a>
     <slot />
-    <MotionToggle pauseLabel={ui.motion.pause} resumeLabel={ui.motion.resume} />
-    <ScrollTopButton />
+    <div class="float-dock">
+      <MotionToggle pauseLabel={ui.motion.pause} resumeLabel={ui.motion.resume} />
+      <ScrollTopButton />
+    </div>
     <WhatsAppButton />
   </body>
 </html>

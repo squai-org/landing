@@ -75,6 +75,7 @@ function bindParallax(frames: HTMLElement[]) {
 
 export function initMotion() {
   splitTextOnHover();
+  bindPauseToggle();
   if (!('IntersectionObserver' in window)) return;
 
   const parallaxFrames = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
@@ -83,8 +84,5 @@ export function initMotion() {
   if (window.matchMedia(reducedMotionQuery).matches) return;
 
   const ambient = Array.from(document.querySelectorAll<HTMLElement>('.ambient'));
-  if (ambient.length) {
-    watchAmbientVisibility(ambient);
-    bindPauseToggle();
-  }
+  if (ambient.length) watchAmbientVisibility(ambient);
 }

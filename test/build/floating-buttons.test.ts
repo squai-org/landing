@@ -95,9 +95,7 @@ describe('volver arriba', () => {
     expect(source).toMatch(/width: 48px/);
     expect(source).toMatch(/height: 48px/);
     expect(source).toMatch(/border-radius: 50%/);
-    expect(source).toMatch(/left: 20px/);
-    expect(source).toMatch(/bottom: 20px/);
-    expect(source).toMatch(/z-index: 40/);
+    expect(source).not.toMatch(/position: fixed/);
     expect(source).toContain('var(--surface)');
     expect(source).toMatch(/@media \(min-width: 768px\)/);
   });
@@ -124,8 +122,30 @@ describe('volver arriba', () => {
 
 describe('esquina inferior izquierda', () => {
   const css = read('src/styles/motion.css');
+  const layout = read('src/layouts/Layout.astro');
+  const client = read('src/lib/motion-client.ts');
 
-  it('Pausar animaciones se desplaza al lado de volver arriba desde md', () => {
-    expect(css).toMatch(/@media \(min-width: 768px\) \{\s*\.motion-toggle \{ left: 80px; bottom: 22px; \}/);
+  it('Pausar animaciones va primero y volver arriba despues, dentro de un mismo contenedor fijo', () => {
+    const dock = layout.indexOf('class="float-dock"');
+    const toggle = layout.indexOf('<MotionToggle');
+    const top = layout.indexOf('<ScrollTopButton');
+
+    expect(dock).toBeGreaterThan(-1);
+    expect(toggle).toBeGreaterThan(dock);
+    expect(top).toBeGreaterThan(toggle);
+    expect(layout.indexOf('</div>', top)).toBeGreaterThan(top);
+    expect(css).toMatch(/\.float-dock \{[^}]*position: fixed/);
+    expect(css).toMatch(/\.float-dock \{[^}]*left: 12px/);
+    expect(css).toMatch(/@media \(min-width: 768px\) \{\s*\.float-dock \{[^}]*left: 20px/);
+  });
+
+  it('el boton de pausa ya no se posiciona por su cuenta', () => {
+    const rule = css.slice(css.indexOf('.motion-toggle {'), css.indexOf('}', css.indexOf('.motion-toggle {')));
+    expect(rule).not.toMatch(/position: fixed|left:|bottom:/);
+    expect(css).not.toMatch(/left: 80px/);
+  });
+
+  it('el boton de pausa se activa en toda pagina, sin depender de los elementos ambientales', () => {
+    expect(client).toMatch(/^  bindPauseToggle\(\);/m);
   });
 });

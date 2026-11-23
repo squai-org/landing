@@ -125,11 +125,19 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
   to { transform: translateX(-50%); }
 }
 
-.motion-toggle {
+.float-dock {
   position: fixed;
   left: 12px;
   bottom: 12px;
   z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .float-dock { left: 20px; bottom: 20px; }
+}
+.motion-toggle {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -146,9 +154,6 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
   cursor: pointer;
 }
 .motion-toggle[hidden] { display: none; }
-@media (min-width: 768px) {
-  .motion-toggle { left: 80px; bottom: 22px; }
-}
 :root:has(.motion-toggle:not([hidden])) { --float-clearance: 76px; }
 .motion-toggle:hover { background: var(--surface); }
 .motion-toggle-play { display: none; }
