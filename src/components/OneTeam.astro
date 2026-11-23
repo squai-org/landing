@@ -72,7 +72,7 @@ const cardStyles = [
                     <div class="mentor-frame" style={`--frame-bg:${style.frame}`}>
                       <div class="mentor-inner" style={`--inner-bg:${style.inner}`}>
                         <div class="mentor-head">
-                          <h3 id={nameId} class="one-h3">{mentor.name}</h3>
+                          <h3 id={nameId} class="one-h3" style={`--name-chars:${mentor.name.length}`}>{mentor.name}</h3>
                           <p class="mentor-role">{mentor.role}</p>
                         </div>
                         {mentor.profile ? (
@@ -236,8 +236,12 @@ const cardStyles = [
     border-radius: 22px;
     background: var(--inner-bg);
   }
-  .mentor-head { display: flex; flex-direction: column; gap: 0.25rem; padding-right: 2.5rem; }
-  .mentor-head h3 { color: var(--midnight); }
+  .mentor-head { display: flex; flex-direction: column; gap: 0.25rem; container-type: inline-size; }
+  .mentor-head h3 {
+    color: var(--midnight);
+    white-space: nowrap;
+    font-size: min(var(--fs-h3), calc(100cqw / (var(--name-chars, 14) * 0.48)));
+  }
   .mentor-role {
     margin: 0;
     font-family: var(--font-body);
@@ -340,7 +344,7 @@ const cardStyles = [
     }
     .mentor-frame { min-height: var(--mc-min-h); padding: var(--mc-frame-pad); border-radius: var(--mc-frame-radius); }
     .mentor-inner { padding: var(--mc-inner-pad); border-radius: var(--mc-inner-radius); }
-    .mentor-head h3 { font-size: calc(clamp(1.7rem, 2.15vw, 2.3rem) * var(--mc-text-scale)); }
+    .mentor-head h3 { font-size: min(calc(clamp(1.7rem, 2.15vw, 2.3rem) * var(--mc-text-scale)), calc(100cqw / (var(--name-chars, 14) * 0.48))); }
     .mentor-role { font-size: 18px; }
     .mentor-body { padding-left: 88px; }
     .mentor-stamp {

@@ -70,3 +70,22 @@ describe('Squai One: equipo y JSON-LD generado', () => {
     }
   });
 });
+
+describe('Squai One: el nombre del mentor cabe en la tarjeta', () => {
+  it('el nombre no rompe de linea y su cuerpo se ajusta al ancho de la cabecera de la tarjeta', async () => {
+    const source = await readFile(path.join(root, 'src/components/OneTeam.astro'), 'utf8');
+
+    expect(source).toMatch(/\.mentor-head \{[^}]*container-type: inline-size/);
+    expect(source).toMatch(/\.mentor-head h3 \{[^}]*white-space: nowrap/);
+    expect(source).toMatch(/\.mentor-head h3 \{[^}]*font-size: min\([^}]*cqw/);
+    expect(source).toContain('--name-chars:');
+  });
+
+  it('la tarjeta publicada declara cuantas letras tiene cada nombre', async () => {
+    const page = await readDist('servicios/squai-one.html');
+    const names = [...page.matchAll(/<h3 id="one-team-\d+-name"[^>]*style="--name-chars:(\d+)"[^>]*>([^<]+)</g)];
+
+    expect(names.length).toBeGreaterThan(0);
+    for (const [, chars, name] of names) expect(Number(chars)).toBe(name!.length);
+  });
+});
