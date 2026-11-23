@@ -53,3 +53,24 @@ describe('pildoras del header a la misma altura', () => {
     expect(logo).toContain('font-size:var(--logo-size, ${size}px)');
   });
 });
+
+describe('personajes de Presentacion', () => {
+  const css = styleOf(read('src/components/VideoSection.astro'));
+
+  it('miden lo mismo de alto: 1,4 veces la altura media que tenian (2,99 veces --peep-w)', () => {
+    expect(css).toContain('--peep-h: calc(var(--peep-w) * 4.2);');
+    const peep = /\.video-peep \{([^}]*)\}/.exec(css)?.[1] ?? '';
+    expect(peep).toContain('height: var(--peep-h)');
+    expect(peep).toContain('width: auto');
+  });
+
+  it('cada personaje se mete un 40 % de su ancho sobre la tarjeta y el pie de la tarjeta le deja ese hueco', () => {
+    expect(css).toContain('--peep-left-w: calc(var(--peep-h) * 256 / 687);');
+    expect(css).toContain('--peep-right-w: calc(var(--peep-h) * 213 / 701);');
+    expect(css).toContain('grid-template-columns: calc(var(--peep-left-w) * 0.6) minmax(0, 1fr) calc(var(--peep-right-w) * 0.6);');
+    expect(css).toMatch(/\.video-peep--left \{[^}]*justify-self: end; margin-right: calc\(var\(--peep-left-w\) \* -0\.4\)/);
+    expect(css).toMatch(/\.video-peep--right \{[^}]*justify-self: start; margin-left: calc\(var\(--peep-right-w\) \* -0\.4\)/);
+    expect(css).toContain('calc(var(--u) * 12 + var(--peep-left-w) * 0.4)');
+    expect(css).toContain('calc(var(--u) * 12 + var(--peep-right-w) * 0.4)');
+  });
+});
