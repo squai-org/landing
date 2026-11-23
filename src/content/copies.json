@@ -153,11 +153,6 @@
         "turnstileError": "No pudimos completar la verificación de seguridad. Revisa tu conexión e inténtalo de nuevo.",
         "turnstileUnsupported": "Este navegador no permite completar la verificación de seguridad. Actualízalo o prueba con otro navegador."
       },
-      "program": {
-        "duration": "Duración",
-        "schedule": "Modalidad",
-        "modality": "Resultado"
-      },
       "checkout": {
         "title": "Inscríbete a nuestro programa para aprender IA",
         "copy": [
@@ -166,7 +161,7 @@
           "Es un pago único por todo el programa. No hay cobros automáticos después."
         ],
         "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
-        "formSubtitle": "Inscripciones abiertas. Pagas con tarjeta, PSE o Nequi.",
+        "formSubtitle": "Pagas con tarjeta, PSE o Nequi.",
         "thanks": {
           "checking": "Estamos confirmando tu pago con Bold…",
           "approvedTitle": "¡Listo! Tu cupo quedó reservado",

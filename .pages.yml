@@ -2226,23 +2226,6 @@ content:
                 label: false
                 type: object
                 fields:
-                  - name: program
-                    label: Etiquetas de la ficha
-                    type: object
-                    required: true
-                    fields:
-                      - name: duration
-                        label: Etiqueta de duración
-                        type: string
-                        required: true
-                      - name: schedule
-                        label: Etiqueta de modalidad
-                        type: string
-                        required: true
-                      - name: modality
-                        label: Etiqueta de resultado
-                        type: string
-                        required: true
                   - name: checkout
                     label: Sección de inscripción
                     type: object
