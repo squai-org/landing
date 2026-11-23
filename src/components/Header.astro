@@ -189,10 +189,13 @@ const pagePills = serviceNav
   }
   .site-header-row > * { pointer-events: auto; }
 
-  .header-brand { position: relative; z-index: 2; }
+  .header-brand { position: relative; z-index: 2; display: flex; align-items: center; }
   .logo-pill {
     --wordmark-color: var(--midnight);
-    padding: 8px 16px;
+    --logo-size: calc(var(--pill-h) * 0.742);
+    justify-content: center;
+    height: var(--pill-h);
+    padding: 0 calc(var(--pill-h) * 0.258);
     border-radius: 9999px;
     background: var(--canvas);
     color: var(--midnight);
@@ -301,6 +304,8 @@ const pagePills = serviceNav
     list-style: none;
   }
   .site-header-socials { display: flex; align-items: center; }
+  .site-header-social :global(.social-links > li) { display: flex; }
+  .site-header-social :global(.social-button) { width: var(--pill-h); height: var(--pill-h); }
   .site-header[data-scrolled='true'] .site-header-social {
     translate: 0 -96px;
     opacity: 0;
@@ -309,6 +314,8 @@ const pagePills = serviceNav
   }
 
   @media (min-width: 1024px) {
+    .site-nav-list > li,
+    .site-header-list > li { display: flex; align-items: center; }
     .header-brand,
     .site-header-social { flex: 0 1 240px; }
   }

@@ -33,3 +33,23 @@ describe('flechas del carrusel de sesiones', () => {
     expect(desktop).toMatch(/\.syllabus-arrows \{[^}]*top: 0;/);
   });
 });
+
+describe('pildoras del header a la misma altura', () => {
+  const header = read('src/components/Header.astro');
+  const css = styleOf(header);
+  const logo = read('src/components/Logo.astro');
+
+  it('los botones de redes del header son circulos de --pill-h', () => {
+    const rule = /\.site-header-social :global\(\.social-button\) \{([^}]*)\}/.exec(css)?.[1] ?? '';
+    expect(rule).toContain('width: var(--pill-h)');
+    expect(rule).toContain('height: var(--pill-h)');
+  });
+
+  it('la pildora del logo mide --pill-h y el logo escala con ella', () => {
+    const rule = /\.logo-pill \{([^}]*)\}/.exec(css)?.[1] ?? '';
+    expect(rule).toContain('height: var(--pill-h)');
+    expect(rule).toMatch(/--logo-size: calc\(var\(--pill-h\) \* [\d.]+\)/);
+    expect(rule).not.toMatch(/padding: 8px 16px/);
+    expect(logo).toContain('font-size:var(--logo-size, ${size}px)');
+  });
+});
