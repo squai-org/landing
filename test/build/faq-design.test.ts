@@ -68,13 +68,86 @@ describe('Es para ti como landing-design', () => {
 
     expect(section).toMatch(/border-radius: var\(--edge-r\) var\(--edge-r\) 0 0/);
     expect(section).toMatch(/margin-top: calc\(var\(--edge-r\) \* -1\)/);
-    expect(section).toMatch(/padding: var\(--section-py\) var\(--gutter\) calc\(var\(--section-py\) \+ var\(--edge-r\)\)/);
+    expect(section).toMatch(/padding: 0 var\(--gutter\) var\(--edge-r\)/);
   });
 
-  it('el empuje al segundo vecino aplica tambien bajo 992 px', () => {
-    const beforeDesktop = audienceCss.slice(0, audienceCss.indexOf('@media (min-width: 768px)'));
+  it('recorta el fondo sin overflow: hidden, que anularia el sticky', () => {
+    const section = rule(audienceCss, '.one-fit');
 
-    expect(beforeDesktop).toMatch(/\.one-fit-item:hover \+ \.one-fit-item \+ \.one-fit-item \.one-fit-button \{ transform: translateY\(0\.6rem\)/);
-    expect(beforeDesktop).toMatch(/\+ \.one-fit-item:hover\) \.one-fit-button \{ transform: translateY\(-0\.6rem\)/);
+    expect(section).not.toMatch(/overflow: hidden/);
+    expect(section).toMatch(/overflow: clip/);
+  });
+
+  it('el contenido queda fijo a pantalla completa y conserva el aire de seccion', () => {
+    const content = rule(audienceCss, '.one-fit-content');
+
+    expect(content).toMatch(/position: sticky/);
+    expect(content).toMatch(/top: 0/);
+    expect(content).toMatch(/min-height: 100svh/);
+    expect(content).toMatch(/padding-block: var\(--section-py\)/);
+  });
+
+  it('bajo 1024 px el aire vertical se ajusta al alto para que la vista fija quepa a 360x640, sin tocar la tipografia', () => {
+    const compact = audienceCss.slice(audienceCss.indexOf('@media (max-width: 1023px)'));
+
+    expect(compact).toMatch(/\.one-fit-content \{ padding-block: min\(var\(--section-py\), 5svh\); \}/);
+    expect(compact).toMatch(/\.one-fit-heading \{ margin-bottom: min\(calc\(var\(--u\) \* 64\), 4svh\); \}/);
+    expect(compact).toMatch(/\.one-fit-bottom \{ margin-top: min\(calc\(var\(--u\) \* 64\), 4svh\); \}/);
+    expect(compact).not.toMatch(/font-size/);
+  });
+
+  it('con el navbar visible en movil y tablet, el contenido fijo empieza debajo de el y aprieta su aire para seguir cabiendo', () => {
+    const tall = audienceCss.slice(audienceCss.indexOf('@media (max-width: 1023px) and (min-height: 560px)'));
+    const visible = ":global(html:has(.site-header[data-hidden='false']))";
+
+    expect(tall).toContain(`${visible} .one-fit-content { padding-block: calc(var(--header-pt) + var(--pill-h) + 12px) 2svh; }`);
+    expect(tall).toContain(`${visible} .one-fit-heading { margin-bottom: min(calc(var(--u) * 64), 2.5svh); }`);
+    expect(tall).toContain(`${visible} .one-fit-bottom { margin-top: min(calc(var(--u) * 64), 2.5svh); }`);
+  });
+
+  it('el ajuste por el navbar acompana su transicion y se quita con movimiento reducido', () => {
+    const tall = audienceCss.slice(audienceCss.indexOf('@media (max-width: 1023px) and (min-height: 560px)'));
+    const reduced = audienceCss.slice(audienceCss.indexOf('@media (prefers-reduced-motion: reduce)'));
+
+    expect(tall).toMatch(/\.one-fit-content, \.one-fit-heading, \.one-fit-bottom \{ transition: padding \.3s var\(--ease-smooth\), margin \.3s var\(--ease-smooth\); \}/);
+    expect(reduced).toMatch(/\.one-fit-content, \.one-fit-heading, \.one-fit-bottom \{ transition: none; \}/);
+  });
+
+  it('en pantallas de menos de 560px de alto deja de ser fija y vuelve al flujo normal sin tramo de scroll', () => {
+    const short = audienceCss.slice(audienceCss.indexOf('@media (max-height: 559px)'));
+
+    expect(short).toMatch(/^@media \(max-height: 559px\)/);
+    expect(rule(short, '.one-fit-content')).toMatch(/position: relative/);
+    expect(rule(short, '.one-fit-content')).toMatch(/min-height: 0/);
+    expect(rule(short, '.one-fit-runway')).toMatch(/display: none/);
+  });
+
+  it('el tramo de scroll da 70svh por perfil', () => {
+    expect(rule(audienceCss, '.one-fit')).toMatch(/--fit-step: 70svh/);
+    expect(rule(audienceCss, '.one-fit-runway')).toMatch(/height: calc\(var\(--fit-profiles\) \* var\(--fit-step\)\)/);
+    expect(audience).toMatch(/<div class="one-fit-runway" aria-hidden="true" data-fit-runway style=\{`--fit-profiles: \$\{fit\.profiles\.length\}`\}><\/div>/);
+  });
+
+  it('el scroll y el click se resuelven con el modulo puro del tramo', () => {
+    expect(audience).toContain("import { profileAt, scrollDrivesProfile, scrollTopFor } from '../lib/fit-scroll'");
+    expect(audience).toMatch(/behavior: reduced \? 'instant' : 'smooth'/);
+  });
+
+  it('el perfil lo decide el scroll, sin vista previa por hover ni foco', () => {
+    expect(audienceCss).not.toMatch(/\.one-fit-item:hover/);
+    expect(audience).not.toMatch(/'mouseenter'|'mouseleave'|'focus'|'blur'/);
+    expect(audience).not.toContain('hovered');
+  });
+
+  it('las fotos laterales del perfil activo se ven completas, sin el estado atenuado de reposo', () => {
+    expect(rule(audienceCss, '.one-fit-preview')).not.toMatch(/opacity/);
+    expect(audience).not.toMatch(/0\.42|0\.88/);
+  });
+
+  it('el contenido fijo en columna flex no encoge el escenario: las fotos quedan a los lados del texto', () => {
+    expect(rule(audienceCss, '.one-fit-content')).toMatch(/display: flex/);
+    expect(rule(audienceCss, '.one-fit-stage')).toMatch(/width: 100%/);
+    expect(rule(audienceCss, '.one-fit-heading')).toMatch(/width: 100%/);
+    expect(rule(audienceCss, '.one-fit-bottom')).toMatch(/width: 100%/);
   });
 });

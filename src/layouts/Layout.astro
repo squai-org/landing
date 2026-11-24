@@ -87,6 +87,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   import type { ClientCopy } from '../lib/content';
   import { initMotion } from '../lib/motion-client';
   import { bindFloatLift } from '../lib/float-lift-client';
+  import { markSectionJump } from '../lib/header-visibility-client';
 
   const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
 
@@ -97,16 +98,20 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
   const navOffset = () => {
     const bar = document.querySelector<HTMLElement>('[data-header-row]');
-    return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
+    return (bar ? bar.offsetTop + bar.offsetHeight : 96) + 28;
   };
+
+  const settleSectionJump = () => requestAnimationFrame(() => requestAnimationFrame(() => markSectionJump(false)));
 
   const scrollToSection = (id: string, instant = false) => {
     const el = document.getElementById(id);
     if (!el) return;
     const topPadding = parseFloat(getComputedStyle(el).paddingTop) || 0;
     const target = el.getBoundingClientRect().top + window.scrollY + topPadding - navOffset();
+    markSectionJump(true);
     if (prefersReducedMotion() || instant) {
       window.scrollTo(0, target);
+      settleSectionJump();
       return;
     }
     const start = window.scrollY;
@@ -118,6 +123,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       const p = Math.min((now - t0) / dur, 1);
       window.scrollTo(0, start + dist * ease(p));
       if (p < 1) requestAnimationFrame(step);
+      else settleSectionJump();
     };
     requestAnimationFrame(step);
   };

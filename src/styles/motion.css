@@ -160,6 +160,15 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
 .motion-toggle-play { display: none; }
 html[data-motion='paused'] .motion-toggle-play { display: block; }
 html[data-motion='paused'] .motion-toggle-pause { display: none; }
+@media (max-width: 639px) {
+  .motion-toggle {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .backdrop-block,
