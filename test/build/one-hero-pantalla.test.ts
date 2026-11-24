@@ -49,12 +49,15 @@ describe('hero de Squai One a pantalla completa en movil y tablet', () => {
     expect(rule(mobile, '.one-hero-person')).toMatch(/translate: none;/);
   });
 
-  it('en escritorio la foto conserva el desplazamiento con el scroll, hacia arriba para no recortarse por abajo', () => {
+  it('en escritorio la foto baja con el scroll y su base sube lo mismo que baja, para no recortarse', () => {
     const range = /scrollRange\(hero, 'start-start', \[(-?\d+), (-?\d+)\]/.exec(hero);
     expect(range).not.toBeNull();
-    const [from, to] = [Number(range![1]), Number(range![2])];
-    expect(from).toBe(0);
-    expect(to).toBeLessThan(0);
+    expect([Number(range![1]), Number(range![2])]).toEqual([0, 1]);
+    expect(hero).toMatch(/setProperty\('--person-progress'/);
+    const desktop = rule(mediaBlock('(min-width: 1024px)'), '.one-hero-person');
+    expect(desktop).toMatch(/--person-drift: calc\(var\(--u\) \* \d+\);/);
+    expect(desktop).toMatch(/bottom: var\(--person-drift\);/);
+    expect(desktop).toMatch(/translate: -50% calc\(var\(--person-progress, 0\) \* var\(--person-drift\)\);/);
   });
 
   it('el titulo arranca bajo el navbar con un respiro de 24 a 32px', () => {

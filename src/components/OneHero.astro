@@ -70,8 +70,8 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
   const person = document.querySelector<HTMLElement>('[data-hero-person]');
   const hero = person?.closest<HTMLElement>('section');
   if (person && hero) {
-    scrollRange(hero, 'start-start', [0, -40], (value) => {
-      person.style.setProperty('--person-y', `${value.toFixed(2)}px`);
+    scrollRange(hero, 'start-start', [0, 1], (value) => {
+      person.style.setProperty('--person-progress', value.toFixed(4));
     });
   }
 </script>
@@ -136,7 +136,6 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
     right: 12%;
     height: 96%;
     aspect-ratio: 768 / 1050;
-    translate: 0 var(--person-y, 0px);
   }
   .one-hero-photo {
     position: relative;
@@ -274,10 +273,12 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
       margin-top: 0;
     }
     .one-hero-person {
+      --person-drift: calc(var(--u) * 24);
       right: auto;
+      bottom: var(--person-drift);
       left: 50%;
       height: calc(100% - var(--u) * 170);
-      translate: -50% var(--person-y, 0px);
+      translate: -50% calc(var(--person-progress, 0) * var(--person-drift));
     }
     .one-hero-tag { font-size: calc(var(--u) * 28); white-space: nowrap; }
     .one-hero-tag-note { right: auto; left: -10%; top: 56%; }
