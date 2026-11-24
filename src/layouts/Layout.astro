@@ -83,7 +83,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 <script>
   import type { ClientCopy } from '../lib/content';
   import { initMotion } from '../lib/motion-client';
-  import { bindFloatLift } from '../lib/float-lift';
+  import { bindFloatLift } from '../lib/float-lift-client';
 
   const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
 
