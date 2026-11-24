@@ -19,7 +19,9 @@ function bindPauseToggle() {
 
   const render = () => {
     const paused = document.documentElement.dataset.motion === 'paused';
-    label.textContent = paused ? toggle.dataset.resumeLabel! : toggle.dataset.pauseLabel!;
+    const name = paused ? toggle.dataset.resumeLabel! : toggle.dataset.pauseLabel!;
+    label.textContent = name;
+    toggle.setAttribute('aria-label', name);
   };
 
   toggle.hidden = false;
