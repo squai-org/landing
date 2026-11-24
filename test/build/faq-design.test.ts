@@ -139,10 +139,15 @@ describe('Es para ti como landing-design', () => {
     expect(audience).not.toContain('hovered');
   });
 
-  it('las fotos laterales del perfil activo se ven completas, delante del texto como en el diseno activo', () => {
+  it('las fotos laterales del perfil activo se ven completas, sin el estado atenuado de reposo', () => {
     expect(rule(audienceCss, '.one-fit-preview')).not.toMatch(/opacity/);
-    expect(rule(audienceCss, '.one-fit-preview')).toMatch(/z-index: 20/);
-    expect(rule(audienceCss, '.one-fit-list')).toMatch(/z-index: 10/);
     expect(audience).not.toMatch(/0\.42|0\.88/);
+  });
+
+  it('el contenido fijo en columna flex no encoge el escenario: las fotos quedan a los lados del texto', () => {
+    expect(rule(audienceCss, '.one-fit-content')).toMatch(/display: flex/);
+    expect(rule(audienceCss, '.one-fit-stage')).toMatch(/width: 100%/);
+    expect(rule(audienceCss, '.one-fit-heading')).toMatch(/width: 100%/);
+    expect(rule(audienceCss, '.one-fit-bottom')).toMatch(/width: 100%/);
   });
 });

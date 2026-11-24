@@ -256,13 +256,14 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     flex-direction: column;
     align-items: center;
     gap: calc(var(--u) * 16);
+    width: 100%;
     max-width: calc(var(--u) * 1100);
     margin: 0 auto calc(var(--u) * 64);
     text-align: center;
   }
   .one-fit-heading h2 { color: var(--canvas); }
   .one-fit-note { display: inline-block; color: var(--gold-9); rotate: -1.5deg; }
-  .one-fit-stage { position: relative; max-width: calc(var(--u) * 1760); margin-inline: auto; }
+  .one-fit-stage { position: relative; width: 100%; max-width: calc(var(--u) * 1760); margin-inline: auto; }
   .one-fit-previews { display: none; pointer-events: none; }
   .one-fit-preview {
     position: absolute;
@@ -350,6 +351,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     display: flex;
     flex-direction: column;
     gap: calc(var(--u) * 24);
+    width: 100%;
     max-width: calc(var(--u) * 840);
     margin: calc(var(--u) * 64) auto 0;
     text-align: center;
