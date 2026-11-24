@@ -115,7 +115,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
 
 <script>
   import { animate, onReducedMotionChange, prefersReducedMotion, springs, tweens } from '../lib/motion';
-  import { profileAt, scrollTopFor } from '../lib/fit-scroll';
+  import { profileAt, scrollDrivesProfile, scrollTopFor } from '../lib/fit-scroll';
 
   const section = document.querySelector<HTMLElement>('[data-fit]');
   if (section) {
@@ -191,9 +191,11 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       });
       button.addEventListener('click', () => {
         selected = index;
-        jumpTarget = index;
         render();
-        window.scrollTo({ top: scrollTopFor(index, track()), behavior: reduced ? 'instant' : 'smooth' });
+        const fitTrack = track();
+        if (!scrollDrivesProfile(fitTrack)) return;
+        jumpTarget = index;
+        window.scrollTo({ top: scrollTopFor(index, fitTrack), behavior: reduced ? 'instant' : 'smooth' });
       });
     });
 
@@ -206,7 +208,9 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     let ticking = false;
     const followScroll = () => {
       ticking = false;
-      const next = profileAt(window.scrollY, track());
+      const fitTrack = track();
+      if (!scrollDrivesProfile(fitTrack)) return;
+      const next = profileAt(window.scrollY, fitTrack);
       if (jumpTarget !== null) {
         if (next !== jumpTarget) return;
         jumpTarget = null;
@@ -395,7 +399,20 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     .one-fit-heading { margin-bottom: min(calc(var(--u) * 64), 4svh); }
     .one-fit-bottom { margin-top: min(calc(var(--u) * 64), 4svh); }
   }
+  @media (max-width: 1023px) and (min-height: 560px) {
+    .one-fit-content, .one-fit-heading, .one-fit-bottom { transition: padding .3s var(--ease-smooth), margin .3s var(--ease-smooth); }
+    :global(html:has(.site-header[data-hidden='false'])) .one-fit-content { padding-block: calc(var(--header-pt) + var(--pill-h) + 12px) 2svh; }
+    :global(html:has(.site-header[data-hidden='false'])) .one-fit-heading { margin-bottom: min(calc(var(--u) * 64), 2.5svh); }
+    :global(html:has(.site-header[data-hidden='false'])) .one-fit-bottom { margin-top: min(calc(var(--u) * 64), 2.5svh); }
+  }
+  @media (max-height: 559px) {
+    .one-fit-content { position: relative; min-height: 0; }
+    .one-fit-runway { display: none; }
+  }
   @media (min-width: 1024px) {
     .one-fit-previews { display: block; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .one-fit-content, .one-fit-heading, .one-fit-bottom { transition: none; }
   }
 </style>

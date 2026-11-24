@@ -6,6 +6,10 @@ export interface FitTrack {
 
 const clampProfile = (profile: number, profiles: number) => Math.min(Math.max(profile, 0), profiles - 1);
 
+export function scrollDrivesProfile(track: FitTrack): boolean {
+  return track.length > 0;
+}
+
 export function profileAt(scrollY: number, track: FitTrack): number {
   if (track.length <= 0) return 0;
   const progress = (scrollY - track.start) / track.length;

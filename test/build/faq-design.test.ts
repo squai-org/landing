@@ -96,6 +96,32 @@ describe('Es para ti como landing-design', () => {
     expect(compact).not.toMatch(/font-size/);
   });
 
+  it('con el navbar visible en movil y tablet, el contenido fijo empieza debajo de el y aprieta su aire para seguir cabiendo', () => {
+    const tall = audienceCss.slice(audienceCss.indexOf('@media (max-width: 1023px) and (min-height: 560px)'));
+    const visible = ":global(html:has(.site-header[data-hidden='false']))";
+
+    expect(tall).toContain(`${visible} .one-fit-content { padding-block: calc(var(--header-pt) + var(--pill-h) + 12px) 2svh; }`);
+    expect(tall).toContain(`${visible} .one-fit-heading { margin-bottom: min(calc(var(--u) * 64), 2.5svh); }`);
+    expect(tall).toContain(`${visible} .one-fit-bottom { margin-top: min(calc(var(--u) * 64), 2.5svh); }`);
+  });
+
+  it('el ajuste por el navbar acompana su transicion y se quita con movimiento reducido', () => {
+    const tall = audienceCss.slice(audienceCss.indexOf('@media (max-width: 1023px) and (min-height: 560px)'));
+    const reduced = audienceCss.slice(audienceCss.indexOf('@media (prefers-reduced-motion: reduce)'));
+
+    expect(tall).toMatch(/\.one-fit-content, \.one-fit-heading, \.one-fit-bottom \{ transition: padding \.3s var\(--ease-smooth\), margin \.3s var\(--ease-smooth\); \}/);
+    expect(reduced).toMatch(/\.one-fit-content, \.one-fit-heading, \.one-fit-bottom \{ transition: none; \}/);
+  });
+
+  it('en pantallas de menos de 560px de alto deja de ser fija y vuelve al flujo normal sin tramo de scroll', () => {
+    const short = audienceCss.slice(audienceCss.indexOf('@media (max-height: 559px)'));
+
+    expect(short).toMatch(/^@media \(max-height: 559px\)/);
+    expect(rule(short, '.one-fit-content')).toMatch(/position: relative/);
+    expect(rule(short, '.one-fit-content')).toMatch(/min-height: 0/);
+    expect(rule(short, '.one-fit-runway')).toMatch(/display: none/);
+  });
+
   it('el tramo de scroll da 70svh por perfil', () => {
     expect(rule(audienceCss, '.one-fit')).toMatch(/--fit-step: 70svh/);
     expect(rule(audienceCss, '.one-fit-runway')).toMatch(/height: calc\(var\(--fit-profiles\) \* var\(--fit-step\)\)/);
@@ -103,7 +129,7 @@ describe('Es para ti como landing-design', () => {
   });
 
   it('el scroll y el click se resuelven con el modulo puro del tramo', () => {
-    expect(audience).toContain("import { profileAt, scrollTopFor } from '../lib/fit-scroll'");
+    expect(audience).toContain("import { profileAt, scrollDrivesProfile, scrollTopFor } from '../lib/fit-scroll'");
     expect(audience).toMatch(/behavior: reduced \? 'instant' : 'smooth'/);
   });
 

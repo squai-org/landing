@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { profileAt, scrollTopFor } from '../../src/lib/fit-scroll';
+import { profileAt, scrollDrivesProfile, scrollTopFor } from '../../src/lib/fit-scroll';
 
 const track = { start: 1000, length: 1500, profiles: 3 };
 
@@ -17,6 +17,11 @@ describe('Es para ti: perfil activo segun el scroll del tramo fijo', () => {
     expect(profileAt(1500, track)).toBe(1);
     expect(profileAt(1999, track)).toBe(1);
     expect(profileAt(2000, track)).toBe(2);
+  });
+
+  it('solo un tramo con recorrido deja que el scroll elija el perfil', () => {
+    expect(scrollDrivesProfile(track)).toBe(true);
+    expect(scrollDrivesProfile({ start: 1000, length: 0, profiles: 3 })).toBe(false);
   });
 
   it('un tramo sin recorrido deja el primer perfil', () => {
