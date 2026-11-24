@@ -133,10 +133,16 @@ describe('Es para ti como landing-design', () => {
     expect(audience).toMatch(/behavior: reduced \? 'instant' : 'smooth'/);
   });
 
-  it('el empuje al segundo vecino aplica tambien bajo 992 px', () => {
-    const beforeDesktop = audienceCss.slice(0, audienceCss.indexOf('@media (min-width: 768px)'));
+  it('el perfil lo decide el scroll, sin vista previa por hover ni foco', () => {
+    expect(audienceCss).not.toMatch(/\.one-fit-item:hover/);
+    expect(audience).not.toMatch(/'mouseenter'|'mouseleave'|'focus'|'blur'/);
+    expect(audience).not.toContain('hovered');
+  });
 
-    expect(beforeDesktop).toMatch(/\.one-fit-item:hover \+ \.one-fit-item \+ \.one-fit-item \.one-fit-button \{ transform: translateY\(0\.6rem\)/);
-    expect(beforeDesktop).toMatch(/\+ \.one-fit-item:hover\) \.one-fit-button \{ transform: translateY\(-0\.6rem\)/);
+  it('las fotos laterales del perfil activo se ven completas, delante del texto como en el diseno activo', () => {
+    expect(rule(audienceCss, '.one-fit-preview')).not.toMatch(/opacity/);
+    expect(rule(audienceCss, '.one-fit-preview')).toMatch(/z-index: 20/);
+    expect(rule(audienceCss, '.one-fit-list')).toMatch(/z-index: 10/);
+    expect(audience).not.toMatch(/0\.42|0\.88/);
   });
 });

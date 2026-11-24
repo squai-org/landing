@@ -79,13 +79,13 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
         }
       </div>
 
-      <ul class="one-fit-list" data-fit-list>
+      <ul class="one-fit-list">
         {
           fit.profiles.map((profile, index) => (
             <li class="one-fit-item" data-selected={index === 0 ? 'true' : 'false'}>
               <button type="button" class="one-fit-button" data-fit-option={index} aria-pressed={index === 0 ? 'true' : 'false'} aria-controls="fit-example">
                 <span class="one-fit-label">{profile.t}</span>
-                <span class="one-fit-label-hover" aria-hidden="true">{profile.t}</span>
+                <span class="one-fit-label-active" aria-hidden="true">{profile.t}</span>
               </button>
             </li>
           ))
@@ -123,7 +123,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-fit-option]'));
     const examples = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-example]'));
     const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-preview]'));
-    const list = section.querySelector<HTMLElement>('[data-fit-list]');
     const runway = section.querySelector<HTMLElement>('[data-fit-runway]');
     let reduced = prefersReducedMotion();
     onReducedMotionChange((value) => {
@@ -131,7 +130,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     });
     let settled = false;
 
-    let hovered: number | null = null;
     let selected = 0;
     let shownExample = 0;
     let pointer = { x: 0, y: 0 };
@@ -155,40 +153,22 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     };
 
     const render = () => {
-      const active = hovered ?? selected;
-      const rowY = active * 54;
-      const isHovering = hovered !== null;
-      items.forEach((item, index) => {
-        item.dataset.selected = (hovered === index || (selected === index && !isHovering)) ? 'true' : 'false';
-      });
+      const rowY = selected * 54;
+      items.forEach((item, index) => (item.dataset.selected = String(selected === index)));
       buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(selected === index)));
       previews.forEach((preview, side) => {
         const left = side === 0;
-        const scale = isHovering ? 1 : 0.88;
-        const rotate = left ? (isHovering ? -8 : -14) : (isHovering ? 7 : 13);
         const x = left ? pointer.x * -0.7 : pointer.x * 0.85;
         const y = left ? rowY * 0.5 + pointer.y * -0.5 : rowY * 0.5 + 32 + pointer.y * 0.65;
-        animate(preview, { opacity: isHovering ? 1 : 0.42, x, y, scale, rotate }, reduced || !settled ? { duration: 0 } : springs.audienceSwap);
+        animate(preview, { opacity: 1, x, y, scale: 1, rotate: left ? -8 : 7 }, reduced || !settled ? { duration: 0 } : springs.audienceSwap);
         preview.querySelectorAll<HTMLElement>('[data-fit-photo]').forEach((photo) => {
-          photo.hidden = Number(photo.dataset.fitPhoto) !== active;
+          photo.hidden = Number(photo.dataset.fitPhoto) !== selected;
         });
       });
-      showExample(active);
+      showExample(selected);
     };
 
     buttons.forEach((button, index) => {
-      button.addEventListener('mouseenter', () => {
-        hovered = index;
-        render();
-      });
-      button.addEventListener('focus', () => {
-        hovered = index;
-        render();
-      });
-      button.addEventListener('blur', () => {
-        hovered = null;
-        render();
-      });
       button.addEventListener('click', () => {
         selected = index;
         render();
@@ -217,7 +197,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       }
       if (next === selected) return;
       selected = next;
-      hovered = null;
       render();
     };
     window.addEventListener(
@@ -232,10 +211,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     window.addEventListener('scrollend', () => {
       jumpTarget = null;
       followScroll();
-    });
-    list?.addEventListener('mouseleave', () => {
-      hovered = null;
-      render();
     });
     section.addEventListener('mousemove', (event) => {
       const rect = section.getBoundingClientRect();
@@ -296,7 +271,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     padding: calc(var(--u) * 13);
     border-radius: calc(var(--u) * 37);
     box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-    opacity: 0.42;
   }
   .one-fit-preview.is-left { left: 0; top: 1rem; background: #fff; }
   .one-fit-preview.is-right { right: 0; top: 2.5rem; background: var(--gold-9); }
@@ -331,7 +305,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     background: none;
     color: inherit;
     cursor: pointer;
-    transition: transform 0.45s var(--ease-smooth);
   }
   .one-fit-label {
     font-family: var(--font-display);
@@ -349,7 +322,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       scale 0.35s var(--ease-bounce),
       filter 0.25s 0.05s var(--ease-smooth);
   }
-  .one-fit-label-hover {
+  .one-fit-label-active {
     position: absolute;
     inset: 0;
     display: flex;
@@ -368,14 +341,8 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       scale 0.35s var(--ease-bounce),
       filter 0.25s 0.05s var(--ease-smooth);
   }
-  .one-fit-item:hover .one-fit-label,
   .one-fit-item[data-selected='true'] .one-fit-label { opacity: 0; scale: 0.75 1.25; filter: blur(2px); }
-  .one-fit-item:hover .one-fit-label-hover,
-  .one-fit-item[data-selected='true'] .one-fit-label-hover { opacity: 1; scale: 1 1; filter: blur(0); }
-  .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(1.5rem); }
-  .one-fit-item:hover + .one-fit-item + .one-fit-item .one-fit-button { transform: translateY(0.6rem); }
-  .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-1.5rem); }
-  .one-fit-item:has(+ .one-fit-item + .one-fit-item:hover) .one-fit-button { transform: translateY(-0.6rem); }
+  .one-fit-item[data-selected='true'] .one-fit-label-active { opacity: 1; scale: 1 1; filter: blur(0); }
 
   .one-fit-bottom {
     position: relative;
@@ -390,10 +357,6 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
   .one-fit-example { color: var(--periwinkle-4); }
   .one-fit-cta { display: flex; justify-content: center; }
 
-  @media (max-width: 991px) {
-    .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(0.35rem); }
-    .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-0.35rem); }
-  }
   @media (max-width: 1023px) {
     .one-fit-content { padding-block: min(var(--section-py), 5svh); }
     .one-fit-heading { margin-bottom: min(calc(var(--u) * 64), 4svh); }
