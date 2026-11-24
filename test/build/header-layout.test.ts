@@ -66,10 +66,61 @@ describe('fila del header', () => {
     expect(company).not.toContain('height');
   });
 
+  it('el CTA de la barra solo se ve por debajo de 1024px y el panel del menu movil no lo repite', () => {
+    const mobile = mediaBlock(headerStyles, '(max-width: 1023px)');
+    const outsideMobile = headerStyles.replace(mobile, '');
+    expect(rule(outsideMobile, '.header-bar-cta')).toContain('display: none');
+    expect(rule(mobile, '.header-bar-cta')).toContain('display: inline-flex');
+    expect(rule(mobile, '.nav-cta-wrap')).toContain('display: none');
+  });
+
+  it('el CTA de la barra se alinea a la derecha junto al menu y queda sobre el fondo del menu abierto', () => {
+    const mobile = mediaBlock(headerStyles, '(max-width: 1023px)');
+    const bar = rule(mobile, '.header-bar-cta');
+    expect(bar).toContain('margin-left: auto');
+    expect(bar).toContain('z-index: 2');
+  });
+
+  it('por debajo de 640px el boton de menu es solo icono y su texto sigue como nombre accesible', () => {
+    expect(header).toMatch(/<span class="btn-text sr-only-compact">/);
+    expect(headerStyles).not.toContain('clip: rect(0 0 0 0)');
+  });
+
+  it('el CTA de la barra se ubica con un gancho data-*, como el resto del header', () => {
+    expect(header).toMatch(/<Button[^>]*class="header-bar-cta"[^>]*data-header-bar-cta/);
+    expect(header).toContain("querySelector<HTMLElement>('[data-header-bar-cta]')");
+  });
+
   it('el nav usa 14px entre pildoras y solo lo reduce entre 1024px y 1279px para que quepan las redes', () => {
     expect(rule(headerStyles, '.site-nav-list')).toContain('gap: 14px');
     const tight = mediaBlock(headerStyles, '(min-width: 1024px) and (max-width: 1279px)');
     expect(rule(tight, '.site-nav-list')).toContain('gap: 8px');
     expect(tight).not.toContain('display: none');
+  });
+  it('por debajo de 1024px el navbar oculto sube fuera de la pantalla con transicion, y en escritorio no se oculta', () => {
+    const mobile = mediaBlock(headerStyles, '(max-width: 1023px)');
+    expect(rule(mobile, ".site-header[data-hidden='true']")).toContain('translate: 0 -100%');
+    expect(rule(mobile, '.site-header')).toContain('transition: translate');
+    expect(headerStyles.replace(mobile, '')).not.toContain('data-hidden');
+  });
+
+  it('con movimiento reducido el navbar aparece y se oculta sin transicion', () => {
+    const reduced = mediaBlock(headerStyles, '(prefers-reduced-motion: reduce)');
+    expect(rule(reduced, '.site-header')).toContain('transition: none');
+  });
+});
+
+describe('pagina actual en el CTA del header', () => {
+  const markup = header.slice(0, header.indexOf('<style>'));
+  const buttonWith = (className: string) => new RegExp(`<Button[^>]*class="${className}"[^>]*>`).exec(markup)?.[0] ?? '';
+
+  it('solo el CTA dentro de la navegacion marca aria-current, el de la barra nunca', () => {
+    expect(buttonWith('header-bar-cta')).not.toBe('');
+    expect(buttonWith('header-bar-cta')).not.toContain('aria-current');
+    expect(buttonWith('nav-cta')).toMatch(/aria-current=\{pageCta\.current\}/);
+  });
+
+  it('el destino que comparten los dos CTA no lleva aria-current', () => {
+    expect(markup).not.toMatch(/'aria-current':/);
   });
 });

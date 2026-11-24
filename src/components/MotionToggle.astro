@@ -13,6 +13,7 @@ const { pauseLabel, resumeLabel } = Astro.props;
   data-motion-toggle
   data-pause-label={pauseLabel}
   data-resume-label={resumeLabel}
+  aria-label={pauseLabel}
   hidden
 >
   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
@@ -22,5 +23,5 @@ const { pauseLabel, resumeLabel } = Astro.props;
     </g>
     <path class="motion-toggle-play" d="M8 5.5v13l11-6.5z" fill="currentColor"></path>
   </svg>
-  <span data-motion-toggle-label>{pauseLabel}</span>
+  <span class="motion-toggle-label sr-only-compact" data-motion-toggle-label>{pauseLabel}</span>
 </button>
