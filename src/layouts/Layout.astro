@@ -7,6 +7,7 @@ import ScrollTopButton from '../components/ScrollTopButton.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import { getSiteContent } from '../lib/content';
 import { SITE_LANG } from '../lib/seo';
+import { resolveWhatsappConfig } from '../lib/whatsapp';
 
 interface Props {
   title: string;
@@ -20,7 +21,9 @@ interface Props {
 }
 
 const { title, description, image, imageAlt, type, noindex, schemas, service } = Astro.props;
-const { ui } = await getSiteContent();
+const { services, ui } = await getSiteContent();
+const activeService = service ? services.find((item) => item.slug === service) : undefined;
+const whatsapp = resolveWhatsappConfig(ui.whatsapp, activeService?.whatsapp);
 
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
@@ -76,7 +79,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       <MotionToggle pauseLabel={ui.motion.pause} resumeLabel={ui.motion.resume} />
       <ScrollTopButton />
     </div>
-    <WhatsAppButton />
+    <WhatsAppButton whatsapp={whatsapp} />
   </body>
 </html>
 

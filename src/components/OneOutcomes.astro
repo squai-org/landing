@@ -17,6 +17,7 @@ const { outcomes } = Astro.props;
     <div class="one-outcomes-heading">
       <h2 id="one-outcomes-title" class="one-h2">{outcomes.title}</h2>
       <p class="one-lead one-outcomes-lead">{outcomes.lead}</p>
+      {outcomes.handwritten && <p class="one-hand one-outcomes-note">{outcomes.handwritten}</p>}
     </div>
 
     <div class="one-outcomes-stage" data-outcomes-stage>
@@ -134,11 +135,17 @@ const { outcomes } = Astro.props;
   }
   .one-outcomes-heading h2 { color: var(--midnight); }
   .one-outcomes-lead { max-width: calc(var(--u) * 640); margin-inline: auto; color: #525770; }
+  .one-outcomes-note {
+    display: inline-block;
+    margin-inline: auto;
+    color: var(--periwinkle-11);
+    rotate: -1.6deg;
+  }
   .one-outcomes-stage {
     position: relative;
     width: 100%;
     margin: calc(var(--u) * 24) auto 0;
-    aspect-ratio: 402 / 570;
+    aspect-ratio: 402 / 860;
   }
   .one-outcomes-list { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; }
   .outcome-label {
@@ -150,11 +157,12 @@ const { outcomes } = Astro.props;
     left: var(--rest-left, auto);
     right: var(--rest-right, auto);
   }
-  .outcome-label:nth-child(5n + 1) { --rest-top: 0%; --rest-left: 0%; --rest-rotate: -6deg; --bg: #0a0c1a; --ink: #f4f6ff; }
-  .outcome-label:nth-child(5n + 2) { --rest-top: 19%; --rest-right: 0%; --rest-rotate: 4deg; --bg: #f9c24d; --ink: #0a0c1a; }
-  .outcome-label:nth-child(5n + 3) { --rest-top: 39%; --rest-left: 3%; --rest-rotate: -2.5deg; --bg: #8a8ef9; --ink: #0a0c1a; }
-  .outcome-label:nth-child(5n + 4) { --rest-top: 53%; --rest-right: 2%; --rest-rotate: 5deg; --bg: #fff; --ink: #303163; }
-  .outcome-label:nth-child(5n + 5) { --rest-top: 75%; --rest-left: 6%; --rest-rotate: -4deg; --bg: #303163; --ink: #f4f6ff; }
+  .outcome-label:nth-child(6n + 1) { --rest-top: 0%; --rest-left: 0%; --rest-rotate: -5deg; --bg: #0a0c1a; --ink: #f4f6ff; }
+  .outcome-label:nth-child(6n + 2) { --rest-top: 17%; --rest-right: 0%; --rest-rotate: 4deg; --bg: #f9c24d; --ink: #0a0c1a; }
+  .outcome-label:nth-child(6n + 3) { --rest-top: 34%; --rest-left: 2%; --rest-rotate: -2.5deg; --bg: #8a8ef9; --ink: #0a0c1a; }
+  .outcome-label:nth-child(6n + 4) { --rest-top: 50.5%; --rest-right: 1%; --rest-rotate: 4.5deg; --bg: #fff; --ink: #303163; }
+  .outcome-label:nth-child(6n + 5) { --rest-top: 67.5%; --rest-left: 3%; --rest-rotate: -3.5deg; --bg: #303163; --ink: #f4f6ff; }
+  .outcome-label:nth-child(6n + 6) { --rest-top: 84%; --rest-right: 2%; --rest-rotate: 3deg; --bg: #d2d7fc; --ink: #0a0c1a; }
   .outcome-pill {
     display: flex;
     align-items: center;
@@ -178,15 +186,16 @@ const { outcomes } = Astro.props;
   }
 
   @media (min-width: 768px) {
-    .one-outcomes-stage { aspect-ratio: 834 / 560; }
+    .one-outcomes-stage { aspect-ratio: 834 / 720; }
   }
   @media (min-width: 1024px) {
-    .one-outcomes-stage { margin-top: calc(var(--u) * 56); aspect-ratio: 1840 / 760; }
+    .one-outcomes-stage { margin-top: calc(var(--u) * 56); aspect-ratio: 1840 / 1080; }
     .outcome-text { max-width: none; white-space: nowrap; }
-    .outcome-label:nth-child(5n + 1) { --rest-top: 0%; --rest-left: 4%; --rest-rotate: -5deg; }
-    .outcome-label:nth-child(5n + 2) { --rest-top: 19%; --rest-right: 3%; --rest-rotate: -1.8deg; }
-    .outcome-label:nth-child(5n + 3) { --rest-top: 46%; --rest-left: 5%; --rest-rotate: 2.5deg; }
-    .outcome-label:nth-child(5n + 4) { --rest-top: 42%; --rest-right: 2%; --rest-rotate: 5.8deg; }
-    .outcome-label:nth-child(5n + 5) { --rest-top: 76%; --rest-left: 28%; --rest-rotate: -5.3deg; }
+    .outcome-label:nth-child(6n + 1) { --rest-top: 1%; --rest-left: 4%; --rest-rotate: -4deg; }
+    .outcome-label:nth-child(6n + 2) { --rest-top: 17%; --rest-right: 3%; --rest-rotate: 2.2deg; }
+    .outcome-label:nth-child(6n + 3) { --rest-top: 34%; --rest-left: 5%; --rest-rotate: -2.2deg; }
+    .outcome-label:nth-child(6n + 4) { --rest-top: 51%; --rest-right: 3%; --rest-rotate: 3.6deg; }
+    .outcome-label:nth-child(6n + 5) { --rest-top: 68%; --rest-left: 6%; --rest-rotate: -3deg; }
+    .outcome-label:nth-child(6n + 6) { --rest-top: 84%; --rest-right: 5%; --rest-rotate: 2.8deg; }
   }
 </style>

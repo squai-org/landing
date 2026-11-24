@@ -42,3 +42,7 @@ pnpm-debug.log*
 pnpm-workspace.yaml
 
 .claude/worktrees/
+-e 
+.aistudio/
+-e .playwright-cli/
+bun.lock

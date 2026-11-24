@@ -5,11 +5,10 @@ import '../styles/one-sections.css';
 
 interface Props {
   title: string;
-  lead?: string;
   quotes: { text: string; name: string; context: string }[];
 }
 
-const { title, lead, quotes } = Astro.props;
+const { title, quotes } = Astro.props;
 
 const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: number; tilt: string }[] = [
   { bg: 'var(--surface)', block: 'var(--periwinkle-9)', preset: 'mod-2', rest: -2, tilt: '-1.6deg' },
@@ -22,7 +21,6 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
   <div class="one-quotes-content">
     <div class="one-quotes-heading">
       <h2 id="one-quotes-title" class="one-h2">{title}</h2>
-      {lead && <p class="one-lead one-quotes-lead">{lead}</p>}
     </div>
 
     <ul class="one-quotes-list">
@@ -87,7 +85,6 @@ const cardStyles: { bg: string; block: string; preset: OneCornerPreset; rest: nu
     text-align: center;
   }
   .one-quotes-heading h2 { color: var(--midnight); }
-  .one-quotes-lead { max-width: calc(var(--u) * 760); margin-inline: auto; color: var(--neutral-12); }
   .one-quotes-list {
     display: grid;
     grid-template-columns: 1fr;

@@ -32,6 +32,7 @@ import {
   webPageSchema,
   websiteSchema,
 } from '../../lib/seo';
+import { resolveWhatsappConfig } from '../../lib/whatsapp';
 
 const content = await getSiteContent();
 
@@ -41,6 +42,7 @@ export async function getStaticPaths() {
 }
 
 const { service } = Astro.props;
+const whatsapp = resolveWhatsappConfig(content.ui.whatsapp, service.whatsapp);
 
 const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
 const seo = serviceSeo(service, content.seo.serviceTitle);
@@ -104,9 +106,9 @@ const schemas = [
 
   {service.marquee && service.hero && <OneMarquee marquee={service.marquee} hero={service.hero} />}
 
-  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} cta={service.cta} profiles={service.team.mentors} stats={service.team.stats} />}
+  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} cta={service.cta} profiles={service.team.mentors} />}
 
-  {service.testimonials && <OneTestimonials title={service.testimonials.title} lead={service.testimonials.lead} quotes={service.testimonials.quotes} />}
+  {service.testimonials && <OneTestimonials title={service.testimonials.title} quotes={service.testimonials.quotes} />}
 
   {
     service.cta.modal ? (
@@ -122,7 +124,7 @@ const schemas = [
       </section>
       </div>
     ) : (
-      <Checkout investment={service.investment} />
+      <Checkout />
     )
   }
 
@@ -137,7 +139,7 @@ const schemas = [
   }
   </main>
 
-  <Footer overlap />
+  <Footer overlap whatsappMessage={whatsapp.message} />
   </div>
 
   <ContactModal />

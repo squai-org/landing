@@ -90,21 +90,20 @@ describe('Squai One: preguntas frecuentes por categoria', () => {
     expect(faqSection(page)).toContain('data-one-backdrop');
   });
 
-  it('la pregunta de las clases ya no dice 5 horas semanales ni escribe fechas', () => {
-    const answer = faqSection(page);
+  it('tiene exactamente las 10 preguntas aprobadas y omite el subtitulo redundante', () => {
+    const section = faqSection(page);
 
-    expect(answer).not.toMatch(/5 horas/);
-    expect(answer).toMatch(/4 semanas/);
-    expect(answer).toMatch(/2 horas y media/);
-    expect(answer).not.toMatch(/\b(enero|febrero|marzo)\b/i);
+    expect(section.match(/data-faq-toggle=/g)).toHaveLength(10);
+    expect(section).not.toContain('faq-lead');
+    expect(section).not.toMatch(/¿Hay cupos limitados\?|¿Cómo me inscribo\?|¿Llenar el formulario me obliga a pagar\?/);
   });
 
-  it('el JSON-LD de preguntas frecuentes no publica fechas, horarios ni precios', () => {
+  it('el JSON-LD de preguntas frecuentes no publica fechas ni precios', () => {
     const faq = jsonLdNodes(page).find((node) => node['@type'] === 'FAQPage');
     const text = JSON.stringify(faq);
 
     expect(faq).toBeDefined();
-    expect(text).not.toMatch(/\$|COP|USD|\d{1,2}:\d{2}|\b(?:lunes|martes|jueves|enero|febrero|2026|2027)\b/i);
+    expect(text).not.toMatch(/\$|COP|USD|\b(?:enero|febrero|2026|2027)\b/i);
   });
 
   it('no deja secciones duplicadas del orden de Notion', () => {

@@ -7,11 +7,12 @@ import { whatsappUrl } from '../lib/whatsapp';
 
 interface Props {
   overlap?: boolean;
+  whatsappMessage?: string;
 }
 
-const { overlap = false } = Astro.props;
+const { overlap = false, whatsappMessage } = Astro.props;
 const { footerCols, footerServices, heroSubtitle, tagline, company, ui, labels } = await getSiteContent();
-const whatsappHref = whatsappUrl(company.phone, ui.whatsapp.message);
+const whatsappHref = whatsappUrl(company.phone, whatsappMessage ?? ui.whatsapp.message);
 const serviceHrefs = new Set(footerServices.links.map((link) => link.href));
 const siteLinks = footerCols.flatMap((col) => col.links).filter((link) => !link.href || !serviceHrefs.has(link.href));
 const isExternal = (href?: string) => Boolean(href?.startsWith('http'));

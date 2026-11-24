@@ -1,7 +1,6 @@
 ---
 import Button from './Button.astro';
 import OneBackdrop from './OneBackdrop.astro';
-import OneMark from './OneMark.astro';
 import type { Service } from '../lib/content';
 import '../styles/one-sections.css';
 
@@ -30,7 +29,6 @@ const stepStyles = [
           <p class="one-hand one-flow-note">{flow.handwritten}</p>
         </div>
         <div class="one-flow-actions">
-          <OneMark class="one-flow-mark" />
           <Button variant="dark" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
         </div>
       </div>
@@ -43,13 +41,12 @@ const stepStyles = [
               <li class="flow-step" style={`z-index:${10 + index}`} data-step={index} data-rest-rotate={style.rotate} data-rest-y={style.y}>
                 <div class="one-flow-card" style={`--card-bg:${style.bg};transform:translateY(${style.y}px) rotate(${style.rotate}deg)`}>
                   <div class="one-flow-label">
-                    <span class="one-hand">{flow.stepLabel} #{index + 1}</span>
+                    <h3 class="one-h3">{step.t}</h3>
                   </div>
                   <div class="one-flow-art">
                     <img src={step.illustration} alt={step.alt} width="1400" height="1365" loading="lazy" decoding="async" draggable="false" />
                   </div>
                   <div class="one-flow-copy">
-                    <h3 class="one-h3">{step.t}</h3>
                     <p class="one-body">{step.d}</p>
                   </div>
                 </div>
@@ -131,11 +128,6 @@ const stepStyles = [
   .one-flow-heading h2 { color: var(--midnight); }
   .one-flow-note { display: inline-block; color: var(--periwinkle-11); rotate: 1.8deg; }
   .one-flow-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
-  .one-flow-actions :global(.one-flow-mark) {
-    flex-shrink: 0;
-    width: max(36px, calc(var(--u) * 48));
-    height: max(36px, calc(var(--u) * 48));
-  }
   .one-flow-deck {
     display: grid;
     grid-template-columns: 1fr;
@@ -160,11 +152,10 @@ const stepStyles = [
     transition: transform 0.48s var(--ease-smooth);
   }
   .one-flow-label { text-align: center; }
-  .one-flow-label .one-hand { color: var(--midnight); }
+  .one-flow-label .one-h3 { color: var(--midnight); }
   .one-flow-art { display: flex; flex: 1; align-items: flex-end; justify-content: center; }
   .one-flow-art img { display: block; width: 100%; height: auto; aspect-ratio: 1400 / 1365; user-select: none; }
   .one-flow-copy { display: flex; flex-direction: column; gap: calc(var(--u) * 12); }
-  .one-flow-copy h3 { color: var(--midnight); }
   .one-flow-copy p { color: var(--neutral-12); }
 
   @media (min-width: 640px) {
@@ -177,6 +168,7 @@ const stepStyles = [
     .one-flow-deck { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
     .flow-step:not(:first-child) { margin-left: calc(var(--u) * -24); }
     .one-flow-card { min-height: calc(var(--u) * 633); }
+    .one-flow-label .one-h3 { font-size: calc(var(--u) * 34); }
   }
   @media (prefers-reduced-motion: reduce) {
     .one-flow-card { transition: none; }

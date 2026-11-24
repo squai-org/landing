@@ -10,11 +10,10 @@ interface Props {
   title: string;
   closing: string;
   cta: Service['cta'];
-  profiles?: { name: string; badge: string; quote: string }[];
-  stats?: { value: string; label: string }[];
+  profiles?: { name: string; badge: string; quote: string; role?: string; bio?: string }[];
 }
 
-const { title, closing, cta, profiles = [], stats = [] } = Astro.props;
+const { title, closing, cta, profiles = [] } = Astro.props;
 const { squadGrid, ui } = await getSiteContent();
 
 const mentors = await Promise.all(
@@ -23,7 +22,16 @@ const mentors = await Promise.all(
     .map(async (member) => {
       const photo = await getImage({ src: teamImages[member.img], width: 360, height: 360, fit: 'cover', position: 'top', format: 'webp', quality: 90 });
       const profile = profiles.find((item) => item.name === member.name);
-      return { ...member, profile, photo, alt: ui.team.memberAlt.replace('{name}', member.name).replace('{role}', member.role) };
+      const role = profile?.role ?? member.role;
+      const bio = profile?.bio ?? member.d;
+      return {
+        ...member,
+        role,
+        bio,
+        profile,
+        photo,
+        alt: ui.team.memberAlt.replace('{name}', member.name).replace('{role}', role),
+      };
     }),
 );
 
@@ -86,17 +94,12 @@ const cardStyles = [
                               </svg>
                               <blockquote class="mentor-quote">“{mentor.profile.quote}”</blockquote>
                             </div>
-                            <p class="one-body mentor-bio">{mentor.d}</p>
+                            <p class="one-body mentor-bio">{mentor.bio}</p>
                           </>
                         ) : (
                           <div class="mentor-body">
-                            <p class="one-body mentor-bio">{mentor.d}</p>
+                            <p class="one-body mentor-bio">{mentor.bio}</p>
                           </div>
-                        )}
-                        {mentor.linkedin && (
-                          <a class="mentor-link" href={mentor.linkedin} rel="noopener noreferrer" target="_blank">
-                            LinkedIn de {mentor.name}
-                          </a>
                         )}
                       </div>
                     </div>
@@ -106,17 +109,6 @@ const cardStyles = [
             })
           }
         </ul>
-
-        {stats.length > 0 && (
-          <dl class="mentor-stats">
-            {stats.map((stat) => (
-              <div class="mentor-stat">
-                <dt>{stat.label}</dt>
-                <dd>{stat.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
       </div>
     </section>
   )
@@ -288,44 +280,6 @@ const cardStyles = [
     line-height: 1.35;
     color: #303163;
   }
-  .mentor-stats {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    width: 100%;
-    max-width: 960px;
-    margin: 0 auto;
-  }
-  .mentor-stat {
-    display: flex;
-    flex-direction: column-reverse;
-    padding: 20px 24px;
-    border-radius: 28px;
-    background: #fff;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    text-align: center;
-  }
-  .mentor-stat dt { font-size: 1rem; line-height: 1.5rem; color: var(--midnight); }
-  .mentor-stat dd {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    color: var(--midnight);
-  }
-  .mentor-link {
-    align-self: flex-start;
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--periwinkle-12);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 2px;
-  }
-  .mentor-link:hover { color: var(--periwinkle-11); }
 
   @media (min-width: 380px) {
     .mentor-body { padding-left: 72px; }
@@ -356,12 +310,6 @@ const cardStyles = [
     }
     .mentor-quote-mark { left: 68px; width: 4rem; height: 4rem; }
     .mentor-quote { font-size: 19px; }
-    .mentor-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
-    .mentor-stat:nth-child(1) { rotate: 1deg; }
-    .mentor-stat:nth-child(2) { rotate: -1.5deg; }
-    .mentor-stat:nth-child(3) { rotate: 1.8deg; }
-    .mentor-stat dt { font-size: 1.125rem; line-height: 1.75rem; }
-    .mentor-stat dd { font-size: 3.75rem; }
     .mentor-bio { font-size: calc(clamp(1.02rem, 1.18vw, 1.2rem) * var(--mc-text-scale)); }
   }
   @media (min-width: 768px) {

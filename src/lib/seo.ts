@@ -90,7 +90,6 @@ export const organizationSchema = (content: SiteContent): Json => {
       '@type': 'Person',
       name: person.name,
       jobTitle: person.role,
-      ...(person.linkedin ? { sameAs: [person.linkedin] } : {}),
     })),
     contactPoint: {
       '@type': 'ContactPoint',
