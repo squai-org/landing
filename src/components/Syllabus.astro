@@ -1,5 +1,6 @@
 ---
 import Button from './Button.astro';
+import CarouselArrows from './CarouselArrows.astro';
 import OneCornerBlocks from './OneCornerBlocks.astro';
 import { slideMotionAt } from '../lib/session-carousel';
 import { sessionsOf } from '../lib/syllabus-sessions';
@@ -42,25 +43,7 @@ const slideStyles: SlideStyle[] = [
 
   <div class="syllabus-carousel">
   <div class="syllabus-arrows">
-    {
-      (['prev', 'next'] as const).map((direction) => (
-        <button
-          type="button"
-          class={`slider-arrow slider-arrow-${direction}`}
-          aria-label={direction === 'prev' ? syllabus.prevLabel : syllabus.nextLabel}
-          disabled={direction === 'prev'}
-          data-sessions-step={direction}
-        >
-          <span class="slider-arrow-bg" aria-hidden="true"></span>
-          <span class="slider-arrow-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-              <path d="M5 12h14"></path>
-              <path d="m12 5 7 7-7 7"></path>
-            </svg>
-          </span>
-        </button>
-      ))
-    }
+    <CarouselArrows prevLabel={syllabus.prevLabel} nextLabel={syllabus.nextLabel} />
   </div>
 
   <div
@@ -134,87 +117,9 @@ const slideStyles: SlideStyle[] = [
 </section>
 
 <script>
-  import { prefersReducedMotion } from '../lib/motion';
-  import { normalizedDistance, slideMotionAt, slideTransform } from '../lib/session-carousel';
+  import { bindSessionCarousels } from '../lib/session-carousel-client';
 
-  const edgeTolerance = 4;
-  const dragThreshold = 5;
-
-  document.querySelectorAll<HTMLElement>('[data-sessions]').forEach((root) => {
-    const track = root.querySelector<HTMLElement>('[data-sessions-track]');
-    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-session-slide]'));
-    const prev = root.querySelector<HTMLButtonElement>('[data-sessions-step="prev"]');
-    const next = root.querySelector<HTMLButtonElement>('[data-sessions-step="next"]');
-    if (!track || !prev || !next || slides.length === 0) return;
-
-    let frame = 0;
-    const drag = { active: false, moved: false, startX: 0, startScroll: 0 };
-
-    const update = () => {
-      frame = 0;
-      const maxScroll = track.scrollWidth - track.clientWidth;
-      prev.disabled = track.scrollLeft <= edgeTolerance;
-      next.disabled = track.scrollLeft >= maxScroll - edgeTolerance;
-
-      if (prefersReducedMotion()) return;
-      const wrap = track.getBoundingClientRect();
-      const center = wrap.left + wrap.width / 2;
-      const maxDistance = wrap.width / 2;
-      slides.forEach((slide, index) => {
-        const rect = slide.getBoundingClientRect();
-        const norm = normalizedDistance({ itemCenter: rect.left + rect.width / 2, center, maxDistance });
-        const { rotate, y } = slideTransform(norm, slideMotionAt(index));
-        slide.style.transform = `translateY(${y.toFixed(2)}%) rotate(${rotate.toFixed(2)}deg)`;
-      });
-    };
-
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-
-    const step = (direction: 1 | -1) => {
-      track.scrollBy({ left: direction * slides[0]!.offsetWidth, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
-    };
-
-    prev.addEventListener('click', () => step(-1));
-    next.addEventListener('click', () => step(1));
-    track.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-
-    track.addEventListener('pointerdown', (event) => {
-      if (event.pointerType !== 'mouse' || event.button !== 0) return;
-      Object.assign(drag, { active: true, moved: false, startX: event.clientX, startScroll: track.scrollLeft });
-    });
-    track.addEventListener('pointermove', (event) => {
-      if (!drag.active) return;
-      const delta = event.clientX - drag.startX;
-      if (!drag.moved && Math.abs(delta) > dragThreshold) {
-        drag.moved = true;
-        track.setPointerCapture(event.pointerId);
-        track.dataset.dragging = 'true';
-      }
-      if (drag.moved) track.scrollLeft = drag.startScroll - delta;
-    });
-    const endDrag = (event: PointerEvent) => {
-      drag.active = false;
-      if (track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
-      delete track.dataset.dragging;
-    };
-    track.addEventListener('pointerup', endDrag);
-    track.addEventListener('pointercancel', endDrag);
-    track.addEventListener(
-      'click',
-      (event) => {
-        if (!drag.moved) return;
-        event.preventDefault();
-        event.stopPropagation();
-        drag.moved = false;
-      },
-      true
-    );
-
-    update();
-  });
+  bindSessionCarousels();
 </script>
 
 <style>
@@ -263,206 +168,15 @@ const slideStyles: SlideStyle[] = [
     justify-content: flex-end;
     gap: calc(var(--u) * 8);
   }
-  .slider-arrow {
-    display: inline-grid;
-    width: var(--slider-btn);
-    height: var(--slider-btn);
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: #fff;
-    cursor: pointer;
-    user-select: none;
-    transition: scale 0.15s var(--ease-click), opacity 0.25s ease-out;
-  }
-  .slider-arrow-prev { rotate: 180deg; }
-  .slider-arrow:active { scale: 0.9; }
-  .slider-arrow:disabled { opacity: 0.25; cursor: default; pointer-events: none; }
-  .slider-arrow:focus-visible { outline-offset: 3px; }
-  .slider-arrow-bg {
-    grid-area: 1 / 1;
-    border-radius: 50%;
-    background-color: var(--midnight);
-    scale: var(--arrow-squash, 1);
-    transition: scale 0.15s var(--ease-soft-overshoot), transform 0.15s var(--ease-soft-overshoot);
-  }
-  .slider-arrow-icon {
-    grid-area: 1 / 1;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .slider-arrow-icon svg { width: max(16px, calc(var(--u) * 18)); height: max(16px, calc(var(--u) * 18)); }
-
-  .sessions-track {
-    position: relative;
-    z-index: 10;
-    overflow-x: auto;
-    overflow-y: hidden;
-    overscroll-behavior-x: contain;
-    touch-action: pan-x pan-y;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline-start: var(--books-list-px);
-    scrollbar-width: none;
-    cursor: grab;
-  }
-  .sessions-track::-webkit-scrollbar { display: none; }
-  .sessions-track:focus-visible { outline-offset: -6px; }
-  .sessions-track[data-dragging='true'] { cursor: grabbing; scroll-snap-type: none; }
-  .sessions-track[data-dragging='true'] .session-slide-link { pointer-events: none; }
-  .sessions-list {
-    display: flex;
-    align-items: center;
-    width: max-content;
-    margin: 0;
-    padding: calc(var(--books-list-py) + var(--u) * 24) var(--books-list-px) calc(var(--books-list-py) + var(--u) * 64);
-    list-style: none;
-  }
-  .session-slide {
-    flex-shrink: 0;
-    width: var(--books-item-w);
-    padding: 0 var(--books-item-px);
-    list-style: none;
-    scroll-snap-align: start;
-    user-select: none;
-    will-change: transform;
-  }
-  .session-slide-inner {
-    position: relative;
-    display: grid;
-    transition: rotate 0.35s var(--ease-bounce);
-  }
-  .session-slide-inner > * { grid-area: 1 / 1; }
-  .session-slide-inner > .session-slide-cta,
-  .session-slide-inner > .session-slide-link { grid-area: auto; }
-  .session-slide-bg {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: flex-end;
-    width: 100%;
-    height: 100%;
-    min-height: 480px;
-    border-radius: var(--card-r);
-    background: var(--card-bg);
-  }
-  .session-slide-bottom {
-    width: 100%;
-    height: max(56px, calc(var(--u) * 88));
-    border-bottom-left-radius: var(--card-r);
-    border-bottom-right-radius: var(--card-r);
-    background: var(--card-bg);
-    transition: translate 0.4s var(--ease-smooth);
-  }
-  .session-slide-body {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: calc(var(--u) * 20);
-    min-height: 480px;
-    padding: calc(var(--u) * 28);
-    color: var(--midnight);
-  }
-  .session-slide-figure {
-    display: flex;
-    flex: 1;
-    align-items: flex-end;
-    justify-content: center;
-    padding-top: 0.5rem;
-  }
-  .session-slide-art {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1400 / 1365;
-    user-select: none;
-  }
-  .session-slide-copy { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
-  .session-slide-copy :is(p, ul) { color: var(--neutral-12); }
-  .session-slide-meta { display: flex; flex-wrap: wrap; gap: 0 0.6em; font-weight: 700; }  .session-slide-topics { display: grid; margin: 0; padding-left: 1.1em; gap: 0.15em; }
-  .session-slide-link {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    border-radius: var(--card-r);
-    cursor: pointer;
-  }
-  .session-slide-link:focus-visible { outline-offset: 4px; }
-  .session-slide-cta {
-    position: absolute;
-    right: 0;
-    bottom: calc(var(--btn-h) * -0.85);
-    left: 0;
-    z-index: 3;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-  }
-  .session-slide-cta :global(:is(.btn-text, .btn-arrow)) {
-    opacity: 0;
-    translate: 0 -1.5em 0;
-    rotate: var(--cta-turn, 0deg);
-    transition:
-      opacity 0.1s var(--ease-smooth),
-      translate 0.35s var(--button-alt-ease-bounce),
-      rotate 0.35s var(--button-alt-ease-bounce),
-      transform 0.35s var(--button-alt-ease-bounce);
-  }
-
-  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-inner {
-      rotate: calc(var(--session-rot, 0deg) * 1.3);
-      transition: rotate 0.35s 0.1s var(--ease-bounce);
-    }
-    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-bottom {
-      translate: 0 calc(var(--btn-h) * 0.5) 0;
-      transition: translate 0.35s 0.1s var(--ease-bounce);
-    }
-    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) :global(.one-corner-blocks--hover) {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-cta :global(:is(.btn-text, .btn-arrow)) {
-      opacity: 1;
-      translate: 0 0 0;
-      transition:
-        opacity 0.2s var(--ease-smooth),
-        translate 0.35s var(--button-alt-ease-bounce),
-        rotate 0.15s var(--button-alt-ease-bounce),
-        transform 0.35s 0.2s var(--button-alt-ease-bounce);
-      transition-delay: 0.15s;
-    }
-    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-cta :global(.btn-text) {
-      --cta-turn: -16deg;
-      transform: rotate(16deg);
-    }
-    .session-slide:has(.session-slide-link:is(:hover, :focus-visible)) .session-slide-cta :global(.btn-arrow) {
-      --cta-turn: 16deg;
-      transform: rotate(-16deg);
-    }
-    .slider-arrow:is(:hover, :focus-visible) .slider-arrow-bg {
-      --arrow-squash: 0.955 0.925;
-      transform: scale(1.047, 1.081);
-      transition: scale 0.15s var(--ease-soft-overshoot), transform 0.35s 0.15s var(--ease-bounce);
-    }
-  }
-
   @media (min-width: 992px) {
     .syllabus-arrows {
       top: 0;
       right: calc(var(--u) * 40);
       bottom: auto;
     }
-    .session-slide-bg,
-    .session-slide-body { min-height: calc(var(--u) * 660); }
-    .session-slide-body { padding: calc(var(--u) * 32); }
   }
   @media (min-width: 1024px) {
     .syllabus-note-wide { display: block; }
     .syllabus-note-narrow { display: none; }
-    .sessions-track { scroll-snap-type: none; }
   }
 </style>

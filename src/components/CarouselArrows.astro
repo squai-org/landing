@@ -1,0 +1,74 @@
+---
+interface Props {
+  prevLabel: string;
+  nextLabel: string;
+}
+
+const { prevLabel, nextLabel } = Astro.props;
+const arrows = [
+  { direction: 'prev', label: prevLabel },
+  { direction: 'next', label: nextLabel },
+] as const;
+---
+
+{
+  arrows.map(({ direction, label }) => (
+    <button
+      type="button"
+      class={`slider-arrow slider-arrow-${direction}`}
+      aria-label={label}
+      disabled={direction === 'prev'}
+      data-sessions-step={direction}
+    >
+      <span class="slider-arrow-bg" aria-hidden="true" />
+      <span class="slider-arrow-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </span>
+    </button>
+  ))
+}
+
+<style>
+  .slider-arrow {
+    display: inline-grid;
+    width: var(--slider-btn);
+    height: var(--slider-btn);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: scale 0.15s var(--ease-click), opacity 0.25s ease-out;
+  }
+  .slider-arrow-prev { rotate: 180deg; }
+  .slider-arrow:active { scale: 0.9; }
+  .slider-arrow:disabled { opacity: 0.25; cursor: default; pointer-events: none; }
+  .slider-arrow:focus-visible { outline-offset: 3px; }
+  .slider-arrow-bg {
+    grid-area: 1 / 1;
+    border-radius: 50%;
+    background-color: var(--midnight);
+    scale: var(--arrow-squash, 1);
+    transition: scale 0.15s var(--ease-soft-overshoot), transform 0.15s var(--ease-soft-overshoot);
+  }
+  .slider-arrow-icon {
+    grid-area: 1 / 1;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slider-arrow-icon svg { width: max(16px, calc(var(--u) * 18)); height: max(16px, calc(var(--u) * 18)); }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .slider-arrow:is(:hover, :focus-visible) .slider-arrow-bg {
+      --arrow-squash: 0.955 0.925;
+      transform: scale(1.047, 1.081);
+      transition: scale 0.15s var(--ease-soft-overshoot), transform 0.35s 0.15s var(--ease-bounce);
+    }
+  }
+</style>
