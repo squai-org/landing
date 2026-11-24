@@ -66,6 +66,32 @@ describe('fila del header', () => {
     expect(company).not.toContain('height');
   });
 
+  it('el CTA de la barra solo se ve por debajo de 1024px y el panel del menu movil no lo repite', () => {
+    const mobile = mediaBlock(headerStyles, '(max-width: 1023px)');
+    const outsideMobile = headerStyles.replace(mobile, '');
+    expect(rule(outsideMobile, '.header-bar-cta')).toContain('display: none');
+    expect(rule(mobile, '.header-bar-cta')).toContain('display: inline-flex');
+    expect(rule(mobile, '.nav-cta-wrap')).toContain('display: none');
+  });
+
+  it('el CTA de la barra se alinea a la derecha junto al menu y queda sobre el fondo del menu abierto', () => {
+    const mobile = mediaBlock(headerStyles, '(max-width: 1023px)');
+    const bar = rule(mobile, '.header-bar-cta');
+    expect(bar).toContain('margin-left: auto');
+    expect(bar).toContain('z-index: 2');
+  });
+
+  it('por debajo de 640px el boton de menu es solo icono y su texto sigue como nombre accesible', () => {
+    const phone = mediaBlock(headerStyles, '(max-width: 639px)');
+    const hiddenText = rule(phone, '.nav-toggle .btn-text');
+    expect(hiddenText).toContain('position: absolute');
+    expect(hiddenText).toContain('clip: rect(0 0 0 0)');
+    expect(hiddenText).not.toContain('display: none');
+    expect(hiddenText).not.toContain('visibility: hidden');
+    const tablet = mediaBlock(headerStyles, '(max-width: 1023px)');
+    expect(rule(tablet, '.nav-toggle .btn-text')).toBe('');
+  });
+
   it('el nav usa 14px entre pildoras y solo lo reduce entre 1024px y 1279px para que quepan las redes', () => {
     expect(rule(headerStyles, '.site-nav-list')).toContain('gap: 14px');
     const tight = mediaBlock(headerStyles, '(min-width: 1024px) and (max-width: 1279px)');
