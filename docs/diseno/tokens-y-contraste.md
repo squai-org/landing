@@ -23,6 +23,8 @@ El servicio activo se declara con `data-service="<slug>"` en `<html>` (la prop `
 
 Reglas: el texto sobre un paso 9 es siempre Midnight, nunca blanco; el paso 9 nunca es texto sobre claro (para eso está `--accent-ink`). Gold solo se usa como acento donde pasa AA: relleno con texto Midnight, lema y enlaces en hover sobre superficies oscuras, y paso 11 como texto en Squai Learn.
 
+El CTA del navbar usa el botón principal (`btn-primary`: relleno `--accent`, texto y flecha `--on-accent`) en todas las páginas menos Squai One, que conserva el botón oscuro: Periwinkle 9 en inicio, legales, gracias y retomar; Teal 9 en Squai Grow; Gold 9 en Squai Learn.
+
 Para añadir un servicio: un bloque `[data-service='<slug>'] { ... }` con esos ocho tokens y filas nuevas en la tabla de contraste (la prueba falla si una fila no cumple).
 
 ## Escala del diseño
@@ -82,6 +84,9 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Wordmark en la píldora del logo | `--midnight` | `--canvas` | 18.02 | 4.5 |
 | base | Botón dorado | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Botón teal | `--midnight` | `--teal-9` | 10.64 | 4.5 |
+| base | CTA del navbar en inicio, legales, gracias y retomar: texto y flecha | `--midnight` | `--periwinkle-9` | 6.77 | 4.5 |
+| grow | CTA del navbar en Squai Grow: texto y flecha | `--midnight` | `--teal-9` | 10.64 | 4.5 |
+| learn | CTA del navbar en Squai Learn: texto y flecha | `--midnight` | `--gold-9` | 11.90 | 4.5 |
 | base | Botón oscuro | `--canvas` | `--midnight` | 18.02 | 4.5 |
 | base | Flecha del botón oscuro | `--gold-9` | `--midnight` | 11.90 | 3 |
 | base | Botón blanco | `--midnight` | `--surface` | 19.44 | 4.5 |

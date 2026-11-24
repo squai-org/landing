@@ -18,7 +18,8 @@ const serviceLinks = services.map((service) => ({ name: service.name, subtitle: 
 const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath === '/servicios/squai-learn' ? 'learn' : undefined;
 const isSquaiOne = currentPath === '/servicios/squai-one';
 const serviceNav = services.find((service) => currentPath === `/servicios/${service.slug}`)?.nav;
-const ctaVariant = tone === 'dark' ? 'white' : 'dark';
+const squaiOneCtaVariant = tone === 'dark' ? 'white' : 'dark';
+const ctaVariant = isSquaiOne ? squaiOneCtaVariant : 'primary';
 const toggleVariant = tone === 'dark' ? 'white' : 'dark';
 const pagePills = serviceNav
   ? serviceNav.items.map((item) => ({ label: item.label, target: item.target, href: `#${item.target}`, services: false }))
