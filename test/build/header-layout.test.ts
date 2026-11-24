@@ -98,4 +98,15 @@ describe('fila del header', () => {
     expect(rule(tight, '.site-nav-list')).toContain('gap: 8px');
     expect(tight).not.toContain('display: none');
   });
+  it('por debajo de 1024px el navbar oculto sube fuera de la pantalla con transicion, y en escritorio no se oculta', () => {
+    const mobile = mediaBlock(headerStyles, '(max-width: 1023px)');
+    expect(rule(mobile, ".site-header[data-hidden='true']")).toContain('translate: 0 -100%');
+    expect(rule(mobile, '.site-header')).toContain('transition: translate');
+    expect(headerStyles.replace(mobile, '')).not.toContain('data-hidden');
+  });
+
+  it('con movimiento reducido el navbar aparece y se oculta sin transicion', () => {
+    const reduced = mediaBlock(headerStyles, '(prefers-reduced-motion: reduce)');
+    expect(rule(reduced, '.site-header')).toContain('transition: none');
+  });
 });
