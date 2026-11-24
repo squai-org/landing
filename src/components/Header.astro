@@ -35,7 +35,7 @@ const pageCtaFor = (): PageCta => {
   };
 };
 const pageCta = pageCtaFor();
-const toggleVariant =tone === 'dark' ? 'white' : 'dark';
+const toggleVariant = tone === 'dark' ? 'white' : 'dark';
 const pagePills = serviceNav
   ? serviceNav.items.map((item) => ({ label: item.label, target: item.target, href: `#${item.target}`, services: false }))
   : navLinks.map((link) => ({ label: link.label, target: link.target, href: `/#${link.target}`, services: link.target === 'servicios' }));
@@ -49,7 +49,7 @@ const pagePills = serviceNav
       </a>
     </div>
 
-    <Button variant={ctaVariant} class="header-bar-cta" {...pageCta.target}>{pageCta.label}</Button>
+    <Button variant={ctaVariant} class="header-bar-cta" data-header-bar-cta {...pageCta.target}>{pageCta.label}</Button>
 
     <button
       type="button"
@@ -60,7 +60,7 @@ const pagePills = serviceNav
       data-menu-label={ui.navigation.menuLabel}
       data-close-label={ui.navigation.closeLabel}
     >
-      <span class="btn-text">
+      <span class="btn-text sr-only-compact">
         <span class="btn-bg" aria-hidden="true"></span>
         <span class="btn-text-outer"><span class="btn-label" data-split-text data-nav-toggle-label>{ui.navigation.menuLabel}</span></span>
       </span>
@@ -405,14 +405,6 @@ const pagePills = serviceNav
   }
 
   @media (max-width: 639px) {
-    .nav-toggle .btn-text {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
-      white-space: nowrap;
-    }
     .nav-toggle .btn-arrow { margin-left: 0; }
     .header-bar-cta { --btn-px: calc(var(--u) * 10); }
   }
@@ -427,7 +419,7 @@ const pagePills = serviceNav
 
   const header = document.querySelector<HTMLElement>('[data-header]');
   const navToggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
-  const barCta = document.querySelector<HTMLElement>('.header-bar-cta');
+  const barCta = document.querySelector<HTMLElement>('[data-header-bar-cta]');
   const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
   const navPanel = document.querySelector<HTMLElement>('[data-nav-panel]');
   const toggleLabel = document.querySelector<HTMLElement>('[data-nav-toggle-label]');

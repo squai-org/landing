@@ -6,11 +6,12 @@ const root = path.join(import.meta.dirname, '../..');
 const read = (file: string) => readFileSync(path.join(root, file), 'utf8').replace(/\r\n/g, '\n');
 
 const css = read('src/styles/motion.css');
+const global = read('src/styles/global.css');
 const component = read('src/components/MotionToggle.astro');
 const client = read('src/lib/motion-client.ts');
 
 const compactBlock = () => {
-  const start = css.indexOf('@media (max-width: 639.98px)');
+  const start = css.indexOf('@media (max-width: 639px)');
   expect(start).toBeGreaterThan(-1);
   const end = css.indexOf('\n}\n', start);
   return css.slice(start, end);
@@ -26,12 +27,17 @@ describe('pausa compacta en movil', () => {
     expect(block).toMatch(/\.motion-toggle \{[^}]*justify-content: center/);
   });
 
-  it('bajo 640px el texto no se ve pero sigue en el arbol accesible', () => {
-    const block = compactBlock();
-    const rule = /\.motion-toggle-label \{([^}]*)\}/.exec(block)?.[1] ?? '';
-    expect(rule).toMatch(/position: absolute/);
-    expect(rule).toMatch(/clip: rect\(0 0 0 0\)/);
-    expect(rule).not.toMatch(/display: none/);
+  it('bajo 640px el texto no se ve pero sigue en el arbol accesible, con el patron compartido', () => {
+    expect(component).toMatch(/class="motion-toggle-label sr-only-compact"/);
+    expect(css).not.toContain('clip: rect(0 0 0 0)');
+  });
+
+  it('el patron compacto oculta igual que .sr-only, solo por debajo de 640px', () => {
+    const body = (source: string, selector: string) => new RegExp(`${selector.replace('.', '\\.')} \\{([^}]*)\\}`).exec(source)?.[1]?.replace(/\s+/g, ' ').trim() ?? '';
+    const compact = global.slice(global.indexOf('@media (max-width: 639px) {\n  .sr-only-compact'));
+    expect(body(global, '.sr-only')).toMatch(/clip: rect\(0 0 0 0\)/);
+    expect(body(compact, '.sr-only-compact')).toBe(body(global, '.sr-only'));
+    expect(body(compact, '.sr-only-compact')).not.toMatch(/display: none/);
   });
 
   it('desde 640px conserva la pildora con texto', () => {
@@ -52,7 +58,7 @@ describe('pausa compacta en movil', () => {
 
   it('el boton nace con nombre accesible y el cliente lo actualiza al pausar y reanudar', () => {
     expect(component).toMatch(/aria-label=\{pauseLabel\}/);
-    expect(component).toMatch(/class="motion-toggle-label"/);
+    expect(component).toMatch(/class="motion-toggle-label sr-only-compact"/);
     expect(client).toMatch(/setAttribute\('aria-label'/);
   });
 });

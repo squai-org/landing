@@ -82,14 +82,13 @@ describe('fila del header', () => {
   });
 
   it('por debajo de 640px el boton de menu es solo icono y su texto sigue como nombre accesible', () => {
-    const phone = mediaBlock(headerStyles, '(max-width: 639px)');
-    const hiddenText = rule(phone, '.nav-toggle .btn-text');
-    expect(hiddenText).toContain('position: absolute');
-    expect(hiddenText).toContain('clip: rect(0 0 0 0)');
-    expect(hiddenText).not.toContain('display: none');
-    expect(hiddenText).not.toContain('visibility: hidden');
-    const tablet = mediaBlock(headerStyles, '(max-width: 1023px)');
-    expect(rule(tablet, '.nav-toggle .btn-text')).toBe('');
+    expect(header).toMatch(/<span class="btn-text sr-only-compact">/);
+    expect(headerStyles).not.toContain('clip: rect(0 0 0 0)');
+  });
+
+  it('el CTA de la barra se ubica con un gancho data-*, como el resto del header', () => {
+    expect(header).toMatch(/<Button[^>]*class="header-bar-cta"[^>]*data-header-bar-cta/);
+    expect(header).toContain("querySelector<HTMLElement>('[data-header-bar-cta]')");
   });
 
   it('el nav usa 14px entre pildoras y solo lo reduce entre 1024px y 1279px para que quepan las redes', () => {
