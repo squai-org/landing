@@ -247,6 +247,10 @@ const hasPanel = Boolean(panel) && topics.length > 0 && topics.every((topic) => 
     color: #075E54;
   }
 
+  @media (max-width: 639px) {
+    .whatsapp-float { translate: 0 calc(var(--footer-bar-overlap, 0px) * -1); }
+  }
+
   @media (min-width: 640px) {
     .whatsapp-panel {
       width: 340px;

@@ -133,6 +133,7 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
   display: flex;
   align-items: flex-end;
   gap: 12px;
+  translate: 0 calc(var(--footer-bar-overlap, 0px) * -1);
 }
 @media (min-width: 768px) {
   .float-dock { left: 20px; bottom: 20px; }

@@ -83,12 +83,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 <script>
   import type { ClientCopy } from '../lib/content';
   import { initMotion } from '../lib/motion-client';
+  import { bindFloatLift } from '../lib/float-lift';
 
   const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
 
   const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   initMotion();
+  bindFloatLift();
 
   const navOffset = () => {
     const bar = document.querySelector<HTMLElement>('[data-header-row]');
