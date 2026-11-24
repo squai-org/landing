@@ -41,7 +41,7 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
     </div>
 
     <div class="one-hero-stage">
-      <div class="one-hero-person" data-hero-person>
+      <div class="one-hero-person">
         <Image
           src={persona}
           alt={hero.photoAlt}
@@ -63,17 +63,8 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
 
 <script>
   import { showCohort } from '../lib/cohort-client';
-  import { scrollRange } from '../lib/motion';
 
   void showCohort();
-
-  const person = document.querySelector<HTMLElement>('[data-hero-person]');
-  const hero = person?.closest<HTMLElement>('section');
-  if (person && hero) {
-    scrollRange(hero, 'start-start', [0, 1], (value) => {
-      person.style.setProperty('--person-progress', value.toFixed(4));
-    });
-  }
 </script>
 
 <style>
@@ -182,7 +173,6 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
       bottom: 0;
       right: var(--photo-right);
       height: var(--photo-h);
-      translate: none;
     }
     .one-hero-tags {
       position: absolute;
@@ -273,12 +263,11 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
       margin-top: 0;
     }
     .one-hero-person {
-      --person-drift: calc(var(--u) * 24);
       right: auto;
-      bottom: var(--person-drift);
+      bottom: 0;
       left: 50%;
       height: calc(100% - var(--u) * 170);
-      translate: -50% calc(var(--person-progress, 0) * var(--person-drift));
+      translate: -50%;
     }
     .one-hero-tag { font-size: calc(var(--u) * 28); white-space: nowrap; }
     .one-hero-tag-note { right: auto; left: -10%; top: 56%; }

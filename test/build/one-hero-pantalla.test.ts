@@ -45,19 +45,13 @@ describe('hero de Squai One a pantalla completa en movil y tablet', () => {
     expect(person).toMatch(/height: var\(--photo-h\);/);
   });
 
-  it('la foto no se desplaza con el scroll', () => {
-    expect(rule(mobile, '.one-hero-person')).toMatch(/translate: none;/);
-  });
-
-  it('en escritorio la foto baja con el scroll y su base sube lo mismo que baja, para no recortarse', () => {
-    const range = /scrollRange\(hero, 'start-start', \[(-?\d+), (-?\d+)\]/.exec(hero);
-    expect(range).not.toBeNull();
-    expect([Number(range![1]), Number(range![2])]).toEqual([0, 1]);
-    expect(hero).toMatch(/setProperty\('--person-progress'/);
+  it('la foto queda siempre apoyada en el borde inferior del hero y no se mueve con el scroll', () => {
+    expect(hero).not.toMatch(/scrollRange/);
+    const stage = rule(mediaBlock('(min-width: 1024px)'), '.one-hero-stage');
+    expect(stage).toMatch(/bottom: 0;/);
     const desktop = rule(mediaBlock('(min-width: 1024px)'), '.one-hero-person');
-    expect(desktop).toMatch(/--person-drift: calc\(var\(--u\) \* \d+\);/);
-    expect(desktop).toMatch(/bottom: var\(--person-drift\);/);
-    expect(desktop).toMatch(/translate: -50% calc\(var\(--person-progress, 0\) \* var\(--person-drift\)\);/);
+    expect(desktop).toMatch(/bottom: 0;/);
+    expect(desktop).toMatch(/translate: -50%;/);
   });
 
   it('el titulo arranca bajo el navbar con un respiro de 24 a 32px', () => {
