@@ -38,6 +38,13 @@ describe('hero y datos clave de Squai One', () => {
     expect(html).toContain('data-cohort-endpoint="/api/checkout/program/squai-one"');
   });
 
+  it('las etiquetas del hero aparecen una sola vez en el HTML', () => {
+    expect(html.match(/class="[^"]*\bone-hero-tag-note\b[^"]*"/g)).toHaveLength(1);
+    expect(html.match(/class="[^"]*\bone-hero-tag-sticker\b[^"]*"/g)).toHaveLength(1);
+    expect(html.match(/100% en vivo, sin clases pregrabadas/g)).toHaveLength(1);
+    expect(html.match(/>Sin saber programar</g)).toHaveLength(1);
+  });
+
   it('el hero no lleva chip de estado ni formas detras de la persona', () => {
     const hero = html.slice(html.indexOf('data-hero'), html.indexOf('id="datos-clave"'));
     expect(hero).not.toContain('data-program-status');

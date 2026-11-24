@@ -41,7 +41,8 @@ describe('hero de Squai One a pantalla completa en movil y tablet', () => {
   it('la foto se apoya abajo y su alto es el menor entre el escenario y lo que permite el ancho', () => {
     const person = rule(mobile, '.one-hero-person');
     expect(person).toMatch(/bottom: 0;/);
-    expect(person).toMatch(/height: min\(100cqh, calc\(100cqw \* 1050 \/ 768\)\);/);
+    expect(person).toMatch(/--photo-h: min\(100cqh, calc\(100cqw \* 1050 \/ 768\)\);/);
+    expect(person).toMatch(/height: var\(--photo-h\);/);
   });
 
   it('la foto no se desplaza con el scroll', () => {
