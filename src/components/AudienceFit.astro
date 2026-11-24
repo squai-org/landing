@@ -109,10 +109,13 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       </div>
     </div>
   </div>
+
+  <div class="one-fit-runway" aria-hidden="true" data-fit-runway style={`--fit-profiles: ${fit.profiles.length}`}></div>
 </section>
 
 <script>
   import { animate, onReducedMotionChange, prefersReducedMotion, springs, tweens } from '../lib/motion';
+  import { profileAt, scrollTopFor } from '../lib/fit-scroll';
 
   const section = document.querySelector<HTMLElement>('[data-fit]');
   if (section) {
@@ -121,6 +124,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     const examples = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-example]'));
     const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-preview]'));
     const list = section.querySelector<HTMLElement>('[data-fit-list]');
+    const runway = section.querySelector<HTMLElement>('[data-fit-runway]');
     let reduced = prefersReducedMotion();
     onReducedMotionChange((value) => {
       reduced = value;
@@ -187,8 +191,43 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       });
       button.addEventListener('click', () => {
         selected = index;
+        jumpTarget = index;
         render();
+        window.scrollTo({ top: scrollTopFor(index, track()), behavior: reduced ? 'instant' : 'smooth' });
       });
+    });
+
+    const track = () => ({
+      start: section.getBoundingClientRect().top + window.scrollY,
+      length: runway?.offsetHeight ?? 0,
+      profiles: buttons.length,
+    });
+    let jumpTarget: number | null = null;
+    let ticking = false;
+    const followScroll = () => {
+      ticking = false;
+      const next = profileAt(window.scrollY, track());
+      if (jumpTarget !== null) {
+        if (next !== jumpTarget) return;
+        jumpTarget = null;
+      }
+      if (next === selected) return;
+      selected = next;
+      hovered = null;
+      render();
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(followScroll);
+      },
+      { passive: true }
+    );
+    window.addEventListener('scrollend', () => {
+      jumpTarget = null;
+      followScroll();
     });
     list?.addEventListener('mouseleave', () => {
       hovered = null;
@@ -202,6 +241,7 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
       };
       render();
     });
+    selected = profileAt(window.scrollY, track());
     render();
     settled = true;
   }
@@ -209,17 +249,29 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
 
 <style>
   .one-fit {
+    --fit-step: 70svh;
     position: relative;
     z-index: 10;
     width: 100%;
-    overflow: hidden;
+    overflow: clip;
     margin-top: calc(var(--edge-r) * -1);
-    padding: var(--section-py) var(--gutter) calc(var(--section-py) + var(--edge-r));
+    padding: 0 var(--gutter) var(--edge-r);
     border-radius: var(--edge-r) var(--edge-r) 0 0;
     background: var(--periwinkle-12);
     color: var(--canvas);
   }
-  .one-fit-content { position: relative; z-index: 10; margin-inline: auto; }
+  .one-fit-content {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    margin-inline: auto;
+    padding-block: var(--section-py);
+  }
+  .one-fit-runway { height: calc(var(--fit-profiles) * var(--fit-step)); }
   .one-fit-heading {
     display: flex;
     flex-direction: column;
@@ -337,6 +389,11 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
   @media (max-width: 991px) {
     .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(0.35rem); }
     .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-0.35rem); }
+  }
+  @media (max-width: 1023px) {
+    .one-fit-content { padding-block: min(var(--section-py), 5svh); }
+    .one-fit-heading { margin-bottom: min(calc(var(--u) * 64), 4svh); }
+    .one-fit-bottom { margin-top: min(calc(var(--u) * 64), 4svh); }
   }
   @media (min-width: 1024px) {
     .one-fit-previews { display: block; }
