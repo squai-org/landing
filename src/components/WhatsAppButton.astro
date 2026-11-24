@@ -266,12 +266,6 @@ const hasPanel = Boolean(panel) && topics.length > 0 && topics.every((topic) => 
   }
 </style>
 
-<style is:global>
-  :root:has([data-whatsapp]) {
-    --float-clearance: 84px;
-  }
-</style>
-
 <script>
   import { animateIn, animateOut, gestures, hoverPress, tweens } from '../lib/motion';
 

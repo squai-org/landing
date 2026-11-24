@@ -155,7 +155,6 @@ html[data-motion='paused'] :is(.hero-caret, .scroll-mouse, .scroll-wheel, .scrol
   cursor: pointer;
 }
 .motion-toggle[hidden] { display: none; }
-:root:has(.motion-toggle:not([hidden])) { --float-clearance: 76px; }
 .motion-toggle:hover { background: var(--surface); }
 .motion-toggle-play { display: none; }
 html[data-motion='paused'] .motion-toggle-play { display: block; }

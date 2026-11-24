@@ -202,7 +202,7 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     font-size: 16px;
     line-height: 1.625;
   }
-  .footer-bottom { width: 100%; padding: 20px var(--gutter) calc(20px + var(--float-clearance, 0px)); background: var(--footer-bar); color: var(--on-footer); }
+  .footer-bottom { width: 100%; padding: 20px var(--gutter); background: var(--footer-bar); color: var(--on-footer); }
   .footer-bottom-inner {
     display: flex;
     flex-direction: column;
@@ -211,14 +211,14 @@ const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
     gap: 16px;
     margin: 0 auto;
     font-size: 14px;
-    line-height: 1.43;
+    line-height: 20px;
   }
   .footer-company-mark { white-space: nowrap; }
   .footer-legal-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
 
   @media (min-width: 640px) {
     .footer-blurb { font-size: 18px; line-height: 1.625; }
-    .footer-bottom { padding: 24px 96px calc(24px + var(--float-clearance, 0px)); }
+    .footer-bottom { padding: 24px 96px; }
     .footer-bottom-inner { flex-direction: row; align-items: center; }
   }
 
