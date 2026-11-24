@@ -2,11 +2,21 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import ServiceHero from '../../components/ServiceHero.astro';
+import OneHero from '../../components/OneHero.astro';
+import OneKeyFacts from '../../components/OneKeyFacts.astro';
+import VideoSection from '../../components/VideoSection.astro';
 import ServiceBento from '../../components/ServiceBento.astro';
 import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
+import AudienceFit from '../../components/AudienceFit.astro';
+import OneOutcomes from '../../components/OneOutcomes.astro';
+import OneMarquee from '../../components/OneMarquee.astro';
+import HowItWorks from '../../components/HowItWorks.astro';
+import Syllabus from '../../components/Syllabus.astro';
 import Checkout from '../../components/Checkout.astro';
 import Faq from '../../components/Faq.astro';
+import OneTeam from '../../components/OneTeam.astro';
+import OneTestimonials from '../../components/OneTestimonials.astro';
 import Footer from '../../components/Footer.astro';
 import ContactModal from '../../components/ContactModal.astro';
 import Button from '../../components/Button.astro';
@@ -34,11 +44,11 @@ const { service } = Astro.props;
 
 const pageUrl = absoluteUrl(`/servicios/${service.slug}`);
 const seo = serviceSeo(service, content.seo.serviceTitle);
-const capabilitiesHeadline = service.slug === 'squai-one' ? service.capabilities.headline : content.ui.services.capabilitiesFallback;
 
-const offering = service.slug === 'squai-one'
-  ? courseSchema(content, service, pageUrl)
+const offering = service.keyFacts
+  ? courseSchema(content, service, service.keyFacts.load, pageUrl)
   : serviceSchema(service, pageUrl);
+const headerTone = service.hero ? 'light' : 'dark';
 
 const schemas = [
   organizationSchema(content),
@@ -54,27 +64,53 @@ const schemas = [
 ];
 ---
 
-<Layout title={seo.title} description={seo.description} schemas={schemas}>
+<Layout title={seo.title} description={seo.description} schemas={schemas} service={service.slug}>
   <div class="page-frame">
-  <Header />
+  <Header tone={headerTone} />
 
   <main id="contenido">
-  <ServiceHero service={service} />
+  {service.hero ? <OneHero service={service} /> : <ServiceHero service={service} />}
+  {service.keyFacts && <OneKeyFacts service={service} />}
 
-  <div class="content-shell content-shell-spaced">
+  {service.video && <VideoSection video={service.video} />}
 
-  <ServicePayback
-    headline={service.payback.headline}
-    body={service.payback.body}
-    cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
-  />
+  {
+    service.payback && (
+      <div class="content-shell content-shell-spaced">
+        <ServicePayback
+          headline={service.payback.headline}
+          body={service.payback.body}
+          cta={service.ctaSecondary ? { ...service.cta, label: service.ctaSecondary } : service.cta}
+        />
+      </div>
+    )
+  }
 
-  <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />
+  {service.audienceFit && <AudienceFit fit={service.audienceFit} cta={service.cta} />}
 
-  <ServiceCapabilities headline={service.capabilities.headline} groups={service.capabilities.groups} />
+  {service.outcomes && <OneOutcomes outcomes={service.outcomes} />}
+
+  {service.howItWorks && <HowItWorks flow={service.howItWorks} cta={service.cta} />}
+
+  {service.syllabus && <Syllabus syllabus={service.syllabus} cta={service.cta} />}
+
+  <div class="content-shell content-shell-joined">
+
+  {service.challenge && <ServiceBento title={service.challenge.headline} cards={service.challenge.cards} tones={['', '', '']} dark />}
+
+  {service.capabilities && <ServiceCapabilities headline={service.capabilities.headline} groups={service.capabilities.groups} />}
+
+  </div>
+
+  {service.marquee && service.hero && <OneMarquee marquee={service.marquee} hero={service.hero} />}
+
+  {service.team && <OneTeam title={service.team.title} closing={service.team.closing} cta={service.cta} profiles={service.team.mentors} stats={service.team.stats} />}
+
+  {service.testimonials && <OneTestimonials title={service.testimonials.title} lead={service.testimonials.lead} quotes={service.testimonials.quotes} />}
 
   {
     service.cta.modal ? (
+      <div class="content-shell content-shell-joined">
       <section class="section tint">
         <div class="shell service-contact-shell">
           <h2 class="display d-h2 service-contact-title">
@@ -84,30 +120,41 @@ const schemas = [
           <Button variant="dark" data-open-modal={service.cta.modal}>{service.contactCta ?? service.cta.label}</Button>
         </div>
       </section>
+      </div>
     ) : (
-      <Checkout />
+      <Checkout investment={service.investment} />
     )
   }
 
-  <Faq items={service.faqs} />
-  </div>
+  {
+    service.hero ? (
+      <Faq items={service.faqs} intro={service.faqIntro} />
+    ) : (
+      <div class="content-shell content-shell-joined content-shell-over-footer">
+        <Faq items={service.faqs} intro={service.faqIntro} />
+      </div>
+    )
+  }
   </main>
 
-  <Footer />
+  <Footer overlap />
   </div>
 
   <ContactModal />
 </Layout>
 
 <style>
-  .page-frame { padding-bottom: 40px; background: var(--canvas); }
+  .page-frame { background: var(--surface); }
   .content-shell-spaced { margin-top: clamp(16px, 1.6vw, 28px); }
+  .content-shell-joined { margin-top: clamp(16px, 1.6vw, 28px); }
+  .content-shell-joined:empty { display: none; }
+  .content-shell-over-footer { position: relative; z-index: 20; }
   .service-contact-shell { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(20px, 2.4vw, 36px); }
   .service-contact-title { max-width: 22ch; color: var(--ink); }
   .service-contact-aside {
     max-width: 38ch;
     margin: 0;
-    color: var(--periwinkle-ink);
+    color: var(--accent-ink);
     font-family: var(--font-hand);
     font-size: clamp(18px, 1.5vw, 24px);
     font-weight: 100;

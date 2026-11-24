@@ -6,6 +6,7 @@ interface Props {
   block?: boolean;
   compact?: boolean;
   disabled?: boolean;
+  arrow?: boolean;
   class?: string;
   [key: string]: unknown;
 }
@@ -17,11 +18,12 @@ const {
   block = false,
   compact = false,
   disabled = false,
+  arrow = false,
   class: extraClass = '',
   ...rest
 } = Astro.props;
 
-const classes = ['btn', `btn-${variant}`, block ? 'btn-block' : '', compact ? 'btn-compact' : '', extraClass]
+const classes = ['btn', `btn-${variant}`, block ? 'btn-block' : '', compact ? 'btn-compact' : '', arrow ? 'btn-split' : '', extraClass]
   .filter(Boolean)
   .join(' ');
 
@@ -29,5 +31,21 @@ const Tag = href ? 'a' : 'button';
 ---
 
 <Tag class={classes} href={href} type={href ? undefined : type} disabled={href ? undefined : disabled} {...rest}>
-  <span class="btn-label"><slot /></span>
+  <span class="btn-text">
+    <span class="btn-bg" aria-hidden="true"></span>
+    <span class="btn-text-outer"><span class="btn-label" data-split-text><slot /></span></span>
+  </span>
+  {
+    arrow && (
+      <span class="btn-arrow" aria-hidden="true">
+        <span class="btn-bg"></span>
+        <span class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </span>
+      </span>
+    )
+  }
 </Tag>

@@ -1,115 +1,238 @@
 ---
 import Logo from './Logo.astro';
+import SocialLinks from './SocialLinks.astro';
 import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
-const { footerCols, heroSubtitle, tagline, socials, ui, labels } = await getSiteContent();
+import { whatsappUrl } from '../lib/whatsapp';
 
-const ACCENTS: Record<string, string> = {
-  LinkedIn: 'var(--teal)',
-};
+interface Props {
+  overlap?: boolean;
+}
 
-const ICONS: Record<string, string> = {
-  LinkedIn:
-    'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21.4 8.65 22 11 22 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21h-4V9Z',
-};
+const { overlap = false } = Astro.props;
+const { footerCols, footerServices, heroSubtitle, tagline, company, ui, labels } = await getSiteContent();
+const whatsappHref = whatsappUrl(company.phone, ui.whatsapp.message);
+const serviceHrefs = new Set(footerServices.links.map((link) => link.href));
+const siteLinks = footerCols.flatMap((col) => col.links).filter((link) => !link.href || !serviceHrefs.has(link.href));
+const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
 ---
 
-<footer class="footer-pad">
-  <div class="footer-shell">
+<footer class:list={['site-footer', { 'site-footer--overlap': overlap }]} data-surface="deep">
+  <div class="footer-main">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="/" class="logo-link footer-logo" aria-label={ui.navigation.home}>
-          <Logo size={34} />
-        </a>
-        <p class="footer-description">
-          {heroSubtitle}
-        </p>
-        <span class="footer-tagline">{tagline}</span>
-      </div>
-      {
-        footerCols.map((col) => (
-          <div class="footer-column">
-            <div class="footer-heading">
-              {col.h}
-            </div>
-            {col.links.map((lnk) =>
-              lnk.target ? (
-                <a href={`/#${lnk.target}`} data-scroll-to={lnk.target} class="footer-link footer-primary-link">
-                  {lnk.t}
-                </a>
-              ) : (
-                <a
-                  href={lnk.href}
-                  target={lnk.href?.startsWith('http') ? '_blank' : undefined}
-                  rel={lnk.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  class="footer-link footer-primary-link"
-                >
-                  {lnk.t}
-                </a>
-              )
-            )}
-          </div>
-        ))
-      }
-      <div class="footer-column footer-socials">
-        <span class="footer-heading">{ui.follow.title}</span>
-        <div class="footer-social-row">
+        <div class="footer-intro">
+          <a href="/" class="logo-link footer-logo" aria-label={ui.navigation.home}>
+            <Logo size={38} />
+          </a>
+          <p class="footer-blurb">{heroSubtitle}</p>
+        </div>
+
+        <address class="footer-company">
+          <span class="footer-company-name">{company.legalName}</span>
+          <span>NIT {company.nit}</span>
+          <a href={`mailto:${company.contact}`} class="footer-mail">{company.contact}</a>
+        </address>
+
+        <div class="footer-follow">
+          <SocialLinks />
           {
-            socials.map((s) =>
-              s.href ? (
-                <a href={s.href} aria-label={s.name} class="social-button footer-social-button" style={`background:${ACCENTS[s.name]};color:var(--midnight)`} target="_blank" rel="noopener noreferrer">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d={ICONS[s.name]} />
-                  </svg>
-                </a>
-              ) : (
-                <span class="social-button footer-social-button social-button-static" aria-hidden="true" style={`--social-accent:${ACCENTS[s.name]};background:${ACCENTS[s.name]};color:var(--midnight)`}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d={ICONS[s.name]} />
-                  </svg>
-                </span>
-              )
+            whatsappHref && (
+              <a href={whatsappHref} class="footer-whatsapp" target="_blank" rel="noopener noreferrer">
+                {ui.footer.whatsapp}
+              </a>
             )
           }
         </div>
+
+        <nav aria-label={labels.brand}>
+          <ul class="footer-nav">
+            {
+              siteLinks.map((link) =>
+                link.target ? (
+                  <li>
+                    <a href={`/#${link.target}`} data-scroll-to={link.target} class="footer-nav-link">{link.t}</a>
+                  </li>
+                ) : (
+                  <li>
+                    <a
+                      href={link.href}
+                      target={isExternal(link.href) ? '_blank' : undefined}
+                      rel={isExternal(link.href) ? 'noopener noreferrer' : undefined}
+                      class="footer-nav-link"
+                    >
+                      {link.t}
+                    </a>
+                  </li>
+                )
+              )
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer-aside">
+        <div class="footer-aside-head">
+          <h2 class="footer-aside-title">{footerServices.title}</h2>
+          <p class="footer-aside-copy">{tagline}</p>
+        </div>
+        <nav aria-label={footerServices.title}>
+          <ul class="footer-nav footer-services">
+            {
+              footerServices.links.map((link) => (
+                <li>
+                  <a href={link.href} class="footer-nav-link">{link.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span class="footer-copyright">{ui.footer.copyright}</span>
-      <div class="footer-legal-links">
-        <a href={legalPaths.terms} class="footer-link footer-legal-link">{labels.terms}</a>
-        <a href={legalPaths.privacy} class="footer-link footer-legal-link">{labels.privacy}</a>
-      </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <span>{ui.footer.copyright}</span>
+      <ul class="footer-legal-links">
+        <li><a href={legalPaths.terms} class="footer-legal-link">{labels.terms}</a></li>
+        <li><a href={legalPaths.privacy} class="footer-legal-link">{labels.privacy}</a></li>
+      </ul>
+      <span class="footer-company-mark">{company.legalName}</span>
     </div>
   </div>
 </footer>
 
 <style>
-  .footer-pad { margin: 28px 12px 12px; padding: clamp(56px, 6vw, 104px) clamp(24px, 5vw, 88px) 40px; border-radius: 28px; background: var(--midnight); }
-  .footer-shell { max-width: 1390px; margin: 0 auto; }
-  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 0.9fr; gap: clamp(32px, 4vw, 64px); padding-bottom: clamp(56px, 6vw, 96px); }
-  .footer-brand, .footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-  .footer-column { gap: 12px; }
-  .footer-logo { --wordmark-color: #F0F2FF; }
-  .footer-description { max-width: 34ch; margin: 0; color: #F0F2FF; font-size: var(--t-body); line-height: 1.7; }
-  .footer-tagline { color: var(--gold); font-family: var(--font-hand); font-size: var(--t-body); line-height: 1.5; }
-  .footer-social-row { display: flex; flex-wrap: wrap; gap: 12px; }
-  .footer-social-button { width: 40px; height: 40px; border-color: transparent; }
-  .footer-social-button.social-button-static { pointer-events: none; cursor: default; }
-  .footer-social-button.social-button-static:hover { background: var(--social-accent); transform: none; filter: none; }
-  .footer-heading { color: var(--periwinkle); font-family: var(--font-display); font-size: var(--t-label); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-  .footer-primary-link { color: #F0F2FF; font-size: var(--t-body); }
-  .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .08); }
-  .footer-copyright, .footer-legal-link { color: #A9B2CC; font-size: 13px; }
-  .footer-legal-link { font-weight: 700; }
-  .footer-legal-links { display: flex; gap: 20px; }
-  @media (max-width: 1023px) {
-    .footer-pad { margin: 20px 10px 10px; padding: 64px 40px 32px; }
-    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .site-footer {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    margin-top: clamp(24px, 3vw, 48px);
+    padding-top: var(--section-py);
+    overflow: hidden;
+    background: var(--footer-bg);
+    color: var(--on-footer);
   }
-  @media (max-width: 640px) {
-    .footer-pad { margin: 16px 8px 8px; padding: 48px 22px 28px; border-radius: 24px; }
-    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
-    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .site-footer--overlap {
+    margin-top: calc(var(--edge-r) * -1);
+    padding-top: calc(var(--edge-r) + var(--section-py));
+  }
+  .footer-main { padding: 0 var(--gutter); }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+    margin: 0 auto;
+    padding-bottom: 64px;
+  }
+  .footer-brand { display: flex; flex-direction: column; gap: 32px; }
+  .footer-intro { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .footer-logo { --wordmark-color: var(--on-footer); color: var(--on-footer); }
+  .footer-blurb {
+    max-width: 28rem;
+    margin: 0;
+    color: var(--on-footer-muted);
+    font-size: 16px;
+    line-height: 1.625;
+  }
+  .footer-company {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: var(--on-footer-muted);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 1.625;
+  }
+  .footer-company-name { color: var(--on-footer); font-family: var(--font-display); font-weight: 700; }
+  .footer-mail,
+  .footer-legal-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color .15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .footer-mail:hover,
+  .footer-legal-link:hover { color: var(--gold-9); }
+  .footer-follow { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .footer-whatsapp {
+    padding: 4px 8px;
+    color: var(--gold-9);
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    transition: color .15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .footer-whatsapp:hover { color: var(--on-footer); }
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .footer-nav-link { color: var(--on-footer); transition: color .15s cubic-bezier(0.4, 0, 0.2, 1); }
+  .footer-nav-link:hover { color: var(--gold-9); }
+  .footer-aside { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+  .footer-aside-head { display: flex; flex-direction: column; gap: 12px; }
+  .footer-aside-title {
+    margin: 0;
+    color: var(--on-footer);
+    font-family: var(--font-display);
+    font-size: calc(var(--u) * 30);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    -webkit-text-stroke: 0.012em currentColor;
+    paint-order: stroke fill;
+    text-wrap: balance;
+  }
+  .footer-aside-copy {
+    max-width: 32rem;
+    margin: 0;
+    color: var(--on-footer-muted);
+    font-size: 16px;
+    line-height: 1.625;
+  }
+  .footer-bottom { width: 100%; padding: 20px var(--gutter); background: var(--footer-bar); color: var(--on-footer); }
+  .footer-bottom-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 auto;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .footer-company-mark { white-space: nowrap; }
+  .footer-legal-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
+
+  @media (min-width: 640px) {
+    .footer-blurb { font-size: 18px; line-height: 1.625; }
+    .footer-bottom { padding: 24px 96px; }
+    .footer-bottom-inner { flex-direction: row; align-items: center; }
+  }
+
+  @media (min-width: 992px) {
+    .footer-aside-title { font-size: calc(var(--u) * 40); }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 64px; }
+    .footer-brand { grid-column: span 6 / span 6; }
+    .footer-aside { grid-column: span 6 / span 6; padding-left: 48px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer-mail, .footer-legal-link, .footer-whatsapp, .footer-nav-link { transition: none; }
   }
 </style>

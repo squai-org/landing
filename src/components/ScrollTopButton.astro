@@ -1,0 +1,75 @@
+---
+import { getSiteContent } from '../lib/content';
+
+const { ui } = await getSiteContent();
+---
+
+{
+  ui.scrollTop && (
+    <button type="button" class="scroll-top" data-scroll-top aria-label={ui.scrollTop.label} hidden>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="m5 12 7-7 7 7"></path>
+        <path d="M12 19V5"></path>
+      </svg>
+    </button>
+  )
+}
+
+<style>
+  .scroll-top {
+    display: none;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--midnight);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  @media (min-width: 768px) {
+    .scroll-top:not([hidden]) {
+      display: inline-flex;
+    }
+  }
+</style>
+
+<script>
+  import { animateIn, animateOut, gestureTransition, gestures, hoverPress } from '../lib/motion';
+
+  const button = document.querySelector<HTMLButtonElement>('[data-scroll-top]');
+
+  if (button) {
+    const hiddenState = { opacity: 0, y: 12, scale: 0.9 };
+    const shownState = { opacity: 1, y: 0, scale: 1 };
+    let shown = false;
+
+    hoverPress(button, gestures.scrollTop);
+
+    button.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+
+    const update = () => {
+      const next = window.scrollY > 520;
+      if (next === shown) return;
+      shown = next;
+      if (next) {
+        button.hidden = false;
+        void animateIn(button, hiddenState, shownState, gestureTransition(shownState));
+      } else {
+        void animateOut(button, hiddenState, gestureTransition(hiddenState)).then(() => {
+          if (!shown) button.hidden = true;
+        });
+      }
+    };
+
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+</script>

@@ -1,0 +1,56 @@
+---
+import Block from './Block.astro';
+
+interface Props {
+  size?: string;
+  rotation?: number;
+  shiftX?: number;
+  shiftY?: number;
+  rotationDelta?: number;
+  delay?: number;
+  duration?: number;
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+  color?: string;
+  class?: string;
+}
+
+const {
+  size = '6rem',
+  rotation = -14,
+  shiftX = -4,
+  shiftY = -6,
+  rotationDelta = -7,
+  delay = 0,
+  duration = 4.8,
+  top,
+  right,
+  bottom,
+  left,
+  color,
+  class: className = '',
+} = Astro.props;
+
+const style = [
+  `--drift-size:${size}`,
+  `--drift-rotation:${rotation}deg`,
+  `--drift-shift-x:${shiftX}px`,
+  `--drift-shift-y:${shiftY}px`,
+  `--drift-rotation-delta:${rotationDelta}deg`,
+  `--drift-delay:${delay}s`,
+  `--drift-duration:${duration}s`,
+  top && `top:${top}`,
+  right && `right:${right}`,
+  bottom && `bottom:${bottom}`,
+  left && `left:${left}`,
+  color && `color:${color}`,
+]
+  .filter(Boolean)
+  .join(';');
+---
+
+<span class:list={['drift-block', className]} style={style} aria-hidden="true">
+  <span class="drift-block-motion ambient"><Block /></span>
+</span>

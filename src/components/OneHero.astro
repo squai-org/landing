@@ -1,0 +1,210 @@
+---
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import OneBackdrop from './OneBackdrop.astro';
+import { endpoints } from '../config/endpoints';
+import { checkout } from '../config/checkout';
+import type { Service } from '../lib/content';
+import persona from '../assets/one/persona-laptop.webp';
+import '../styles/one-sections.css';
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const hero = service.hero!;
+const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
+---
+
+<div class="one-hero-band one-u">
+  <section class="one-hero" data-hero aria-labelledby="one-hero-title" data-cohort-endpoint={cohortEndpoint}>
+    <OneBackdrop
+      shape="hero"
+      colors={['#969bfc', '#777ae3']}
+      opacities={[0.45, 0.35]}
+      align="xMaxYMin"
+      small
+      frameClass="one-hero-ribbon"
+      scrollY={[0, 84]}
+    />
+
+    <div class="one-hero-copy">
+      <h1 id="one-hero-title" class="one-h1 one-hero-title">{hero.title}</h1>
+      <p class="one-hero-lead">{hero.lead}</p>
+      <div class="one-hero-action">
+        <Button variant="dark" arrow href={`#${service.cta.target}`} data-scroll-to={service.cta.target}>{service.cta.label}</Button>
+      </div>
+      <p class="one-small one-hero-schedule">
+        <span data-cohort-schedule>{hero.schedulePending}</span> · <span data-cohort-dates>{hero.datesPending}</span>
+      </p>
+    </div>
+
+    <div class="one-hero-stage">
+      <div class="one-hero-person" data-hero-person>
+        <Image
+          src={persona}
+          alt={hero.photoAlt}
+          widths={[360, 540, 768]}
+          sizes="(min-width: 1024px) 34vw, 80vw"
+          loading="eager"
+          fetchpriority="high"
+          draggable="false"
+          class="one-hero-photo"
+        />
+        <p class="one-hero-tag one-hero-tag-note">{hero.note}</p>
+        <p class="one-hero-tag one-hero-tag-sticker">{hero.sticker}</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  import { showCohort } from '../lib/cohort-client';
+  import { scrollRange } from '../lib/motion';
+
+  void showCohort();
+
+  const person = document.querySelector<HTMLElement>('[data-hero-person]');
+  const hero = person?.closest<HTMLElement>('section');
+  if (person && hero) {
+    scrollRange(hero, 'start-start', [0, 40], (value) => {
+      person.style.setProperty('--person-y', `${value.toFixed(2)}px`);
+    });
+  }
+</script>
+
+<style>
+  .one-hero-band { background: #fff; }
+  .one-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100svh;
+    min-height: 640px;
+    overflow: hidden;
+    background: var(--periwinkle-9);
+    color: var(--midnight);
+    border-radius: 0 0 var(--edge-r) var(--edge-r);
+  }
+  .one-hero :global(.one-hero-ribbon) {
+    inset: -8% 0 -14% 0;
+  }
+  .one-hero-copy {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    padding: var(--hero-title-top) var(--gutter) 0 var(--hero-x);
+  }
+  .one-hero-title {
+    max-width: var(--hero-title-w);
+    line-height: 0.8;
+    color: var(--midnight);
+  }
+  .one-hero-lead {
+    max-width: var(--hero-p-w);
+    margin: var(--hero-gap-title) 0 0;
+    font-size: var(--hero-p-fs);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--midnight);
+  }
+  .one-hero-action {
+    display: flex;
+    align-items: center;
+    column-gap: 1.25rem;
+    margin-top: var(--hero-gap-cta);
+  }
+  .one-hero-schedule {
+    margin-top: calc(var(--u) * 14);
+    font-weight: 700;
+    color: var(--midnight);
+  }
+  .one-hero-stage {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    width: 100%;
+    min-height: 280px;
+    margin-top: calc(var(--u) * 24);
+  }
+  .one-hero-person {
+    position: absolute;
+    bottom: 0;
+    right: 12%;
+    height: 96%;
+    aspect-ratio: 768 / 1050;
+    translate: 0 var(--person-y, 0px);
+  }
+  .one-hero-photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+  }
+  .one-hero-tag {
+    position: absolute;
+    width: max-content;
+    max-width: calc(var(--u) * 150);
+    margin: 0;
+    padding: calc(var(--u) * 9) calc(var(--u) * 14);
+    background: var(--midnight);
+    color: var(--canvas);
+    border-radius: 18px;
+    font-family: var(--font-hand);
+    font-size: max(15px, var(--fs-tag));
+    line-height: 1.375;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+  .one-hero-tag-note { right: 80%; top: 20%; rotate: -4deg; }
+  .one-hero-tag-sticker { right: 76%; top: 46%; rotate: 3deg; }
+
+  @media (max-width: 639px) {
+    .one-hero-stage { container-type: size; }
+    .one-hero-tag-note { max-width: min(calc(var(--u) * 150), calc(88cqw - 56.2cqh - 8px)); }
+    .one-hero-tag-sticker { max-width: min(calc(var(--u) * 150), calc(88cqw - 53.4cqh - 8px)); }
+  }
+
+  @media (min-width: 640px) {
+    .one-hero-tag { max-width: none; white-space: nowrap; }
+    .one-hero-tag-note {
+      top: 40%;
+      padding: calc(var(--u) * 10) calc(var(--u) * 16);
+      border-radius: var(--tag-r);
+    }
+    .one-hero-tag-sticker {
+      top: 64%;
+      padding: calc(var(--u) * 12) calc(var(--u) * 22);
+      border-radius: 9999px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .one-hero {
+      display: block;
+      min-height: 0;
+      height: calc(var(--u) * 1100);
+    }
+    .one-hero-stage {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: calc(var(--u) * 190);
+      width: calc(var(--u) * 640);
+      min-height: 0;
+      margin-top: 0;
+    }
+    .one-hero-person {
+      right: auto;
+      left: 50%;
+      height: calc(100% - var(--u) * 170);
+      translate: -50% var(--person-y, 0px);
+    }
+    .one-hero-tag { font-size: calc(var(--u) * 28); }
+    .one-hero-tag-note { right: auto; left: -10%; top: 56%; }
+    .one-hero-tag-sticker { right: auto; left: 59%; top: 70%; }
+  }
+</style>

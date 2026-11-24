@@ -14,6 +14,7 @@
  * vez lo lee de la base. Lo que se muestra y lo que se cobra son el mismo dato.
  * https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada
  */
+import OneBackdrop from './OneBackdrop.astro';
 import Button from './Button.astro';
 import CountryCodeSelect from './CountryCodeSelect.astro';
 import CustomSelect from './CustomSelect.astro';
@@ -22,160 +23,196 @@ import { checkout, CURRENCIES, type Currency } from '../config/checkout';
 import { endpoints } from '../config/endpoints';
 import { legalPaths } from '../config/legal';
 import { getSiteContent } from '../lib/content';
+import { fillTemplate } from '../lib/template';
+import '../styles/one-sections.css';
 
-const { program, ui, labels } = await getSiteContent();
+interface Props {
+  investment?: { referencePrice: Partial<Record<Currency, number>>; discountPercent?: number; discountDeadline?: string };
+}
+
+const { investment } = Astro.props;
+const { ui, labels } = await getSiteContent();
+const referencePrices = investment?.referencePrice ?? {};
+const hasReference = Object.values(referencePrices).some((amount) => amount !== undefined);
+const discountText = investment?.discountPercent ? fillTemplate(ui.checkout.investment.discountLabel, { percent: String(investment.discountPercent) }) : '';
+const deadlineText = investment?.discountDeadline ? fillTemplate(ui.checkout.investment.deadlineLabel, { date: investment.discountDeadline }) : '';
 const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop, USD: ui.checkout.currency.usd };
 ---
 
-<section class="section tint">
-  <div id="inscripcion" class="shell">
-    <div class="bento checkout-grid">
-      <div class="checkout-column span-4 row-5">
-        <div class="checkout-sticky">
-          <h2 class="display d-h2 checkout-title">{ui.checkout.title}</h2>
-          <div class="checkout-copy">
-            {
-              ui.checkout.copy.map((paragraph, index) => (
-                <p class={`lead${index === ui.checkout.copy.length - 1 ? ' checkout-promise' : ''}`}>{paragraph}</p>
-              ))
-            }
-          </div>
+<section id="inscripcion" class="one-signup one-u" aria-labelledby="one-signup-title">
+  <OneBackdrop shape="signup" colors={['#e1e4fd']} opacities={[1]} align="xMidYMid" />
+  <div class="one-signup-grid">
+    <div class="checkout-column" data-signup-enter="intro">
+      <h2 id="one-signup-title" class="one-h2">{ui.checkout.title}</h2>
+      <div class="checkout-copy">
+        {ui.checkout.copy.map((paragraph) => <p class="one-lead">{paragraph}</p>)}
+      </div>
 
-          <div
-            class="checkout-card card-pad-lg"
-            data-bold-checkout
-            data-program={checkout.program}
-            data-program-endpoint={endpoints.checkoutProgram}
-            data-library-url={checkout.libraryUrl}
-            data-return-path={checkout.returnPath}
-            data-status-endpoint={endpoints.checkoutStatus}
-            data-paying-label={ui.checkout.button.paying}
-            data-retry-label={ui.checkout.button.retry}
-          >
-            <div class="checkout-card-heading">
-              <h3 class="display checkout-card-title">{ui.checkout.formTitle}</h3>
-              <p class="body checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
+      <fieldset class="currency-picker" data-currency-picker>
+        <legend class="one-signup-label">{ui.checkout.currency.label}</legend>
+        <div class="currency-options">
+          {
+            CURRENCIES.map((currency, index) => (
+              <label class="currency-option" data-currency-option={currency}>
+                <input type="radio" name="currency" value={currency} form="checkout-form" checked={index === 0} />
+                <span>{currencyLabels[currency]}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <div class="investment-price">
+        <div class="price-row">
+          <span class="one-small price-label">{ui.checkout.investment.eyebrow}</span>
+          <p class="one-h3 price-line">
+            <span class="price-amount" data-bold-price data-state="loading"></span> <span class="price-currency" data-bold-currency></span>
+          </p>
+        </div>
+        {
+          hasReference && (
+            <div class="reference-offer" data-reference-offer data-reference-prices={JSON.stringify(referencePrices)} hidden>
+              <s class="reference-price">
+                <span class="sr-only">{ui.checkout.investment.referenceLabel}: </span>
+                <span data-reference-amount />
+              </s>
+              {discountText && <span class="discount-badge">{discountText}</span>}
+              {deadlineText && <span class="one-small discount-deadline">{deadlineText}</span>}
             </div>
+          )
+        }
+        {
+          ui.checkout.investment.copy.map((paragraph, index) => (
+            <p class={index === 0 ? 'price-note' : 'one-small price-detail'}>{paragraph}</p>
+          ))
+        }
+        <div class="payment-methods">
+          <p class="one-small price-detail" id="payment-methods-label">{ui.checkout.paymentMethods.label}</p>
+          <ul class="payment-list" aria-labelledby="payment-methods-label">
+            {ui.checkout.paymentMethods.items.map((method) => <li class="one-small">{method}</li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
 
-            <form id="checkout-form" data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
-              <input type="hidden" name="program" value={checkout.program} />
-              <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
+    <div class="checkout-form-column" data-signup-enter="form">
+      <div
+        class="checkout-card"
+        data-bold-checkout
+        data-program={checkout.program}
+        data-program-endpoint={endpoints.checkoutProgram}
+        data-library-url={checkout.libraryUrl}
+        data-return-path={checkout.returnPath}
+        data-status-endpoint={endpoints.checkoutStatus}
+        data-paying-label={ui.checkout.button.paying}
+        data-retry-label={ui.checkout.button.retry}
+      >
+        <div class="checkout-card-heading">
+          <h3 class="one-h3">{ui.checkout.formTitle}</h3>
+          <p class="one-small checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
+        </div>
 
-              <div class="field-grid-2">
-                <label class="field-group" for="checkout-full-name">
-                  <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
-                  <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" class="field" aria-describedby="checkout-full-name-error" />
-                  <span id="checkout-full-name-error" class="field-error" data-field-error="full_name"></span>
-                </label>
-                <label class="field-group" for="checkout-email">
-                  <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
-                  <input id="checkout-email" type="email" name="email" required autocomplete="email" class="field" aria-describedby="checkout-email-error" />
-                  <span id="checkout-email-error" class="field-error" data-field-error="email"></span>
-                </label>
-              </div>
+        <form id="checkout-form" data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
+          <input type="hidden" name="program" value={checkout.program} />
+          <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
 
-              <div class="field-grid-phone">
-                <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} />
-                <label class="field-group" for="checkout-phone">
-                  <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
-                  <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" class="field" aria-describedby="checkout-phone-error" />
-                  <span id="checkout-phone-error" class="field-error" data-field-error="phone"></span>
-                </label>
-              </div>
+          <label class="field-group" for="checkout-full-name">
+            <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
+            <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" placeholder={ui.forms.placeholders?.fullName} class="field" aria-describedby="checkout-full-name-error" />
+            <span id="checkout-full-name-error" role="alert" class="field-error" data-field-error="full_name"></span>
+          </label>
 
-              <div class="field-group-spaced">
-                <CustomSelect
-                  idPrefix="checkout"
-                  name="referral_source"
-                  label={ui.forms.referralSourceProgram}
-                  placeholder={ui.forms.select}
-                  options={ui.forms.referralSources}
-                />
-              </div>
-
-              <Turnstile action="checkout" />
-
-              <label class="field-group consent-field" for="checkout-terms-consent">
-                <span class="consent-row">
-                  <input id="checkout-terms-consent" type="checkbox" name="terms_consent" required class="consent-checkbox" aria-describedby="checkout-terms-consent-error" />
-                  <span class="consent-label">
-                    {ui.forms.termsConsentPrefix}<a href={legalPaths.terms} target="_blank" rel="noopener">{ui.forms.termsConsentLink}</a>{ui.forms.termsConsentSuffix}
-                  </span>
-                </span>
-                <span id="checkout-terms-consent-error" class="field-error" data-field-error="terms_consent"></span>
+          <div class="one-signup-row">
+            <label class="field-group" for="checkout-email">
+              <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
+              <input id="checkout-email" type="email" name="email" required autocomplete="email" placeholder={ui.forms.placeholders?.email} class="field" aria-describedby="checkout-email-error" />
+              <span id="checkout-email-error" role="alert" class="field-error" data-field-error="email"></span>
+            </label>
+            <div class="one-signup-phone">
+              <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} />
+              <label class="field-group" for="checkout-phone">
+                <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
+                <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" placeholder={ui.forms.placeholders?.phone} class="field" aria-describedby="checkout-phone-error" />
+                <span id="checkout-phone-error" role="alert" class="field-error" data-field-error="phone"></span>
               </label>
-
-              <label class="field-group consent-field" for="checkout-privacy-consent">
-                <span class="consent-row">
-                  <input id="checkout-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="checkout-privacy-consent-error" />
-                  <span class="consent-label">
-                    {ui.forms.privacyConsentPrefix}<a href={legalPaths.privacy} target="_blank" rel="noopener">{ui.forms.privacyConsentLink}</a>{ui.forms.privacyConsentSuffix}
-                  </span>
-                </span>
-                <span id="checkout-privacy-consent-error" class="field-error" data-field-error="privacy_consent"></span>
-              </label>
-
-              <div class="form-submit" data-sales-panel="form">
-                <Button variant="primary" type="submit" block>{labels.reserve}</Button>
-              </div>
-
-              <div class="sales-notice" data-sales-panel="upcoming" hidden>
-                <p class="sales-notice-title">{ui.checkout.status.upcomingTitle}</p>
-                <p class="body">{ui.checkout.status.upcomingBody}</p>
-              </div>
-              <div class="sales-notice" data-sales-panel="closed" hidden>
-                <p class="sales-notice-title">{ui.checkout.status.closedTitle}</p>
-                <p class="body">{ui.checkout.status.closedBody}</p>
-              </div>
-
-              <div class="form-status" data-form-status role="status" aria-live="polite"></div>
-            </form>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div class="bento-card span-2 row-2 investment-card">
-        <span class="service-eyebrow investment-eyebrow">
-          <span class="service-eyebrow-dot" aria-hidden="true"></span>
-          <span class="service-eyebrow-text">{ui.checkout.investment.eyebrow}</span>
-        </span>
-        {ui.checkout.investment.copy.map((paragraph) => <p class="body investment-copy">{paragraph}</p>)}
-        <div class="investment-price">
-          <h3 class="display">
-            <span data-bold-price>&nbsp;</span> <span data-bold-currency>&nbsp;</span>
-          </h3>
-          <fieldset class="currency-picker" data-currency-picker>
-            <legend class="currency-legend">{ui.checkout.currency.label}</legend>
+          <CustomSelect
+            idPrefix="checkout"
+            name="referral_source"
+            label={ui.forms.referralSourceProgram}
+            placeholder={ui.forms.select}
+            options={ui.forms.referralSources}
+          />
+
+          <Turnstile action="checkout" />
+
+          <label class="field-group consent-field" for="checkout-terms-consent">
+            <span class="consent-row">
+              <input id="checkout-terms-consent" type="checkbox" name="terms_consent" required class="consent-checkbox" aria-describedby="checkout-terms-consent-error" />
+              <span class="consent-label">
+                {ui.forms.termsConsentPrefix}<a href={legalPaths.terms} target="_blank" rel="noopener">{ui.forms.termsConsentLink}</a>{ui.forms.termsConsentSuffix}
+              </span>
+            </span>
+            <span id="checkout-terms-consent-error" role="alert" class="field-error" data-field-error="terms_consent"></span>
+          </label>
+
+          <label class="field-group consent-field" for="checkout-privacy-consent">
+            <span class="consent-row">
+              <input id="checkout-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="checkout-privacy-consent-error" />
+              <span class="consent-label">
+                {ui.forms.privacyConsentPrefix}<a href={legalPaths.privacy} target="_blank" rel="noopener">{ui.forms.privacyConsentLink}</a>{ui.forms.privacyConsentSuffix}
+              </span>
+            </span>
+            <span id="checkout-privacy-consent-error" role="alert" class="field-error" data-field-error="privacy_consent"></span>
+          </label>
+
+          <div class="form-submit" data-sales-panel="form">
+            <Button variant="primary" type="submit" block arrow>{labels.reserve}</Button>
             {
-              CURRENCIES.map((currency, index) => (
-                <label class="currency-option" data-currency-option={currency}>
-                  <input type="radio" name="currency" value={currency} form="checkout-form" checked={index === 0} />
-                  <span>{currencyLabels[currency]}</span>
-                </label>
-              ))
+              ui.checkout.secureNote && (
+                <p class="secure-note">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>{ui.checkout.secureNote}</span>
+                </p>
+              )
             }
-          </fieldset>
-        </div>
-      </div>
-      <div class="bento-card span-2 peri program-detail-card">
-        <h3 class="display d-h3">{ui.program.duration}</h3>
-        <p class="body">{program.duration}</p>
-      </div>
-      <div class="bento-card span-2 teal program-detail-card">
-        <h3 class="display d-h3">{ui.program.schedule}</h3>
-        <p class="body">{program.schedule}</p>
-      </div>
-      <div class="bento-card span-2 gold program-detail-card">
-        <h3 class="display d-h3">{ui.program.modality}</h3>
-        <p class="body">{program.modality}</p>
+          </div>
+
+          <div class="sales-notice" data-sales-panel="upcoming" hidden>
+            <p class="sales-notice-title">{ui.checkout.status.upcomingTitle}</p>
+            <p class="one-small">{ui.checkout.status.upcomingBody}</p>
+          </div>
+          <div class="sales-notice" data-sales-panel="closed" hidden>
+            <p class="sales-notice-title">{ui.checkout.status.closedTitle}</p>
+            <p class="one-small">{ui.checkout.status.closedBody}</p>
+          </div>
+
+          <div class="form-status" data-form-status role="status" aria-live="polite"></div>
+        </form>
       </div>
     </div>
   </div>
 </section>
 
 <script>
+  import { revealOnView, tweens } from '../lib/motion';
+
+  const intro = document.querySelector<HTMLElement>('[data-signup-enter="intro"]');
+  const formColumn = document.querySelector<HTMLElement>('[data-signup-enter="form"]');
+  if (intro) revealOnView(intro, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, tweens.formReveal, 0.25);
+  if (formColumn) revealOnView(formColumn, { opacity: 0, y: 28 }, { opacity: 1, y: 0 }, tweens.formCardReveal, 0.2);
+</script>
+
+<script>
   import { openBoldCheckout } from '../lib/bold-library';
+  import { fetchProgram } from '../lib/program-client';
   import { type CheckoutSession, type CustomerData } from '../lib/bold-checkout';
+  import { discountedReference } from '../lib/reference-price';
   import {
     buttonView,
     canReopen,
@@ -200,10 +237,25 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     const currencySlot = document.querySelector<HTMLElement>('[data-bold-currency]');
 
     /** Bold cobra enteros sin decimales, asi que no se formatean centavos. */
+    const formatAmount = (amount: number) => `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(amount)}`;
+
     const showPrice = (amount: number, currency: string) => {
-      if (priceSlot) priceSlot.textContent = `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(amount)}`;
+      if (priceSlot) {
+        priceSlot.textContent = formatAmount(amount);
+        priceSlot.dataset.state = 'ready';
+      }
       if (currencySlot) currencySlot.textContent = currency;
     };
+
+    const markPriceUnavailable = () => {
+      if (!priceSlot || priceSlot.dataset.state === 'ready') return;
+      priceSlot.textContent = '—';
+      priceSlot.dataset.state = 'error';
+    };
+
+    const referenceOffer = document.querySelector<HTMLElement>('[data-reference-offer]');
+    const referenceAmountSlot = referenceOffer?.querySelector<HTMLElement>('[data-reference-amount]') ?? null;
+    const referencePrices: Partial<Record<string, number>> = JSON.parse(referenceOffer?.dataset.referencePrices ?? '{}');
 
     const currencyInputs = Array.from(
       document.querySelectorAll<HTMLInputElement>('[data-currency-picker] input[name="currency"]')
@@ -212,23 +264,29 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
     const selectedCurrency = () => currencyInputs.find((input) => input.checked)?.value ?? '';
 
+    const showReference = (currency: string) => {
+      if (!referenceOffer) return;
+      const listed = discountedReference(referencePrices, prices, currency);
+      referenceOffer.hidden = listed === undefined;
+      if (listed !== undefined && referenceAmountSlot) referenceAmountSlot.textContent = formatAmount(listed);
+    };
+
     const showSelectedPrice = () => {
       const currency = selectedCurrency();
       const amount = prices[currency];
       if (amount !== undefined) showPrice(amount, currency);
+      showReference(currency);
     };
 
     const loadPrice = async () => {
       try {
-        const res = await fetch(`${root.dataset.programEndpoint}/${root.dataset.program}`, {
-          headers: { Accept: 'application/json' },
-        });
-        if (!res.ok) return;
-        const { program } = (await res.json()) as {
-          program: { prices: Partial<Record<string, number>>; defaultCurrency: string; status?: string };
-        };
+        const program = await fetchProgram(`${root.dataset.programEndpoint}/${root.dataset.program}`);
+        if (!program) {
+          markPriceUnavailable();
+          return;
+        }
         showSalesPanel(salesPanel(program.status));
-        prices = program.prices;
+        prices = program.prices ?? {};
         currencyInputs.forEach((input) => {
           const available = prices[input.value] !== undefined;
           input.disabled = !available;
@@ -237,7 +295,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
         });
         showSelectedPrice();
       } catch {
-        // El precio tambien viaja en la sesion: si esto falla, se pinta al pagar.
+        markPriceUnavailable();
       }
     };
 
@@ -407,141 +465,186 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 </script>
 
 <style>
-  .checkout-grid { align-items: stretch; }
-  .row-5 { grid-row: span 5; }
-  .checkout-column { display: flex; flex-direction: column; min-width: 0; }
-  .checkout-sticky { position: sticky; top: calc(var(--nav-space) + 24px); }
-  .checkout-title { color: var(--ink); }
-  .checkout-copy {
-    max-width: 60ch;
-    margin: clamp(16px, 1.6vw, 24px) 0 clamp(28px, 3vw, 44px);
-    color: var(--ink-body);
-  }
-  .checkout-copy p + p { margin-top: 12px; }
-  /* --periwinkle (#8A8EF9) sobre --canvas da 2.66:1; WCAG 2.2 AA exige 4.5:1
-     para texto normal. --periwinkle-ink da 5.65:1. */
-  .checkout-promise { font-family: var(--font-hand); font-weight: 100; color: var(--periwinkle-ink); }
-  .program-detail-card { gap: 8px; padding: clamp(20px, 1.8vw, 30px); }
-  .program-detail-card h3 { font-size: clamp(19px, 1.55vw, 27px); }
-  .program-detail-card p { font-size: clamp(16px, .95vw, 18px); }
-  .investment-card {
-    justify-content: space-between;
-    min-height: clamp(320px, 30vw, 460px);
-    background: var(--midnight);
-    border-color: transparent;
-  }
-  .investment-eyebrow {
-    display: inline-flex;
-    align-self: flex-start;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 22px;
-    background: var(--canvas);
-    border: 1px solid var(--canvas);
-    border-radius: var(--radius-pill);
-  }
-  .service-eyebrow-dot {
-    flex: none;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--periwinkle);
-  }
-  .service-eyebrow-text {
+  .one-signup {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    overflow: hidden;
+    padding: var(--section-py) var(--gutter);
+    background: #fff;
     color: var(--midnight);
-    font-family: var(--font-body);
+  }
+  .one-signup-grid {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: calc(var(--u) * 56);
+    max-width: calc(var(--u) * 1560);
+    margin: 0 auto;
+  }
+  .checkout-column,
+  .checkout-form-column { min-width: 0; }
+  .checkout-column { display: flex; flex-direction: column; gap: calc(var(--u) * 24); }
+  .checkout-column h2 { color: var(--midnight); }
+  .checkout-copy { display: flex; flex-direction: column; gap: 0.75rem; max-width: calc(var(--u) * 620); color: var(--neutral-11); }
+
+  .one-signup-label {
+    display: block;
+    margin-bottom: 0.75rem;
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    color: var(--periwinkle-12);
+  }
+  .currency-picker { margin: 0; padding: 0.25rem 0 0; border: 0; min-width: 0; }
+  .currency-options { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .currency-option { position: relative; display: inline-flex; cursor: pointer; }
+  .currency-option span {
+    padding: 0.625rem 1rem;
+    border: 2px solid var(--periwinkle-12);
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--periwinkle-12);
+    font-family: var(--font-display);
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-  .investment-price { display: flex; flex-direction: column; gap: 8px; }
-  .investment-price h3 {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: .18em;
-    width: 100%;
-    font-size: clamp(30px, 2.65vw, 50px);
+    line-height: 1.43;
     white-space: nowrap;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .investment-card .investment-price h3,
-  .investment-card .investment-price p,
-  .investment-copy { color: var(--canvas); }
-  .investment-copy { max-width: 32ch; }
-  .currency-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; min-width: 0; }
-  .currency-legend {
-    width: 100%;
-    margin-bottom: 4px;
-    padding: 0;
-    color: var(--canvas);
-    font-size: 14px;
+  .currency-option:hover span { background: var(--periwinkle-3); }
+  .currency-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .currency-option input:checked + span { background: var(--periwinkle-12); color: var(--canvas); }
+  .currency-option input:focus-visible + span { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
+
+  .investment-price { display: flex; flex-direction: column; gap: calc(var(--u) * 12); padding-top: 0.5rem; }
+  .price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem; }
+  .price-label { font-weight: 500; color: var(--neutral-11); }
+  .price-line { display: flex; align-items: baseline; gap: 0.22em; color: var(--midnight); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .price-currency { font-size: 0.6em; }
+  .price-amount[data-state='loading'] {
+    display: inline-block;
+    min-width: 4.2em;
+    height: 0.9em;
+    border-radius: 8px;
+    background: var(--periwinkle-4);
+    animation: price-pulse 1.4s ease-in-out infinite;
   }
-  .currency-option { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
-  .currency-option[hidden] { display: none; }
-  .currency-option span {
-    padding: 6px 14px;
-    border: 1px solid var(--canvas);
-    border-radius: var(--radius-pill);
-    color: var(--canvas);
-    font-size: 14px;
+  @keyframes price-pulse { 50% { opacity: 0.4; } }
+  .reference-offer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+  .reference-price { color: var(--neutral-11); font-family: var(--font-display); font-size: var(--fs-small); font-weight: 700; }
+  .discount-badge {
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: var(--gold-9);
+    color: var(--midnight);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
   }
-  .currency-option input {
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
+  .discount-deadline { color: var(--neutral-11); }
+  .price-note { margin: 0; font-family: var(--font-display); font-size: 16px; font-weight: 700; line-height: 1.5; color: var(--midnight); }
+  .price-detail { color: var(--neutral-11); }
+  .payment-methods { display: flex; flex-direction: column; gap: 0.25rem; }
+  .payment-list { display: flex; flex-wrap: wrap; gap: 0 0.5rem; margin: 0; padding: 0; list-style: none; color: var(--neutral-11); }
+  .payment-list li:not(:last-child)::after { content: ' ·'; }
+
+  .checkout-card { display: flex; flex-direction: column; gap: 1.5rem; text-align: left; }
+  .checkout-card-heading { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
+  .checkout-card-heading h3 { color: var(--midnight); }
+  .checkout-card-subtitle { color: var(--neutral-11); }
+  .checkout-card form { display: flex; flex-direction: column; gap: 1.5rem; }
+  .checkout-card form > .form-instructions { margin: 0; font-size: 14px; color: var(--neutral-11); }
+  .one-signup-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .one-signup-phone { display: grid; grid-template-columns: minmax(96px, auto) minmax(0, 1fr); gap: 0.5rem; }
+
+  .one-signup :global(.field-group) { --group-gap: calc(var(--u) * 10); gap: var(--group-gap); }
+  .one-signup :global(.field-label) {
+    font-family: var(--font-display);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--midnight);
   }
-  .currency-option input:checked + span { background: var(--canvas); color: var(--midnight); }
-  .currency-option input:focus-visible + span { outline: 2px solid var(--periwinkle); outline-offset: 2px; }
-  .checkout-card {
-    padding: 32px;
-    border: 1px solid var(--line);
-    border-radius: 32px;
-    background: var(--surface);
-    box-shadow: 0 1px 2px rgba(10, 12, 26, .03), 0 30px 70px -44px rgba(10, 12, 26, .45);
-    text-align: left;
+  .one-signup :global(.field) {
+    height: var(--input-h);
+    min-height: var(--input-h);
+    padding: 0 var(--input-px);
+    border: 0;
+    border-radius: var(--input-r);
+    background: var(--periwinkle-3);
+    color: var(--midnight);
+    font-size: var(--input-fs);
+    box-shadow: none;
+    outline: none;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .checkout-card-heading { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-  .checkout-card-title { color: var(--midnight); font-size: clamp(19px, 1.55vw, 27px); }
-  .checkout-card-subtitle { color: var(--midnight); }
-  .consent-field { gap: 7px; margin: 4px 0 18px; }
+  .one-signup :global(.field::placeholder) { color: var(--neutral-11); }
+  .one-signup :global(.field:focus) { background: var(--periwinkle-4); }
+  .one-signup :global(.field:focus-visible) { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
+  .one-signup :global(.field[aria-invalid='true']) { box-shadow: inset 0 0 0 2px #B3261E; }
+
+  .one-signup :global(.consent-field) { --group-gap: 7px; }
   .consent-row { display: flex; align-items: flex-start; gap: 10px; }
-  .consent-checkbox {
-    flex: none;
-    width: 18px;
-    height: 18px;
-    margin-top: 2px;
-    accent-color: var(--periwinkle);
-    border: 1px solid var(--line);
-    border-radius: 4px;
+  .consent-checkbox { flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--periwinkle-12); }
+  .consent-label { font-size: 14px; line-height: 1.625; color: var(--neutral-11); }
+  .consent-label a {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--periwinkle-12);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
   }
-  .consent-label { font-size: 14px; line-height: 1.4; color: var(--ink-body); }
-  .consent-label a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
-  .consent-label a:hover { color: var(--periwinkle-ink); }
+  .consent-label a:hover { color: var(--periwinkle-11); }
+  .form-submit { display: flex; flex-direction: column; gap: 1.5rem; margin: 0; padding-top: 0.25rem; }
+  .secure-note { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 14px; line-height: 1.43; color: var(--neutral-11); }
+  .secure-note svg { flex: none; color: var(--periwinkle-11); }
+  .one-signup :global(.field-error:empty) { margin-top: calc(var(--group-gap) * -1); }
+  @media (min-width: 640px) {
+    :global(.form-submit .btn-block .btn-text) { flex: initial; }
+  }
+
   .sales-notice {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 18px 20px;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    background: var(--canvas);
-    color: var(--ink-body);
+    padding: max(24px, calc(var(--u) * 40));
+    border-radius: var(--card-r);
+    background: var(--periwinkle-3);
+    color: var(--neutral-11);
   }
-  .sales-notice[hidden] { display: none; }
-  .sales-notice-title { margin: 0; color: var(--ink); font-weight: 700; }
-  .sales-notice .body { margin: 0; }
-  @media (max-width: 1100px) {
-    .checkout-column { order: -1; }
-    .row-5, .investment-card { grid-row: auto; }
-    .checkout-sticky { position: static; }
+  .sales-notice-title { margin: 0; font-family: var(--font-display); font-weight: 700; color: var(--midnight); }
+
+  .form-status { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; font-size: 16px; }
+  .form-status:not(:empty) { padding: 1rem; border-radius: 1rem; background: var(--periwinkle-2); }
+  .form-status:not(:empty):not([data-state='error']):not([data-state='ok'])::before {
+    content: '';
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--neutral-11);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: status-spin 0.8s linear infinite;
   }
-  @media (max-width: 640px) {
-    .checkout-card { padding: 22px; border-radius: 22px; }
+  .form-status[data-state='error'] { background: #fde2e2; color: #9b1c1c; font-weight: 500; }
+  @keyframes status-spin { to { rotate: 360deg; } }
+
+  @media (min-width: 640px) {
+    .one-signup-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .currency-option span { padding-inline: 1.5rem; font-size: 16px; line-height: 1.5; }
   }
-  @media (max-width: 400px) {
-    .field { padding-inline: 14px; }
+  @media (min-width: 1024px) {
+    .one-signup { padding-inline: calc(var(--u) * 112); }
+    .one-signup-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .checkout-column { grid-column: span 5 / span 5; }
+    .checkout-form-column { grid-column: span 7 / span 7; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .price-amount[data-state='loading'], .form-status::before { animation: none; }
   }
 </style>

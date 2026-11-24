@@ -1,6 +1,10 @@
 ---
 import '../styles/global.css';
+import '../styles/motion.css';
+import MotionToggle from '../components/MotionToggle.astro';
 import Seo from '../components/Seo.astro';
+import ScrollTopButton from '../components/ScrollTopButton.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
 import { getSiteContent } from '../lib/content';
 import { SITE_LANG } from '../lib/seo';
 
@@ -12,16 +16,17 @@ interface Props {
   type?: 'website' | 'article';
   noindex?: boolean;
   schemas?: Record<string, unknown>[];
+  service?: string;
 }
 
-const { title, description, image, imageAlt, type, noindex, schemas } = Astro.props;
+const { title, description, image, imageAlt, type, noindex, schemas, service } = Astro.props;
 const { ui } = await getSiteContent();
 
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <!doctype html>
-<html lang={SITE_LANG}>
+<html lang={SITE_LANG} data-service={service}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -64,21 +69,31 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       )
     }
   </head>
-  <body data-client-copy={JSON.stringify({ navigation: ui.navigation, modal: ui.modal, feedback: ui.feedback })}>
+  <body data-client-copy={JSON.stringify({ modal: ui.modal, feedback: ui.feedback })}>
     <a class="skip-link" href="#contenido">{ui.skip}</a>
     <slot />
+    <div class="float-dock">
+      <MotionToggle pauseLabel={ui.motion.pause} resumeLabel={ui.motion.resume} />
+      <ScrollTopButton />
+    </div>
+    <WhatsAppButton />
   </body>
 </html>
 
 <script>
   import type { ClientCopy } from '../lib/content';
+  import { initMotion } from '../lib/motion-client';
+  import { bindFloatLift } from '../lib/float-lift-client';
 
   const clientCopy: ClientCopy = JSON.parse(document.body.dataset.clientCopy!);
 
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  initMotion();
+  bindFloatLift();
 
   const navOffset = () => {
-    const bar = document.querySelector<HTMLElement>('.nav-bar');
+    const bar = document.querySelector<HTMLElement>('[data-header-row]');
     return (bar ? bar.getBoundingClientRect().bottom : 96) + 28;
   };
 
@@ -87,7 +102,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (!el) return;
     const topPadding = parseFloat(getComputedStyle(el).paddingTop) || 0;
     const target = el.getBoundingClientRect().top + window.scrollY + topPadding - navOffset();
-    if (prefersReducedMotion || instant) {
+    if (prefersReducedMotion() || instant) {
       window.scrollTo(0, target);
       return;
     }
@@ -127,20 +142,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     });
   });
 
-  const header = document.querySelector<HTMLElement>('[data-header]');
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-
-  if (header) {
-    const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
-    if (hero) {
-      new IntersectionObserver(
-        ([entry]) => header.classList.toggle('over-hero', entry.isIntersecting),
-        { rootMargin: '-96px 0px 0px 0px', threshold: 0 }
-      ).observe(hero);
-    } else {
-      header.classList.remove('over-hero');
-    }
-
+  const scrollCue = document.querySelector<HTMLElement>('[data-hero-scroll]');
+  if (scrollCue) {
     let ticking = false;
     window.addEventListener(
       'scroll',
@@ -207,8 +210,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     document.querySelectorAll<HTMLElement>('.footer-grid > *').forEach((column, index) =>
       addReveal(column, 'copy', index * 60)
     );
-    const footerBottom = document.querySelector<HTMLElement>('.footer-bottom');
-    if (footerBottom) addReveal(footerBottom, 'copy', 120);
+
+    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) =>
+      addReveal(el, el.dataset.reveal!, Number(el.dataset.revealDelay ?? 0))
+    );
 
     targets.forEach((el) => el.classList.add('reveal'));
 
@@ -294,80 +299,30 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     targets.forEach((el) => io.observe(el));
   }
 
-  const navToggle = document.querySelector<HTMLElement>('[data-nav-toggle]');
-  const navMenu = document.querySelector<HTMLElement>('[data-nav-menu]');
-
-  const setNavOpen = (open: boolean) => {
-    navMenu?.classList.toggle('nav-open', open);
-    navToggle?.setAttribute('aria-expanded', String(open));
-    navToggle?.setAttribute('aria-label', open ? clientCopy.navigation.close : clientCopy.navigation.open);
-  };
-
-  navToggle?.addEventListener('click', () => {
-    setNavOpen(!navMenu?.classList.contains('nav-open'));
-  });
-
-  navMenu?.querySelectorAll('a').forEach((el) => {
-    el.addEventListener('click', () => setNavOpen(false));
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!navMenu?.classList.contains('nav-open')) return;
-    const target = event.target as Node;
-    if (navMenu.contains(target) || navToggle?.contains(target)) return;
-    setNavOpen(false);
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !navMenu?.classList.contains('nav-open')) return;
-    setNavOpen(false);
-    navToggle?.focus();
-  });
-
-  const desktopNav = window.matchMedia('(min-width: 1024px)');
-  desktopNav.addEventListener('change', (event) => {
-    if (event.matches) setNavOpen(false);
-  });
-
   const navSectionLinks = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-section]'));
-  if (location.pathname === '/' && navSectionLinks.length && 'IntersectionObserver' in window) {
+  const pageSections = navSectionLinks.filter((link) => {
+    const href = link.getAttribute('href') ?? '';
+    return href.startsWith('#') || (location.pathname === '/' && href.startsWith('/#'));
+  });
+  if (pageSections.length && 'IntersectionObserver' in window) {
     const currentSectionObserver = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (!visible) return;
-        navSectionLinks.forEach((link) => {
+        pageSections.forEach((link) => {
           if (link.dataset.navSection === visible.target.id) link.setAttribute('aria-current', 'location');
           else link.removeAttribute('aria-current');
         });
       },
-      { rootMargin: '-25% 0px -60% 0px', threshold: [0, .25, .5] }
+      { rootMargin: '-18% 0px -55% 0px', threshold: [0.1, 0.35, 0.6] }
     );
-    navSectionLinks.forEach((link) => {
+    pageSections.forEach((link) => {
       const section = document.getElementById(link.dataset.navSection || '');
       if (section) currentSectionObserver.observe(section);
     });
   }
-
-  let openFaq: string | null = null;
-
-  document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((toggle) => {
-    toggle.addEventListener('click', () => {
-      const index = toggle.dataset.faqToggle!;
-      openFaq = openFaq === index ? null : index;
-
-      document.querySelectorAll<HTMLElement>('[data-faq-panel]').forEach((panel) => {
-        panel.hidden = panel.dataset.faqPanel !== openFaq;
-      });
-      document.querySelectorAll<HTMLElement>('[data-faq-sign]').forEach((sign) => {
-        sign.textContent = sign.dataset.faqSign === openFaq ? '−' : '+';
-      });
-      document.querySelectorAll<HTMLElement>('[data-faq-toggle]').forEach((btn) => {
-        btn.setAttribute('aria-expanded', String(btn.dataset.faqToggle === openFaq));
-      });
-    });
-  });
 
   const modal = document.querySelector<HTMLElement>('[data-modal]');
   const modalPanel = document.querySelector<HTMLElement>('[data-modal-panel]');

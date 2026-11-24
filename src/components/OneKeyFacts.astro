@@ -1,0 +1,157 @@
+---
+import Button from './Button.astro';
+import CarouselArrows from './CarouselArrows.astro';
+import OneCornerBlocks from './OneCornerBlocks.astro';
+import type { OneCornerPreset } from '../lib/one-corner-presets';
+import { slideMotionAt } from '../lib/session-carousel';
+import type { Service } from '../lib/content';
+import '../styles/one-sections.css';
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const facts = service.keyFacts!;
+const cards = facts.cards ?? [];
+
+interface CardStyle {
+  bg: string;
+  block: string;
+  preset: OneCornerPreset;
+}
+
+const cardStyles: CardStyle[] = [
+  { bg: 'var(--periwinkle-2)', block: 'var(--periwinkle-6)', preset: 'mod-1' },
+  { bg: 'var(--periwinkle-4)', block: 'var(--periwinkle-7)', preset: 'mod-2' },
+  { bg: 'var(--periwinkle-3)', block: 'var(--periwinkle-8)', preset: 'mod-3' },
+  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-11)', preset: 'mod-4' },
+];
+---
+
+<section class="one-facts one-u" id="datos-clave" aria-labelledby="one-facts-title" data-sessions>
+  <div class="one-facts-heading">
+    <h2 id="one-facts-title" class="one-h2">{facts.title}</h2>
+    <p class="one-lead one-facts-lead">{facts.lead}</p>
+  </div>
+
+  <div class="one-facts-note">
+    <span class="one-hand">{facts.handwritten}</span>
+  </div>
+
+  <div class="one-facts-carousel">
+    <div class="one-facts-arrows">
+      <CarouselArrows prevLabel={facts.prevLabel} nextLabel={facts.nextLabel} />
+    </div>
+
+    <div
+      class="sessions-track"
+      role="region"
+      aria-roledescription="carrusel"
+      aria-label={facts.carouselLabel}
+      tabindex="0"
+      data-sessions-track
+    >
+      <ul class="sessions-list">
+        {
+          cards.map((card, index) => {
+            const style = cardStyles[index % cardStyles.length]!;
+            const motion = slideMotionAt(index);
+            return (
+              <li class="session-slide one-facts-slide" style={`--session-rot:${-motion.rotate}deg`} data-session-slide>
+                <article class="session-slide-inner" aria-labelledby={`one-fact-${index + 1}-title`}>
+                  <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
+
+                  <div class="session-slide-bg" style={`--card-bg:${style.bg}`} aria-hidden="true">
+                    <div class="session-slide-bottom" />
+                  </div>
+
+                  <div class="session-slide-body">
+                    <div class="session-slide-figure">
+                      <img
+                        class="session-slide-art"
+                        src={card.illustration}
+                        alt=""
+                        width="1400"
+                        height="1365"
+                        loading="lazy"
+                        decoding="async"
+                        draggable="false"
+                      />
+                    </div>
+
+                    <div class="session-slide-copy">
+                      <h3 id={`one-fact-${index + 1}-title`} class="one-h3">{card.title}</h3>
+                      <p class="one-small">{card.description}</p>
+                    </div>
+                  </div>
+
+                  <a
+                    class="session-slide-link"
+                    href={`#${service.cta.target}`}
+                    data-scroll-to={service.cta.target}
+                    aria-label={`${service.cta.label}: ${card.title}`}
+                  />
+
+                  <div class="session-slide-cta" aria-hidden="true">
+                    <Button variant="dark" arrow tabindex="-1">{service.cta.label}</Button>
+                  </div>
+                </article>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { bindSessionCarousels } from '../lib/session-carousel-client';
+
+  bindSessionCarousels();
+</script>
+
+<style>
+  .one-facts {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding: var(--section-py) 0 var(--books-pb);
+    overflow: clip;
+    background: #fff;
+    color: var(--midnight);
+  }
+  .one-facts-heading {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 24);
+    max-width: calc(var(--u) * 1280);
+    margin: 0 auto calc(var(--u) * 24);
+    padding: 0 var(--gutter);
+    text-align: center;
+  }
+  .one-facts-heading h2 { color: var(--midnight); }
+  .one-facts-lead { max-width: calc(var(--u) * 640); margin-inline: auto; color: var(--neutral-11); }
+  .one-facts-note { padding: 0 var(--gutter); text-align: center; }
+  .one-facts-note .one-hand { display: inline-block; color: var(--periwinkle-11); rotate: -1.6deg; }
+  .one-facts-carousel { position: relative; }
+  .one-facts-arrows {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 0;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(var(--u) * 8);
+  }
+
+  @media (min-width: 992px) {
+    .one-facts-arrows {
+      top: 0;
+      right: calc(var(--u) * 40);
+      bottom: auto;
+    }
+  }
+</style>

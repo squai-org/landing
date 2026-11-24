@@ -1,0 +1,184 @@
+---
+import Button from './Button.astro';
+import OneBackdrop from './OneBackdrop.astro';
+import OneMark from './OneMark.astro';
+import type { Service } from '../lib/content';
+import '../styles/one-sections.css';
+
+interface Props {
+  flow: NonNullable<Service['howItWorks']>;
+  cta: Service['cta'];
+}
+
+const { flow, cta } = Astro.props;
+const stepStyles = [
+  { bg: 'var(--periwinkle-9)', rotate: 2.2, y: 4 },
+  { bg: '#fff', rotate: -1.4, y: -4 },
+  { bg: 'var(--periwinkle-9)', rotate: 1.5, y: 8 },
+  { bg: '#fff', rotate: -2.2, y: 0 },
+];
+---
+
+<section id="como-funciona" class="one-flow one-u" aria-labelledby="flow-title">
+  <div class="one-flow-band">
+    <OneBackdrop shape="flow" colors={['#d2d7fc']} opacities={[0.65]} align="xMidYMax" />
+
+    <div class="one-flow-content">
+      <div class="one-flow-header">
+        <div class="one-flow-heading">
+          <h2 id="flow-title" class="one-h2">{flow.title}</h2>
+          <p class="one-hand one-flow-note">{flow.handwritten}</p>
+        </div>
+        <div class="one-flow-actions">
+          <OneMark class="one-flow-mark" />
+          <Button variant="dark" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
+        </div>
+      </div>
+
+      <ol class="one-flow-deck" data-flow-deck>
+        {
+          flow.steps.map((step, index) => {
+            const style = stepStyles[index % stepStyles.length]!;
+            return (
+              <li class="flow-step" style={`z-index:${10 + index}`} data-step={index} data-rest-rotate={style.rotate} data-rest-y={style.y}>
+                <div class="one-flow-card" style={`--card-bg:${style.bg};transform:translateY(${style.y}px) rotate(${style.rotate}deg)`}>
+                  <div class="one-flow-label">
+                    <span class="one-hand">{flow.stepLabel} #{index + 1}</span>
+                  </div>
+                  <div class="one-flow-art">
+                    <img src={step.illustration} alt={step.alt} width="1400" height="1365" loading="lazy" decoding="async" draggable="false" />
+                  </div>
+                  <div class="one-flow-copy">
+                    <h3 class="one-h3">{step.t}</h3>
+                    <p class="one-body">{step.d}</p>
+                  </div>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { revealOnView, scrollRange, springs } from '../lib/motion';
+
+  const deck = document.querySelector<HTMLElement>('[data-flow-deck]');
+  if (deck) {
+    const items = Array.from(deck.querySelectorAll<HTMLElement>('.flow-step'));
+    const rest = items.map((item) => ({ rotate: Number(item.dataset.restRotate), y: Number(item.dataset.restY) }));
+
+    items.forEach((item, index) => {
+      revealOnView(
+        item,
+        { opacity: 0, y: 120, rotate: rest[index]!.rotate * 2 },
+        { opacity: 1, y: 0, rotate: 0 },
+        { ...springs.flowCard, delay: index * 0.08 }
+      );
+    });
+
+    const paint = (hovered: number | null) => {
+      items.forEach((item, index) => {
+        const card = item.firstElementChild as HTMLElement;
+        const isHovered = hovered === index;
+        const push = hovered !== null && !isHovered ? 18 / (index - hovered) : 0;
+        item.style.zIndex = String(isHovered ? 40 : 10 + index);
+        card.style.transform = `translateX(${push}%) translateY(${isHovered ? -10 : rest[index]!.y}px) scale(${isHovered ? 1.075 : 1}) rotate(${isHovered ? 0 : rest[index]!.rotate}deg)`;
+      });
+    };
+
+    items.forEach((item, index) => item.addEventListener('mouseenter', () => paint(index)));
+    deck.addEventListener('mouseleave', () => paint(null));
+
+    scrollRange(deck.closest('section') ?? deck, 'start-end', [32, -32], (value) => {
+      deck.style.transform = `translateY(${value.toFixed(2)}px)`;
+    });
+  }
+</script>
+
+<style>
+  .one-flow {
+    width: 100%;
+    padding: var(--band-inset);
+    background: #fff;
+    color: var(--midnight);
+  }
+  .one-flow-band {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: var(--section-py) var(--gutter);
+    border-radius: var(--band-r);
+    background: var(--periwinkle-2);
+  }
+  .one-flow-content { position: relative; z-index: 10; }
+  .one-flow-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: calc(var(--u) * 80);
+  }
+  .one-flow-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(var(--u) * 16);
+    max-width: calc(var(--u) * 1040);
+  }
+  .one-flow-heading h2 { color: var(--midnight); }
+  .one-flow-note { display: inline-block; color: var(--periwinkle-11); rotate: 1.8deg; }
+  .one-flow-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+  .one-flow-actions :global(.one-flow-mark) {
+    flex-shrink: 0;
+    width: max(36px, calc(var(--u) * 48));
+    height: max(36px, calc(var(--u) * 48));
+  }
+  .one-flow-deck {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 1rem 0 1.5rem;
+    list-style: none;
+  }
+  .flow-step { position: relative; list-style: none; }
+  .one-flow-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: 100%;
+    min-height: calc(var(--u) * 460);
+    padding: calc(var(--u) * 40);
+    border-radius: var(--card-r);
+    background: var(--card-bg);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    transition: transform 0.48s var(--ease-smooth);
+  }
+  .one-flow-label { text-align: center; }
+  .one-flow-label .one-hand { color: var(--midnight); }
+  .one-flow-art { display: flex; flex: 1; align-items: flex-end; justify-content: center; }
+  .one-flow-art img { display: block; width: 100%; height: auto; aspect-ratio: 1400 / 1365; user-select: none; }
+  .one-flow-copy { display: flex; flex-direction: column; gap: calc(var(--u) * 12); }
+  .one-flow-copy h3 { color: var(--midnight); }
+  .one-flow-copy p { color: var(--neutral-12); }
+
+  @media (min-width: 640px) {
+    .one-flow-deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .one-flow-band { padding-inline: calc(var(--u) * 112); }
+    .one-flow-header { flex-direction: row; align-items: flex-start; }
+    .one-flow-actions { justify-content: flex-end; }
+    .one-flow-deck { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+    .flow-step:not(:first-child) { margin-left: calc(var(--u) * -24); }
+    .one-flow-card { min-height: calc(var(--u) * 633); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .one-flow-card { transition: none; }
+  }
+</style>

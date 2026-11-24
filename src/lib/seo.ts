@@ -13,6 +13,8 @@
 
 import type { Faq, Service, SiteContent } from './content';
 import { SITE_URL } from '../config/site';
+import { courseLoadSummary, isoDuration, type CourseLoad } from './course-load';
+import { foundersOf } from './founders';
 
 export { SITE_URL };
 export const SITE_NAME = 'Squai';
@@ -56,7 +58,7 @@ type Json = Record<string, unknown>;
 
 export const organizationSchema = (content: SiteContent): Json => {
   const sameAs = content.socials.map((social) => social.href).filter(Boolean);
-  const founders = content.squadGrid.filter((person) => /fundador/i.test(person.role));
+  const founders = foundersOf(content.squadGrid);
 
   return {
     '@type': ['Organization', 'EducationalOrganization'],
@@ -141,14 +143,14 @@ export const webPageSchema = (page: { url: string; title: string; description: s
   about: { '@id': ORG_ID },
 });
 
-export const courseSchema = (content: SiteContent, service: Service, pageUrl: string): Json => ({
+export const courseSchema = (content: SiteContent, service: Service, load: CourseLoad, pageUrl: string): Json => ({
   '@type': 'Course',
   '@id': `${pageUrl}#program`,
   name: content.program.name,
   description: service.slogan,
   url: pageUrl,
   inLanguage: SITE_LANG,
-  timeRequired: 'PT20H',
+  timeRequired: isoDuration(load),
   educationalCredentialAwarded: 'Certificado digital de finalización',
   teaches: [
     'Fundamentos de inteligencia artificial generativa',
@@ -167,8 +169,8 @@ export const courseSchema = (content: SiteContent, service: Service, pageUrl: st
     '@id': `${pageUrl}#program-instance`,
     name: content.program.name,
     courseMode: 'Online, en vivo',
-    courseWorkload: '5 horas por semana durante 4 semanas',
-    duration: 'PT20H',
+    courseWorkload: courseLoadSummary(load),
+    duration: isoDuration(load),
     inLanguage: SITE_LANG,
   },
 });

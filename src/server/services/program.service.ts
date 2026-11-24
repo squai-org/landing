@@ -18,6 +18,9 @@ export interface ProgramView {
   prices: Partial<Record<Currency, number>>;
   defaultCurrency: Currency;
   status: ProgramStatus;
+  startsOn: string | null;
+  endsOn: string | null;
+  schedule: string | null;
 }
 
 const pickDefaultCurrency = (prices: ProgramView['prices'], ipCountry: string | null): Currency => {
@@ -64,6 +67,9 @@ export const loadProgram = async (
     prices,
     defaultCurrency: pickDefaultCurrency(prices, ipCountry),
     status: await computeStatus(env, program, now),
+    startsOn: program.startsOn,
+    endsOn: program.endsOn,
+    schedule: program.schedule,
   };
 };
 

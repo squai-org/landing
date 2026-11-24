@@ -1,0 +1,312 @@
+---
+import Button from './Button.astro';
+import OneBackdrop from './OneBackdrop.astro';
+import { youtubeEmbedUrl, youtubeVideoId } from '../lib/youtube';
+import type { Service } from '../lib/content';
+import '../styles/one-sections.css';
+
+interface Props {
+  video: NonNullable<Service['video']>;
+}
+
+const { video } = Astro.props;
+const videoId = video.url ? youtubeVideoId(video.url) : undefined;
+const embedUrl = videoId ? youtubeEmbedUrl(videoId) : undefined;
+const playerArt = '/illustrations/pasos/paso-4.svg';
+const peeps = ['/illustrations/peeps/peep-standing-14.svg', '/illustrations/peeps/peep-standing-30.svg'] as const;
+const mediaNote = embedUrl ? video.mediaNoteReady : video.mediaNote;
+---
+
+<section id="presentacion" class="video-section one-u" aria-labelledby="video-title">
+  <OneBackdrop shape="faq" colors={['#FFFFFF']} opacities={[0.7]} flip="x" align="xMaxYMin" />
+
+  <div class="video-heading">
+    <h2 id="video-title" class="one-h2 video-title">{video.title}</h2>
+  </div>
+
+  <div class="video-grid">
+    <div class="video-copy" data-video-copy>
+      <span class="one-hand video-hand">{video.caption}</span>
+      {video.lead && <p class="video-lead">{video.lead}</p>}
+      {video.body && <p class="one-small video-body">{video.body}</p>}
+      {
+        video.cta && (
+          <div class="video-cta">
+            <Button variant="dark" arrow href={`#${video.cta.target}`} data-scroll-to={video.cta.target}>{video.cta.label}</Button>
+          </div>
+        )
+      }
+      {
+        video.logos && video.logos.length > 0 && (
+          <div class="video-logos">
+            {video.logosLabel && <span class="one-hand video-hand video-logos-label">{video.logosLabel}</span>}
+            <ul class="video-logo-list" aria-label={video.logosLabel}>
+              {video.logos.map((logo) => <li class="video-logo">{logo}</li>)}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+
+    <div class="video-figure-col">
+      <div class="video-stage">
+        <img class="video-peep video-peep--left" src={peeps[0]} alt="" width="256" height="687" loading="lazy" decoding="async" aria-hidden="true" draggable="false" />
+        <figure class="video-card" data-video-figure>
+          <div class="video-frame" data-video-frame>
+            <div class="video-poster-crop">
+              <img
+                class="video-poster"
+                src={playerArt}
+                width="1400"
+                height="1365"
+                alt={video.posterAlt}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            {
+              embedUrl && (
+                <button
+                  type="button"
+                  class="video-play"
+                  data-video-play
+                  data-embed-url={embedUrl}
+                  data-video-title={video.iframeTitle}
+                  aria-label={`${video.playLabel}: ${video.iframeTitle}`}
+                >
+                  <span class="video-play-pill" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"></path></svg>
+                    {video.playLabel}
+                  </span>
+                </button>
+              )
+            }
+          </div>
+          {
+            (video.mediaTitle || mediaNote) && (
+              <figcaption class="video-caption">
+                {video.mediaTitle && <span class="one-h3 video-media-title">{video.mediaTitle}</span>}
+                {mediaNote && <span class="one-hand video-media-note">{mediaNote}</span>}
+              </figcaption>
+            )
+          }
+        </figure>
+        <img class="video-peep video-peep--right" src={peeps[1]} alt="" width="213" height="701" loading="lazy" decoding="async" aria-hidden="true" draggable="false" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { hoverBetween, revealOnView, springs, tweens } from '../lib/motion';
+
+  document.querySelectorAll<HTMLButtonElement>('[data-video-play]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const frame = button.closest('[data-video-frame]');
+      const { embedUrl, videoTitle } = button.dataset;
+      if (!frame || !embedUrl || !videoTitle) return;
+
+      const player = document.createElement('iframe');
+      player.src = embedUrl;
+      player.title = videoTitle;
+      player.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      player.allowFullscreen = true;
+      player.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.replaceChildren(player);
+      player.focus();
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-video-copy]').forEach((copy) => {
+    revealOnView(copy, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, tweens.sectionReveal, 0.25);
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-video-figure]').forEach((figure) => {
+    revealOnView(figure, { opacity: 0, rotate: 6, scale: 0.9 }, { opacity: 1, rotate: 2.5, scale: 1 }, springs.presentationMedia, 0.2);
+    hoverBetween(figure, { rest: { rotate: 2.5, scale: 1 }, hovered: { rotate: 0, scale: 1.02 } }, springs.presentationMedia);
+  });
+</script>
+
+<style>
+  .video-section {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    padding-top: var(--section-py);
+    padding-bottom: calc(var(--section-py) + var(--edge-r));
+    overflow: hidden;
+    border-radius: var(--edge-r) var(--edge-r) 0 0;
+    background: var(--periwinkle-2);
+    color: var(--midnight);
+    scroll-margin-top: 4rem;
+  }
+  .video-heading {
+    position: relative;
+    z-index: 10;
+    max-width: calc(var(--u) * 1280);
+    margin: 0 auto calc(var(--u) * 56);
+    padding: 0 var(--gutter);
+    text-align: center;
+  }
+  .video-title { color: var(--midnight); }
+  .video-grid {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: calc(var(--u) * 56);
+    max-width: calc(var(--u) * 1760);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+  .video-copy { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 28); }
+  .video-hand { display: inline-block; color: var(--periwinkle-11); rotate: -1.5deg; }
+  .video-lead {
+    max-width: calc(var(--u) * 720);
+    margin: 0;
+    color: var(--midnight);
+    font-size: var(--fs-medium);
+    line-height: 1.3;
+  }
+  .video-body { max-width: calc(var(--u) * 660); color: var(--neutral-11); }
+  .video-cta { padding-top: 0.25rem; }
+  .video-logos { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 12); padding-top: calc(var(--u) * 24); }
+  .video-logos-label { rotate: -4deg; }
+  .video-logo-list { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 12); margin: 0; padding: 0; list-style: none; }
+  .video-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: max(56px, calc(var(--u) * 104));
+    height: max(56px, calc(var(--u) * 104));
+    padding: 0 calc(var(--u) * 16);
+    border-radius: calc(var(--u) * 26);
+    background: var(--neutral-1);
+    color: var(--periwinkle-12);
+    font-family: var(--font-display);
+    font-size: max(14px, calc(var(--u) * 20));
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .video-figure-col { display: flex; justify-content: center; container-type: inline-size; }
+  .video-stage {
+    --peep-w: clamp(48px, 17cqw, 190px);
+    --peep-h: calc(var(--peep-w) * 4.2);
+    --peep-left-w: calc(var(--peep-h) * 256 / 687);
+    --peep-right-w: calc(var(--peep-h) * 213 / 701);
+    display: grid;
+    grid-template-columns: calc(var(--peep-left-w) * 0.6) minmax(0, 1fr) calc(var(--peep-right-w) * 0.6);
+    align-items: end;
+    width: 100%;
+    max-width: calc(var(--u) * 900);
+  }
+  .video-peep {
+    display: block;
+    width: auto;
+    height: var(--peep-h);
+    scale: -1 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .video-peep--left { grid-column: 1; grid-row: 1; z-index: 2; justify-self: end; margin-right: calc(var(--peep-left-w) * -0.4); }
+  .video-peep--right { grid-column: 3; grid-row: 1; z-index: 2; justify-self: start; margin-left: calc(var(--peep-right-w) * -0.4); }
+  .video-card {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    max-width: calc(var(--u) * 760);
+    justify-self: center;
+    margin: 0;
+    padding: calc(var(--u) * 20);
+    border-radius: calc(var(--u) * 48);
+    background: #fff;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    transform: rotate(2.5deg);
+  }
+  .video-frame {
+    position: relative;
+    aspect-ratio: 4 / 4.2;
+    overflow: hidden;
+    border-radius: var(--card-r);
+    background: var(--periwinkle-4);
+  }
+  .video-frame:has(iframe) { background: var(--midnight); }
+  .video-poster-crop {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 78%;
+    aspect-ratio: 497 / 450;
+    overflow: hidden;
+    translate: -50% -50%;
+  }
+  .video-poster {
+    position: absolute;
+    top: -27.3%;
+    left: -174.7%;
+    display: block;
+    width: 281.7%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 1400 / 1365;
+  }
+  .video-frame :global(iframe) {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    translate: 0 -50%;
+  }
+  .video-play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .video-play:focus-visible { outline-offset: -6px; }
+  .video-play-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--control-height);
+    padding: 0 22px 0 18px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--on-accent);
+    box-shadow: var(--shadow-float);
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    transition: transform var(--duration-base) var(--ease-overshoot), background-color var(--duration-fast) var(--ease-out);
+  }
+  .video-play:hover .video-play-pill { background: var(--accent-hover); transform: scale(1.06); }
+  .video-caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: calc(var(--u) * 20) calc(var(--u) * 12 + var(--peep-right-w) * 0.4) calc(var(--u) * 8) calc(var(--u) * 12 + var(--peep-left-w) * 0.4);
+  }
+  .video-media-title { min-width: 0; color: var(--midnight); hyphens: auto; overflow-wrap: break-word; }
+  .video-media-note { color: var(--periwinkle-11); }
+
+  @media (min-width: 1024px) {
+    .video-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .video-copy { grid-column: span 6 / span 6; }
+    .video-figure-col { grid-column: span 6 / span 6; justify-content: flex-end; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .video-play-pill { transition: none; }
+    .video-play:hover .video-play-pill { transform: none; }
+  }
+</style>

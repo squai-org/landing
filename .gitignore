@@ -40,3 +40,5 @@ pnpm-debug.log*
 # con "packages field missing or empty" si no esta. Los scripts de
 # instalacion permitidos viven en package.json, en pnpm.onlyBuiltDependencies.
 pnpm-workspace.yaml
+
+.claude/worktrees/

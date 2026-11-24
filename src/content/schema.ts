@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { youtubeVideoId } from '../lib/youtube';
 
 const text = z.string().min(1);
 const paragraphs = z
@@ -24,7 +25,13 @@ const span = text.regex(/^span-[2-6](?: row-[2-5])?$/);
 // Cada ruta es una clave del mapa de fotos compiladas de Team.astro. Anadir una
 // foto nueva es un cambio de codigo, no editorial.
 export const teamPhotos = ['/images/team1.webp', '/images/team2.webp', '/images/team3.webp', '/images/team4.webp', '/images/team5.webp', '/images/team6.webp'] as const;
-const faq = z.object({ q: text, a: paragraphs });
+const faq = z.object({ q: text, a: paragraphs, category: optional(text) });
+const optionalAmount = optional(z.number().int().positive());
+const investment = z.object({
+  referencePrice: z.object({ COP: optionalAmount, USD: optionalAmount }).default({}),
+  discountPercent: optional(z.number().int().min(1).max(99)),
+  discountDeadline: optional(text),
+}).optional();
 const labels = z.object({
   whatWeDo: text, services: text, team: text, faq: text, impact: text,
   origin: text, brand: text, reserve: text, call: text, challenge: text,
@@ -32,23 +39,140 @@ const labels = z.object({
 });
 const labelKey = labels.keyof();
 const capabilityGroup = z.object({ t: text, items: z.array(text).min(1), tone });
+export const stepIllustrations = [
+  '/illustrations/pasos/paso-2.svg',
+  '/illustrations/pasos/paso-3.svg',
+  '/illustrations/pasos/paso-4.svg',
+  '/illustrations/incluye/incluye-4.svg',
+] as const;
+export const moduleIllustrations = [
+  '/illustrations/sesiones/sesion-1.svg',
+  '/illustrations/sesiones/sesion-2.svg',
+  '/illustrations/sesiones/sesion-3.svg',
+  '/illustrations/sesiones/sesion-4.svg',
+  '/illustrations/sesiones/sesion-5.svg',
+  '/illustrations/sesiones/sesion-6.svg',
+  '/illustrations/sesiones/sesion-7.svg',
+  '/illustrations/sesiones/sesion-8.svg',
+] as const;
+export const factIllustrations = [
+  '/illustrations/datos/en-vivo.svg',
+  '/illustrations/incluye/incluye-1.svg',
+  '/illustrations/incluye/incluye-2.svg',
+  '/illustrations/datos/sin-conocimientos.svg',
+  '/illustrations/datos/grupo.svg',
+  '/illustrations/datos/comunidad.svg',
+  '/illustrations/datos/cualquier-ia.svg',
+  '/illustrations/datos/mentores.svg',
+  '/illustrations/incluye/incluye-3.svg',
+  '/illustrations/incluye/incluye-4.svg',
+] as const;
+const audienceFit = z.object({
+  title: text,
+  handwritten: text,
+  profiles: z.array(card).min(1),
+});
+const howItWorks = z.object({
+  title: text,
+  handwritten: text,
+  stepLabel: text,
+  steps: z.array(z.object({ t: text, d: text, illustration: z.enum(stepIllustrations), alt: text })).min(1),
+});
+const syllabus = z.object({
+  title: text,
+  handwritten: text,
+  summary: text,
+  moduleLabel: text,
+  sessionLabel: text,
+  topicsLabel: text,
+  prevLabel: text.default('Ver sesiones anteriores'),
+  nextLabel: text.default('Ver sesiones siguientes'),
+  modules: z.array(z.object({
+    t: text,
+    d: optional(text),
+    topics: z.array(text).min(1),
+    sessions: z.array(text).min(1),
+    illustration: z.enum(moduleIllustrations),
+    alt: text,
+    sessionArt: z.array(z.object({ illustration: z.enum(moduleIllustrations), alt: text })).optional(),
+  })).min(1),
+});
+const outcomes = z.object({ title: text, lead: text, pills: z.array(text).min(1) });
+const marqueeItem = z.object({ text: optional(text), cohort: z.enum(['', 'dates', 'schedule']).default('') })
+  .refine((item) => Boolean(item.text || item.cohort), 'Provide text or a cohort');
+const marquee = z.object({ title: text, lineA: z.array(marqueeItem).min(1), lineB: z.array(text).min(1) });
+const mentorProfile = z.object({ name: text, badge: text, quote: text });
+const teamStat = z.object({ value: text, label: text });
+const youtubeUrl =text.refine((value) => youtubeVideoId(value) !== undefined, 'Use una URL de YouTube: watch?v=, youtu.be/ o embed/');
+const videoSchema = z.object({
+  url: optional(youtubeUrl),
+  title: text, playLabel: text, iframeTitle: text, caption: text, posterAlt: text,
+  lead: optional(text),
+  body: optional(text),
+  cta: z.object({ label: text, target: text }).optional(),
+  mediaTitle: optional(text),
+  mediaNote: optional(text),
+  logosLabel: optional(text),
+  logos: z.array(text).optional(),
+});
 // Un servicio por archivo en src/content/services/: el nombre del archivo es el
 // slug y `order` fija el orden en la retícula de la pagina principal.
 export const serviceSchema = z.object({
   order: z.number().int().min(1),
   name: text, audience: text, menuAudience: text, slogan: text, cardCopy: text, discoverLabel: text,
   accent: hex, span, tone,
-  payback: z.object({ headline: text, body: paragraphs }),
-  challenge: z.object({ cards: z.array(card).min(1) }),
-  capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }),
+  payback: z.object({ headline: text, body: paragraphs }).optional(),
+  challenge: z.object({ cards: z.array(card).min(1) }).optional(),
+  capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }).optional(),
+  audienceFit: audienceFit.optional(),
+  howItWorks: howItWorks.optional(),
+  syllabus: syllabus.optional(),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']).default(''), target: z.string().default('') }),
+  investment,
+  hero: z.object({
+    title: text, lead: text, note: text, sticker: text, photoAlt: text,
+    datesPending: text, schedulePending: text,
+  }).optional(),
+  keyFacts: z.object({
+    title: text, lead: text, handwritten: text,
+    load: z.object({
+      weeks: z.number().int().min(1),
+      sessionsPerWeek: z.number().int().min(1),
+      sessionMinutes: z.number().int().min(15),
+    }),
+    labels: z.object({ duration: text, sessions: text, dates: text, schedule: text, modality: text, seats: text }),
+    modality: text, seats: text,
+    cards: z.array(z.object({ title: text, description: text, illustration: z.enum(factIllustrations) })).min(1).optional(),
+    carouselLabel: text.default('Lo que necesitas saber del programa'),
+    prevLabel: text.default('Ver datos anteriores'),
+    nextLabel: text.default('Ver datos siguientes'),
+  }).optional(),
   ctaSecondary: optional(text),
   contactCta: optional(text),
   contactCopy: optional(text),
   contactAside: optional(text),
+  video: videoSchema.optional(),
   seoTitle: optional(text),
   seoDescription: optional(text),
+  team: z.object({
+    title: text,
+    closing: text,
+    mentors: z.array(mentorProfile).optional(),
+    stats: z.array(teamStat).optional(),
+  }).optional(),
+  outcomes: outcomes.optional(),
+  marquee: marquee.optional(),
+  testimonials: z.object({
+    title: text,
+    lead: optional(text),
+    quotes: z.array(z.object({ text, name: text, context: text })).min(1),
+  }).optional(),
+  faqIntro: z.object({ lead: text, categoriesLabel: text, allLabel: text.default('Todas') }).optional(),
   faqs: z.array(faq).min(1),
+  nav: z.object({
+    items: z.array(z.object({ label: text, target: text })).min(1),
+    companyLabel: text,
+  }).optional(),
 });
 const modal = z.object({ title: text, copy: text, placeholder: text });
 const inline = z.array(z.object({ text, href: link.optional() })).min(1);
@@ -79,7 +203,7 @@ export const siteSchema = z.object({
   capabilities: z.array(card.extend({ span, tone })).min(1),
   impact: z.object({ body: paragraphs }),
   originStory: paragraphs,
-  squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link) })).min(1),
+  squadGrid: z.array(z.object({ img: z.enum(teamPhotos), name: text, role: text, d: text, linkedin: optional(link), founder: z.boolean().default(false) })).min(1),
   faqs: z.array(faq).min(1),
   socials: z.array(z.object({ name: text, href: optionalLink.default('') })),
   footerServices: z.object({
@@ -97,19 +221,22 @@ export const siteSchema = z.object({
   company: z.object({ legalName: text, nit: text, address: text, phone: text, contact: text }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
-    navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text }),
+    navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text, menuLabel: text, closeLabel: text }),
+    motion: z.object({ pause: text, resume: text }),
+    whatsapp: z.object({ label: text, message: text, panel: z.object({ dialogLabel: text, title: text, subtitle: text, close: text, topics: z.array(z.object({ label: text, message: text })).min(1).max(5) }).optional() }),
+    scrollTop: z.object({ label: text }).optional(),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
-    services: z.object({ payback: text, capabilitiesFallback: text }),
-    program: z.object({ duration: text, schedule: text, modality: text }),
+    services: z.object({ payback: text }),
     team: z.object({ intro: paragraphs, memberAlt: text.refine((value) => value.includes('{name}') && value.includes('{role}'), 'Include {name} and {role}') }),
     finalCta: z.object({ title: text, body: paragraphs, cta: text }),
     follow: z.object({ title: text }),
-    footer: z.object({ copyright: text }),
+    footer: z.object({ copyright: text, whatsapp: text }),
     checkout: z.object({
       title: text,
       copy: paragraphs,
       formTitle: text,
       formSubtitle: text,
+      secureNote: text.optional(),
       thanks: z.object({
         checking: text, approvedTitle: text, approvedBody: text,
         pendingTitle: text, pendingBody: text,
@@ -118,7 +245,12 @@ export const siteSchema = z.object({
         orderLabel: text, backCta: text,
         enrolledTitle: text, enrolledBody: text,
       }),
-      investment: z.object({ eyebrow: text, copy: paragraphs }),
+      investment: z.object({
+        eyebrow: text, copy: paragraphs, referenceLabel: text,
+        discountLabel: text.refine((value) => value.includes('{percent}'), 'Include {percent}'),
+        deadlineLabel: text.refine((value) => value.includes('{date}'), 'Include {date}'),
+      }),
+      paymentMethods: z.object({ label: text, items: z.array(text).min(1) }),
       button: z.object({ paying: text, retry: text }),
       currency: z.object({ label: text, cop: text, usd: text }),
       status: z.object({ upcomingTitle: text, upcomingBody: text, closedTitle: text, closedBody: text }),
@@ -148,6 +280,7 @@ export const siteSchema = z.object({
       referralSources: z.array(z.object({ value: z.enum(['instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras']), label: text })).length(6),
       teamSizes: z.array(z.object({ value: z.enum(['menos-10', '10-30', '30-100', 'mas-100']), label: text })).length(4),
       termsConsentPrefix: text, termsConsentLink: text, termsConsentSuffix: text,
+      placeholders: z.object({ fullName: text, email: text, phone: text }).optional(),
     }),
     contact: z.object({ title: text, close: text, bookingFallback: text, bookingFallbackLink: text }),
     modal: z.object({ grow: modal, learn: modal }),

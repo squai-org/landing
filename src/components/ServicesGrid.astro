@@ -1,4 +1,5 @@
 ---
+import Button from './Button.astro';
 import { getSiteContent } from '../lib/content';
 const { services, labels } = await getSiteContent();
 ---
@@ -21,9 +22,7 @@ const { services, labels } = await getSiteContent();
           </div>
           <div class="service-card-footer">
             <h3 class="display d-h1">{s.name}</h3>
-            <a href={`/servicios/${s.slug}`} class="btn btn-dark discover">
-              <span class="btn-label">{s.discoverLabel}</span>
-            </a>
+            <Button variant="dark" href={`/servicios/${s.slug}`} class="discover">{s.discoverLabel}</Button>
           </div>
         </div>
       ))
@@ -84,7 +83,6 @@ const { services, labels } = await getSiteContent();
   .service-card-footer .discover {
     flex: none;
   }
-  .discover:hover { background: #26262B; transform: translateY(-1px); }
 
   @media (max-width: 900px) {
     .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

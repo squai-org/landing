@@ -1,0 +1,31 @@
+---
+import Marquee from './Marquee.astro';
+import type { Service } from '../lib/content';
+
+interface Props {
+  marquee: NonNullable<Service['marquee']>;
+  hero: NonNullable<Service['hero']>;
+}
+
+const { marquee, hero } = Astro.props;
+const fallback = { dates: hero.datesPending, schedule: hero.schedulePending };
+const lineA = marquee.lineA.map((item) => ({ text: item.text ?? (item.cohort ? fallback[item.cohort] : ''), cohort: item.cohort }));
+---
+
+<section class="one-marquee" aria-labelledby="one-marquee-title">
+  <h2 id="one-marquee-title" class="sr-only">{marquee.title}</h2>
+  <div class="marquee-stack">
+    <Marquee items={lineA} tone="gold" size="one" tilt={-1.8} duration={26} repeat={2} ribbon={{ color: '#fedea0', opacity: 0.65 }} />
+    <Marquee items={marquee.lineB} tone="dark" size="one" tilt={1.4} duration={30} reverse repeat={2} ribbon={{ color: '#303163', opacity: 0.35 }} />
+  </div>
+</section>
+
+<style>
+  .one-marquee {
+    width: 100%;
+    padding-block: calc(var(--u) * 96);
+    overflow-x: clip;
+    background: #fff;
+    user-select: none;
+  }
+</style>

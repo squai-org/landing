@@ -1,0 +1,182 @@
+---
+import Button from './Button.astro';
+import CarouselArrows from './CarouselArrows.astro';
+import OneCornerBlocks from './OneCornerBlocks.astro';
+import { slideMotionAt } from '../lib/session-carousel';
+import { sessionsOf } from '../lib/syllabus-sessions';
+import type { OneCornerPreset } from '../lib/one-corner-presets';
+import type { Service } from '../lib/content';
+import '../styles/one-sections.css';
+
+interface Props {
+  syllabus: NonNullable<Service['syllabus']>;
+  cta: Service['cta'];
+}
+
+const { syllabus, cta } = Astro.props;
+const sessions = sessionsOf(syllabus);
+const ctaHref = cta.modal ? undefined : `#${cta.target}`;
+
+interface SlideStyle {
+  bg: string;
+  block: string;
+  preset: OneCornerPreset;
+}
+
+const slideStyles: SlideStyle[] = [
+  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-12)', preset: 'mod-1' },
+  { bg: 'var(--gold-9)', block: 'var(--periwinkle-9)', preset: 'mod-2' },
+  { bg: 'var(--periwinkle-4)', block: 'var(--gold-9)', preset: 'mod-3' },
+  { bg: 'var(--gold-3)', block: 'var(--periwinkle-9)', preset: 'mod-4' },
+];
+---
+
+<section id="temario" class="syllabus one-u" aria-labelledby="syllabus-title" data-sessions>
+  <header class="syllabus-header">
+    <p class="one-hand syllabus-note syllabus-note-wide">{syllabus.handwritten}</p>
+    <div class="syllabus-heading">
+      <h2 id="syllabus-title" class="one-h2 syllabus-title">{syllabus.title}</h2>
+      <p class="one-lead syllabus-lead">{syllabus.summary}</p>
+      <p class="one-hand syllabus-note syllabus-note-narrow">{syllabus.handwritten}</p>
+    </div>
+  </header>
+
+  <div class="syllabus-carousel">
+  <div class="syllabus-arrows">
+    <CarouselArrows prevLabel={syllabus.prevLabel} nextLabel={syllabus.nextLabel} />
+  </div>
+
+  <div
+    class="sessions-track"
+    role="region"
+    aria-roledescription="carrusel"
+    aria-label={`Las ${sessions.length} sesiones del programa`}
+    tabindex="0"
+    data-sessions-track
+  >
+    <ol class="sessions-list">
+      {
+        sessions.map((session, index) => {
+          const style = slideStyles[index % slideStyles.length]!;
+          const motion = slideMotionAt(index);
+          return (
+            <li class="session-slide syllabus-session" style={`--session-rot:${-motion.rotate}deg`} data-session-slide>
+              <article class="session-slide-inner" aria-labelledby={`session-${session.number}-title`}>
+                <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
+
+                <div class="session-slide-bg" style={`--card-bg:${style.bg}`} aria-hidden="true">
+                  <div class="session-slide-bottom"></div>
+                </div>
+
+                <div class="session-slide-body">
+                  <div class="session-slide-figure">
+                    <img
+                      class="session-slide-art"
+                      src={session.illustration}
+                      alt={session.alt}
+                      width="1400"
+                      height="1365"
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                  </div>
+
+                  <div class="session-slide-copy">
+                    <p class="one-small session-slide-meta">
+                      <span class="syllabus-session-tag">{syllabus.sessionLabel} {session.number}</span>
+                      <span class="session-slide-module">{syllabus.moduleLabel} {session.moduleNumber}</span>
+                    </p>
+                    <h3 id={`session-${session.number}-title`} class="one-h3">{session.focus}</h3>
+                    <ul class="one-small session-slide-topics" aria-label={syllabus.topicsLabel}>
+                      {session.topics.map((topic) => <li>{topic}</li>)}
+                    </ul>
+                  </div>
+                </div>
+
+                <a
+                  class="session-slide-link"
+                  href={ctaHref}
+                  data-scroll-to={cta.modal ? undefined : cta.target}
+                  data-open-modal={cta.modal || undefined}
+                  aria-label={`${cta.label}: sesión ${session.number}, ${session.focus}`}
+                ></a>
+
+                <div class="session-slide-cta" aria-hidden="true">
+                  <Button variant="dark" arrow tabindex="-1">{cta.label}</Button>
+                </div>
+              </article>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+  </div>
+
+</section>
+
+<script>
+  import { bindSessionCarousels } from '../lib/session-carousel-client';
+
+  bindSessionCarousels();
+</script>
+
+<style>
+  .syllabus {
+    position: relative;
+    width: 100%;
+    padding-bottom: var(--books-pb);
+    overflow: clip;
+    background: #fff;
+    color: var(--midnight);
+    scroll-margin-top: 2.5rem;
+  }
+  .syllabus-header {
+    position: relative;
+    z-index: 10;
+    padding: var(--books-header-pt) var(--gutter) var(--books-header-pb);
+    text-align: center;
+  }
+  .syllabus-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--books-header-gap);
+  }
+  .syllabus-title { max-width: 18ch; color: var(--midnight); }
+  .syllabus-lead { max-width: 34ch; color: var(--midnight); }
+  .syllabus-note { color: var(--periwinkle-11); }
+  .syllabus-note-narrow { rotate: -2deg; }
+  .syllabus-note-wide {
+    display: none;
+    position: absolute;
+    top: calc(var(--u) * 150);
+    left: calc(var(--u) * 116);
+    max-width: 18ch;
+    rotate: -10deg;
+    text-align: left;
+  }
+  .syllabus-carousel { position: relative; margin-top: calc(var(--books-header-pb) * -1); }
+  .syllabus-arrows {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 0;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(var(--u) * 8);
+  }
+  @media (min-width: 992px) {
+    .syllabus-arrows {
+      top: 0;
+      right: calc(var(--u) * 40);
+      bottom: auto;
+    }
+  }
+  @media (min-width: 1024px) {
+    .syllabus-note-wide { display: block; }
+    .syllabus-note-narrow { display: none; }
+  }
+</style>

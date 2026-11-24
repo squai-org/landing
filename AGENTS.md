@@ -51,6 +51,8 @@ Squai's marketing site (https://squai.io): a static Astro site plus a lead-captu
 * Before changing anything the build touches (`package.json` scripts or `pnpm.onlyBuiltDependencies`, `.node-version`, lockfile, a new root config file), run the real sequence in a clean clone with those exact versions — `pnpm install --frozen-lockfile && pnpm verify`. Passing with the local pnpm or Node proves nothing: a version skew is what breaks the deploy.
 * `pnpm install` on pnpm 11 writes a `pnpm-workspace.yaml` stub. It is gitignored; never commit it. pnpm 9 requires a `packages:` field in that file and the production build dies with `ERROR packages field missing or empty` before installing anything.
 
+* Never commit `.claude/worktrees/`: agent worktrees become gitlinks without `.gitmodules` and Workers Builds dies with "error occurred while updating repository submodules".
+
 ## Maintenance
 
 * Humans own this file. Agents propose edits, humans approve them.

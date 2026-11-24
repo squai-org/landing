@@ -1,0 +1,16 @@
+---
+import DriftBlock from './DriftBlock.astro';
+import { cornerPairs, type CornerPreset } from '../lib/corner-presets';
+
+interface Props {
+  preset?: CornerPreset;
+  color?: string;
+  hoverOnly?: boolean;
+}
+
+const { preset = 'diagonal-a', color, hoverOnly = false } = Astro.props;
+---
+
+<span class:list={['corner-blocks', hoverOnly && 'corner-blocks--hover']} aria-hidden="true">
+  {cornerPairs[preset].map((block) => <DriftBlock {...block} color={color} />)}
+</span>

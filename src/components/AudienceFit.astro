@@ -1,0 +1,344 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Button from './Button.astro';
+import OneBackdrop from './OneBackdrop.astro';
+import type { Service } from '../lib/content';
+import teamTable from '../assets/one/para-ti/pexels-3184325.jpeg';
+import teamLead from '../assets/one/para-ti/pexels-3184405.jpeg';
+import charts from '../assets/one/para-ti/pexels-3184292.jpeg';
+import officeTalk from '../assets/one/para-ti/pexels-3182765.jpeg';
+import laptopDesk from '../assets/one/para-ti/pexels-4050315.jpeg';
+import colleagues from '../assets/one/para-ti/pexels-3153198.jpeg';
+import '../styles/one-sections.css';
+
+interface Props {
+  fit: NonNullable<Service['audienceFit']>;
+  cta: Service['cta'];
+}
+
+const { fit, cta } = Astro.props;
+
+interface Photo {
+  src: ImageMetadata;
+  alt: string;
+  position: string;
+}
+
+const photoPairs: [Photo, Photo][] = [
+  [
+    { src: teamTable, alt: 'Equipo reunido alrededor de una mesa con portátiles', position: 'center' },
+    { src: teamLead, alt: 'Líder de equipo sonríe con su grupo trabajando detrás', position: 'right top' },
+  ],
+  [
+    { src: charts, alt: 'Manos revisan gráficas impresas sobre una mesa', position: 'center' },
+    { src: officeTalk, alt: 'Dos personas conversan de pie en una oficina', position: 'top' },
+  ],
+  [
+    { src: laptopDesk, alt: 'Persona trabaja en su portátil desde una mesa blanca, vista desde arriba', position: 'center' },
+    { src: colleagues, alt: 'Grupo de colegas se ríe frente a un portátil', position: 'top' },
+  ],
+];
+
+const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
+---
+
+<section id="para-quien" class="one-fit one-u" aria-labelledby="fit-title" data-fit>
+  <OneBackdrop shape="benefits" colors={['#5a5bb6', '#777ae3']} opacities={[0.35, 0.18]} flip="x" small />
+
+  <div class="one-fit-content">
+    <div class="one-fit-heading">
+      <h2 id="fit-title" class="one-h2">{fit.title}</h2>
+      <p class="one-hand one-fit-note">{fit.handwritten}</p>
+    </div>
+
+    <div class="one-fit-stage">
+      <div class="one-fit-previews" aria-hidden="true">
+        {
+          [0, 1].map((side) => (
+            <div class:list={['one-fit-preview', side === 0 ? 'is-left' : 'is-right']} data-fit-preview={side}>
+              <div class="one-fit-photo">
+                {fit.profiles.map((_, index) => {
+                  const photo = pairFor(index)[side]!;
+                  return (
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      widths={[350, 700]}
+                      sizes="(min-width: 992px) 18vw, 50vw"
+                      loading="lazy"
+                      style={`object-position:${photo.position}`}
+                      data-fit-photo={index}
+                      hidden={index !== 0}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <ul class="one-fit-list" data-fit-list>
+        {
+          fit.profiles.map((profile, index) => (
+            <li class="one-fit-item" data-selected={index === 0 ? 'true' : 'false'}>
+              <button type="button" class="one-fit-button" data-fit-option={index} aria-pressed={index === 0 ? 'true' : 'false'} aria-controls="fit-example">
+                <span class="one-fit-label">{profile.t}</span>
+                <span class="one-fit-label-hover" aria-hidden="true">{profile.t}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="one-fit-bottom">
+      <div id="fit-example" aria-live="polite">
+        {fit.profiles.map((profile, index) => <p class="one-lead one-fit-example" data-fit-example={index} hidden={index !== 0}>{profile.d}</p>)}
+      </div>
+
+      <div class="one-fit-cta">
+        {
+          cta.modal ? (
+            <Button variant="gold" arrow data-open-modal={cta.modal}>{cta.label}</Button>
+          ) : (
+            <Button variant="gold" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { animate, onReducedMotionChange, prefersReducedMotion, springs, tweens } from '../lib/motion';
+
+  const section = document.querySelector<HTMLElement>('[data-fit]');
+  if (section) {
+    const items = Array.from(section.querySelectorAll<HTMLElement>('.one-fit-item'));
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-fit-option]'));
+    const examples = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-example]'));
+    const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-preview]'));
+    const list = section.querySelector<HTMLElement>('[data-fit-list]');
+    let reduced = prefersReducedMotion();
+    onReducedMotionChange((value) => {
+      reduced = value;
+    });
+    let settled = false;
+
+    let hovered: number | null = null;
+    let selected = 0;
+    let shownExample = 0;
+    let pointer = { x: 0, y: 0 };
+
+    const showExample = (next: number) => {
+      if (next === shownExample) return;
+      const current = examples[shownExample]!;
+      const incoming = examples[next]!;
+      shownExample = next;
+      const reveal = () => {
+        examples.forEach((example) => (example.hidden = example !== incoming));
+        if (!reduced) animate(incoming, { opacity: [0, 1], y: [8, 0] }, tweens.audienceExample);
+      };
+      if (reduced) {
+        reveal();
+        return;
+      }
+      animate(current, { opacity: 0, y: -6 }, tweens.audienceExample).finished.then(() => {
+        if (shownExample === next) reveal();
+      });
+    };
+
+    const render = () => {
+      const active = hovered ?? selected;
+      const rowY = active * 54;
+      const isHovering = hovered !== null;
+      items.forEach((item, index) => {
+        item.dataset.selected = (hovered === index || (selected === index && !isHovering)) ? 'true' : 'false';
+      });
+      buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(selected === index)));
+      previews.forEach((preview, side) => {
+        const left = side === 0;
+        const scale = isHovering ? 1 : 0.88;
+        const rotate = left ? (isHovering ? -8 : -14) : (isHovering ? 7 : 13);
+        const x = left ? pointer.x * -0.7 : pointer.x * 0.85;
+        const y = left ? rowY * 0.5 + pointer.y * -0.5 : rowY * 0.5 + 32 + pointer.y * 0.65;
+        animate(preview, { opacity: isHovering ? 1 : 0.42, x, y, scale, rotate }, reduced || !settled ? { duration: 0 } : springs.audienceSwap);
+        preview.querySelectorAll<HTMLElement>('[data-fit-photo]').forEach((photo) => {
+          photo.hidden = Number(photo.dataset.fitPhoto) !== active;
+        });
+      });
+      showExample(active);
+    };
+
+    buttons.forEach((button, index) => {
+      button.addEventListener('mouseenter', () => {
+        hovered = index;
+        render();
+      });
+      button.addEventListener('focus', () => {
+        hovered = index;
+        render();
+      });
+      button.addEventListener('blur', () => {
+        hovered = null;
+        render();
+      });
+      button.addEventListener('click', () => {
+        selected = index;
+        render();
+      });
+    });
+    list?.addEventListener('mouseleave', () => {
+      hovered = null;
+      render();
+    });
+    section.addEventListener('mousemove', (event) => {
+      const rect = section.getBoundingClientRect();
+      pointer = {
+        x: ((event.clientX - rect.left) / rect.width - 0.5) * 28,
+        y: ((event.clientY - rect.top) / rect.height - 0.5) * 22,
+      };
+      render();
+    });
+    render();
+    settled = true;
+  }
+</script>
+
+<style>
+  .one-fit {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    overflow: hidden;
+    margin-top: calc(var(--edge-r) * -1);
+    padding: var(--section-py) var(--gutter) calc(var(--section-py) + var(--edge-r));
+    border-radius: var(--edge-r) var(--edge-r) 0 0;
+    background: var(--periwinkle-12);
+    color: var(--canvas);
+  }
+  .one-fit-content { position: relative; z-index: 10; margin-inline: auto; }
+  .one-fit-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--u) * 16);
+    max-width: calc(var(--u) * 1100);
+    margin: 0 auto calc(var(--u) * 64);
+    text-align: center;
+  }
+  .one-fit-heading h2 { color: var(--canvas); }
+  .one-fit-note { display: inline-block; color: var(--gold-9); rotate: -1.5deg; }
+  .one-fit-stage { position: relative; max-width: calc(var(--u) * 1760); margin-inline: auto; }
+  .one-fit-previews { display: none; pointer-events: none; }
+  .one-fit-preview {
+    position: absolute;
+    z-index: 20;
+    width: calc(var(--u) * 333);
+    padding: calc(var(--u) * 13);
+    border-radius: calc(var(--u) * 37);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    opacity: 0.42;
+  }
+  .one-fit-preview.is-left { left: 0; top: 1rem; background: #fff; }
+  .one-fit-preview.is-right { right: 0; top: 2.5rem; background: var(--gold-9); }
+  .one-fit-photo {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: calc(var(--u) * 26);
+    background: var(--periwinkle-2);
+  }
+  .one-fit-photo :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .one-fit-list {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: calc(var(--u) * 1120);
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+  }
+  .one-fit-item { width: 100%; padding: calc(var(--u) * 10) 0; }
+  .one-fit-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.25rem 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.45s var(--ease-smooth);
+  }
+  .one-fit-label {
+    font-family: var(--font-display);
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    line-height: 0.91;
+    letter-spacing: -0.04em;
+    color: var(--canvas);
+    -webkit-text-stroke: 0.02em currentColor;
+    paint-order: stroke fill;
+    text-wrap: balance;
+    will-change: transform, filter, opacity;
+    transition:
+      opacity 0.15s 0.05s var(--ease-smooth),
+      scale 0.35s var(--ease-bounce),
+      filter 0.25s 0.05s var(--ease-smooth);
+  }
+  .one-fit-label-hover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-hand);
+    font-size: calc(var(--fs-h2) * 0.8);
+    line-height: 1;
+    color: var(--gold-9);
+    opacity: 0;
+    scale: 0.75 1.25;
+    filter: blur(2px);
+    will-change: transform, filter, opacity;
+    transition:
+      opacity 0.15s 0.05s var(--ease-smooth),
+      scale 0.35s var(--ease-bounce),
+      filter 0.25s 0.05s var(--ease-smooth);
+  }
+  .one-fit-item:hover .one-fit-label,
+  .one-fit-item[data-selected='true'] .one-fit-label { opacity: 0; scale: 0.75 1.25; filter: blur(2px); }
+  .one-fit-item:hover .one-fit-label-hover,
+  .one-fit-item[data-selected='true'] .one-fit-label-hover { opacity: 1; scale: 1 1; filter: blur(0); }
+  .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(1.5rem); }
+  .one-fit-item:hover + .one-fit-item + .one-fit-item .one-fit-button { transform: translateY(0.6rem); }
+  .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-1.5rem); }
+  .one-fit-item:has(+ .one-fit-item + .one-fit-item:hover) .one-fit-button { transform: translateY(-0.6rem); }
+
+  .one-fit-bottom {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 24);
+    max-width: calc(var(--u) * 840);
+    margin: calc(var(--u) * 64) auto 0;
+    text-align: center;
+  }
+  .one-fit-example { color: var(--periwinkle-4); }
+  .one-fit-cta { display: flex; justify-content: center; }
+
+  @media (max-width: 991px) {
+    .one-fit-item:hover + .one-fit-item .one-fit-button { transform: translateY(0.35rem); }
+    .one-fit-item:has(+ .one-fit-item:hover) .one-fit-button { transform: translateY(-0.35rem); }
+  }
+  @media (min-width: 1024px) {
+    .one-fit-previews { display: block; }
+  }
+</style>

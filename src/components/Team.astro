@@ -1,27 +1,9 @@
 ---
 import { getImage } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import { getSiteContent } from '../lib/content';
-import { teamPhotos } from '../content/schema';
-import team1 from '../assets/team1.webp';
-import team2 from '../assets/team2.webp';
-import team3 from '../assets/team3.webp';
-import team4 from '../assets/team4.webp';
-import team5 from '../assets/team5.webp';
-import team6 from '../assets/team6.webp';
+import { teamImages } from '../lib/team-photos';
 
 const { squadGrid, ui, labels } = await getSiteContent();
-
-// El contrato editorial solo acepta estas rutas (teamPhotos): el editor elige
-// entre las fotos que ya estan compiladas, y este mapa las resuelve.
-const teamImages = {
-  '/images/team1.webp': team1,
-  '/images/team2.webp': team2,
-  '/images/team3.webp': team3,
-  '/images/team4.webp': team4,
-  '/images/team5.webp': team5,
-  '/images/team6.webp': team6,
-} satisfies Record<(typeof teamPhotos)[number], ImageMetadata>;
 
 type TeamPhoto = {
   src: string;
