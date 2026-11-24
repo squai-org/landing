@@ -20,18 +20,21 @@ const isSquaiOne = currentPath === '/servicios/squai-one';
 const serviceNav = services.find((service) => currentPath === `/servicios/${service.slug}`)?.nav;
 const squaiOneCtaVariant = tone === 'dark' ? 'white' : 'dark';
 const ctaVariant = isSquaiOne ? squaiOneCtaVariant : 'primary';
-const pageCta = navModal
-  ? { label: ui.navigation.contactCta, target: { 'data-open-modal': navModal } }
-  : isSquaiOne
-    ? { label: ui.navigation.oneCta, target: { href: '#inscripcion', 'data-scroll-to': 'inscripcion' } }
-    : {
-        label: ui.navigation.program,
-        target: {
-          href: '/#servicios',
-          'data-scroll-to': 'servicios',
-          'aria-current': currentPath.startsWith('/servicios') ? 'page' : undefined,
-        },
-      };
+interface PageCta {
+  label: string;
+  target: Record<string, string>;
+  current?: 'page';
+}
+const pageCtaFor = (): PageCta => {
+  if (navModal) return { label: ui.navigation.contactCta, target: { 'data-open-modal': navModal } };
+  if (isSquaiOne) return { label: ui.navigation.oneCta, target: { href: '#inscripcion', 'data-scroll-to': 'inscripcion' } };
+  return {
+    label: ui.navigation.program,
+    target: { href: '/#servicios', 'data-scroll-to': 'servicios' },
+    current: currentPath.startsWith('/servicios') ? 'page' : undefined,
+  };
+};
+const pageCta = pageCtaFor();
 const toggleVariant =tone === 'dark' ? 'white' : 'dark';
 const pagePills = serviceNav
   ? serviceNav.items.map((item) => ({ label: item.label, target: item.target, href: `#${item.target}`, services: false }))
@@ -131,7 +134,7 @@ const pagePills = serviceNav
             })
           }
           <li class="nav-cta-wrap">
-            <Button variant={ctaVariant} arrow class="nav-cta" {...pageCta.target}>{pageCta.label}</Button>
+            <Button variant={ctaVariant} arrow class="nav-cta" {...pageCta.target} aria-current={pageCta.current}>{pageCta.label}</Button>
           </li>
         </ul>
         <div class="site-nav-social">

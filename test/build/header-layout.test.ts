@@ -110,3 +110,18 @@ describe('fila del header', () => {
     expect(rule(reduced, '.site-header')).toContain('transition: none');
   });
 });
+
+describe('pagina actual en el CTA del header', () => {
+  const markup = header.slice(0, header.indexOf('<style>'));
+  const buttonWith = (className: string) => new RegExp(`<Button[^>]*class="${className}"[^>]*>`).exec(markup)?.[0] ?? '';
+
+  it('solo el CTA dentro de la navegacion marca aria-current, el de la barra nunca', () => {
+    expect(buttonWith('header-bar-cta')).not.toBe('');
+    expect(buttonWith('header-bar-cta')).not.toContain('aria-current');
+    expect(buttonWith('nav-cta')).toMatch(/aria-current=\{pageCta\.current\}/);
+  });
+
+  it('el destino que comparten los dos CTA no lleva aria-current', () => {
+    expect(markup).not.toMatch(/'aria-current':/);
+  });
+});
