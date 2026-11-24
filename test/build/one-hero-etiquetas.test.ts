@@ -33,10 +33,19 @@ describe('etiquetas del hero de Squai One en movil y tablet', () => {
     expect(rule(mobile, '.one-hero-tag')).toMatch(/position: static;/);
   });
 
-  it('empiezan por debajo de la linea de los hombros, lejos de la cara', () => {
-    const top = /top: (\d+(?:\.\d+)?)%;/.exec(rule(mobile, '.one-hero-tags'));
+  it('empiezan por debajo de la linea de los hombros, medida sobre el alto de la foto', () => {
+    const top = /top: calc\(var\(--photo-h\) \* (0\.\d+)\);/.exec(rule(mobile, '.one-hero-tags'));
     expect(top).not.toBeNull();
-    expect(Number(top![1])).toBeGreaterThanOrEqual(45);
+    expect(Number(top![1])).toBeGreaterThanOrEqual(0.45);
+    expect(Number(top![1])).toBeLessThanOrEqual(0.5);
+  });
+
+  it('terminan sobre el torso, medido sobre el ancho de la foto y no sobre el escenario', () => {
+    const group = rule(mobile, '.one-hero-tags');
+    const right = /right: calc\(var\(--photo-w\) \* (0\.\d+)\);/.exec(group);
+    expect(right).not.toBeNull();
+    expect(group).toMatch(new RegExp(`width: calc\\(100cqw - var\\(--photo-right\\) - var\\(--photo-w\\) \\* ${right![1]} - var\\(--hero-x\\) - \\d+px\\);`));
+    expect(group).not.toMatch(/(top|right): \d+%/);
   });
 
   it('su ancho va del margen izquierdo de la pantalla al torso y el texto puede partirse', () => {
