@@ -38,7 +38,7 @@ const pagePills = serviceNav
   : navLinks.map((link) => ({ label: link.label, target: link.target, href: `/#${link.target}`, services: link.target === 'servicios' }));
 ---
 
-<header class="site-header" data-header data-tone={tone} data-scrolled="false">
+<header class="site-header" data-header data-tone={tone} data-scrolled="false" data-hidden="false">
   <div class="site-header-row" data-header-row>
     <div class="header-brand">
       <a href="/" class="logo-link logo-pill" aria-label={ui.navigation.home}>
@@ -323,11 +323,9 @@ const pagePills = serviceNav
     .site-header-social { min-width: 0; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .nav-services-chevron, .services-submenu, .site-header-social { transition: none; }
-  }
-
   @media (max-width: 1023px) {
+    .site-header { transition: translate .3s var(--ease-smooth); }
+    .site-header[data-hidden='true'] { translate: 0 -100%; }
     .site-header-row { gap: 8px; }
     .header-bar-cta { position: relative; z-index: 2; display: inline-flex; margin-left: auto; }
     .nav-toggle { display: inline-flex; }
@@ -415,10 +413,14 @@ const pagePills = serviceNav
     .nav-toggle .btn-arrow { margin-left: 0; }
     .header-bar-cta { --btn-px: calc(var(--u) * 10); }
   }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header, .nav-services-chevron, .services-submenu, .site-header-social { transition: none; }
+  }
 </style>
 
 <script>
   import { animateIn, animateOut, tweens } from '../lib/motion';
+  import { bindHeaderVisibility } from '../lib/header-visibility-client';
 
   const header = document.querySelector<HTMLElement>('[data-header]');
   const navToggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
@@ -548,6 +550,8 @@ const pagePills = serviceNav
       first.focus();
     }
   });
+
+  bindHeaderVisibility();
 
   window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
     if (!event.matches || !navMenu) return;
