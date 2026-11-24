@@ -618,6 +618,62 @@ content:
                 description: No lleva cifras: el cupo real vive en la base de datos.
                 type: string
                 required: true
+              - name: cards
+                label: Tarjetas
+                description: Se muestran en un carrusel. Cada tarjeta lleva solo título, descripción e ilustración.
+                type: object
+                list:
+                  min: 1
+                  collapsible:
+                    summary: '{title}'
+                fields:
+                  - name: title
+                    label: Título
+                    description: Sin punto final, como los demás títulos de tarjeta.
+                    type: string
+                    required: true
+                  - name: description
+                    label: Descripción
+                    type: text
+                    required: true
+                  - name: illustration
+                    label: Ilustración
+                    type: select
+                    required: true
+                    options:
+                      values:
+                        - label: Videollamada en vivo
+                          value: /illustrations/datos/en-vivo.svg
+                        - label: Calendario
+                          value: /illustrations/incluye/incluye-1.svg
+                        - label: Grabación con botón de repetir
+                          value: /illustrations/incluye/incluye-2.svg
+                        - label: Bombillo
+                          value: /illustrations/datos/sin-conocimientos.svg
+                        - label: Grupo de personas
+                          value: /illustrations/datos/grupo.svg
+                        - label: Globos de chat
+                          value: /illustrations/datos/comunidad.svg
+                        - label: Aplicaciones conectadas
+                          value: /illustrations/datos/cualquier-ia.svg
+                        - label: Mentor con tablero
+                          value: /illustrations/datos/mentores.svg
+                        - label: Guía y plantillas
+                          value: /illustrations/incluye/incluye-3.svg
+                        - label: Certificado
+                          value: /illustrations/incluye/incluye-4.svg
+              - name: carouselLabel
+                label: Nombre del carrusel para lectores de pantalla
+                description: Opcional. Por defecto, "Lo que necesitas saber del programa".
+                type: string
+              - name: prevLabel
+                label: Etiqueta de la flecha anterior
+                description: Opcional. Por defecto, "Ver datos anteriores".
+                type: string
+              - name: nextLabel
+                label: Etiqueta de la flecha siguiente
+                description: Opcional. Por defecto, "Ver datos siguientes".
+                type: string
       - name: one-tarjeta
         label: Tarjeta en Inicio
         description: Cómo se ve este servicio en la retícula de la página principal y en el menú.

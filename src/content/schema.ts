@@ -55,6 +55,18 @@ export const moduleIllustrations = [
   '/illustrations/sesiones/sesion-7.svg',
   '/illustrations/sesiones/sesion-8.svg',
 ] as const;
+export const factIllustrations = [
+  '/illustrations/datos/en-vivo.svg',
+  '/illustrations/incluye/incluye-1.svg',
+  '/illustrations/incluye/incluye-2.svg',
+  '/illustrations/datos/sin-conocimientos.svg',
+  '/illustrations/datos/grupo.svg',
+  '/illustrations/datos/comunidad.svg',
+  '/illustrations/datos/cualquier-ia.svg',
+  '/illustrations/datos/mentores.svg',
+  '/illustrations/incluye/incluye-3.svg',
+  '/illustrations/incluye/incluye-4.svg',
+] as const;
 const audienceFit = z.object({
   title: text,
   handwritten: text,
@@ -130,6 +142,10 @@ export const serviceSchema = z.object({
     }),
     labels: z.object({ duration: text, sessions: text, dates: text, schedule: text, modality: text, seats: text }),
     modality: text, seats: text,
+    cards: z.array(z.object({ title: text, description: text, illustration: z.enum(factIllustrations) })).min(1).optional(),
+    carouselLabel: text.default('Lo que necesitas saber del programa'),
+    prevLabel: text.default('Ver datos anteriores'),
+    nextLabel: text.default('Ver datos siguientes'),
   }).optional(),
   ctaSecondary: optional(text),
   contactCta: optional(text),

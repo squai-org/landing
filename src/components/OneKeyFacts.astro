@@ -1,14 +1,10 @@
 ---
-import type { ImageMetadata } from 'astro';
 import Button from './Button.astro';
+import CarouselArrows from './CarouselArrows.astro';
 import OneCornerBlocks from './OneCornerBlocks.astro';
 import type { OneCornerPreset } from '../lib/one-corner-presets';
-import { durationInHours, sessionLength, totalSessions } from '../lib/course-load';
+import { slideMotionAt } from '../lib/session-carousel';
 import type { Service } from '../lib/content';
-import live from '../assets/one/incluye/incluye-1.svg';
-import recordings from '../assets/one/incluye/incluye-2.svg';
-import guides from '../assets/one/incluye/incluye-3.svg';
-import certificate from '../assets/one/incluye/incluye-4.svg';
 import '../styles/one-sections.css';
 
 interface Props {
@@ -17,72 +13,23 @@ interface Props {
 
 const { service } = Astro.props;
 const facts = service.keyFacts!;
-const hero = service.hero!;
-const { load, labels } = facts;
+const cards = facts.cards ?? [];
 
-interface Fact {
-  label: string;
-  value: string;
-  cohort?: 'dates' | 'schedule';
-}
-
-interface Card {
-  image: ImageMetadata;
-  facts: Fact[];
+interface CardStyle {
   bg: string;
   block: string;
   preset: OneCornerPreset;
-  tilt: string;
-  stagger: string;
 }
 
-const cards: Card[] = [
-  {
-    image: live,
-    facts: [
-      { label: labels.duration, value: `${load.weeks} semanas · ${durationInHours(load)} horas` },
-      { label: labels.sessions, value: `${totalSessions(load)} sesiones de ${sessionLength(load.sessionMinutes)}, ${load.sessionsPerWeek} por semana` },
-    ],
-    bg: 'var(--periwinkle-2)',
-    block: 'var(--periwinkle-6)',
-    preset: 'mod-1',
-    tilt: '-2deg',
-    stagger: '0',
-  },
-  {
-    image: recordings,
-    facts: [{ label: labels.modality, value: facts.modality }],
-    bg: 'var(--periwinkle-4)',
-    block: 'var(--periwinkle-7)',
-    preset: 'mod-2',
-    tilt: '1.8deg',
-    stagger: '1.5rem',
-  },
-  {
-    image: guides,
-    facts: [
-      { label: labels.dates, value: hero.datesPending, cohort: 'dates' },
-      { label: labels.schedule, value: hero.schedulePending, cohort: 'schedule' },
-    ],
-    bg: 'var(--periwinkle-3)',
-    block: 'var(--periwinkle-8)',
-    preset: 'mod-3',
-    tilt: '-1.6deg',
-    stagger: '0.25rem',
-  },
-  {
-    image: certificate,
-    facts: [{ label: labels.seats, value: facts.seats }],
-    bg: 'var(--periwinkle-9)',
-    block: 'var(--periwinkle-11)',
-    preset: 'mod-4',
-    tilt: '2deg',
-    stagger: '1.75rem',
-  },
+const cardStyles: CardStyle[] = [
+  { bg: 'var(--periwinkle-2)', block: 'var(--periwinkle-6)', preset: 'mod-1' },
+  { bg: 'var(--periwinkle-4)', block: 'var(--periwinkle-7)', preset: 'mod-2' },
+  { bg: 'var(--periwinkle-3)', block: 'var(--periwinkle-8)', preset: 'mod-3' },
+  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-11)', preset: 'mod-4' },
 ];
 ---
 
-<section class="one-facts one-u" id="datos-clave" aria-labelledby="one-facts-title">
+<section class="one-facts one-u" id="datos-clave" aria-labelledby="one-facts-title" data-sessions>
   <div class="one-facts-heading">
     <h2 id="one-facts-title" class="one-h2">{facts.title}</h2>
     <p class="one-lead one-facts-lead">{facts.lead}</p>
@@ -92,54 +39,77 @@ const cards: Card[] = [
     <span class="one-hand">{facts.handwritten}</span>
   </div>
 
-  <ul class="one-facts-cards">
-    {
-      cards.map((card, index) => (
-        <li class="one-facts-item one-card-host" style={`--stagger:${card.stagger}`} data-one-enter={index}>
-          <div class="one-facts-inner" style={`--tilt:${card.tilt}`}>
-            <OneCornerBlocks preset={card.preset} color={card.block} hoverOnly />
-            <article class="one-facts-card" style={`--card-bg:${card.bg}`}>
-              <div class="one-facts-body">
-                <div class="one-facts-art">
-                  <img src={card.image.src} alt="" width="1400" height="1365" loading="lazy" decoding="async" draggable="false" />
-                </div>
-                <dl class="one-facts-list">
-                  {card.facts.map((fact) => (
-                    <div>
-                      <dt class="one-h3">{fact.label}</dt>
-                      <dd
-                        class="one-small"
-                        data-cohort-dates={fact.cohort === 'dates' ? '' : undefined}
-                        data-cohort-schedule={fact.cohort === 'schedule' ? '' : undefined}
-                      >{fact.value}</dd>
+  <div class="one-facts-carousel">
+    <div class="one-facts-arrows">
+      <CarouselArrows prevLabel={facts.prevLabel} nextLabel={facts.nextLabel} />
+    </div>
+
+    <div
+      class="sessions-track"
+      role="region"
+      aria-roledescription="carrusel"
+      aria-label={facts.carouselLabel}
+      tabindex="0"
+      data-sessions-track
+    >
+      <ul class="sessions-list">
+        {
+          cards.map((card, index) => {
+            const style = cardStyles[index % cardStyles.length]!;
+            const motion = slideMotionAt(index);
+            return (
+              <li class="session-slide one-facts-slide" style={`--session-rot:${-motion.rotate}deg`} data-session-slide>
+                <article class="session-slide-inner" aria-labelledby={`one-fact-${index + 1}-title`}>
+                  <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
+
+                  <div class="session-slide-bg" style={`--card-bg:${style.bg}`} aria-hidden="true">
+                    <div class="session-slide-bottom" />
+                  </div>
+
+                  <div class="session-slide-body">
+                    <div class="session-slide-figure">
+                      <img
+                        class="session-slide-art"
+                        src={card.illustration}
+                        alt=""
+                        width="1400"
+                        height="1365"
+                        loading="lazy"
+                        decoding="async"
+                        draggable="false"
+                      />
                     </div>
-                  ))}
-                </dl>
-              </div>
-              <span class="one-facts-bottom" aria-hidden="true"></span>
-            </article>
-            <a
-              class="one-facts-link"
-              href={`#${service.cta.target}`}
-              data-scroll-to={service.cta.target}
-              aria-label={`${service.cta.label}: ${card.facts.map((fact) => fact.label).join(' y ')}`}
-            ></a>
-            <div class="one-card-cta" aria-hidden="true">
-              <Button variant="dark" arrow tabindex="-1">{service.cta.label}</Button>
-            </div>
-          </div>
-        </li>
-      ))
-    }
-  </ul>
+
+                    <div class="session-slide-copy">
+                      <h3 id={`one-fact-${index + 1}-title`} class="one-h3">{card.title}</h3>
+                      <p class="one-small">{card.description}</p>
+                    </div>
+                  </div>
+
+                  <a
+                    class="session-slide-link"
+                    href={`#${service.cta.target}`}
+                    data-scroll-to={service.cta.target}
+                    aria-label={`${service.cta.label}: ${card.title}`}
+                  />
+
+                  <div class="session-slide-cta" aria-hidden="true">
+                    <Button variant="dark" arrow tabindex="-1">{service.cta.label}</Button>
+                  </div>
+                </article>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
 </section>
 
 <script>
-  import { revealOnView, tweens } from '../lib/motion';
+  import { bindSessionCarousels } from '../lib/session-carousel-client';
 
-  document.querySelectorAll<HTMLElement>('.one-facts-item[data-one-enter]').forEach((item) => {
-    revealOnView(item, { opacity: 0, y: 36 }, { opacity: 1, y: 0 }, { ...tweens.includesCard, delay: Number(item.dataset.oneEnter) * 0.07 });
-  });
+  bindSessionCarousels();
 </script>
 
 <style>
@@ -147,7 +117,8 @@ const cards: Card[] = [
     position: relative;
     z-index: 10;
     width: 100%;
-    padding: var(--section-py) var(--gutter);
+    padding: var(--section-py) 0 var(--books-pb);
+    overflow: clip;
     background: #fff;
     color: var(--midnight);
   }
@@ -157,115 +128,30 @@ const cards: Card[] = [
     gap: calc(var(--u) * 24);
     max-width: calc(var(--u) * 1280);
     margin: 0 auto calc(var(--u) * 24);
+    padding: 0 var(--gutter);
     text-align: center;
   }
   .one-facts-heading h2 { color: var(--midnight); }
   .one-facts-lead { max-width: calc(var(--u) * 640); margin-inline: auto; color: var(--neutral-11); }
-  .one-facts-note { margin-bottom: calc(var(--u) * 56); text-align: center; }
+  .one-facts-note { padding: 0 var(--gutter); text-align: center; }
   .one-facts-note .one-hand { display: inline-block; color: var(--periwinkle-11); rotate: -1.6deg; }
-  .one-facts-cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    gap: 3rem;
-    margin: 0;
-    padding: 1.5rem 0 2rem;
-    list-style: none;
-  }
-  .one-facts-item {
-    position: relative;
-    display: flex;
-    padding-top: 2rem;
-    user-select: none;
-  }
-  .one-facts-inner {
-    position: relative;
-    display: grid;
-    width: 100%;
-    rotate: var(--tilt);
-    transition: transform 0.35s var(--ease-bounce);
-  }
-  .one-facts-card {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    min-height: 480px;
-    border-radius: var(--card-r);
-    background: var(--card-bg);
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  }
-  .one-facts-body {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: calc(var(--u) * 20);
-    padding: calc(var(--u) * 28);
-  }
-  .one-facts-art {
-    display: flex;
-    flex: 1;
-    align-items: flex-end;
-    justify-content: center;
-    padding-top: 0.5rem;
-  }
-  .one-facts-art img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1400 / 1365;
-    user-select: none;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .one-facts-list { display: flex; flex-direction: column; gap: calc(var(--u) * 20); margin: 0; }
-  .one-facts-list div { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
-  .one-facts-list dt { color: var(--midnight); }
-  .one-facts-list dd { color: var(--neutral-12); }
-  .one-facts-bottom {
-    position: relative;
-    z-index: -10;
-    display: block;
-    width: 100%;
-    height: max(56px, calc(var(--u) * 88));
-    margin-top: -3rem;
-    background: var(--card-bg);
-    border-bottom-left-radius: var(--card-r);
-    border-bottom-right-radius: var(--card-r);
-    transition: translate 0.3s var(--ease-smooth);
-  }
-  .one-facts-link {
+  .one-facts-carousel { position: relative; }
+  .one-facts-arrows {
     position: absolute;
-    inset: 0;
-    z-index: 15;
-    border-radius: var(--card-r);
-  }
-  .one-facts-link:focus-visible { outline-offset: 4px; }
-
-  @media (hover: hover) and (pointer: fine) {
-    .one-facts-item:hover .one-facts-art img { transform: scale(1.03); }
-  }
-  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    .one-facts-item:is(:hover, :focus-within) .one-facts-inner { transform: rotate(0deg) translateY(-8px); }
-    .one-facts-item:is(:hover, :focus-within) .one-facts-bottom {
-      translate: 0 calc(var(--btn-h) * 0.55) 0;
-      transition: translate 0.35s 0.1s var(--ease-bounce);
-    }
+    right: var(--gutter);
+    bottom: 0;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(var(--u) * 8);
   }
 
-  @media (min-width: 768px) {
-    .one-facts-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (min-width: 1024px) {
-    .one-facts-cards {
-      display: flex;
-      justify-content: center;
-      gap: calc(var(--u) * 48);
+  @media (min-width: 992px) {
+    .one-facts-arrows {
+      top: 0;
+      right: calc(var(--u) * 40);
+      bottom: auto;
     }
-    .one-facts-item { flex-shrink: 0; width: calc(var(--u) * 372); translate: 0 var(--stagger); }
-    .one-facts-card { min-height: calc(var(--u) * 660); }
-    .one-facts-body { padding: calc(var(--u) * 32); }
   }
 </style>

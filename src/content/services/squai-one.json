@@ -33,7 +33,59 @@
       "seats": "Cupo"
     },
     "modality": "100% virtual y en vivo, con grabaciones por si la vida se interpone",
-    "seats": "Grupos pequeños y cupos limitados para que tus preguntas se escuchen"
+    "seats": "Grupos pequeños y cupos limitados para que tus preguntas se escuchen",
+    "cards": [
+      {
+        "title": "Programa virtual con sesiones en vivo",
+        "description": "Entras desde donde estés a sesiones en directo, sin videos pregrabados.",
+        "illustration": "/illustrations/datos/en-vivo.svg"
+      },
+      {
+        "title": "Terminas en 4 semanas",
+        "description": "Son 2 sesiones por semana, de 2 horas y media cada una, con tiempo para practicar.",
+        "illustration": "/illustrations/incluye/incluye-1.svg"
+      },
+      {
+        "title": "Sesiones grabadas",
+        "description": "Si faltas a una sesión, la ves grabada y no te quedas atrás.",
+        "illustration": "/illustrations/incluye/incluye-2.svg"
+      },
+      {
+        "title": "Sin conocimientos previos",
+        "description": "No necesitas haber usado la IA antes, porque explicamos todo desde las bases y sin palabras raras.",
+        "illustration": "/illustrations/datos/sin-conocimientos.svg"
+      },
+      {
+        "title": "Grupo de máximo 30 personas",
+        "description": "Aprendes en comunidad y con casos de otras personas, y cada sesión tiene espacio para tus dudas.",
+        "illustration": "/illustrations/datos/grupo.svg"
+      },
+      {
+        "title": "Comunidad en WhatsApp",
+        "description": "Resuelves tus dudas entre sesiones y aprendes también de las preguntas de las demás personas.",
+        "illustration": "/illustrations/datos/comunidad.svg"
+      },
+      {
+        "title": "Fundamentos que sirven con cualquier IA",
+        "description": "Entiendes cómo funciona la IA, así que no dependes de una sola aplicación.",
+        "illustration": "/illustrations/datos/cualquier-ia.svg"
+      },
+      {
+        "title": "Mentores que saben explicar y aplicar",
+        "description": "Combinamos años dando clase con años en empresas, así que te explicamos cómo usar la IA en la práctica.",
+        "illustration": "/illustrations/datos/mentores.svg"
+      },
+      {
+        "title": "Guías y recursos",
+        "description": "Material de apoyo para repasar por tu cuenta.",
+        "illustration": "/illustrations/incluye/incluye-3.svg"
+      },
+      {
+        "title": "Certificado al terminar",
+        "description": "Lo sumas a tu hoja de vida o lo guardas como prueba de un reto cumplido.",
+        "illustration": "/illustrations/incluye/incluye-4.svg"
+      }
+    ]
   },
   "menuAudience": "Personas",
   "cardCopy": "Un programa en vivo para entender la IA, en lugar de seguir guardando tutoriales que nunca vas a ver.",

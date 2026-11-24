@@ -27,9 +27,9 @@ describe('hero y datos clave de Squai One', () => {
     expect(ctas.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('dice fechas y horario por confirmar mientras la base no responde, en el hero y en los datos clave', () => {
-    expect(html).toMatch(/<dd[^>]*data-cohort-dates[^>]*>Fechas por confirmar<\/dd>/);
-    expect(html).toMatch(/<dd[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/dd>/);
+  it('dice fechas y horario por confirmar mientras la base no responde, en el hero y en la franja de datos', () => {
+    expect(html).toMatch(/<li[^>]*data-cohort-dates[^>]*>Fechas por confirmar<\/li>/);
+    expect(html).toMatch(/<li[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/li>/);
     expect(html).toMatch(/<span[^>]*data-cohort-dates[^>]*>Fechas por confirmar<\/span>/);
     expect(html).toMatch(/<span[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/span>/);
   });
@@ -45,17 +45,17 @@ describe('hero y datos clave de Squai One', () => {
     expect(hero).not.toMatch(/one-hero-(arch|block)/);
   });
 
-  it('los datos clave van en las cuatro tarjetas con ilustracion, sin cuadricula aparte', () => {
+  it('los datos clave van en las diez tarjetas con ilustracion, sin cuadricula aparte', () => {
     const start = html.indexOf('id="datos-clave"');
     const facts = html.slice(start, html.indexOf('</section>', start));
-    expect(facts.match(/<article\b/g)).toHaveLength(4);
-    expect(facts.match(/<dt\b/g)).toHaveLength(6);
-    expect(facts.match(/<img\b/g)).toHaveLength(4);
+    expect(facts.match(/<article\b/g)).toHaveLength(10);
+    expect(facts.match(/<dt\b/g)).toBeNull();
+    expect(facts.match(/<img\b/g)).toHaveLength(10);
   });
 
-  it('muestra 4 semanas y 8 sesiones de 2 horas y media', () => {
-    expect(html).toContain('4 semanas · 20 horas');
-    expect(html).toContain('8 sesiones de 2 horas y media, 2 por semana');
+  it('muestra 4 semanas con 2 sesiones de 2 horas y media por semana', () => {
+    expect(html).toContain('Terminas en 4 semanas');
+    expect(html).toContain('Son 2 sesiones por semana, de 2 horas y media cada una');
     expect(html).not.toMatch(/5 semanas|cinco semanas/i);
   });
 

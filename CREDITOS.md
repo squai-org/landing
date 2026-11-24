@@ -9,7 +9,8 @@ Los dos personajes de `public/illustrations/peeps/` son `peep-standing-14` y `pe
 | Archivo | Uso |
 | --- | --- |
 | `public/illustrations/pasos/paso-2.svg`, `paso-3.svg`, `paso-4.svg` | Cómo funciona |
-| `public/illustrations/incluye/incluye-4.svg`, `src/assets/one/incluye/incluye-1.svg` a `incluye-4.svg` | Datos clave |
+| `public/illustrations/incluye/incluye-1.svg` a `incluye-4.svg` | Lo que necesitas saber (calendario, grabación, guías y certificado); `incluye-4` también en Cómo funciona |
+| `public/illustrations/datos/en-vivo.svg`, `sin-conocimientos.svg`, `grupo.svg`, `comunidad.svg`, `cualquier-ia.svg`, `mentores.svg` | Lo que necesitas saber. Personajes de Open Peeps (CC0) generados con `react-peeps` 0.1.10 (MIT) en pose de busto, sin cambios de dibujo; los objetos (pantalla en vivo, bombillo, globos de chat, aplicaciones conectadas, tablero) se dibujaron con el mismo trazo de 13 y la paleta Midnight, blanco, Gold #F9C24D y Periwinkle #8A8EF9. Sin comentarios ni metadatos del generador. |
 | `public/illustrations/sesiones/sesion-1.svg`, 4, 5, 6, 7, 8 | Temario (un módulo cada una) |
 | `public/illustrations/pasos/paso-4.svg` | Cómo funciona (paso 3) y reproductor de la Presentación en video (recortado con CSS, sin copia) |
 | `public/illustrations/peeps/peep-standing-14.svg`, `public/illustrations/peeps/peep-standing-30.svg` | Personajes que rodean el video de la Presentación, invertidos en horizontal con CSS |

@@ -139,6 +139,12 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Hero de Squai One: texto sobre Periwinkle | `--midnight` | `--periwinkle-9` | 6.77 | 4.5 |
 | base | Datos clave: texto en tarjeta clara | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
 | base | Datos clave: texto en tarjeta intermedia | `--midnight` | `--periwinkle-4` | 13.76 | 4.5 |
+| base | Datos clave: título en tarjeta P3 | `--midnight` | `--periwinkle-3` | 15.47 | 4.5 |
+| base | Datos clave: título en tarjeta P9 | `--midnight` | `--periwinkle-9` | 6.77 | 4.5 |
+| base | Datos clave: descripción en tarjeta clara | `--neutral-12` | `--periwinkle-2` | 14.53 | 4.5 |
+| base | Datos clave: descripción en tarjeta P3 | `--neutral-12` | `--periwinkle-3` | 13.12 | 4.5 |
+| base | Datos clave: descripción en tarjeta intermedia | `--neutral-12` | `--periwinkle-4` | 11.66 | 4.5 |
+| base | Datos clave: descripción en tarjeta P9 | `--neutral-12` | `--periwinkle-9` | 5.74 | 4.5 |
 | base | Datos clave: apunte a mano | `--accent-ink` | `--canvas` | 5.40 | 4.5 |
 
 ## Fuera de la tabla, a propósito
