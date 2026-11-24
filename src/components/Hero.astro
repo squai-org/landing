@@ -12,21 +12,6 @@ const statusAttributes = programStatusAttributes({ program, ui });
 
   <div class="hero-inner">
     <div class="hero-eyebrow-row">
-      <button
-        type="button"
-        class="hero-animation-toggle"
-        data-hero-animation-toggle
-        aria-label={ui.hero.pause}
-        aria-pressed="false"
-        title={ui.hero.pause}
-      >
-        <svg class="hero-animation-icon hero-animation-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M7 5h3v14H7V5Zm7 0h3v14h-3V5Z" />
-        </svg>
-        <svg class="hero-animation-icon hero-animation-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M8 5v14l11-7L8 5Z" />
-        </svg>
-      </button>
       <a href="/servicios/squai-one" class="hero-eyebrow">
         <span class="hero-dot" aria-hidden="true"></span>
         <span class="hero-eyebrow-status" {...statusAttributes} hidden>{program.status}</span>
@@ -184,27 +169,6 @@ const statusAttributes = programStatusAttributes({ program, ui });
     text-wrap: pretty;
   }
 
-  .hero-animation-toggle {
-    display: inline-flex;
-    flex: none;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(244, 246, 255, .28);
-    border-radius: 50%;
-    background: rgba(244, 246, 255, .08);
-    color: var(--canvas);
-    cursor: pointer;
-  }
-  .hero-animation-toggle:hover { background: rgba(244, 246, 255, .1); }
-  .hero-animation-toggle:focus-visible { outline: 3px solid var(--canvas); outline-offset: 3px; box-shadow: 0 0 0 3px var(--midnight); }
-  .hero-animation-icon { display: block; }
-  .hero-animation-icon-play { display: none; }
-  .hero-animation-toggle[aria-pressed="true"] .hero-animation-icon-pause { display: none; }
-  .hero-animation-toggle[aria-pressed="true"] .hero-animation-icon-play { display: block; }
-  .hero.animation-paused .hero-caret { animation-play-state: paused; }
 
   .hero-actions { display: flex; gap: 14px; align-items: stretch; justify-content: center; flex-wrap: wrap; }
 
@@ -443,41 +407,29 @@ const statusAttributes = programStatusAttributes({ program, ui });
 <script>
   import type { HeroClientCopy } from '../lib/content';
   import { showProgramStatuses } from '../lib/program-status-client';
+  import { motionAllowed } from '../lib/motion';
   showProgramStatuses();
   const heroCopy: HeroClientCopy = JSON.parse(document.querySelector<HTMLElement>('[data-hero-copy]')!.dataset.heroCopy!);
   const heroVerbs = heroCopy.verbs;
 
   const verb = document.querySelector<HTMLElement>('[data-hero-verb]');
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  const toggle = document.querySelector<HTMLButtonElement>('[data-hero-animation-toggle]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (verb && heroVerbs.length > 1) {
     if (reduced) {
       document.querySelector('[data-hero-caret]')?.remove();
-      if (toggle) toggle.hidden = true;
     } else {
       const TYPE = 70;
       const ERASE = 45;
       const HOLD = 2200;
       let index = 0;
-      let paused = false;
-
-      toggle?.addEventListener('click', () => {
-        paused = !paused;
-        toggle.setAttribute('aria-pressed', String(paused));
-        const label = paused ? heroCopy.resume : heroCopy.pause;
-        toggle.setAttribute('aria-label', label);
-        toggle.title = label;
-        hero?.classList.toggle('animation-paused', paused);
-      });
 
       const wait = (ms: number) =>
         new Promise<void>((done) => {
           let remaining = ms;
           let previous = performance.now();
           const step = (now: number) => {
-            if (!paused) remaining -= now - previous;
+            if (motionAllowed()) remaining -= now - previous;
             previous = now;
             if (remaining <= 0) done();
             else requestAnimationFrame(step);
