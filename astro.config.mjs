@@ -1,5 +1,4 @@
 import { defineConfig } from 'astro/config';
-import node from '@astrojs/node';
 import sitemap from '@astrojs/sitemap';
 import cspHeaders from './src/integrations/csp-headers.mjs';
 
@@ -10,8 +9,6 @@ const useTestSiteKey = Boolean(branch && branch !== PRODUCTION_BRANCH && testSit
 
 export default defineConfig({
   site: 'https://squai.io',
-  output: 'static',
-  adapter: node({ mode: 'standalone' }),
   server: {
     host: '0.0.0.0',
     port: 3000,
