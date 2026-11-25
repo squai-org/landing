@@ -21,11 +21,12 @@ describe('Que vas a lograr', () => {
     const { outcomes } = await parseOne();
     expect(outcomes?.title).toBe('Lo que vas a lograr.');
     expect(outcomes?.pills).toEqual([
-      'Pedirle bien a la IA',
-      'Revisar lo que responde',
-      'Cuidar tus datos',
-      'Elegir la herramienta',
-      'Armar tus rutinas',
+      'Automatizar lo que repites',
+      'Ordenar tu trabajo',
+      'Crear sin sonar genérico',
+      'Respuestas que sí sirven',
+      'Cuidar tu información',
+      'Saber cuándo confiar',
     ]);
   });
 
@@ -51,17 +52,19 @@ describe('Franja de datos', () => {
     expect(marquee?.lineA.length).toBeGreaterThan(0);
     expect(marquee?.lineB).toEqual([
       '8 sesiones en vivo',
-      'Grabación de cada clase',
-      'Guía por sesión',
-      'Certificado',
-      'PSE, Nequi, Bancolombia o tarjeta',
+      'Grabación por 1 mes',
+      'Comunidad en WhatsApp',
+      'Guías y recursos',
+      'Proyecto personal',
+      'Certificado Squai',
     ]);
   });
 
   it('fecha y horario salen de la cohorte, no del texto editorial', async () => {
     const { marquee } = await parseOne();
-    expect(marquee?.lineA.map((item) => item.cohort)).toEqual(['dates', 'schedule']);
-    expect(marquee?.lineA.every((item) => item.text === undefined)).toBe(true);
+    const cohortItems = marquee?.lineA.filter((item) => item.cohort) ?? [];
+    expect(cohortItems.map((item) => item.cohort)).toEqual(['dates', 'schedule']);
+    expect(cohortItems.every((item) => item.text === undefined)).toBe(true);
   });
 
   it('un item sin texto ni cohorte se rechaza', async () => {
@@ -75,7 +78,7 @@ describe('Franja de datos', () => {
   });
 });
 
-describe('Mentores: sello, cita y cifras', () => {
+describe('Mentores: sello, cita, rol y bio', () => {
   it('cada fundador tiene sello y cita', async () => {
     const { team } = await parseOne();
     expect(team?.mentors?.map((mentor) => mentor.name)).toEqual(['Laura Villada', 'Sebastián Rico']);
@@ -83,22 +86,18 @@ describe('Mentores: sello, cita y cifras', () => {
     expect(team?.mentors?.every((mentor) => mentor.quote.length > 0)).toBe(true);
   });
 
-  it('son tres cifras con su etiqueta', async () => {
+  it('cada mentor trae su rol y su bio para el programa', async () => {
     const { team } = await parseOne();
-    expect(team?.stats).toEqual([
-      { value: '1.200+', label: 'personas formadas' },
-      { value: '85', label: 'charlas dictadas' },
-      { value: '30', label: 'organizaciones atendidas' },
-    ]);
+    expect(team?.mentors?.every((mentor) => Boolean(mentor.role && mentor.bio))).toBe(true);
   });
 
-  it('sello, cita y cifras son opcionales', async () => {
+  it('sello, cita, rol y bio son opcionales', async () => {
     expect(serviceSchema.safeParse({ ...(await loadOne()), team: { title: 'T', closing: 'C' } }).success).toBe(true);
   });
 
   it('el CMS edita los mismos campos', async () => {
     const form = await formOf('one-equipo');
-    for (const field of ['mentors', 'badge', 'quote', 'stats', 'value', 'label']) expect(form).toContain(`- name: ${field}`);
+    for (const field of ['mentors', 'badge', 'quote', 'role', 'bio']) expect(form).toContain(`- name: ${field}`);
   });
 });
 
@@ -125,9 +124,9 @@ describe('Que vas a lograr: componente', () => {
 
   it('el escenario conserva la proporcion del diseno', async () => {
     const source = await read('src/components/OneOutcomes.astro');
-    expect(source).toContain('aspect-ratio: 1840 / 760');
-    expect(source).toContain('aspect-ratio: 834 / 560');
-    expect(source).toContain('aspect-ratio: 402 / 570');
+    expect(source).toContain('aspect-ratio: 1840 / 1080');
+    expect(source).toContain('aspect-ratio: 834 / 720');
+    expect(source).toContain('aspect-ratio: 402 / 860');
   });
 
   it('entra con el resorte del motor, retardo de 72 ms y margen del 25 % superior', async () => {
@@ -177,11 +176,8 @@ describe('Mentores: componente', () => {
     expect(source).toMatch(/\.mentor-stamp \{[^}]*rotate: 6deg/);
   });
 
-  it('la cita lleva comillas tipograficas y la fila de cifras es una lista de definiciones', async () => {
+  it('la cita lleva comillas tipograficas', async () => {
     const source = await read('src/components/OneTeam.astro');
     expect(source).toContain('“');
-    expect(source).toContain('<dl class="mentor-stats"');
-    expect(source).toMatch(/\.mentor-stat:nth-child\(2\) \{[^}]*rotate: -1\.5deg/);
-    expect(source).toMatch(/\.mentor-stat:nth-child\(3\) \{[^}]*rotate: 1\.8deg/);
   });
 });

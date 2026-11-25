@@ -6,6 +6,14 @@
     "target": "inscripcion",
     "label": "Quiero inscribirme"
   },
+  "investment": {
+    "referencePrice": {
+      "COP": 550000,
+      "USD": 185
+    },
+    "discountPercent": 20,
+    "discountDeadline": "31 de diciembre"
+  },
   "hero": {
     "title": "Haz que la IA sí te ahorre tiempo en el trabajo.",
     "lead": "8 sesiones prácticas para usar la IA en tus correos, informes y tareas diarias, paso a paso y con ejemplos de tu trabajo.",

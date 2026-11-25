@@ -366,13 +366,6 @@ content:
                     label: Cargo
                     type: string
                     required: true
-                  - name: linkedin
-                    label: LinkedIn
-                    description: URL https completa. Vacío oculta el enlace.
-                    type: string
-                    pattern:
-                      regex: ^$|^https://
-                      message: Usa una URL que empiece por https:// o deja el campo vacío.
                   - name: founder
                     label: Es fundador
                     description: Marca a quienes el sitio declara como fundadores (JSON-LD y sección de equipo de Squai One).
@@ -515,6 +508,17 @@ content:
                 label: Subtítulo
                 type: text
                 required: true
+              - name: ctaLabel
+                label: Texto del botón del encabezado
+                description: Vacío usa el texto del botón principal.
+                type: string
+              - name: supportSchedule
+                label: Línea de horario y oferta
+                description: Si la llenas, reemplaza las fechas y el horario que salen de la base de datos.
+                type: string
+              - name: supportOffer
+                label: Línea extra bajo el horario
+                type: string
               - name: note
                 label: Apunte a mano
                 description: Etiqueta oscura junto a la foto.
@@ -892,10 +896,6 @@ content:
                 label: Apunte a mano
                 type: string
                 required: true
-              - name: stepLabel
-                label: Etiqueta del número de paso
-                description: Se muestra como "Paso 1", "Paso 2"...
-                type: string
               - name: steps
                 label: Pasos
                 type: object
@@ -954,14 +954,6 @@ content:
                 label: Resumen
                 type: string
                 required: true
-              - name: moduleLabel
-                label: Etiqueta de módulo
-                description: Opcional. No se muestra en las tarjetas.
-                type: string
-              - name: sessionLabel
-                label: Etiqueta de sesión
-                description: Opcional. No se muestra en las tarjetas.
-                type: string
               - name: topicsLabel
                 label: Título de la lista de temas
                 type: string
@@ -997,13 +989,6 @@ content:
                     list:
                       min: 1
                       collapsible: false
-                  - name: sessions
-                    label: Sesiones del módulo
-                    description: Opcional.
-                    type: string
-                    list:
-                      min: 1
-                      collapsible: false
                   - name: illustration
                     label: Ilustración
                     type: select
@@ -1028,40 +1013,6 @@ content:
                           value: /illustrations/sesiones/sesion-8.svg
                   - name: alt
                     label: Texto alternativo de la ilustración
-                  - name: sessionArt
-                    label: Ilustración por sesión
-                    description: Opcional. Una por cada sesión del módulo, en orden. Sin ellas, todas las sesiones usan la ilustración del módulo.
-                    type: object
-                    list:
-                      collapsible:
-                        summary: '{alt}'
-                    fields:
-                      - name: illustration
-                        label: Ilustración
-                        type: select
-                        required: true
-                        options:
-                          values:
-                            - label: Chip con chispa
-                              value: /illustrations/sesiones/sesion-1.svg
-                            - label: Globos con error y acierto
-                              value: /illustrations/sesiones/sesion-2.svg
-                            - label: Mensaje a medio escribir
-                              value: /illustrations/sesiones/sesion-3.svg
-                            - label: Documentos y formato
-                              value: /illustrations/sesiones/sesion-4.svg
-                            - label: Lupa
-                              value: /illustrations/sesiones/sesion-5.svg
-                            - label: Escudo con candado
-                              value: /illustrations/sesiones/sesion-6.svg
-                            - label: Correo y reloj
-                              value: /illustrations/sesiones/sesion-7.svg
-                            - label: Camino con bandera
-                              value: /illustrations/sesiones/sesion-8.svg
-                      - name: alt
-                        label: Texto alternativo de la ilustración
-                        type: string
-                        required: true
       - name: one-franja
         label: Franja de datos
         description: Dos cintas con datos del programa, antes de Quiénes enseñan. Fecha y horario salen de la cohorte; en una cinta, un item con cohorte no lleva texto.
@@ -1149,22 +1100,14 @@ content:
                     label: Cita
                     type: text
                     required: true
-              - name: stats
-                label: Cifras
-                description: Fila de cifras bajo las tarjetas de mentores.
-                type: object
-                list:
-                  collapsible:
-                    summary: '{value}'
-                fields:
-                  - name: value
-                    label: Cifra
+                  - name: role
+                    label: Cargo en el programa
+                    description: Vacío usa el cargo de Inicio → Equipo.
                     type: string
-                    required: true
-                  - name: label
-                    label: Descripción
-                    type: string
-                    required: true
+                  - name: bio
+                    label: Bio en el programa
+                    description: Vacío usa la descripción de Inicio → Equipo.
+                    type: text
       - name: one-testimonios
         label: Testimonios
         type: file
@@ -1179,9 +1122,6 @@ content:
                 label: Título
                 type: string
                 required: true
-              - name: lead
-                label: Bajada
-                type: text
               - name: quotes
                 label: Testimonios
                 type: object
@@ -1250,6 +1190,59 @@ content:
                 label: Fecha límite del descuento
                 description: Texto libre, por ejemplo «15 de diciembre».
                 type: string
+      - name: one-whatsapp
+        label: WhatsApp de la página
+        description: Opcional. Lo que llenes aquí reemplaza el botón flotante de WhatsApp general solo en la página de Squai One.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: whatsapp
+            label: false
+            type: object
+            fields:
+              - name: label
+                label: Nombre accesible del botón
+                type: string
+              - name: message
+                label: Mensaje precargado en el chat
+                type: string
+              - name: tooltip
+                label: Texto emergente junto al botón
+                type: string
+              - name: panel
+                label: Panel de temas rápidos
+                type: object
+                fields:
+                  - name: dialogLabel
+                    label: Nombre accesible del panel
+                    type: string
+                  - name: title
+                    label: Título
+                    type: string
+                  - name: subtitle
+                    label: Subtítulo
+                    type: string
+                  - name: close
+                    label: Nombre accesible del botón de cerrar
+                    type: string
+                  - name: topics
+                    label: Temas
+                    type: object
+                    list:
+                      min: 1
+                      max: 5
+                      collapsible:
+                        summary: '{label}'
+                    fields:
+                      - name: label
+                        label: Texto del tema
+                        type: string
+                        required: true
+                      - name: message
+                        label: Mensaje precargado
+                        type: string
+                        required: true
       - name: one-navegacion
         label: Menú de la página
         description: Elementos del menú superior que solo se ven en la página de Squai One, y el botón que lleva a la página de la empresa.
@@ -1297,7 +1290,6 @@ content:
               - name: lead
                 label: Texto de apoyo
                 type: string
-                required: true
               - name: categoriesLabel
                 label: Título de la lista de categorías
                 type: string
@@ -2061,6 +2053,9 @@ content:
                         label: Mensaje precargado en el chat
                         type: string
                         required: true
+                      - name: tooltip
+                        label: Texto emergente junto al botón
+                        type: string
                       - name: panel
                         label: Panel de temas rápidos
                         type: object
@@ -2520,19 +2515,38 @@ content:
                         label: Título
                         type: string
                         required: true
-                      - name: copy
-                        label: Párrafos
-                        type: text
+                      - name: includesTitle
+                        label: Título de lo que incluye
+                        type: string
+                        required: true
+                      - name: includesItems
+                        label: Lo que incluye
+                        type: string
                         required: true
                         list:
                           min: 1
-                          collapsible: true
-                      - name: formTitle
-                        label: Título del formulario
+                          collapsible: false
+                      - name: datesTitle
+                        label: Título de fechas
                         type: string
                         required: true
-                      - name: formSubtitle
-                        label: Subtítulo del formulario
+                      - name: datesItems
+                        label: Fechas
+                        type: string
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: false
+                      - name: seatsLabel
+                        label: Etiqueta de cupos
+                        type: string
+                        required: true
+                      - name: seatsText
+                        label: Texto de cupos
+                        type: string
+                        required: true
+                      - name: formTitle
+                        label: Título del formulario
                         type: string
                         required: true
                       - name: secureNote
@@ -2596,54 +2610,6 @@ content:
                             label: Texto de cliente ya inscrito
                             type: string
                             required: true
-                      - name: investment
-                        label: Inversión
-                        type: object
-                        required: true
-                        fields:
-                          - name: eyebrow
-                            label: Antetítulo
-                            type: string
-                            required: true
-                          - name: copy
-                            label: Párrafos
-                            type: text
-                            required: true
-                            list:
-                              min: 1
-                              collapsible: true
-                          - name: referenceLabel
-                            label: Etiqueta del Precio de referencia
-                            description: La lee el lector de pantalla antes del precio tachado. El valor del precio se edita en Squai One → Inversión.
-                            type: string
-                            required: true
-                          - name: discountLabel
-                            label: Texto del descuento
-                            description: Debe incluir {percent}, que se reemplaza por el porcentaje de descuento.
-                            type: string
-                            required: true
-                          - name: deadlineLabel
-                            label: Texto de la fecha límite
-                            description: Debe incluir {date}, que se reemplaza por la fecha límite del descuento.
-                            type: string
-                            required: true
-                      - name: paymentMethods
-                        label: Medios de pago
-                        description: Solo escribe los que Bold tiene activos. Bre-B no se lista hasta confirmarlo en Bold.
-                        type: object
-                        required: true
-                        fields:
-                          - name: label
-                            label: Título de la lista
-                            type: string
-                            required: true
-                          - name: items
-                            label: Medios
-                            type: string
-                            required: true
-                            list:
-                              min: 1
-                              collapsible: false
                       - name: currency
                         label: Selector de moneda
                         description: El precio de cada moneda vive en D1 (program_prices), no aquí.
@@ -2660,6 +2626,26 @@ content:
                             required: true
                           - name: usd
                             label: Opción dólares
+                            type: string
+                            required: true
+                      - name: investment
+                        label: Inversión
+                        type: object
+                        required: true
+                        fields:
+                          - name: referenceLabel
+                            label: Etiqueta del Precio de referencia
+                            description: La lee el lector de pantalla antes del precio tachado. El valor del precio se edita en Squai One → Inversión.
+                            type: string
+                            required: true
+                          - name: discountLabel
+                            label: Texto del descuento
+                            description: Debe incluir {percent}, que se reemplaza por el porcentaje de descuento.
+                            type: string
+                            required: true
+                          - name: deadlineLabel
+                            label: Texto de la fecha límite
+                            description: Debe incluir {date}, que se reemplaza por la fecha límite del descuento.
                             type: string
                             required: true
                       - name: button

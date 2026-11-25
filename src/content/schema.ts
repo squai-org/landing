@@ -26,6 +26,12 @@ const span = text.regex(/^span-[2-6](?: row-[2-5])?$/);
 // foto nueva es un cambio de codigo, no editorial.
 export const teamPhotos = ['/images/team1.webp', '/images/team2.webp', '/images/team3.webp', '/images/team4.webp', '/images/team5.webp', '/images/team6.webp'] as const;
 const faq = z.object({ q: text, a: paragraphs, category: optional(text) });
+const optionalAmount = optional(z.number().int().positive());
+const investment = z.object({
+  referencePrice: z.object({ COP: optionalAmount, USD: optionalAmount }).default({}),
+  discountPercent: optional(z.number().int().min(1).max(99)),
+  discountDeadline: optional(text),
+}).optional();
 const labels = z.object({
   whatWeDo: text, services: text, team: text, faq: text, impact: text,
   origin: text, brand: text, reserve: text, call: text, challenge: text,
@@ -116,6 +122,7 @@ export const serviceSchema = z.object({
   howItWorks: howItWorks.optional(),
   syllabus: syllabus.optional(),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']).default(''), target: z.string().default('') }),
+  investment,
   hero: z.object({
     title: text, lead: text, ctaLabel: optional(text),
     supportSchedule: optional(text), supportOffer: optional(text),
@@ -239,11 +246,6 @@ export const siteSchema = z.object({
       seatsLabel: text,
       seatsText: text,
       formTitle: text,
-      referencePriceText: text,
-      discountNote: text,
-      legalPrefix: text,
-      legalLink: text,
-      legalSuffix: text,
       secureNote: text.optional(),
       thanks: z.object({
         checking: text, approvedTitle: text, approvedBody: text,
@@ -252,6 +254,11 @@ export const siteSchema = z.object({
         errorTitle: text, errorBody: text,
         orderLabel: text, backCta: text,
         enrolledTitle: text, enrolledBody: text,
+      }),
+      investment: z.object({
+        referenceLabel: text,
+        discountLabel: text.refine((value) => value.includes('{percent}'), 'Include {percent}'),
+        deadlineLabel: text.refine((value) => value.includes('{date}'), 'Include {date}'),
       }),
       button: z.object({ paying: text, retry: text }),
       currency: z.object({ label: text, cop: text, usd: text }),
@@ -281,6 +288,7 @@ export const siteSchema = z.object({
       privacyConsentPrefix: text, privacyConsentLink: text, privacyConsentSuffix: text,
       referralSources: z.array(z.object({ value: z.enum(['instagram', 'linkedin', 'tiktok', 'youtube', 'google', 'otras']), label: text })).length(6),
       teamSizes: z.array(z.object({ value: z.enum(['menos-10', '10-30', '30-100', 'mas-100']), label: text })).length(4),
+      termsConsentPrefix: text, termsConsentLink: text, termsConsentSuffix: text,
       placeholders: z.object({ fullName: text, email: text, phone: text }).optional(),
     }),
     contact: z.object({ title: text, close: text, bookingFallback: text, bookingFallbackLink: text }),

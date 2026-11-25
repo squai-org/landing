@@ -166,7 +166,10 @@
             "value": "mas-100",
             "label": "Más de 100"
           }
-        ]
+        ],
+        "termsConsentPrefix": "He leído y acepto los ",
+        "termsConsentLink": "Términos de Servicio",
+        "termsConsentSuffix": " de Squai."
       },
       "feedback": {
         "invalid": "Faltan campos por llenar o el correo tiene un formato extraño. Revisa los cuadros marcados.",
@@ -199,11 +202,6 @@
         "seatsLabel": "Cupos:",
         "seatsText": "Grupo de máximo 30 personas.",
         "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
-        "referencePriceText": "Precio: $550.000 COP (185 USD)",
-        "discountNote": "20% de descuento hasta el 31 de diciembre.",
-        "legalPrefix": "Al inscribirte aceptas los ",
-        "legalLink": "términos y condiciones",
-        "legalSuffix": ".",
         "secureNote": "Pago seguro en línea · Confirmación por correo",
         "thanks": {
           "checking": "Estamos confirmando tu pago con Bold…",
@@ -219,6 +217,11 @@
           "backCta": "Volver al programa",
           "enrolledTitle": "Ya estás inscrito",
           "enrolledBody": "Este correo ya tiene un pago aprobado en el programa, así que no te cobramos de nuevo. Revisa tu correo: ahí están los datos del programa. Si no los encuentras, escríbenos a team@squai.io."
+        },
+        "investment": {
+          "referenceLabel": "Precio de referencia",
+          "discountLabel": "{percent}% de descuento",
+          "deadlineLabel": "hasta el {date}."
         },
         "button": {
           "paying": "Completa el pago en la ventana de Bold",

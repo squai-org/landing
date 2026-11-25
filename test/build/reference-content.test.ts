@@ -8,10 +8,20 @@ const root = path.join(import.meta.dirname, '../..');
 const service = async () => JSON.parse(await readFile(path.join(root, 'src/content/services/squai-one.json'), 'utf8'));
 
 describe('contenido del Precio de referencia', () => {
-  it('el servicio sin campos de inversion es valido y no muestra nada', async () => {
+  it('el servicio sin campos de inversion es valido', async () => {
+    const { investment: _investment, ...rest } = await service();
+
+    expect(serviceSchema.parse(rest).investment).toBeUndefined();
+  });
+
+  it('Squai One declara su precio de referencia, descuento y fecha limite', async () => {
     const parsed = serviceSchema.parse(await service());
 
-    expect(parsed.investment).toBeUndefined();
+    expect(parsed.investment).toEqual({
+      referencePrice: { COP: 550000, USD: 185 },
+      discountPercent: 20,
+      discountDeadline: '31 de diciembre',
+    });
   });
 
   it('acepta precio por moneda, porcentaje y fecha limite', async () => {
