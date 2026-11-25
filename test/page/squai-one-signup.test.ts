@@ -17,13 +17,13 @@ describe('pagina de Squai One: inscripcion', () => {
     signup = sectionOf(await readFile(path.join(dist, 'servicios/squai-one.html'), 'utf8'), 'inscripcion');
   });
 
-  it('la forma del fondo usa el tono de inscripcion opaco', () => {
+  it('la forma del fondo usa periwinkle-4 opaco', () => {
     const backdrop = /<div class="one-backdrop"[\s\S]*?<\/svg>/.exec(signup)?.[0] ?? '';
     const paths = backdrop.match(/<path[^>]*>/g) ?? [];
 
     expect(paths.length).toBeGreaterThan(0);
     for (const tag of paths) {
-      expect(tag).toContain('fill="#7174da"');
+      expect(tag).toContain('fill="#d2d7fc"');
       expect(tag).not.toContain('#e1e4fd');
     }
   });
