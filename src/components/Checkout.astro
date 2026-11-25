@@ -80,6 +80,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
       >
         <div class="checkout-card-heading">
           <h3 class="one-h3">{ui.checkout.formTitle}</h3>
+          <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
         </div>
 
         <div class="checkout-pricing">
@@ -123,20 +124,21 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
         <form id="checkout-form" data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
           <input type="hidden" name="program" value={checkout.program} />
-          <p class="form-instructions"><span aria-hidden="true">*</span> {ui.forms.required}</p>
 
+          <div class="one-signup-row">
           <label class="field-group" for="checkout-full-name">
             <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
             <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" placeholder={ui.forms.placeholders?.fullName} class="field" aria-describedby="checkout-full-name-error" />
             <span id="checkout-full-name-error" role="alert" class="field-error" data-field-error="full_name"></span>
           </label>
-
-          <div class="one-signup-row">
             <label class="field-group" for="checkout-email">
               <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
               <input id="checkout-email" type="email" name="email" required autocomplete="email" placeholder={ui.forms.placeholders?.email} class="field" aria-describedby="checkout-email-error" />
               <span id="checkout-email-error" role="alert" class="field-error" data-field-error="email"></span>
             </label>
+          </div>
+
+          <div class="one-signup-row">
             <div class="field-group" role="group" aria-labelledby="checkout-phone-label">
               <span class="field-label" id="checkout-phone-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
               <div class="one-signup-phone">
@@ -147,8 +149,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
               </label>
               </div>
             </div>
-          </div>
-
           <CustomSelect
             idPrefix="checkout"
             name="referral_source"
@@ -158,9 +158,10 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
             required={false}
             optionalLabel={ui.forms.optional}
           />
+          </div>
 
-          <Turnstile action="checkout" />
-
+          <div class="checkout-consent-row" data-consent-row>
+          <div class="checkout-consents">
           <label class="field-group consent-field" for="checkout-terms-consent">
             <span class="consent-row">
               <input id="checkout-terms-consent" type="checkbox" name="terms_consent" required class="consent-checkbox" aria-describedby="checkout-terms-consent-error" />
@@ -180,6 +181,9 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
             </span>
             <span id="checkout-privacy-consent-error" role="alert" class="field-error" data-field-error="privacy_consent"></span>
           </label>
+          </div>
+          <Turnstile action="checkout" />
+          </div>
 
           <div class="form-submit" data-sales-panel="form">
             <Button variant="primary" type="submit" block arrow>{labels.reserve}</Button>
@@ -620,6 +624,8 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   .checkout-card form { display: flex; flex-direction: column; gap: 1.5rem; }
   .checkout-card form > .form-instructions { margin: 0; font-size: 14px; color: var(--neutral-11); }
   .one-signup-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .checkout-consent-row { display: flex; flex-direction: column; gap: 1.5rem; }
+  .checkout-consents { display: flex; flex-direction: column; gap: 1.5rem; }
   .one-signup-phone { display: grid; grid-template-columns: minmax(96px, auto) minmax(0, 1fr); gap: 0.5rem; }
 
   .one-signup :global(.field-group) { --group-gap: calc(var(--u) * 10); gap: var(--group-gap); }
@@ -704,6 +710,16 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     .one-signup-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
     .checkout-column { grid-column: span 5 / span 5; }
     .checkout-form-column { grid-column: span 7 / span 7; }
+    .checkout-card-heading { flex-direction: row; align-items: baseline; justify-content: space-between; }
+    .checkout-card form { gap: 10px; }
+    .checkout-card .one-signup-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .checkout-consent-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+    .checkout-consents { gap: 10px; }
+    .checkout-consent-row :global(.turnstile-wrap) { margin-top: 0; }
+    .checkout-price-group { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 0.75rem; row-gap: 0.5rem; }
+    .checkout-reference-offer { display: contents; }
+    .checkout-reference-line { margin: 0; }
+    .checkout-discount-line { grid-column: 1 / -1; justify-self: start; }
   }
   @media (prefers-reduced-motion: reduce) {
     .price-amount[data-state='loading'], .form-status::before { animation: none; }

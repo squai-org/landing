@@ -150,6 +150,49 @@ describe('pagina de Squai One: contrato del formulario', () => {
     expect(referral).toContain('(opcional)');
   });
 
+  it('los checks de terminos y privacidad van antes que el Turnstile dentro del mismo grupo', () => {
+    const group = enclosingElement(form, 'data-consent-row', 'div');
+    const terms = group.indexOf('name="terms_consent"');
+    const privacy = group.indexOf('name="privacy_consent"');
+    const widget = group.indexOf('turnstile-wrap');
+
+    expect(terms).toBeGreaterThan(-1);
+    expect(privacy).toBeGreaterThan(terms);
+    if (widget !== -1) expect(widget).toBeGreaterThan(privacy);
+    expect(form.indexOf('data-consent-row')).toBeLessThan(form.indexOf('data-sales-panel="form"'));
+  });
+
+  it('el Precio de referencia esta en la misma linea del Precio vigente y el descuento debajo', () => {
+    const group = enclosingElement(page, 'class="checkout-price-group"', 'div');
+    const price = group.indexOf('checkout-price-line');
+    const reference = group.indexOf('checkout-reference-line');
+    const discount = group.indexOf('checkout-discount-line');
+
+    expect(price).toBeGreaterThan(-1);
+    expect(reference).toBeGreaterThan(price);
+    expect(discount).toBeGreaterThan(reference);
+  });
+
+  it('las filas de campos son nombre con correo y telefono con como descubriste', () => {
+    const rows = [...form.matchAll(/class="one-signup-row"/g)].map((match) => match.index!);
+
+    expect(rows).toHaveLength(2);
+    const first = form.slice(rows[0]!, rows[1]);
+    const second = form.slice(rows[1]);
+    expect(first.indexOf('name="full_name"')).toBeGreaterThan(-1);
+    expect(first.indexOf('name="email"')).toBeGreaterThan(first.indexOf('name="full_name"'));
+    expect(first).not.toContain('name="phone"');
+    expect(second.indexOf('name="phone"')).toBeGreaterThan(-1);
+    expect(second.indexOf('name="referral_source"')).toBeGreaterThan(second.indexOf('name="phone"'));
+  });
+
+  it('Campos obligatorios acompana al titulo de la tarjeta', () => {
+    const heading = enclosingElement(container, 'checkout-card-heading', 'div');
+
+    expect(heading).toContain('Campos obligatorios');
+    expect(form).not.toContain('Campos obligatorios');
+  });
+
   it('tiene un unico boton de envio con su etiqueta', () => {
     const submits = submitButtons(form);
 
