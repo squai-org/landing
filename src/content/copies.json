@@ -85,6 +85,13 @@
       "scrollTop": {
         "label": "Volver arriba"
       },
+      "carousel": {
+        "roleDescription": "carrusel"
+      },
+      "cohort": {
+        "from": "Desde el {start}",
+        "range": "Del {start} al {end}"
+      },
       "skip": "Saltar al contenido",
       "motion": {
         "pause": "Pausar animaciones",
@@ -183,14 +190,25 @@
         "turnstileUnsupported": "Este navegador no permite completar la verificación de seguridad. Actualízalo o prueba con otro navegador."
       },
       "checkout": {
-        "title": "Inscríbete a nuestro programa para aprender IA",
-        "copy": [
-          "Paga en línea y tu cupo queda reservado en el mismo momento. Te llega la confirmación al correo con los datos del programa.",
-          "Los cupos son limitados. Creemos que en una clase con muchas personas te conviertes en un avatar silenciado y las preguntas se pierden en el chat.",
-          "Es un pago único por todo el programa. No hay cobros automáticos después."
+        "title": "Aprende IA sin sentirte perdido",
+        "includesTitle": "Qué incluye",
+        "includesItems": [
+          "8 sesiones en vivo de 2 horas y media",
+          "Grabaciones de cada sesión",
+          "Comunidad de WhatsApp",
+          "Guías y recursos de apoyo",
+          "Certificado al terminar",
+          "Acompañamiento en tu proyecto personal"
         ],
+        "datesTitle": "Fechas",
+        "datesItems": [
+          "Inscripciones hasta el 22 de enero de 2027",
+          "El programa inicia el 26 de enero y termina el 18 de febrero de 2027",
+          "Sesiones los martes y jueves, de 6:30 a 9:00 p. m. (hora de Colombia)"
+        ],
+        "seatsLabel": "Cupos:",
+        "seatsText": "Grupo de máximo 30 personas.",
         "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
-        "formSubtitle": "Pagas con tarjeta, PSE o Nequi.",
         "secureNote": "Pago seguro en línea · Confirmación por correo",
         "thanks": {
           "checking": "Estamos confirmando tu pago con Bold…",
@@ -208,18 +226,9 @@
           "enrolledBody": "Este correo ya tiene un pago aprobado en el programa, así que no te cobramos de nuevo. Revisa tu correo: ahí están los datos del programa. Si no los encuentras, escríbenos a team@squai.io."
         },
         "investment": {
-          "eyebrow": "INVERSIÓN",
-          "copy": [
-            "Un solo pago por las cuatro semanas del programa.",
-            "Cuesta menos que seguir perdiendo horas intentando entender la IA por tu cuenta."
-          ],
           "referenceLabel": "Precio de referencia",
-          "discountLabel": "{percent} % de descuento",
-          "deadlineLabel": "Hasta el {date}"
-        },
-        "paymentMethods": {
-          "label": "Medios de pago",
-          "items": ["Tarjeta de crédito", "Tarjeta débito", "PSE", "Nequi", "Botón Bancolombia"]
+          "discountLabel": "{percent}% de descuento",
+          "deadlineLabel": "hasta el {date}."
         },
         "button": {
           "paying": "Completa el pago en la ventana de Bold",
@@ -286,7 +295,7 @@
       "faq": "Preguntas frecuentes",
       "brand": "Squai",
       "call": "Solicitar una llamada",
-      "reserve": "Reservar mi cupo para aprender IA",
+      "reserve": "Inscribirme al programa",
       "challenge": "Nuestro desafío",
       "capabilities": "Nuestro programa",
       "terms": "Términos de Servicio",
@@ -345,7 +354,6 @@
         "img": "/images/team1.webp",
         "name": "Laura Villada",
         "role": "Estratega de Adopción de IA & Co-fundadora",
-        "linkedin": "https://www.linkedin.com/in/laura-villadaa/",
         "founder": true,
         "d": "Magíster en ingeniería, con 5 años como docente y directora de operaciones en una empresa de tecnología de EE. UU. Laura diseña la estructura de nuestros programas para que el aprendizaje sea fácil, entretenido y sostenible."
       },
@@ -353,7 +361,6 @@
         "img": "/images/team2.webp",
         "name": "Sebastián Rico",
         "role": "Ingeniero de IA & Co-fundador",
-        "linkedin": "https://www.linkedin.com/in/josesebastianricoleyton/",
         "founder": true,
         "d": "Más de 8 años en tecnología y líder de equipos. Sebas arma el núcleo técnico de los programas, dejando fuera todo el humo y promesas falsas que abundan en internet."
       },
@@ -433,7 +440,57 @@
       "imageAlt": "Squai: capacitación y formación en inteligencia artificial",
       "serviceTitle": "{service} — Squai",
       "title": "Capacitación y formación en inteligencia artificial | Squai",
-      "description": "Capacitación en inteligencia artificial para personas, empresas e instituciones educativas. Programas prácticos, en vivo y sin necesidad de perfil técnico."
+      "description": "Capacitación en inteligencia artificial para personas, empresas e instituciones educativas. Programas prácticos, en vivo y sin necesidad de perfil técnico.",
+      "websiteDescription": "Capacitación y formación en inteligencia artificial para personas, empresas e instituciones educativas.",
+      "areaServed": "Latinoamérica",
+      "knowsAbout": [
+        "Inteligencia artificial generativa",
+        "Entrenamiento en inteligencia artificial",
+        "Formación en inteligencia artificial",
+        "Adopción de inteligencia artificial",
+        "Capacitación en inteligencia artificial",
+        "Uso seguro y ético de inteligencia artificial"
+      ],
+      "servicesListName": "Servicios de Squai",
+      "course": {
+        "credential": "Certificado digital de finalización",
+        "mode": "Online, en vivo",
+        "teaches": [
+          "Fundamentos de inteligencia artificial generativa",
+          "Uso práctico de herramientas de inteligencia artificial",
+          "Evaluación y mejora de respuestas generadas por IA",
+          "Uso seguro y responsable de la inteligencia artificial"
+        ],
+        "workload": {
+          "summary": "{sessions} de {length}, {perWeek} por semana durante {weeks}",
+          "session": { "one": "sesión", "many": "sesiones" },
+          "week": { "one": "semana", "many": "semanas" },
+          "hour": { "one": "hora", "many": "horas" },
+          "minute": { "one": "minuto", "many": "minutos" },
+          "halfHour": "{hours} y media",
+          "hoursAndMinutes": "{hours} y {minutes}"
+        }
+      }
+    },
+    "llms": {
+      "language": "Squai trabaja en español.",
+      "goalsTitle": "Qué ayuda a lograr Squai",
+      "goals": [
+        "Aprender inteligencia artificial con práctica y sin tecnicismos.",
+        "Capacitar equipos para integrar IA en tareas y procesos reales.",
+        "Adoptar la inteligencia artificial con criterios de seguridad, ética y revisión humana.",
+        "Integrar inteligencia artificial en instituciones educativas para usar IA.",
+        "Formar docentes, estudiantes e instituciones educativas para usar IA."
+      ],
+      "servicesTitle": "Servicios",
+      "programTitle": "Programa actual",
+      "programNote": "Si las inscripciones están abiertas, el precio y el pago están en [la página del programa]({url}).",
+      "pagesTitle": "Páginas",
+      "homeLabel": "Inicio",
+      "homeNote": "qué hace Squai, servicios, equipo y preguntas frecuentes.",
+      "faqTitle": "Preguntas frecuentes",
+      "contactTitle": "Contacto",
+      "emailLabel": "Correo"
     },
     "company": {
       "legalName": "Squai S.A.S.",

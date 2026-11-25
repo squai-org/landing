@@ -52,24 +52,31 @@ interface FitBlock {
   items: FitStep[];
 }
 
+const photoSources: { src: ImageMetadata; position: string }[] = [
+  { src: teamTable, position: 'center' },
+  { src: teamLead, position: 'right top' },
+  { src: charts, position: 'center' },
+  { src: officeTalk, position: 'top' },
+  { src: laptopDesk, position: 'center' },
+  { src: colleagues, position: 'top' },
+];
+
+const photos: Photo[] = photoSources.map((photo, index) => ({ ...photo, alt: fit.photoAlts[index]! }));
+
 const photoPairs: [Photo, Photo][] = [
-  [
-    { src: teamTable, alt: 'Equipo reunido alrededor de una mesa con portátiles', position: 'center' },
-    { src: teamLead, alt: 'Líder de equipo sonríe con su grupo trabajando detrás', position: 'right top' },
-  ],
-  [
-    { src: charts, alt: 'Manos revisan gráficas impresas sobre una mesa', position: 'center' },
-    { src: officeTalk, alt: 'Dos personas conversan de pie en una oficina', position: 'top' },
-  ],
-  [
-    { src: laptopDesk, alt: 'Persona trabaja en su portátil desde una mesa blanca, vista desde arriba', position: 'center' },
-    { src: colleagues, alt: 'Grupo de colegas se ríe frente a un portátil', position: 'top' },
-  ],
+  [photos[0]!, photos[1]!],
+  [photos[2]!, photos[3]!],
+  [photos[4]!, photos[5]!],
+];
+
+const notForYouSources: { src: ImageMetadata; position: string }[] = [
+  { src: shrugMan, position: 'center 18%' },
+  { src: shrugWoman, position: 'center 25%' },
 ];
 
 const notForYouPair: [Photo, Photo] = [
-  { src: shrugMan, alt: 'Persona con gafas levanta los hombros y las manos con gesto escéptico', position: 'center 18%' },
-  { src: shrugWoman, alt: 'Mujer en camisa blanca levanta ambas manos encogiéndose de hombros', position: 'center 25%' },
+  { src: notForYouSources[0]!.src, alt: fit.notForYou?.photoAlts?.[0] ?? '', position: notForYouSources[0]!.position },
+  { src: notForYouSources[1]!.src, alt: fit.notForYou?.photoAlts?.[1] ?? '', position: notForYouSources[1]!.position },
 ];
 
 const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;

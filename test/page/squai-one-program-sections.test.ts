@@ -36,18 +36,13 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     }
   });
 
-  it('el temario es el carrusel de 8 sesiones sin la lista de modulos', () => {
+  it('el temario es el carrusel de 6 bloques de contenido sin etiquetas de modulo', () => {
     const syllabus = sectionOf(page, 'temario');
 
     expect(count(syllabus, classed('syllabus-module'))).toBe(0);
-    expect(count(syllabus, classed('syllabus-session'))).toBe(8);
-    expect(syllabus).toMatch(/Seis módulos, ocho sesiones/);
-  });
-
-  it('numera las sesiones de 1 a 8 sin repetir', () => {
-    const tags = [...sectionOf(page, 'temario').matchAll(/syllabus-session-tag[^>]*>Sesión (\d+)</g)].map((match) => Number(match[1]));
-
-    expect(tags).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(count(syllabus, classed('syllabus-session'))).toBe(6);
+    expect(syllabus).toMatch(/Lo que vemos en las 8 sesiones/);
+    expect(count(syllabus, classed('session-slide-meta'))).toBe(0);
   });
 
   it('Es para ti integra los tres bloques en el mismo tramo de scroll', () => {
@@ -64,7 +59,7 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     expect(fit).toContain('Conexión a internet.');
     expect(fit).toContain('Una cuenta gratuita de IA');
     expect(fit).toContain('Cualquier herramienta como Claude, ChatGPT o Gemini. Si todavía no la tienes, te ayudamos a crearla en la primera sesión.');
-    expect(fit).toContain('Inscribirme al programa');
+    expect(fit).toContain('Quiero inscribirme');
   });
 
   it('cuenta cuatro pasos y cada ilustracion lleva texto alternativo', () => {

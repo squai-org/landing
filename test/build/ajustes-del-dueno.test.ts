@@ -116,10 +116,9 @@ describe('Testimonios', () => {
   const css = styleOf(source);
   const doc = read('docs/diseno/tokens-y-contraste.md');
 
-  it('la seccion es Periwinkle 5 (#c3c9fc) y el lead pasa a Neutral 12 para cumplir AA sobre ella', () => {
+  it('la seccion es Periwinkle 5 (#c3c9fc)', () => {
     expect(read('src/styles/global.css')).toContain('--periwinkle-5: #c3c9fc;');
     expect(/\.one-quotes \{[^}]*background: var\(--periwinkle-5\);/.test(css)).toBe(true);
-    expect(/\.one-quotes-lead \{[^}]*color: var\(--neutral-12\);/.test(css)).toBe(true);
   });
 
   it('las tarjetas son blanca, crema Gold 3 y Periwinkle 2, con su contraste documentado', () => {

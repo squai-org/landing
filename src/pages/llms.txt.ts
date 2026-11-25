@@ -19,7 +19,7 @@ import { getSiteContent } from '../lib/content';
 import { CONTACT_EMAIL, SITE_URL } from '../lib/seo';
 
 export const GET: APIRoute = async () => {
-  const { program, faqs, legal, seo, services } = await getSiteContent();
+  const { program, faqs, legal, seo, services, llms } = await getSiteContent();
 
   const serviceLines = services
     .map(
@@ -34,41 +34,37 @@ export const GET: APIRoute = async () => {
 
 > ${seo.description}
 
-Squai trabaja en español.
+${llms.language}
 
-## Qué ayuda a lograr Squai
+## ${llms.goalsTitle}
 
-- Aprender inteligencia artificial con práctica y sin tecnicismos.
-- Capacitar equipos para integrar IA en tareas y procesos reales.
-- Adoptar la inteligencia artificial con criterios de seguridad, ética y revisión humana.
-- Integrar inteligencia artificial en instituciones educativas para usar IA.
-- Formar docentes, estudiantes e instituciones educativas para usar IA.
+${llms.goals.map((goal) => `- ${goal}`).join('\n')}
 
-## Servicios
+## ${llms.servicesTitle}
 
 ${serviceLines}
 
-## Programa actual
+## ${llms.programTitle}
 
-**${program.name}** (${program.ecosystem}). Si las inscripciones están abiertas, el precio y el pago están en [la página del programa](${SITE_URL}/servicios/${checkout.program}#inscripcion).
+**${program.name}** (${program.ecosystem}). ${llms.programNote.replace('{url}', `${SITE_URL}/servicios/${checkout.program}#inscripcion`)}
 
 - ${program.duration}
 - ${program.schedule}
 - ${program.modality}
 
-## Páginas
+## ${llms.pagesTitle}
 
-- [Inicio](${SITE_URL}/): qué hace Squai, servicios, equipo y preguntas frecuentes.
+- [${llms.homeLabel}](${SITE_URL}/): ${llms.homeNote}
 - [${legal.terms.title.split('|')[0].trim()}](${SITE_URL}${legalPaths.terms})
 - [${legal.privacy.title.split('|')[0].trim()}](${SITE_URL}${legalPaths.privacy})
 
-## Preguntas frecuentes
+## ${llms.faqTitle}
 
 ${faqLines}
 
-## Contacto
+## ${llms.contactTitle}
 
-- Correo: ${CONTACT_EMAIL}
+- ${llms.emailLabel}: ${CONTACT_EMAIL}
 `;
 
   return new Response(body, {

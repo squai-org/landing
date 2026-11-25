@@ -4,20 +4,30 @@
   "slogan": "Aprende IA. Tu yo del futuro te está mirando.",
   "cta": {
     "target": "inscripcion",
-    "label": "Inscribirme al programa"
+    "label": "Quiero inscribirme"
+  },
+  "investment": {
+    "referencePrice": {
+      "COP": 550000,
+      "USD": 185
+    },
+    "discountPercent": 20,
+    "discountDeadline": "31 de diciembre"
   },
   "hero": {
     "title": "Haz que la IA sí te ahorre tiempo en el trabajo.",
-    "lead": "Entiende la IA desde las bases y conviértela en una herramienta para tu trabajo, en vivo, con práctica guiada y mentores que la usan todos los días.",
-    "note": "100% en vivo, sin clases pregrabadas",
-    "sticker": "Sin saber programar",
+    "lead": "8 sesiones prácticas para usar la IA en tus correos, informes y tareas diarias, paso a paso y con ejemplos de tu trabajo.",
+    "ctaLabel": "Quiero inscribirme",
+    "supportSchedule": "Inicia 26 de ene · Mar y jue 6:30 p. m. COL · 20% dto. hasta el 31 de dic ($440.000 COP / 147 USD)",
+    "note": "100% en vivo",
+    "sticker": "Sin clases pregrabadas que nunca vas a ver",
     "photoAlt": "Mujer sonriente sostiene su portátil y mira hacia el título",
     "datesPending": "Fechas por confirmar",
     "schedulePending": "Horario por confirmar"
   },
   "keyFacts": {
     "title": "Lo que necesitas saber.",
-    "lead": "Lo práctico de un vistazo: cuánto dura, cómo son las clases y qué recibes. No necesitas conocimientos previos.",
+    "lead": "Formato, ritmo y todo lo que incluye tu inscripción en un vistazo.",
     "handwritten": "Un mes, dos clases por semana",
     "load": {
       "weeks": 4,
@@ -95,31 +105,30 @@
   "tone": "peri",
   "order": 1,
   "video": {
-    "title": "En menos de 2 minutos, conoce el programa y a quienes lo imparten",
+    "title": "En menos de 2 minutos te contamos cómo es aprender con nosotros",
     "playLabel": "Reproducir",
     "iframeTitle": "Video de presentación de Squai One con Laura y Sebastián",
-    "caption": "Laura y Sebastián te lo cuentan",
+    "caption": "Somos Laura y Sebastián",
     "posterAlt": "Ilustración de un reproductor de video con un signo de interrogación",
-    "lead": "En este video te contamos para quién es el programa, cómo son las clases y qué te llevas al terminar.",
-    "body": "Lo grabamos con subtítulos en español para que lo veas donde estés, incluso sin sonido.",
+    "lead": "Hemos dado charlas a más de 200 personas y acompañado a profesionales y equipos de distintas áreas.",
     "cta": {
-      "label": "Conocer a Laura y Sebastián",
-      "target": "equipo-one"
+      "label": "Quiero inscribirme",
+      "target": "inscripcion"
     },
-    "mediaTitle": "Video de presentación",
-    "mediaNote": "Muy pronto, con subtítulos",
-    "mediaNoteReady": "Con subtítulos en español",
-    "logosLabel": "Han confiado en nosotros",
-    "logos": [
-      "Nodo",
-      "Aula 21",
-      "Cumbre",
-      "Ruta Pyme"
-    ]
+    "mediaNote": "Muy pronto...",
+    "mediaNoteReady": "Con subtítulos en español"
   },
   "audienceFit": {
     "title": "¿Es para ti?",
     "handwritten": "Puedes empezar sin haber usado la IA antes.",
+    "photoAlts": [
+      "Equipo reunido alrededor de una mesa con portátiles",
+      "Líder de equipo sonríe con su grupo trabajando detrás",
+      "Manos revisan gráficas impresas sobre una mesa",
+      "Dos personas conversan de pie en una oficina",
+      "Persona trabaja en su portátil desde una mesa blanca, vista desde arriba",
+      "Grupo de colegas se ríe frente a un portátil"
+    ],
     "profiles": [
       {
         "t": "Trabajas en una empresa",
@@ -137,6 +146,10 @@
     "notForYou": {
       "title": "No es para ti si...",
       "handwritten": "No te vendemos humo.",
+      "photoAlts": [
+        "Persona con gafas levanta los hombros y las manos con gesto escéptico",
+        "Mujer en camisa blanca levanta ambas manos encogiéndose de hombros"
+      ],
       "items": [
         {
           "t": "Reemplazar todo con IA",
@@ -175,147 +188,104 @@
   },
   "howItWorks": {
     "title": "Cómo funciona",
-    "handwritten": "Cuatro pasos, sin sorpresas",
-    "stepLabel": "Paso",
+    "handwritten": "Un programa preparado para ti",
     "steps": [
       {
-        "t": "Una semana antes",
-        "d": "Te llega por correo la invitación a la comunidad de WhatsApp y los datos para conectarte a las sesiones.",
+        "t": "Antes de empezar",
+        "d": "Una semana antes del inicio recibes por correo la invitación a la comunidad de WhatsApp y los datos para conectarte a las sesiones. Ahí puedes resolver tus dudas antes de la primera clase.",
         "illustration": "/illustrations/pasos/paso-2.svg",
         "alt": "Persona toma café junto a un sobre abierto con una llave de acceso"
       },
       {
         "t": "En cada sesión",
-        "d": "Explicamos, hacemos ejemplos en vivo y practicas con nosotros al lado. No avanzamos mientras queden dudas.",
+        "d": "Hay explicaciones, ejemplos en vivo y una parte práctica en la que entras a tu herramienta de IA y practicas. Las dudas se resuelven en el momento, así que no avanzamos hasta que todo quede claro.",
         "illustration": "/illustrations/pasos/paso-3.svg",
         "alt": "Persona explica algo junto a una videollamada con dos participantes"
       },
       {
         "t": "Entre sesiones",
-        "d": "Trabajas en tu proyecto personal y preguntas lo que no te salga en el grupo de WhatsApp.",
+        "d": "Eliges tu proyecto personal en la primera semana y lo vas trabajando con lo que aprendes. Si algo se te queda sin entender, lo preguntas en la comunidad de WhatsApp, donde resolveremos tus dudas.",
         "illustration": "/illustrations/pasos/paso-4.svg",
         "alt": "Persona revisa su celular junto a la grabación de una clase y un globo con una pregunta"
       },
       {
         "t": "Al terminar",
-        "d": "La comunidad sigue abierta, puedes ver las grabaciones hasta un mes después de la última sesión y recibes tu certificado.",
+        "d": "La comunidad de WhatsApp sigue abierta después del programa, y puedes volver a ver las grabaciones hasta un mes después de la última sesión. Al completar el programa recibes tu certificado.",
         "illustration": "/illustrations/incluye/incluye-4.svg",
         "alt": "Persona sostiene un certificado de finalización"
       }
     ]
   },
   "syllabus": {
-    "title": "Seis módulos, ocho sesiones",
-    "handwritten": "Un recorrido gradual, sin abrumarte",
-    "summary": "8 sesiones · 2 por semana · 2 horas y media cada una",
-    "moduleLabel": "Módulo",
-    "sessionLabel": "Sesión",
+    "title": "Lo que vemos en las 8 sesiones",
+    "handwritten": "Terminas en 4 semanas",
+    "summary": "Repartimos las 20 horas del programa para que aprendas paso a paso sin abrumarte.",
     "topicsLabel": "Lo que vemos",
     "modules": [
       {
-        "t": "Qué es la IA",
-        "d": "Entiendes cómo funciona la IA por dentro, para saber qué pedirle y por qué falla cuando no le das las instrucciones correctas.",
+        "t": "Qué es la IA y cómo funciona",
+        "d": "Ves cómo aprende y por qué a veces inventa respuestas con seguridad.",
         "topics": [
-          "Cómo responde la IA y por qué a veces se equivoca",
-          "Qué hace bien y qué no",
-          "Tu proyecto personal para el programa"
-        ],
-        "sessions": [
-          "Bases de la IA y elección de tu proyecto personal"
+          "Qué es la IA y qué mitos la rodean",
+          "Cómo aprende y cómo decide qué responder",
+          "Por qué inventa información y cuándo desconfiar"
         ],
         "illustration": "/illustrations/sesiones/sesion-1.svg",
         "alt": "Persona señala hacia arriba junto a un chip con una chispa"
       },
       {
-        "t": "Conceptos y uso seguro",
-        "d": "Aprendes a pedir con claridad, a iterar sobre las respuestas y a cuidar tu información y la de los demás.",
+        "t": "Conceptos básicos y uso seguro de la IA",
+        "d": "Aprendes a pedirle las cosas con claridad, a comprobar lo que responde y a decidir qué información compartir con ella.",
         "topics": [
-          "Instrucciones claras, contexto y ejemplos",
-          "Iterar hasta llegar a lo que buscas",
-          "Qué datos no se comparten",
-          "Alucinaciones: cuándo confiar y cuándo revisar"
-        ],
-        "sessions": [
-          "Pedir con claridad e iterar",
-          "Cuidar tu información y saber cuándo confiar"
+          "Qué es una instrucción (prompt) y cómo se escribe bien",
+          "Contexto, memoria y límites de uso (tokens)",
+          "Cómo mejorar un resultado y evitar que solo te dé la razón",
+          "Cómo detectar errores, información inventada y sesgos",
+          "Qué pasa con lo que escribes y cómo proteger tu información"
         ],
         "illustration": "/illustrations/sesiones/sesion-6.svg",
-        "alt": "Persona de brazos cruzados junto a un escudo con candado",
-        "sessionArt": [
-          {
-            "illustration": "/illustrations/sesiones/sesion-3.svg",
-            "alt": "Persona escribe en su celular junto a un globo de mensaje con un texto a medio escribir"
-          },
-          {
-            "illustration": "/illustrations/sesiones/sesion-6.svg",
-            "alt": "Persona de brazos cruzados junto a un escudo con candado"
-          }
-        ]
+        "alt": "Persona de brazos cruzados junto a un escudo con candado"
       },
       {
-        "t": "De tareas a procesos",
-        "d": "Identificas lo que haces una y otra vez y lo conviertes en un proceso donde la IA te acompaña, con tu revisión.",
+        "t": "De tareas sencillas a procesos paso a paso",
+        "d": "Aprendes a usar la IA en procesos que se repiten paso a paso, más allá de un chat.",
         "topics": [
-          "Qué tareas vale la pena delegar",
-          "Qué debes revisar tú siempre",
-          "Elegir la herramienta adecuada"
-        ],
-        "sessions": [
-          "Convertir tus tareas repetitivas en procesos"
+          "Chats sueltos, proyectos y habilidades",
+          "Tareas programadas: pedirle a la IA que actúe en un horario",
+          "Cómo elegir la forma de usarla según la tarea"
         ],
         "illustration": "/illustrations/sesiones/sesion-7.svg",
         "alt": "Persona toma café junto a un sobre de correo y un reloj"
       },
       {
         "t": "Productividad y planeación",
-        "d": "Ordenas tu trabajo, priorizas y planeas tu semana apoyándote en la IA sin perder el control.",
+        "d": "Organizas tu información y tus pendientes para decidir, con ayuda de la IA, qué tareas atender primero.",
         "topics": [
-          "Ordenar y priorizar tareas",
-          "Planear tu semana",
-          "Integrar la IA en tu rutina"
-        ],
-        "sessions": [
-          "Organizar y planear tu trabajo con IA"
+          "Reunir la información en un solo lugar",
+          "Organizar tus tareas para decidir qué atender primero",
+          "Planear un proyecto, hacerle seguimiento y ajustarlo"
         ],
         "illustration": "/illustrations/sesiones/sesion-8.svg",
         "alt": "Persona señala un camino con pasos completados que termina en una bandera"
       },
       {
         "t": "Crear documentos, presentaciones e imágenes",
-        "d": "Creas materiales propios sin caer en resultados genéricos: que suenen a ti y sirvan para tu caso.",
+        "d": "Preparas documentos, presentaciones e imágenes con la IA y los ajustas hasta que suenen y se vean como tuyos.",
         "topics": [
-          "Documentos y textos con tu estilo",
-          "Presentaciones",
-          "Imágenes con IA",
-          "Revisar y corregir lo que crea"
-        ],
-        "sessions": [
-          "Documentos y presentaciones",
-          "Imágenes y revisión de lo creado"
+          "Cómo armar un documento o una presentación por secciones",
+          "Plantillas que puedes reutilizar",
+          "Imágenes con estilo propio, y cómo editarlas"
         ],
         "illustration": "/illustrations/sesiones/sesion-4.svg",
-        "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato",
-        "sessionArt": [
-          {
-            "illustration": "/illustrations/sesiones/sesion-4.svg",
-            "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato"
-          },
-          {
-            "illustration": "/illustrations/sesiones/sesion-2.svg",
-            "alt": "Persona encoge los hombros entre un globo con un error y otro con un acierto"
-          }
-        ]
+        "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato"
       },
       {
         "t": "Analizar información",
-        "d": "Usas la IA para entender textos y datos, sacar conclusiones y cerrar tu proyecto personal con lo aprendido.",
+        "d": "Le das tus documentos o datos a la IA para resumirlos, compararlos y sacar tus propias conclusiones.",
         "topics": [
-          "Resumir y analizar documentos",
-          "Sacar conclusiones de tus datos",
-          "Cierre del proyecto personal"
-        ],
-        "sessions": [
-          "Analizar información y cerrar tu proyecto"
+          "Cómo plantear la pregunta que quieres responder",
+          "Resumir, comparar y buscar patrones",
+          "Tablas y revisión de las conclusiones"
         ],
         "illustration": "/illustrations/sesiones/sesion-5.svg",
         "alt": "Persona con gafas trabaja en su portátil junto a un documento y una lupa"
@@ -324,13 +294,15 @@
   },
   "outcomes": {
     "title": "Lo que vas a lograr.",
-    "lead": "Cinco cosas que harás en tu trabajo con la IA que ya usas.",
+    "lead": "Seis cosas concretas que harás en tu trabajo con la IA que ya usas.",
+    "handwritten": "A veces la IA enreda más que el que te debe plata.",
     "pills": [
-      "Pedirle bien a la IA",
-      "Revisar lo que responde",
-      "Cuidar tus datos",
-      "Elegir la herramienta",
-      "Armar tus rutinas"
+      "Automatizar lo que repites",
+      "Ordenar tu trabajo",
+      "Crear sin sonar genérico",
+      "Respuestas que sí sirven",
+      "Cuidar tu información",
+      "Saber cuándo confiar"
     ]
   },
   "marquee": {
@@ -341,149 +313,131 @@
       },
       {
         "cohort": "schedule"
+      },
+      {
+        "text": "Máximo 30 cupos"
+      },
+      {
+        "text": "100% virtual y en vivo"
       }
     ],
     "lineB": [
       "8 sesiones en vivo",
-      "Grabación de cada clase",
-      "Guía por sesión",
-      "Certificado",
-      "PSE, Nequi, Bancolombia o tarjeta"
+      "Grabación por 1 mes",
+      "Comunidad en WhatsApp",
+      "Guías y recursos",
+      "Proyecto personal",
+      "Certificado Squai"
     ]
   },
   "team": {
     "title": "Quiénes te enseñan",
-    "closing": "Uno de los dos será tu mentor.",
+    "closing": "Aprendes de quienes saben explicar desde las bases y han llevado la IA a equipos de trabajo, para que lo que aprendes sirva en la práctica.",
     "mentors": [
       {
         "name": "Laura Villada",
         "badge": "Cofundadora",
+        "role": "Estratega de adopción de IA. Magíster en ingeniería.",
+        "bio": "Fue docente durante 5 años y directora de operaciones en una empresa de tecnología en EE. UU., donde se encargó de optimizar procesos con IA y de su adopción en los equipos.",
         "quote": "Cuando entiendes por qué falla una respuesta, dejas de improvisar y empiezas a ahorrar tiempo cada día."
       },
       {
         "name": "Sebastián Rico",
         "badge": "Cofundador",
+        "role": "Ingeniero de IA",
+        "bio": "Lleva más de 8 años en tecnología, liderando equipos y guiando a personas de distintos roles. Ha desarrollado soluciones con IA, y entender en detalle cómo funciona le permite explicarla de forma sencilla.",
         "quote": "Las herramientas cambian rápido, pero el criterio para pedir bien y verificar datos se queda contigo."
-      }
-    ],
-    "stats": [
-      {
-        "value": "1.200+",
-        "label": "personas formadas"
-      },
-      {
-        "value": "85",
-        "label": "charlas dictadas"
-      },
-      {
-        "value": "30",
-        "label": "organizaciones atendidas"
       }
     ]
   },
   "testimonials": {
-    "title": "Lo que dicen después de una charla.",
-    "lead": "Frases de personas que asistieron a nuestras charlas, publicadas con su permiso.",
+    "title": "Así fue aprender con nosotros",
     "quotes": [
       {
-        "text": "Por fin entendí por qué la IA me inventaba datos, y ahora reviso cada respuesta antes de enviarla.",
-        "name": "Carolina M.",
-        "context": "Coordinadora administrativa"
+        "text": "Nunca me había sentido tan cómoda en una clase de tecnología. Siendo trabajadora de recursos humanos, me cuesta mucho ciertas cosas del manejo de sistemas, pero con ustedes entendí todo de forma fácil y me llevé cosas que todos los días me ayudan a que el día rinda.",
+        "name": "Manuela A.",
+        "context": "Asistente a una capacitación de IA"
       },
       {
-        "text": "Salí con tres plantillas que uso cada semana para mis informes.",
-        "name": "Andrés P.",
-        "context": "Analista financiero"
+        "text": "La forma en que me explicaste todo el funcionamiento de la IA me hizo caer en cuenta de lo mal que la estaba usando. Ahora con tus tips he hecho cosas que me han ayudado mucho en mi emprendimiento.",
+        "name": "Juan Pablo V.",
+        "context": "Consultoría con Laura"
       },
       {
-        "text": "Nadie me hizo sentir que preguntaba algo obvio, y pregunté mucho.",
-        "name": "Marcela R.",
-        "context": "Docente de secundaria"
+        "text": "Eres demasiado paciente y explicas todo las veces que sea necesario. Yo venía muy enredada de todo lo que quería hacer con IA, pero me diste un foco y me enseñaste dónde vale la pena meter IA y cómo hacerlo.",
+        "name": "Claudia M.",
+        "context": "Consultoría con Sebastián"
       }
     ]
   },
   "faqs": [
     {
-      "q": "¿En qué se diferencia Squai de los otros 500 programas de IA que he visto?",
+      "q": "¿En qué se diferencia de los cursos y videos gratis?",
       "a": [
-        "Que no te vendemos la herramienta de moda ni promesas vacías. Te enseñamos a entender qué pasa por detrás. Y si la IA no sirve para tu problema, te lo decimos de frente para que no pierdas tiempo."
+        "Los videos gratis suelen no tener un método de enseñanza definido ni a alguien que responda tus dudas. Aquí aprendes con un método pensado para quien empieza: vamos de las bases a la práctica, con explicaciones, ejemplos en vivo y tiempo para que practiques en tu propia herramienta de IA. Las sesiones son en vivo y en un grupo de máximo 30 personas, así que tus dudas se resuelven en el momento y aprendes también de las preguntas y los casos de las demás personas. Combinamos años dando clase con años usando la IA en empresas. Durante todo el programa trabajas en un proyecto personal."
       ],
       "category": "Programa"
     },
     {
-      "q": "¿Cuándo son las clases y cuánto duran?",
+      "q": "¿Cuál es el horario en mi país?",
       "a": [
-        "El programa dura 4 semanas, con 2 sesiones en vivo por semana de 2 horas y media cada una: 8 sesiones en total. Las fechas y el horario de tu grupo están en los datos clave de esta página y te llegan otra vez en el correo de confirmación de tu inscripción."
+        "Las sesiones son los martes y jueves, de 6:30 a 9:00 p. m. en Colombia. En otros países:\n\n- México (Ciudad de México): de 5:30 a 8:00 p. m.\n- Perú y Ecuador: de 6:30 a 9:00 p. m.\n- Venezuela: de 7:30 a 10:00 p. m.\n- Argentina, Chile y Uruguay: de 8:30 a 11:00 p. m."
       ],
       "category": "Programa"
     },
     {
-      "q": "¿Qué pasa si no puedo asistir a una clase en vivo?",
+      "q": "¿Qué pasa si falto a una sesión?",
       "a": [
-        "No tienes que inventar una emergencia. Grabamos las sesiones y puedes verlas hasta un mes después de la última sesión del programa, para ponerte al día o volver sobre algo que quieras repasar."
+        "Todas las sesiones quedan grabadas. Si faltas a una, puedes verla en grabación hasta un mes después de la última sesión y no te quedas atrás."
       ],
       "category": "Programa"
     },
     {
       "q": "¿Cómo me conecto a las sesiones?",
       "a": [
-        "Una semana antes de que empiece el programa te llega por correo la invitación a la comunidad de WhatsApp y los datos para conectarte."
+        "Una semana antes del inicio recibes por correo el enlace para conectarte a las sesiones y la invitación a la comunidad de WhatsApp."
       ],
       "category": "Programa"
     },
     {
       "q": "¿Qué certificado recibo?",
       "a": [
-        "Un certificado digital de Fundamentos de Inteligencia Artificial Generativa, si asistes al menos al 80 % de las sesiones."
-      ],
-      "category": "Programa"
-    },
-    {
-      "q": "¿Hay cupos limitados?",
-      "a": [
-        "Sí. Cada programa tiene un número limitado de cupos para que las sesiones en vivo sigan siendo útiles y no una clase magistral para 500 personas. Se asignan en el orden en que se aprueba el pago."
+        "Al terminar el programa recibes un certificado de Squai que acredita que completaste Fundamentos de Inteligencia Artificial Generativa. Lo recibes si asistes al menos al 80% de las sesiones (7 de las 8). Si avisas con anticipación y justificas una falta, no se cuenta como ausencia."
       ],
       "category": "Programa"
     },
     {
       "q": "¿Necesito saber de tecnología?",
       "a": [
-        "No. Arrancamos desde las bases, así que puedes empezar sin haber usado la IA antes."
+        "No necesitas saber de tecnología, porque te explicamos todo desde las bases y sin tecnicismos. Solo necesitas un computador, conexión a internet y una cuenta gratuita en alguna herramienta de IA."
       ],
       "category": "Requisitos"
     },
     {
-      "q": "¿Qué necesito para participar y tengo que pagar alguna herramienta?",
+      "q": "¿Tengo que pagar alguna herramienta de IA?",
       "a": [
-        "Un computador, conexión a internet y una cuenta gratuita en Claude, ChatGPT o Gemini. No necesitas pagar ninguna herramienta: si todavía no tienes cuenta, te ayudamos a crearla en la primera sesión, y en las prácticas tenemos en cuenta los límites de uso de las versiones gratuitas."
+        "No necesitas pagar ninguna herramienta para empezar, porque puedes usar la versión gratuita de Claude, ChatGPT o Gemini. Las versiones gratuitas permiten hacer muchas cosas, pero tienen un límite de uso. Más adelante puedes considerar una cuenta de pago, según lo que quieras hacer y cuánto uses la IA."
       ],
       "category": "Requisitos"
     },
     {
-      "q": "Si ya uso la IA, ¿me sirve?",
+      "q": "Si ya uso la IA, ¿me sirve el programa?",
       "a": [
-        "Sí, sobre todo si ya la usas pero sientes que vas adivinando. Entiendes por qué responde como responde, aprendes a pedir con claridad e iterar, y decides qué delegar y qué revisar tú siempre."
+        "Sí te sirve, porque entender cómo funciona la IA por dentro te ayuda a usarla mejor y a sacarle más provecho. Ves con claridad cosas que quizá antes no habías entendido bien, como por qué a veces inventa respuestas, qué información conviene compartirle y cómo usar la IA en tareas que se repiten."
       ],
       "category": "Requisitos"
-    },
-    {
-      "q": "¿Cómo me inscribo?",
-      "a": [
-        "Llenas el formulario de inscripción de esta página y pagas en línea. Cuando el pago se aprueba, tu cupo queda reservado y te llega la confirmación al correo. Fácil."
-      ],
-      "category": "Inscripción y pagos"
-    },
-    {
-      "q": "¿Llenar el formulario me obliga a pagar?",
-      "a": [
-        "No. El formulario solo prepara tu pago: quedas inscrito cuando el pago se aprueba. Si cierras la ventana de pago sin terminar, no se te cobra nada. Tú decides, sin presiones."
-      ],
-      "category": "Inscripción y pagos"
     },
     {
       "q": "¿Cómo pago?",
       "a": [
-        "El pago es en línea y seguro. Desde Colombia puedes pagar con tarjeta débito o crédito, PSE o Nequi; desde otros países, con tarjeta. Algunos medios, como PSE, tardan unos minutos en confirmar, y te avisamos por correo cuando el pago quede aprobado."
+        "En el botón de inscripción ves los medios de pago disponibles: tarjeta débito o crédito, PSE, Nequi y Bre-B. Si estás fuera de Colombia, puedes pagar con tu tarjeta débito o crédito."
+      ],
+      "category": "Inscripción y pagos"
+    },
+    {
+      "q": "¿Qué pasa si no puedo asistir o seguir el programa?",
+      "a": [
+        "Si no puedes asistir, puedes ceder tu cupo a otra persona. Si por una causa de fuerza mayor, como un accidente o una enfermedad, no puedes iniciar el programa o seguir con él, te devolvemos el dinero."
       ],
       "category": "Inscripción y pagos"
     }
@@ -491,7 +445,6 @@
   "seoTitle": "Programa en vivo para aprender inteligencia artificial | Squai",
   "seoDescription": "Programa de inteligencia artificial en vivo: 4 semanas, 20 horas, práctica guiada y certificado. Aprende a usar IA en situaciones reales.",
   "faqIntro": {
-    "lead": "Lo que más nos preguntan antes de inscribirse, con respuestas cortas.",
     "categoriesLabel": "Categorías",
     "allLabel": "Todas"
   },
@@ -515,5 +468,33 @@
       }
     ],
     "companyLabel": "Conoce Squai"
+  },
+  "whatsapp": {
+    "message": "Hola, estoy viendo la página de Squai One y tengo una duda antes de inscribirme.",
+    "tooltip": "¿Dudas antes de inscribirte?",
+    "panel": {
+      "dialogLabel": "Dudas rápidas sobre Squai One por WhatsApp",
+      "title": "¿Dudas antes de inscribirte?",
+      "subtitle": "Te respondemos nosotros, sin bots.",
+      "close": "Cerrar ventana de WhatsApp",
+      "topics": [
+        {
+          "label": "¿Esto aplica para mi trabajo?",
+          "message": "Hola, estoy viendo Squai One y quiero saber si el programa aplica para mi trabajo y mi nivel actual."
+        },
+        {
+          "label": "Dudas de horarios, fechas o clases",
+          "message": "Hola, tengo una duda sobre las fechas, horarios o las 8 sesiones en vivo de Squai One."
+        },
+        {
+          "label": "Medios de pago o 20 % de descuento",
+          "message": "Hola, quiero consultar los medios de pago o cómo asegurar mi cupo con el 20 % de descuento en Squai One."
+        },
+        {
+          "label": "Inscribir a varias personas de mi equipo",
+          "message": "Hola, me interesa inscribir a varias personas de mi equipo en Squai One. ¿Cómo funcionaría?"
+        }
+      ]
+    }
   }
 }

@@ -1,10 +1,14 @@
 ---
 import Block from './Block.astro';
 import { getSiteContent } from '../lib/content';
-import { whatsappUrl } from '../lib/whatsapp';
+import { whatsappUrl, type WhatsappConfig } from '../lib/whatsapp';
+
+interface Props {
+  whatsapp?: WhatsappConfig;
+}
 
 const { company, ui } = await getSiteContent();
-const { label, message, panel } = ui.whatsapp;
+const { label, message, tooltip, panel } = Astro.props.whatsapp ?? ui.whatsapp;
 const href = whatsappUrl(company.phone, message);
 const topics = (panel?.topics ?? []).map((topic) => ({ ...topic, href: whatsappUrl(company.phone, topic.message) }));
 const logoPath =
@@ -50,21 +54,28 @@ const hasPanel = Boolean(panel) && topics.length > 0 && topics.every((topic) => 
           </div>
         </div>
       )}
-      {hasPanel ? (
-        <button type="button" class="whatsapp-button" aria-label={label} aria-expanded="false" aria-controls="whatsapp-panel" data-whatsapp-toggle>
-          <span class="whatsapp-shape"><Block /></span>
-          <svg class="whatsapp-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <path fill="#FFFFFF" d={logoPath} />
-          </svg>
-        </button>
-      ) : (
-        <a class="whatsapp-button" href={href} target="_blank" rel="noopener noreferrer" aria-label={label} data-whatsapp-toggle>
-          <span class="whatsapp-shape"><Block /></span>
-          <svg class="whatsapp-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-            <path fill="#FFFFFF" d={logoPath} />
-          </svg>
-        </a>
-      )}
+      <div class="whatsapp-trigger">
+        {hasPanel ? (
+          <button type="button" class="whatsapp-button" aria-label={label} aria-expanded="false" aria-controls="whatsapp-panel" data-whatsapp-toggle>
+            <span class="whatsapp-shape"><Block /></span>
+            <svg class="whatsapp-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path fill="#FFFFFF" d={logoPath} />
+            </svg>
+          </button>
+        ) : (
+          <a class="whatsapp-button" href={href} target="_blank" rel="noopener noreferrer" aria-label={label} data-whatsapp-toggle>
+            <span class="whatsapp-shape"><Block /></span>
+            <svg class="whatsapp-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path fill="#FFFFFF" d={logoPath} />
+            </svg>
+          </a>
+        )}
+        {tooltip && (
+          <span class="whatsapp-tooltip" aria-hidden="true" data-whatsapp-tooltip>
+            {tooltip}
+          </span>
+        )}
+      </div>
     </div>
   )
 }
@@ -88,6 +99,17 @@ const hasPanel = Boolean(panel) && topics.length > 0 && topics.every((topic) => 
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+  }
+
+  .whatsapp-trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .whatsapp-tooltip {
+    display: none;
   }
 
   .whatsapp-button {
@@ -257,6 +279,41 @@ const hasPanel = Boolean(panel) && topics.length > 0 && topics.every((topic) => 
     }
   }
 
+  @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    .whatsapp-tooltip {
+      position: absolute;
+      right: calc(100% + 12px);
+      top: 50%;
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 16px;
+      border: 1px solid var(--neutral-3);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--midnight);
+      box-shadow: 0 14px 30px -8px rgb(10 12 26 / 0.18), 0 4px 10px -4px rgb(10 12 26 / 0.08);
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-50%) translateX(6px);
+      transition:
+        opacity var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out),
+        visibility var(--duration-fast);
+    }
+
+    .whatsapp-button:is(:hover, :focus-visible):not([aria-expanded='true']) + .whatsapp-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-50%) translateX(0);
+    }
+  }
+
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .whatsapp-button:hover .whatsapp-shape {
       transform: scale(1.05);
@@ -266,6 +323,7 @@ const hasPanel = Boolean(panel) && topics.length > 0 && topics.every((topic) => 
   @media (prefers-reduced-motion: reduce) {
     .whatsapp-shape,
     .whatsapp-topic,
+    .whatsapp-tooltip,
     .whatsapp-float { transition: none; }
   }
 </style>

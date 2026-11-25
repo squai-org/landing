@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { courseLoadSummary, durationInHours, isoDuration, sessionLength, totalMinutes, totalSessions } from '../../src/lib/course-load';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
+const copies = JSON.parse(readFileSync(path.join(import.meta.dirname, '../../src/content/copies.json'), 'utf8'));
+
+const words = copies.site.seo.course.workload;
 
 const squaiOne = { weeks: 4, sessionsPerWeek: 2, sessionMinutes: 150 };
 
@@ -11,16 +17,16 @@ describe('carga del programa', () => {
   });
 
   it('describe la duracion de una sesion en palabras', () => {
-    expect(sessionLength(150)).toBe('2 horas y media');
-    expect(sessionLength(120)).toBe('2 horas');
-    expect(sessionLength(60)).toBe('1 hora');
-    expect(sessionLength(90)).toBe('1 hora y media');
-    expect(sessionLength(75)).toBe('1 hora y 15 minutos');
-    expect(sessionLength(45)).toBe('45 minutos');
+    expect(sessionLength(150, words)).toBe('2 horas y media');
+    expect(sessionLength(120, words)).toBe('2 horas');
+    expect(sessionLength(60, words)).toBe('1 hora');
+    expect(sessionLength(90, words)).toBe('1 hora y media');
+    expect(sessionLength(75, words)).toBe('1 hora y 15 minutos');
+    expect(sessionLength(45, words)).toBe('45 minutos');
   });
 
   it('resume la carga para el JSON-LD sin precios ni fechas', () => {
-    expect(courseLoadSummary(squaiOne)).toBe('8 sesiones de 2 horas y media, 2 por semana durante 4 semanas');
+    expect(courseLoadSummary(squaiOne, words)).toBe('8 sesiones de 2 horas y media, 2 por semana durante 4 semanas');
   });
 
   it('expresa la duracion total en ISO 8601', () => {
@@ -29,7 +35,7 @@ describe('carga del programa', () => {
   });
 
   it('usa el singular cuando corresponde', () => {
-    expect(courseLoadSummary({ weeks: 1, sessionsPerWeek: 1, sessionMinutes: 60 })).toBe(
+    expect(courseLoadSummary({ weeks: 1, sessionsPerWeek: 1, sessionMinutes: 60 }, words)).toBe(
       '1 sesión de 1 hora, 1 por semana durante 1 semana'
     );
   });

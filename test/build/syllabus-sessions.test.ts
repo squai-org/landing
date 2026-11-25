@@ -2,7 +2,6 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { serviceSchema } from '../../src/content/schema';
-import { sessionsOf } from '../../src/lib/syllabus-sessions';
 import { normalizedDistance, slideTransform, sessionSlideMotion } from '../../src/lib/session-carousel';
 
 const root = path.join(import.meta.dirname, '../..');
@@ -11,62 +10,17 @@ const loadRaw = async () => JSON.parse(await readFile(path.join(root, 'src/conte
 
 const loadSyllabus = async () => serviceSchema.parse(await loadRaw()).syllabus!;
 
-describe('sesiones del temario', () => {
-  it('reparte los modulos en ocho sesiones numeradas de corrido', async () => {
-    const sessions = sessionsOf(await loadSyllabus());
+describe('temario por modulos', () => {
+  it('cada modulo es una tarjeta con titulo, temas e ilustracion propia', async () => {
+    const { modules } = await loadSyllabus();
 
-    expect(sessions.map((session) => session.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
-    expect(sessions.map((session) => session.moduleNumber)).toEqual([1, 2, 2, 3, 4, 5, 5, 6]);
-  });
-
-  it('cada sesion conserva su foco aprobado como titulo', async () => {
-    const syllabus = await loadSyllabus();
-    const sessions = sessionsOf(syllabus);
-
-    expect(sessions.map((session) => session.focus)).toEqual(syllabus.modules.flatMap((module) => module.sessions));
-  });
-
-  it('no pierde ningun tema del temario al repartirlos', async () => {
-    const syllabus = await loadSyllabus();
-    const sessions = sessionsOf(syllabus);
-
-    syllabus.modules.forEach((module, index) => {
-      const own = sessions.filter((session) => session.moduleNumber === index + 1);
-      expect(own.flatMap((session) => session.topics)).toEqual(module.topics);
-    });
-  });
-
-  it('las ocho sesiones tienen una ilustracion distinta', async () => {
-    const sessions = sessionsOf(await loadSyllabus());
-
-    expect(new Set(sessions.map((session) => session.illustration)).size).toBe(8);
-    expect(sessions.every((session) => session.alt.length > 0)).toBe(true);
-  });
-
-  it('reparte los temas cuando sobran o faltan frente a las sesiones', () => {
-    const base = { d: 'd', illustration: '/illustrations/sesiones/sesion-1.svg', alt: 'a' } as const;
-    const syllabus = {
-      modules: [
-        { ...base, t: 'A', topics: ['1', '2', '3'], sessions: ['x', 'y'] },
-        { ...base, t: 'B', topics: ['1'], sessions: ['x', 'y'] },
-      ],
-    } as Parameters<typeof sessionsOf>[0];
-
-    expect(sessionsOf(syllabus).map((session) => session.topics)).toEqual([['1', '2'], ['3'], ['1'], ['1']]);
+    expect(modules.length).toBeGreaterThan(0);
+    expect(modules.every((module) => module.t.length > 0 && module.topics.length > 0 && module.alt.length > 0)).toBe(true);
+    expect(new Set(modules.map((module) => module.illustration)).size).toBe(modules.length);
   });
 });
 
 describe('esquema de las sesiones y la presentacion', () => {
-  it('acepta ilustraciones propias por sesion y las nuevas del carrusel', async () => {
-    const raw = await loadRaw();
-    raw.syllabus.modules[1].sessionArt = [
-      { illustration: '/illustrations/sesiones/sesion-3.svg', alt: 'Persona escribe en su celular' },
-      { illustration: '/illustrations/sesiones/sesion-6.svg', alt: 'Persona junto a un escudo' },
-    ];
-
-    expect(serviceSchema.safeParse(raw).success).toBe(true);
-  });
-
   it('las etiquetas de las flechas llevan valor por defecto', async () => {
     const syllabus = await loadSyllabus();
 
@@ -74,14 +28,12 @@ describe('esquema de las sesiones y la presentacion', () => {
     expect(syllabus.nextLabel).toBe('Ver sesiones siguientes');
   });
 
-  it('el video admite texto lateral, boton y logos opcionales', async () => {
+  it('el video admite texto lateral y boton opcionales', async () => {
     const raw = await loadRaw();
     const parsed = serviceSchema.parse(raw);
 
     expect(parsed.video?.lead).toBeTruthy();
-    expect(parsed.video?.body).toBeTruthy();
-    expect(parsed.video?.cta?.target).toBe('equipo-one');
-    expect(parsed.video?.logos?.length).toBeGreaterThan(0);
+    expect(parsed.video?.cta?.target).toBe('inscripcion');
 
     const bare = { ...raw, video: { title: 'T', playLabel: 'P', iframeTitle: 'I', caption: 'C', posterAlt: 'A' } };
     expect(serviceSchema.safeParse(bare).success).toBe(true);

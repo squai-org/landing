@@ -15,13 +15,22 @@ const format = (date: Date, withYear: boolean) =>
     timeZone: 'UTC',
   }).format(date);
 
-export const formatCohortDates = (startsOn: string | null | undefined, endsOn: string | null | undefined): string | null => {
+export interface CohortDateLabels {
+  from: string;
+  range: string;
+}
+
+export const formatCohortDates = (
+  startsOn: string | null | undefined,
+  endsOn: string | null | undefined,
+  labels: CohortDateLabels
+): string | null => {
   const start = parse(startsOn);
   if (!start) return null;
 
   const end = parse(endsOn);
-  if (!end) return `Desde el ${format(start, true)}`;
+  if (!end) return labels.from.replace('{start}', format(start, true));
 
   const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
-  return `Del ${format(start, !sameYear)} al ${format(end, true)}`;
+  return labels.range.replace('{start}', format(start, !sameYear)).replace('{end}', format(end, true));
 };
