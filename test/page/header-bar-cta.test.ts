@@ -72,3 +72,23 @@ describe('CTA de la barra compacta del header', () => {
     expect(/data-nav-toggle-label[^>]*>([^<]*)</.exec(toggle)?.[1]).toBe('Menú');
   });
 });
+
+describe('logo del header', () => {
+  const logoOf = async (file: string) => ctaElement(headerOf(await page(file)), 'header-logo')!.open;
+
+  it('en Squai One lleva al hero con scroll suave y anuncia el inicio de Squai One', async () => {
+    const html = await page('servicios/squai-one.html');
+    const logo = await logoOf('servicios/squai-one.html');
+    const target = attr(logo, 'data-scroll-to')!;
+    expect(attr(logo, 'href')).toBe(`#${target}`);
+    expect(attr(logo, 'aria-label')).toBe('Ir al inicio de Squai One');
+    expect(html).toMatch(new RegExp(`<section\\b[^>]*\\sid="${target}"`));
+  });
+
+  it.each(['index.html', 'terminos-de-servicio.html', 'servicios/squai-grow.html', 'servicios/squai-learn.html'])('%s sigue llevando a /', async (file) => {
+    const logo = await logoOf(file);
+    expect(attr(logo, 'href')).toBe('/');
+    expect(attr(logo, 'data-scroll-to')).toBeUndefined();
+    expect(attr(logo, 'aria-label')).toBe('Squai — inicio');
+  });
+});

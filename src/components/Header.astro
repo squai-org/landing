@@ -18,6 +18,7 @@ const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '')
 const serviceLinks = services.map((service) => ({ name: service.name, subtitle: service.menuAudience, href: `/servicios/${service.slug}` }));
 const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath === '/servicios/squai-learn' ? 'learn' : undefined;
 const isSquaiOne = currentPath === '/servicios/squai-one';
+const oneHeroId = 'inicio';
 const serviceNav = services.find((service) => currentPath === `/servicios/${service.slug}`)?.nav;
 const onDark = tone === 'dark';
 const squaiOneCtaVariant = onDark ? 'white' : 'dark';
@@ -36,6 +37,7 @@ const pageCtaFor = (): PageCta => {
     current: currentPath.startsWith('/servicios') ? 'page' : undefined,
   };
 };
+const logoTarget = isSquaiOne ? { href: `#${oneHeroId}`, 'data-scroll-to': oneHeroId } : { href: '/' };
 const pageCta = pageCtaFor();
 const toggleVariant = onDark ? 'white' : 'dark';
 const pagePills = serviceNav
@@ -46,7 +48,7 @@ const pagePills = serviceNav
 <header class="site-header" data-header data-tone={tone} data-scrolled="false" data-hidden="false">
   <div class="site-header-row" data-header-row>
     <div class="header-brand">
-      <a href="/" class="logo-link header-logo" aria-label={ui.navigation.home}>
+      <a {...logoTarget} class="logo-link header-logo" aria-label={isSquaiOne ? ui.navigation.oneHome : ui.navigation.home}>
         <Logo size={46} />
       </a>
     </div>
