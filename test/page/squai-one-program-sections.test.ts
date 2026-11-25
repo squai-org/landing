@@ -52,8 +52,15 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     expect(fit).not.toContain('one-fit-card');
     expect(fit).not.toContain('No es para ti si');
     expect(fit).not.toContain('Lo que necesitas');
-    expect(fit).not.toContain('Puedes empezar sin haber usado la IA antes');
     expect(fit).toContain('Quiero inscribirme');
+  });
+
+  it('el boton de inscripcion del Equipo va despues de la lista de mentores', () => {
+    const team = sectionOf(page, 'equipo-one');
+
+    expect(count(team, /<a [^>]*data-scroll-to=/g)).toBe(1);
+    expect(team).toContain('class="one-team-cta"');
+    expect(team.indexOf('data-scroll-to=')).toBeGreaterThan(team.lastIndexOf('</ul>'));
   });
 
   it('cuenta cuatro pasos y cada ilustracion lleva texto alternativo', () => {

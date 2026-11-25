@@ -13,6 +13,7 @@ Los dos personajes de `public/illustrations/peeps/` son `peep-standing-14` y `pe
 | `public/illustrations/datos/en-vivo.svg`, `sin-conocimientos.svg`, `grupo.svg`, `comunidad.svg`, `cualquier-ia.svg`, `mentores.svg` | Lo que necesitas saber. Personajes de Open Peeps (CC0) generados con `react-peeps` 0.1.10 (MIT) en pose de busto, sin cambios de dibujo; los objetos (pantalla en vivo, bombillo, globos de chat, aplicaciones conectadas, tablero) se dibujaron con el mismo trazo de 13 y la paleta Midnight, blanco, Gold #F9C24D y Periwinkle #8A8EF9. Sin comentarios ni metadatos del generador. |
 | `public/illustrations/sesiones/sesion-1.svg`, 4, 5, 6, 7, 8 | Temario (un módulo cada una) |
 | `public/illustrations/pasos/paso-4.svg` | Cómo funciona (paso 3) y reproductor de la Presentación en video (recortado con CSS, sin copia) |
+| `public/illustrations/logos/claude-color.svg`, `claude-text.svg`, `gemini-color.svg`, `gemini-text.svg`, `openai.svg` | Logos de la fila Lo que necesitas en Requisitos de Squai One. Vienen de `@lobehub/icons-static-svg` 1.106.0 ([lobe-icons](https://github.com/lobehub/lobe-icons), licencia MIT), descargados de unpkg. Solo se les quitó el `<title>` y el `style`, y `currentColor` pasó a `#0A0C1A`; el dibujo no cambió. Claude, Gemini y OpenAI son marcas de sus titulares. |
 | `public/illustrations/peeps/peep-standing-14.svg`, `public/illustrations/peeps/peep-standing-30.svg` | Personajes que rodean el video de la Presentación, invertidos en horizontal con CSS |
 | `public/images/shape-*.svg` | Formas decorativas de las secciones |
 
@@ -35,6 +36,7 @@ Sección ¿Es para ti? de Squai One. Descargadas de [Pexels](https://www.pexels.
 | `src/assets/one/para-ti/pexels-3182765.jpeg` | [3182765](https://www.pexels.com/photo/3182765/) | Dos personas conversan de pie en una oficina |
 | `src/assets/one/para-ti/pexels-4050315.jpeg` | [4050315](https://www.pexels.com/photo/4050315/) | Persona trabaja en su portátil desde una mesa blanca, vista desde arriba |
 | `src/assets/one/para-ti/pexels-3153198.jpeg` | [3153198](https://www.pexels.com/photo/3153198/) | Grupo de colegas se ríe frente a un portátil |
+| `src/assets/one/requisitos/pexels-8638716.jpeg` | [8638716](https://www.pexels.com/photo/8638716/) | Persona con gafas que se encoge de hombros (sección Requisitos de Squai One) |
 
 ## Tipografías
 

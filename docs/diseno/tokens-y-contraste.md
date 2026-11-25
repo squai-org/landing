@@ -121,8 +121,16 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Texto de acento sobre fondo suave | `--accent-ink` | `--accent-soft` | 4.64 | 4.5 |
 | base | Texto oscuro sobre fondo suave | `--midnight` | `--accent-soft` | 15.47 | 4.5 |
 | base | Temario: texto oscuro sobre tarjeta crema | `--midnight` | `--gold-3` | 17.24 | 4.5 |
+| base | Requisitos: nota manuscrita y Nota sobre blanco | `--periwinkle-11` | `--surface` | 5.82 | 4.5 |
+| base | Requisitos: nota manuscrita y Nota sobre el fondo decorativo | `--periwinkle-11` | `--periwinkle-2` | 5.13 | 4.5 |
+| base | Requisitos: cuerpo y listas sobre blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
+| base | Requisitos: cuerpo y listas sobre el fondo decorativo | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
 | base | Foco sobre el pie | `--canvas` | `--periwinkle-12` | 11.16 | 3 |
 | base | Botón Conoce Squai junto a las redes | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Inscripción: campo sobre la forma de fondo | `--surface` | `--periwinkle-4` | 1.41 | 1.4 |
+| base | Inscripción: texto oscuro sobre la forma de fondo | `--midnight` | `--periwinkle-4` | 13.76 | 4.5 |
+| base | Inscripción: etiqueta de descuento sobre la forma de fondo | `--gold-9` | `--periwinkle-4` | 1.16 | 1.1 |
+| base | Inscripción: texto secundario sobre la forma de fondo | `--neutral-11` | `--periwinkle-4` | 5.03 | 4.5 |
 | base | Menú móvil: elementos sobre blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
 | base | Menú móvil: panel | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
 | base | Botones sociales | `--midnight` | `--canvas` | 18.02 | 3 |
