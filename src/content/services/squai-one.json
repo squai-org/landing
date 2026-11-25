@@ -152,7 +152,7 @@
       ],
       "items": [
         {
-          "t": "Reemplazar todo con IA",
+          "t": "Quieres reemplazar todo con IA",
           "d": "Buscas construir agentes (asistentes que trabajan solos) para hacerte rico. Preferimos no venderte lo que no necesitas, porque con lo básico bien aprendido ya se logra mucho."
         }
       ]
@@ -163,25 +163,25 @@
       "items": [
         {
           "t": "Un computador.",
-          "leftIllustration": "/illustrations/requisitos/computador-izq.svg",
-          "leftAlt": "Persona sonriente junto a un computador portátil",
-          "rightIllustration": "/illustrations/requisitos/computador-der.svg",
-          "rightAlt": "Persona con gafas junto a una pantalla y una libreta de apuntes"
+          "leftIllustration": "/assets/one/para-ti/pexels-3747070.jpeg",
+          "leftAlt": "Computador portátil plateado sobre un escritorio frente a una ventana",
+          "rightIllustration": "/assets/one/para-ti/pexels-6893890.jpeg",
+          "rightAlt": "Manos escribiendo en un computador portátil junto a una libreta sobre una mesa"
         },
         {
           "t": "Conexión a internet.",
-          "leftIllustration": "/illustrations/requisitos/internet-izq.svg",
-          "leftAlt": "Persona con audífonos junto a un router con señal Wi-Fi",
-          "rightIllustration": "/illustrations/requisitos/internet-der.svg",
-          "rightAlt": "Persona con gorro y gafas junto a un navegador conectado"
+          "leftIllustration": "/assets/one/para-ti/pexels-4218546.jpeg",
+          "leftAlt": "Router Wi-Fi blanco de tres antenas con su cable de alimentación",
+          "rightIllustration": "/assets/one/para-ti/pexels-8829442.jpeg",
+          "rightAlt": "Pantalla de celular con el ícono de conexión Wi-Fi activado"
         },
         {
           "t": "Una cuenta gratuita de IA",
           "d": "Cualquier herramienta como Claude, ChatGPT o Gemini. Si todavía no la tienes, te ayudamos a crearla en la primera sesión.",
           "leftIllustration": "/illustrations/requisitos/cuenta-ia-izq.svg",
-          "leftAlt": "Persona junto a una tarjeta de cuenta gratuita verificada",
+          "leftAlt": "Logos de ChatGPT y Claude",
           "rightIllustration": "/illustrations/requisitos/cuenta-ia-der.svg",
-          "rightAlt": "Persona junto a burbujas de conversación con IA"
+          "rightAlt": "Logos de Gemini y Grok"
         }
       ]
     }

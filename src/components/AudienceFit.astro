@@ -12,6 +12,10 @@ import laptopDesk from '../assets/one/para-ti/pexels-4050315.jpeg';
 import colleagues from '../assets/one/para-ti/pexels-3153198.jpeg';
 import shrugMan from '../assets/one/para-ti/pexels-8638716.jpeg';
 import shrugWoman from '../assets/one/para-ti/pexels-3958872.jpeg';
+import laptopDeskSide from '../assets/one/para-ti/pexels-3747070.jpeg';
+import laptopMarble from '../assets/one/para-ti/pexels-6893890.jpeg';
+import wifiRouter from '../assets/one/para-ti/pexels-4218546.jpeg';
+import wifiPhone from '../assets/one/para-ti/pexels-8829442.jpeg';
 import '../styles/one-sections.css';
 
 interface Props {
@@ -32,9 +36,11 @@ interface Art {
   alt: string;
 }
 
-type StepMedia =
-  | { kind: 'photo'; pair: [Photo, Photo] }
-  | { kind: 'art'; pair: [Art, Art] };
+type SideMedia =
+  | ({ kind: 'photo' } & Photo)
+  | ({ kind: 'art' } & Art);
+
+type StepMedia = [SideMedia, SideMedia];
 
 interface FitStep {
   index: number;
@@ -79,7 +85,23 @@ const notForYouPair: [Photo, Photo] = [
   { src: notForYouSources[1]!.src, alt: fit.notForYou?.photoAlts?.[1] ?? '', position: notForYouSources[1]!.position },
 ];
 
-const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
+const requirementPhotoSources: Record<string, { src: ImageMetadata; position: string }> = {
+  '/assets/one/para-ti/pexels-3747070.jpeg': { src: laptopDeskSide, position: 'center' },
+  '/assets/one/para-ti/pexels-6893890.jpeg': { src: laptopMarble, position: 'center' },
+  '/assets/one/para-ti/pexels-4218546.jpeg': { src: wifiRouter, position: 'center' },
+  '/assets/one/para-ti/pexels-8829442.jpeg': { src: wifiPhone, position: 'center' },
+};
+
+const pairFor = (index: number): StepMedia => {
+  const [left, right] = photoPairs[index % photoPairs.length]!;
+  return [{ kind: 'photo', ...left }, { kind: 'photo', ...right }];
+};
+
+const sideMediaFor = (src: string, alt: string): SideMedia => {
+  const photo = requirementPhotoSources[src];
+  if (photo) return { kind: 'photo', ...photo, alt };
+  return { kind: 'art', src, alt };
+};
 
 const rawBlocks: { title: string; handwritten: string; items: { t: string; d?: string; media: StepMedia }[] }[] = [
   {
@@ -88,7 +110,7 @@ const rawBlocks: { title: string; handwritten: string; items: { t: string; d?: s
     items: fit.profiles.map((profile, index) => ({
       t: profile.t,
       d: profile.d,
-      media: { kind: 'photo', pair: pairFor(index) },
+      media: pairFor(index),
     })),
   },
 ];
@@ -100,7 +122,10 @@ if (fit.notForYou) {
     items: fit.notForYou.items.map((item) => ({
       t: item.t,
       d: item.d,
-      media: { kind: 'photo', pair: notForYouPair },
+      media: [
+        { kind: 'photo', ...notForYouPair[0] },
+        { kind: 'photo', ...notForYouPair[1] },
+      ],
     })),
   });
 }
@@ -112,13 +137,10 @@ if (fit.requirements) {
     items: fit.requirements.items.map((item) => ({
       t: item.t,
       d: item.d,
-      media: {
-        kind: 'art',
-        pair: [
-          { src: item.leftIllustration, alt: item.leftAlt },
-          { src: item.rightIllustration, alt: item.rightAlt },
-        ],
-      },
+      media: [
+        sideMediaFor(item.leftIllustration, item.leftAlt),
+        sideMediaFor(item.rightIllustration, item.rightAlt),
+      ],
     })),
   });
 }
@@ -166,29 +188,30 @@ const blockCounts = blocks.map((block) => block.items.length);
           [0, 1].map((side) => (
             <div class:list={['one-fit-preview', side === 0 ? 'is-left' : 'is-right']} data-fit-preview={side}>
               <div class="one-fit-photo">
-                {steps.map((step) =>
-                  step.media.kind === 'photo' ? (
+                {steps.map((step) => {
+                  const sideMedia = step.media[side]!;
+                  return sideMedia.kind === 'photo' ? (
                     <Image
-                      src={step.media.pair[side]!.src}
-                      alt={step.media.pair[side]!.alt}
+                      src={sideMedia.src}
+                      alt={sideMedia.alt}
                       widths={[350, 700]}
                       sizes="(min-width: 992px) 18vw, 50vw"
                       loading="lazy"
-                      style={`object-position:${step.media.pair[side]!.position}`}
+                      style={`object-position:${sideMedia.position}`}
                       data-fit-photo={step.index}
                       hidden={step.index !== 0}
                     />
                   ) : (
                     <img
                       class="one-fit-art"
-                      src={step.media.pair[side]!.src}
-                      alt={step.media.pair[side]!.alt}
+                      src={sideMedia.src}
+                      alt={sideMedia.alt}
                       loading="lazy"
                       data-fit-photo={step.index}
                       hidden={step.index !== 0}
                     />
-                  )
-                )}
+                  );
+                })}
               </div>
             </div>
           ))

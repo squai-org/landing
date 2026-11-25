@@ -1,9 +1,11 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   factIllustrations,
   moduleIllustrations,
+  requirementIllustrations,
+  requirementPhotos,
   serviceSchema,
   stepIllustrations,
 } from '../../src/content/schema';
@@ -72,7 +74,7 @@ describe('Es para ti: perfil activo segun el scroll del tramo fijo', () => {
 });
 
 describe('Es para ti: bloques No es para ti si y Lo que necesitas', () => {
-  it('valida el contrato editorial, el CMS y las ilustraciones unicas sin comentarios', () => {
+  it('valida el contrato editorial, el CMS y los recursos unicos sin comentarios', () => {
     const one = serviceSchema.parse(JSON.parse(read('src/content/services/squai-one.json')));
     const notForYou = one.audienceFit?.notForYou;
     const requirements = one.audienceFit?.requirements;
@@ -80,6 +82,7 @@ describe('Es para ti: bloques No es para ti si y Lo que necesitas', () => {
     expect(notForYou?.title).toBe('No es para ti si...');
     expect(notForYou?.handwritten).toBe('No te vendemos humo.');
     expect(notForYou?.items).toHaveLength(1);
+    expect(notForYou?.items[0]?.t).toBe('Quieres reemplazar todo con IA');
     expect(requirements?.title).toBe('Lo que necesitas');
     expect(requirements?.items).toHaveLength(3);
     expect(requirements?.items[0]?.d).toBeUndefined();
@@ -87,12 +90,18 @@ describe('Es para ti: bloques No es para ti si y Lo que necesitas', () => {
     expect(requirements?.items[2]?.d).toBeTruthy();
 
     const usedElsewhere = new Set<string>([...stepIllustrations, ...moduleIllustrations, ...factIllustrations]);
-    const reqSvgs = (requirements?.items ?? []).flatMap((item) => [item.leftIllustration, item.rightIllustration]);
-    expect(new Set(reqSvgs).size).toBe(6);
-    for (const svgPath of reqSvgs) {
-      expect(usedElsewhere.has(svgPath)).toBe(false);
-      const svg = read(`public${svgPath}`);
-      expect(svg).not.toMatch(/<!--|<metadata|<desc/);
+    const reqMedia = (requirements?.items ?? []).flatMap((item) => [item.leftIllustration, item.rightIllustration]);
+    expect(new Set(reqMedia).size).toBe(6);
+    for (const mediaPath of reqMedia) {
+      expect(usedElsewhere.has(mediaPath)).toBe(false);
+      if (mediaPath.endsWith('.svg')) {
+        expect(requirementIllustrations as readonly string[]).toContain(mediaPath);
+        const svg = read(`public${mediaPath}`);
+        expect(svg).not.toMatch(/<!--|<metadata|<desc/);
+      } else {
+        expect(requirementPhotos as readonly string[]).toContain(mediaPath);
+        expect(existsSync(path.join(root, `src${mediaPath}`))).toBe(true);
+      }
     }
 
     const pages = read('.pages.yml');

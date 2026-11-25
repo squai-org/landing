@@ -69,20 +69,23 @@ export const factIllustrations = [
   '/illustrations/incluye/incluye-4.svg',
 ] as const;
 export const requirementIllustrations = [
-  '/illustrations/requisitos/computador-izq.svg',
-  '/illustrations/requisitos/computador-der.svg',
-  '/illustrations/requisitos/internet-izq.svg',
-  '/illustrations/requisitos/internet-der.svg',
   '/illustrations/requisitos/cuenta-ia-izq.svg',
   '/illustrations/requisitos/cuenta-ia-der.svg',
 ] as const;
+export const requirementPhotos = [
+  '/assets/one/para-ti/pexels-3747070.jpeg',
+  '/assets/one/para-ti/pexels-6893890.jpeg',
+  '/assets/one/para-ti/pexels-4218546.jpeg',
+  '/assets/one/para-ti/pexels-8829442.jpeg',
+] as const;
+const requirementMedia = [...requirementIllustrations, ...requirementPhotos] as const;
 const fitEntry = z.object({ t: text, d: optional(text) });
 const requirementEntry = z.object({
   t: text,
   d: optional(text),
-  leftIllustration: z.enum(requirementIllustrations),
+  leftIllustration: z.enum(requirementMedia),
   leftAlt: text,
-  rightIllustration: z.enum(requirementIllustrations),
+  rightIllustration: z.enum(requirementMedia),
   rightAlt: text,
 });
 const audienceFit = z.object({

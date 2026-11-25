@@ -924,44 +924,44 @@ content:
                         type: text
                         required: false
                       - name: leftIllustration
-                        label: Ilustración izquierda
+                        label: Imagen o ilustración izquierda
                         type: select
                         required: true
                         options:
                           values:
-                            - label: Computador (izquierda)
-                              value: /illustrations/requisitos/computador-izq.svg
-                            - label: Computador y libreta (derecha)
-                              value: /illustrations/requisitos/computador-der.svg
-                            - label: Conexión Wi-Fi (izquierda)
-                              value: /illustrations/requisitos/internet-izq.svg
-                            - label: Navegador conectado (derecha)
-                              value: /illustrations/requisitos/internet-der.svg
-                            - label: Cuenta verificada (izquierda)
+                            - label: Computador en escritorio (Pexels)
+                              value: /assets/one/para-ti/pexels-3747070.jpeg
+                            - label: Manos escribiendo en portátil (Pexels)
+                              value: /assets/one/para-ti/pexels-6893890.jpeg
+                            - label: Router Wi-Fi sobre fondo amarillo (Pexels)
+                              value: /assets/one/para-ti/pexels-4218546.jpeg
+                            - label: Señal Wi-Fi activa en pantalla (Pexels)
+                              value: /assets/one/para-ti/pexels-8829442.jpeg
+                            - label: Logos de ChatGPT y Claude
                               value: /illustrations/requisitos/cuenta-ia-izq.svg
-                            - label: Burbujas de IA (derecha)
+                            - label: Logos de Gemini y Grok
                               value: /illustrations/requisitos/cuenta-ia-der.svg
                       - name: leftAlt
                         label: Texto alternativo izquierdo
                         type: string
                         required: true
                       - name: rightIllustration
-                        label: Ilustración derecha
+                        label: Imagen o ilustración derecha
                         type: select
                         required: true
                         options:
                           values:
-                            - label: Computador (izquierda)
-                              value: /illustrations/requisitos/computador-izq.svg
-                            - label: Computador y libreta (derecha)
-                              value: /illustrations/requisitos/computador-der.svg
-                            - label: Conexión Wi-Fi (izquierda)
-                              value: /illustrations/requisitos/internet-izq.svg
-                            - label: Navegador conectado (derecha)
-                              value: /illustrations/requisitos/internet-der.svg
-                            - label: Cuenta verificada (izquierda)
+                            - label: Computador en escritorio (Pexels)
+                              value: /assets/one/para-ti/pexels-3747070.jpeg
+                            - label: Manos escribiendo en portátil (Pexels)
+                              value: /assets/one/para-ti/pexels-6893890.jpeg
+                            - label: Router Wi-Fi sobre fondo amarillo (Pexels)
+                              value: /assets/one/para-ti/pexels-4218546.jpeg
+                            - label: Señal Wi-Fi activa en pantalla (Pexels)
+                              value: /assets/one/para-ti/pexels-8829442.jpeg
+                            - label: Logos de ChatGPT y Claude
                               value: /illustrations/requisitos/cuenta-ia-izq.svg
-                            - label: Burbujas de IA (derecha)
+                            - label: Logos de Gemini y Grok
                               value: /illustrations/requisitos/cuenta-ia-der.svg
                       - name: rightAlt
                         label: Texto alternativo derecho
