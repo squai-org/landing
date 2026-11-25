@@ -21,6 +21,7 @@ const attrs = (cohort: string) => ({ 'data-cohort-dates': cohort === 'dates' ? '
 ---
 
 <div
+  data-header-tone={tone === 'gold' ? 'brand' : undefined}
   class:list={['marquee', `marquee--${tone}`, reverse && 'marquee--reverse', size === 'one' && 'marquee--one']}
   style={`--marquee-duration:${duration}s;--marquee-tilt:${tilt}deg`}
 >

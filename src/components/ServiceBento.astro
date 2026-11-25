@@ -1,4 +1,5 @@
 ---
+import { headerToneOfCard } from '../lib/header-tone';
 interface Card {
   t: string;
   d: string;
@@ -30,7 +31,7 @@ const { label, title, headline, cards, tones = [], dark = false } = Astro.props;
     <div class="bento service-bento-grid">
       {
         cards.map((c, i) => (
-          <div class={`bento-card span-2 ${tones[i] ?? ''}`}>
+          <div class={`bento-card span-2 ${tones[i] ?? ''}`} data-header-tone={headerToneOfCard(tones[i] ?? '')}>
             <h3 class="display d-h3">{c.t}</h3>
             <p class="body">{c.d}</p>
           </div>

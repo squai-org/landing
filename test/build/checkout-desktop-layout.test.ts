@@ -24,20 +24,14 @@ describe('formulario de compra en escritorio', () => {
     expect(rule(css, '.checkout-card .one-signup-row')).toContain('gap: 10px');
   });
 
-  it('pone los checks a la izquierda y el Turnstile a la derecha en la misma fila', () => {
+  it('pone el Turnstile justo despues de los checks, en la misma fila', () => {
     const css = desktop();
     const row = rule(css, '.checkout-consent-row');
 
     expect(row).toContain('display: grid');
-    expect(row).toMatch(/grid-template-columns: minmax\(0, 1fr\) auto/);
+    expect(row).toMatch(/grid-template-columns: minmax\(0, max-content\) auto/);
+    expect(row).toContain('justify-content: start');
     expect(rule(css, '.checkout-consent-row :global(.turnstile-wrap)')).toContain('margin-top: 0');
-  });
-
-  it('sube Campos obligatorios a la linea del titulo', () => {
-    const heading = rule(desktop(), '.checkout-card-heading');
-
-    expect(heading).toContain('flex-direction: row');
-    expect(heading).toContain('justify-content: space-between');
   });
 
   it('pone el Precio de referencia a la derecha del vigente sin tocar sus tamanos', () => {

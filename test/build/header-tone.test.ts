@@ -1,34 +1,59 @@
 import { describe, expect, it } from 'vitest';
-import { headerToneAt, type ToneBand } from '../../src/lib/header-tone';
+import { headerToneAt, headerToneOfCard, type ToneBand } from '../../src/lib/header-tone';
+
+const fullWidth = { left: 0, right: 1440 };
 
 const bands: ToneBand[] = [
-  { top: 0, bottom: 800, tone: 'brand' },
-  { top: 800, bottom: 1600, tone: 'light' },
-  { top: 1600, bottom: 2400, tone: 'dark' },
+  { ...fullWidth, top: 0, bottom: 800, tone: 'brand' },
+  { ...fullWidth, top: 800, bottom: 1600, tone: 'light' },
+  { ...fullWidth, top: 1600, bottom: 2400, tone: 'dark' },
 ];
 
-describe('tono del header segun la seccion que tiene debajo', () => {
-  it('toma el tono de la seccion que contiene la linea del header', () => {
-    expect(headerToneAt(bands, 40, 'light')).toBe('brand');
-    expect(headerToneAt(bands, 900, 'brand')).toBe('light');
-    expect(headerToneAt(bands, 2000, 'light')).toBe('dark');
+describe('tono del header segun lo que tiene debajo el logo', () => {
+  it('toma el tono de la seccion que contiene el logo', () => {
+    expect(headerToneAt(bands, { x: 100, y: 40 })).toBe('brand');
+    expect(headerToneAt(bands, { x: 100, y: 900 })).toBe('light');
+    expect(headerToneAt(bands, { x: 100, y: 2000 })).toBe('dark');
   });
 
   it('en el limite entre dos secciones gana la de abajo', () => {
-    expect(headerToneAt(bands, 800, 'brand')).toBe('light');
+    expect(headerToneAt(bands, { x: 100, y: 800 })).toBe('light');
   });
 
-  it('si hay secciones anidadas gana la ultima en el documento', () => {
+  it('si hay regiones anidadas gana la ultima en el documento', () => {
     const nested: ToneBand[] = [
-      { top: 0, bottom: 1000, tone: 'light' },
-      { top: 200, bottom: 600, tone: 'brand' },
+      { ...fullWidth, top: 0, bottom: 1000, tone: 'dark' },
+      { left: 0, right: 500, top: 0, bottom: 400, tone: 'brand' },
     ];
-    expect(headerToneAt(nested, 300, 'dark')).toBe('brand');
-    expect(headerToneAt(nested, 700, 'dark')).toBe('light');
+    expect(headerToneAt(nested, { x: 100, y: 50 })).toBe('brand');
+    expect(headerToneAt(nested, { x: 800, y: 50 })).toBe('dark');
+    expect(headerToneAt(nested, { x: 100, y: 700 })).toBe('dark');
   });
 
-  it('fuera de toda seccion conserva el tono actual', () => {
-    expect(headerToneAt(bands, 5000, 'dark')).toBe('dark');
-    expect(headerToneAt([], 10, 'brand')).toBe('brand');
+  it('una seccion en tarjeta no cuenta si el logo queda fuera de ella, sobre el fondo de la pagina', () => {
+    const card: ToneBand[] = [{ left: 180, right: 1260, top: 0, bottom: 900, tone: 'dark' }];
+    expect(headerToneAt(card, { x: 110, y: 50 })).toBe('light');
+    expect(headerToneAt(card, { x: 400, y: 50 })).toBe('dark');
+  });
+
+  it('fuera de toda region el logo esta sobre el fondo claro de la pagina', () => {
+    expect(headerToneAt(bands, { x: 100, y: 5000 })).toBe('light');
+    expect(headerToneAt([], { x: 10, y: 10 })).toBe('light');
+  });
+});
+
+describe('tono del header sobre tarjetas de color', () => {
+  it('las tarjetas periwinkle, teal y doradas piden el logo monocromo', () => {
+    expect(headerToneOfCard('peri')).toBe('brand');
+    expect(headerToneOfCard('teal')).toBe('brand');
+    expect(headerToneOfCard('gold')).toBe('brand');
+  });
+
+  it('las tarjetas oscuras piden el logo con letras claras', () => {
+    expect(headerToneOfCard('dark')).toBe('dark');
+  });
+
+  it('las tarjetas sin color heredan el tono de su seccion', () => {
+    expect(headerToneOfCard('')).toBeUndefined();
   });
 });

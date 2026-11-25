@@ -186,11 +186,13 @@ describe('pagina de Squai One: contrato del formulario', () => {
     expect(second.indexOf('name="referral_source"')).toBeGreaterThan(second.indexOf('name="phone"'));
   });
 
-  it('Campos obligatorios acompana al titulo de la tarjeta', () => {
+  it('Campos obligatorios va al inicio del formulario, antes del primer campo', () => {
     const heading = enclosingElement(container, 'checkout-card-heading', 'div');
+    const note = form.indexOf('Campos obligatorios');
 
-    expect(heading).toContain('Campos obligatorios');
-    expect(form).not.toContain('Campos obligatorios');
+    expect(heading).not.toContain('Campos obligatorios');
+    expect(note).toBeGreaterThan(-1);
+    expect(note).toBeLessThan(form.indexOf('name="full_name"'));
   });
 
   it('tiene un unico boton de envio con su etiqueta', () => {
