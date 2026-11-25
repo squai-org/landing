@@ -856,6 +856,38 @@ content:
                     label: Descripción
                     type: text
                     required: true
+      - name: one-requisitos
+        label: Requisitos
+        description: Fila No es para ti si... que sigue a Para quién es.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: beforeSignup
+            label: false
+            type: object
+            fields:
+              - name: notForYou
+                label: No es para ti si...
+                type: object
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: body
+                    label: Párrafo
+                    type: text
+                    required: true
+                  - name: handwritten
+                    label: Apunte a mano
+                    type: string
+                    required: true
+                  - name: photoAlt
+                    label: Descripción de la foto
+                    description: Texto alternativo para lectores de pantalla.
+                    type: string
+                    required: true
       - name: one-logros
         label: Qué vas a lograr
         description: Etiquetas manuscritas entre Para quién es y Cómo funciona.

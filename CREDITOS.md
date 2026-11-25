@@ -35,6 +35,7 @@ Sección ¿Es para ti? de Squai One. Descargadas de [Pexels](https://www.pexels.
 | `src/assets/one/para-ti/pexels-3182765.jpeg` | [3182765](https://www.pexels.com/photo/3182765/) | Dos personas conversan de pie en una oficina |
 | `src/assets/one/para-ti/pexels-4050315.jpeg` | [4050315](https://www.pexels.com/photo/4050315/) | Persona trabaja en su portátil desde una mesa blanca, vista desde arriba |
 | `src/assets/one/para-ti/pexels-3153198.jpeg` | [3153198](https://www.pexels.com/photo/3153198/) | Grupo de colegas se ríe frente a un portátil |
+| `src/assets/one/requisitos/pexels-8638716.jpeg` | [8638716](https://www.pexels.com/photo/8638716/) | Persona con gafas que se encoge de hombros (sección Requisitos de Squai One) |
 
 ## Tipografías
 

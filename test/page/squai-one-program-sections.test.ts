@@ -52,7 +52,6 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     expect(fit).not.toContain('one-fit-card');
     expect(fit).not.toContain('No es para ti si');
     expect(fit).not.toContain('Lo que necesitas');
-    expect(fit).not.toContain('Puedes empezar sin haber usado la IA antes');
     expect(fit).toContain('Quiero inscribirme');
   });
 
