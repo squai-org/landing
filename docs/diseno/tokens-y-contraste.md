@@ -123,6 +123,9 @@ Columnas: `Tema` (`base` es Squai One y la marca madre; `grow` y `learn` aplican
 | base | Temario: texto oscuro sobre tarjeta crema | `--midnight` | `--gold-3` | 17.24 | 4.5 |
 | base | Foco sobre el pie | `--canvas` | `--periwinkle-12` | 11.16 | 3 |
 | base | Botón Conoce Squai junto a las redes | `--midnight` | `--canvas` | 18.02 | 4.5 |
+| base | Inscripción: campo sobre la forma de fondo | `--periwinkle-3` | `--periwinkle-10` | 2.94 | 2.9 |
+| base | Inscripción: texto oscuro sobre la forma de fondo | `--midnight` | `--periwinkle-10` | 5.25 | 4.5 |
+| base | Inscripción: etiqueta de descuento sobre la forma de fondo | `--gold-9` | `--periwinkle-10` | 2.26 | 2 |
 | base | Menú móvil: elementos sobre blanco | `--midnight` | `--surface` | 19.44 | 4.5 |
 | base | Menú móvil: panel | `--midnight` | `--periwinkle-2` | 17.14 | 4.5 |
 | base | Botones sociales | `--midnight` | `--canvas` | 18.02 | 3 |
