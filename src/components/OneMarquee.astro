@@ -12,7 +12,7 @@ const fallback = { dates: hero.datesPending, schedule: hero.schedulePending };
 const lineA = marquee.lineA.map((item) => ({ text: item.text ?? (item.cohort ? fallback[item.cohort] : ''), cohort: item.cohort }));
 ---
 
-<section class="one-marquee" aria-labelledby="one-marquee-title">
+<section class="one-marquee" aria-labelledby="one-marquee-title" data-header-tone="light">
   <h2 id="one-marquee-title" class="sr-only">{marquee.title}</h2>
   <div class="marquee-stack">
     <Marquee items={lineA} tone="gold" size="one" tilt={-1.8} duration={26} repeat={2} ribbon={{ color: '#fedea0', opacity: 0.65 }} />

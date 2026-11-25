@@ -57,7 +57,7 @@ describe('CTA de la barra compacta del header', () => {
 
   it('la barra queda en el orden logo, CTA y boton de menu, fuera del panel del menu', async () => {
     const header = headerOf(await page('servicios/squai-grow.html'));
-    const logo = header.indexOf('logo-pill');
+    const logo = header.indexOf('header-logo');
     const bar = header.indexOf('header-bar-cta');
     const toggle = header.indexOf('data-nav-toggle');
     const panel = header.indexOf('data-nav-panel');

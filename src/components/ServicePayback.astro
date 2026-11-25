@@ -16,7 +16,7 @@ const { headline, body, cta } = Astro.props;
 const { ui } = await getSiteContent();
 ---
 
-<section class="section tint">
+<section class="section tint" data-header-tone="light">
   <div class="shell payback-shell">
     <h2 class="display d-h1 payback-title">{ui.services.payback}</h2>
     <h3 class="display d-h2 payback-headline">{headline}</h3>
