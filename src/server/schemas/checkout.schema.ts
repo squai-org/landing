@@ -22,7 +22,7 @@ export const checkoutSessionSchema = z.object({
   email: emailField,
   country_code: countryCodeField,
   phone: phoneField,
-  referral_source: referralSourceField,
+  referral_source: z.preprocess((value) => (value === '' ? undefined : value), referralSourceField.optional()),
   'cf-turnstile-response': turnstileTokenField,
 });
 

@@ -137,13 +137,15 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
               <input id="checkout-email" type="email" name="email" required autocomplete="email" placeholder={ui.forms.placeholders?.email} class="field" aria-describedby="checkout-email-error" />
               <span id="checkout-email-error" role="alert" class="field-error" data-field-error="email"></span>
             </label>
-            <div class="one-signup-phone">
-              <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} />
+            <div class="field-group" role="group" aria-labelledby="checkout-phone-label">
+              <span class="field-label" id="checkout-phone-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
+              <div class="one-signup-phone">
+              <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} labelHidden />
               <label class="field-group" for="checkout-phone">
-                <span class="field-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
                 <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" placeholder={ui.forms.placeholders?.phone} class="field" aria-describedby="checkout-phone-error" />
                 <span id="checkout-phone-error" role="alert" class="field-error" data-field-error="phone"></span>
               </label>
+              </div>
             </div>
           </div>
 
@@ -153,6 +155,8 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
             label={ui.forms.referralSourceProgram}
             placeholder={ui.forms.select}
             options={ui.forms.referralSources}
+            required={false}
+            optionalLabel={ui.forms.optional}
           />
 
           <Turnstile action="checkout" />

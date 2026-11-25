@@ -5,6 +5,7 @@ export interface Props {
   idPrefix: string;
   label: string;
   required?: boolean;
+  labelHidden?: boolean;
   defaultDial?: string;
   defaultIso2?: string;
 }
@@ -13,6 +14,7 @@ const {
   idPrefix,
   label,
   required = true,
+  labelHidden = false,
   defaultDial = '57',
   defaultIso2 = 'CO',
 } = Astro.props;
@@ -23,8 +25,8 @@ const { ui } = await getSiteContent();
 ---
 
 <div class="field-group country-field" data-country-select data-default-dial={defaultDial} data-default-iso2={defaultIso2}>
-  <span class="field-label" id={`${fieldId}-label`}>
-    {label} {required && <span aria-hidden="true">*</span>}
+  <span class={labelHidden ? 'sr-only' : 'field-label'} id={`${fieldId}-label`}>
+    {label} {required && !labelHidden && <span aria-hidden="true">*</span>}
   </span>
   <button
     type="button"

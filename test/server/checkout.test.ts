@@ -298,6 +298,35 @@ describe('POST /api/checkout/session', () => {
     });
   });
 
+  it('crea la orden con referral_source null cuando no viene', async () => {
+    await clearOrders();
+    const { referral_source: _omitted, ...withoutReferral } = orderPayload;
+    const res = await postSession(withoutReferral);
+
+    expect(res.status).toBe(201);
+    const row = await env.DB.prepare('SELECT referral_source FROM orders').first();
+    expect(row).toEqual({ referral_source: null });
+  });
+
+  it('trata un referral_source vacio como ausente', async () => {
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, referral_source: '' });
+
+    expect(res.status).toBe(201);
+    const row = await env.DB.prepare('SELECT referral_source FROM orders').first();
+    expect(row).toEqual({ referral_source: null });
+  });
+
+  it('rechaza un referral_source fuera de la lista senalando el campo', async () => {
+    await clearOrders();
+    const res = await postSession({ ...orderPayload, referral_source: 'radio' });
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toMatchObject({
+      error: { code: 'validation_failed', fields: { referral_source: 'Selecciona cómo nos descubriste.' } },
+    });
+  });
+
   it('reutiliza al cliente con el mismo correo en otro formato y actualiza su contacto', async () => {
     await clearOrders();
     await postSession(orderPayload);
