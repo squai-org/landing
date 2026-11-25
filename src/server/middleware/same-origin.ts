@@ -7,7 +7,6 @@ export const sameOrigin = (): MiddlewareHandler<AppBindings> => async (c, next) 
 
   if (origin) {
     const requestHost = new URL(c.req.url).host;
-    const forwardedHost = c.req.header('x-forwarded-host')?.split(',')[0]?.trim();
     let originHost: string | null = null;
     try {
       originHost = new URL(origin).host;
@@ -15,7 +14,7 @@ export const sameOrigin = (): MiddlewareHandler<AppBindings> => async (c, next) 
       originHost = null;
     }
 
-    if (originHost !== requestHost && (!forwardedHost || originHost !== forwardedHost)) {
+    if (originHost !== requestHost) {
       throw forbidden('cross_origin_blocked', 'Origen no permitido.');
     }
   }

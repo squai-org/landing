@@ -9,10 +9,6 @@ const useTestSiteKey = Boolean(branch && branch !== PRODUCTION_BRANCH && testSit
 
 export default defineConfig({
   site: 'https://squai.io',
-  server: {
-    host: '0.0.0.0',
-    port: 3000,
-  },
   vite: useTestSiteKey
     ? { define: { 'import.meta.env.PUBLIC_TURNSTILE_SITE_KEY': JSON.stringify(testSiteKey) } }
     : {},
