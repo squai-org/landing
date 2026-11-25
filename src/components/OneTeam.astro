@@ -48,7 +48,6 @@ const cardStyles = [
 
       <div class="one-team-content">
         <div class="one-team-heading">
-          <Button variant="dark" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
           <h2 id="one-team-title" class="one-h2">{title}</h2>
           <p class="one-lead one-team-lead">{closing}</p>
         </div>
@@ -109,6 +108,10 @@ const cardStyles = [
             })
           }
         </ul>
+
+        <div class="one-team-cta">
+          <Button variant="dark" arrow href={`#${cta.target}`} data-scroll-to={cta.target}>{cta.label}</Button>
+        </div>
       </div>
     </section>
   )
@@ -167,6 +170,7 @@ const cardStyles = [
   }
   .one-team-heading h2 { color: var(--midnight); }
   .one-team-lead { max-width: calc(var(--u) * 800); color: var(--neutral-12); }
+  .one-team-cta { display: flex; justify-content: center; }
   .one-team-list {
     display: grid;
     grid-template-columns: 1fr;

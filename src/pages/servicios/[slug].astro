@@ -9,6 +9,7 @@ import ServiceBento from '../../components/ServiceBento.astro';
 import ServicePayback from '../../components/ServicePayback.astro';
 import ServiceCapabilities from '../../components/ServiceCapabilities.astro';
 import AudienceFit from '../../components/AudienceFit.astro';
+import OneRequirements from '../../components/OneRequirements.astro';
 import OneOutcomes from '../../components/OneOutcomes.astro';
 import OneMarquee from '../../components/OneMarquee.astro';
 import HowItWorks from '../../components/HowItWorks.astro';
@@ -89,6 +90,8 @@ const schemas = [
   }
 
   {service.audienceFit && <AudienceFit fit={service.audienceFit} cta={service.cta} />}
+
+  {service.beforeSignup && <OneRequirements beforeSignup={service.beforeSignup} />}
 
   {service.outcomes && <OneOutcomes outcomes={service.outcomes} />}
 

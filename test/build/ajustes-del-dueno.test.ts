@@ -84,12 +84,6 @@ describe('personajes de Presentacion', () => {
   });
 });
 
-describe('fondo del formulario de inscripcion', () => {
-  it('la forma usa #e1e4fd opaco', () => {
-    expect(read('src/components/Checkout.astro')).toContain(`<OneBackdrop shape="signup" colors={['#e1e4fd']} opacities={[1]}`);
-  });
-});
-
 describe('boton Pausar animaciones', () => {
   const css = read('src/styles/motion.css');
   const rule = /\n\.motion-toggle \{([^}]*)\}/.exec(css)?.[1] ?? '';

@@ -41,7 +41,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 ---
 
 <section id="inscripcion" class="one-signup one-u" aria-labelledby="one-signup-title" data-header-tone="light">
-  <OneBackdrop shape="signup" colors={['#e1e4fd']} opacities={[1]} align="xMidYMid" />
+  <OneBackdrop shape="signup" colors={['#d2d7fc']} opacities={[1]} align="xMidYMid" />
   <div class="one-signup-grid">
     <div class="checkout-column" data-signup-enter="intro">
       <h2 id="one-signup-title" class="one-h2">{ui.checkout.title}</h2>
@@ -642,7 +642,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     padding: 0 var(--input-px);
     border: 0;
     border-radius: var(--input-r);
-    background: var(--periwinkle-3);
+    background: var(--surface);
     color: var(--midnight);
     font-size: var(--input-fs);
     box-shadow: none;
@@ -650,7 +650,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .one-signup :global(.field::placeholder) { color: var(--neutral-11); }
-  .one-signup :global(.field:focus) { background: var(--periwinkle-4); }
+  .one-signup :global(.field:focus) { background: var(--periwinkle-2); }
   .one-signup :global(.field:focus-visible) { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
   .one-signup :global(.field[aria-invalid='true']) { box-shadow: inset 0 0 0 2px #B3261E; }
 

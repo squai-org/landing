@@ -149,3 +149,22 @@ describe('etiquetas de color bajo el CTA del hero', () => {
     }
   });
 });
+
+describe('etiqueta sticker del hero de Squai One', () => {
+  it('desde movil lleva mas padding y un radio redondeado proporcional, no de pildora', () => {
+    const sticker = rule(hero, '.one-hero-tag-sticker');
+
+    expect(sticker).toMatch(/padding: calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 24\);/);
+    expect(sticker).toMatch(/border-radius: calc\(var\(--u\) \* 28\);/);
+    expect(sticker).not.toMatch(/9999px/);
+    expect(rule(block('@media (min-width: 640px)'), '.one-hero-tag-sticker')).toBe('');
+  });
+
+  it('en escritorio, que envuelve el texto, mantiene el mismo criterio con mas aire', () => {
+    const sticker = rule(block('@media (min-width: 1024px)'), '.one-hero-tag-sticker');
+
+    expect(sticker).toMatch(/padding: calc\(var\(--u\) \* 18\) calc\(var\(--u\) \* 32\);/);
+    expect(sticker).toMatch(/border-radius: calc\(var\(--u\) \* 32\);/);
+    expect(sticker).toMatch(/max-width: calc\(var\(--u\) \* 390\);/);
+  });
+});
