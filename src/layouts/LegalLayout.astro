@@ -20,7 +20,7 @@ const path = canonicalPath(Astro.url.pathname);
 const pageUrl = absoluteUrl(path);
 const schemas = [
   organizationSchema(content),
-  websiteSchema(),
+  websiteSchema(content),
   webPageSchema({ url: pageUrl, title, description }),
   breadcrumbSchema([
     { name: 'Inicio', path: '/' },

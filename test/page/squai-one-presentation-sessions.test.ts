@@ -48,20 +48,17 @@ describe('Squai One: presentacion', () => {
     expect(figure).toBeGreaterThan(copy);
   });
 
-  it('muestra el manuscrito, el texto principal, el de apoyo, el boton y los logos', () => {
-    expect(section).toContain('Laura y Sebastián te lo cuentan');
+  it('muestra el manuscrito, el texto principal, el de apoyo y el boton', () => {
+    expect(section).toContain('Somos Laura y Sebastián');
     expect(count(section, classed('video-lead'))).toBe(1);
-    expect(count(section, classed('video-body'))).toBe(1);
-    expect(section).toMatch(/<a [^>]*href="#equipo-one"[^>]*>/);
-    expect(section).toContain('Conocer a Laura y Sebastián');
-    expect(count(section, classed('video-logo'))).toBe(4);
+    expect(section).toMatch(/<a [^>]*href="#inscripcion"[^>]*>/);
+    expect(section).toContain('Quiero inscribirme');
   });
 
-  it('la figura lleva el titulo y el apunte del pie', () => {
+  it('la figura lleva el apunte del pie', () => {
     const figure = section.slice(section.indexOf('<figure'), section.indexOf('</figure>'));
 
-    expect(figure).toContain('Video de presentación');
-    expect(figure).toContain('Muy pronto, con subtítulos');
+    expect(figure).toContain('Muy pronto...');
   });
 
   it('el fondo es la forma que respira de las secciones nuevas', () => {
@@ -129,14 +126,14 @@ describe('Squai One: sesiones en carrusel', () => {
     expect(section).not.toMatch(/\bd-h[123]\b/);
   });
 
-  it('el carrusel es una region con ocho tarjetas, teclado y arrastre', () => {
+  it('el carrusel es una region con seis tarjetas, teclado y arrastre', () => {
     const track = /<div[^>]*data-sessions-track[^>]*>/.exec(section)?.[0] ?? '';
 
     expect(track).toContain('role="region"');
     expect(track).toContain('aria-roledescription="carrusel"');
-    expect(track).toContain('aria-label="Las 8 sesiones del programa"');
+    expect(track).toContain('aria-label="Lo que vemos en las 8 sesiones"');
     expect(track).toContain('tabindex="0"');
-    expect(count(section, classed('session-slide'))).toBe(8);
+    expect(count(section, classed('session-slide'))).toBe(6);
   });
 
   it('las flechas anterior y siguiente tienen nombre y la anterior parte desactivada', () => {
@@ -148,39 +145,38 @@ describe('Squai One: sesiones en carrusel', () => {
     expect(arrows[1]).toContain('aria-label="Ver sesiones siguientes"');
   });
 
-  it('cada tarjeta enlaza a la inscripcion con un nombre que dice la sesion', () => {
+  it('cada tarjeta enlaza a la inscripcion sin etiqueta de modulo ni sesion', () => {
     const links = [...section.matchAll(/<a[^>]*class="session-slide-link"[^>]*>/g)].map((match) => match[0]);
 
-    expect(links).toHaveLength(8);
-    links.forEach((link, index) => {
+    expect(links).toHaveLength(6);
+    links.forEach((link) => {
       expect(link).toContain('href="#inscripcion"');
-      expect(link).toContain(`sesión ${index + 1}`);
     });
+    expect(count(section, classed('session-slide-meta'))).toBe(0);
   });
 
-  it('cada tarjeta lleva ilustracion con texto alternativo, titulo y temas', () => {
+  it('cada tarjeta lleva ilustracion con texto alternativo, titulo, descripcion y temas', () => {
     const slides = section.split('<li class="session-slide').slice(1);
 
-    expect(slides).toHaveLength(8);
+    expect(slides).toHaveLength(6);
     slides.forEach((slide) => {
       expect(slide).toMatch(/<img[^>]*width="1400"[^>]*height="1365"[^>]*\balt="[^"]+"|<img[^>]*\balt="[^"]+"[^>]*width="1400"/);
       expect(slide).toMatch(/<h3\b/);
+      expect(count(slide, classed('session-slide-desc'))).toBe(1);
       expect(count(slide, classed('session-slide-topics'))).toBe(1);
     });
   });
 
-  it('las ocho ilustraciones son distintas', () => {
+  it('las seis ilustraciones son distintas', () => {
     const sources = [...section.matchAll(/<img[^>]*class="session-slide-art"[^>]*src="([^"]+)"/g)].map((match) => match[1]);
 
-    expect(new Set(sources).size).toBe(8);
+    expect(new Set(sources).size).toBe(6);
   });
 
-  it('no repite los seis modulos ni el cierre bajo el carrusel y conserva el boton de inscripcion', () => {
+  it('conserva el boton de inscripcion', () => {
     expect(count(section, classed('syllabus-module'))).toBe(0);
-    expect(section).not.toContain('Entiendes cómo funciona la IA por dentro');
     expect(section).not.toContain('syllabus-outcome');
-    expect(section).not.toContain('Vas a desarrollar la habilidad de usar cualquier IA');
-    expect(section).toMatch(/<a[^>]*href="#inscripcion"[^>]*>[\s\S]*Inscribirme al programa/);
+    expect(section).toMatch(/<a[^>]*href="#inscripcion"[^>]*>[\s\S]*Quiero inscribirme/);
   });
 
   it('el CSS publicado define los tokens del carrusel', async () => {

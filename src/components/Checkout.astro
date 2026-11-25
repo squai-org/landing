@@ -36,6 +36,7 @@ const referencePrices = investment?.referencePrice ?? {};
 const hasReference = Object.values(referencePrices).some((amount) => amount !== undefined);
 const discountText = investment?.discountPercent ? fillTemplate(ui.checkout.investment.discountLabel, { percent: String(investment.discountPercent) }) : '';
 const deadlineText = investment?.discountDeadline ? fillTemplate(ui.checkout.investment.deadlineLabel, { date: investment.discountDeadline }) : '';
+const offerText = [discountText, deadlineText].filter(Boolean).join(' ');
 const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop, USD: ui.checkout.currency.usd };
 ---
 
@@ -44,54 +45,24 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   <div class="one-signup-grid">
     <div class="checkout-column" data-signup-enter="intro">
       <h2 id="one-signup-title" class="one-h2">{ui.checkout.title}</h2>
-      <div class="checkout-copy">
-        {ui.checkout.copy.map((paragraph) => <p class="one-lead">{paragraph}</p>)}
-      </div>
-
-      <fieldset class="currency-picker" data-currency-picker>
-        <legend class="one-signup-label">{ui.checkout.currency.label}</legend>
-        <div class="currency-options">
-          {
-            CURRENCIES.map((currency, index) => (
-              <label class="currency-option" data-currency-option={currency}>
-                <input type="radio" name="currency" value={currency} form="checkout-form" checked={index === 0} />
-                <span>{currencyLabels[currency]}</span>
-              </label>
-            ))
-          }
-        </div>
-      </fieldset>
-
-      <div class="investment-price">
-        <div class="price-row">
-          <span class="one-small price-label">{ui.checkout.investment.eyebrow}</span>
-          <p class="one-h3 price-line">
-            <span class="price-amount" data-bold-price data-state="loading"></span> <span class="price-currency" data-bold-currency></span>
-          </p>
-        </div>
-        {
-          hasReference && (
-            <div class="reference-offer" data-reference-offer data-reference-prices={JSON.stringify(referencePrices)} hidden>
-              <s class="reference-price">
-                <span class="sr-only">{ui.checkout.investment.referenceLabel}: </span>
-                <span data-reference-amount />
-              </s>
-              {discountText && <span class="discount-badge">{discountText}</span>}
-              {deadlineText && <span class="one-small discount-deadline">{deadlineText}</span>}
-            </div>
-          )
-        }
-        {
-          ui.checkout.investment.copy.map((paragraph, index) => (
-            <p class={index === 0 ? 'price-note' : 'one-small price-detail'}>{paragraph}</p>
-          ))
-        }
-        <div class="payment-methods">
-          <p class="one-small price-detail" id="payment-methods-label">{ui.checkout.paymentMethods.label}</p>
-          <ul class="payment-list" aria-labelledby="payment-methods-label">
-            {ui.checkout.paymentMethods.items.map((method) => <li class="one-small">{method}</li>)}
+      <div class="checkout-summary">
+        <div class="checkout-block">
+          <h3 class="checkout-block-title">{ui.checkout.includesTitle}</h3>
+          <ul class="checkout-list">
+            {ui.checkout.includesItems.map((item) => <li class="one-body">{item}</li>)}
           </ul>
         </div>
+
+        <div class="checkout-block">
+          <h3 class="checkout-block-title">{ui.checkout.datesTitle}</h3>
+          <ul class="checkout-list">
+            {ui.checkout.datesItems.map((item) => <li class="one-body">{item}</li>)}
+          </ul>
+        </div>
+
+        <p class="one-body checkout-seats">
+          <strong>{ui.checkout.seatsLabel}</strong> {ui.checkout.seatsText}
+        </p>
       </div>
     </div>
 
@@ -109,7 +80,45 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
       >
         <div class="checkout-card-heading">
           <h3 class="one-h3">{ui.checkout.formTitle}</h3>
-          <p class="one-small checkout-card-subtitle">{ui.checkout.formSubtitle}</p>
+        </div>
+
+        <div class="checkout-pricing">
+          <fieldset class="currency-picker" data-currency-picker>
+            <legend class="one-signup-label">{ui.checkout.currency.label}</legend>
+            <div class="currency-options">
+              {
+                CURRENCIES.map((currency, index) => (
+                  <label class="currency-option" data-currency-option={currency}>
+                    <input type="radio" name="currency" value={currency} form="checkout-form" checked={index === 0} />
+                    <span>{currencyLabels[currency]}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <div class="checkout-price-group">
+            <p class="checkout-price-line">
+              <span class="price-amount" data-bold-price data-state="loading"></span> <span class="price-currency" data-bold-currency></span>
+            </p>
+            {
+              hasReference && (
+                <div class="checkout-reference-offer" data-reference-offer data-reference-prices={JSON.stringify(referencePrices)} hidden>
+                  <p class="checkout-reference-line">
+                    <s class="reference-price">
+                      <span class="sr-only">{ui.checkout.investment.referenceLabel}: </span>
+                      <span data-reference-amount />
+                    </s>
+                  </p>
+                  {offerText && (
+                    <p class="checkout-discount-line">
+                      <strong>{offerText}</strong>
+                    </p>
+                  )}
+                </div>
+              )
+            }
+          </div>
         </div>
 
         <form id="checkout-form" data-form="checkout" data-endpoint={endpoints.checkoutSession} novalidate>
@@ -226,7 +235,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   } from '../lib/checkout-flow';
   import type { ClientCopy } from '../lib/content';
 
-  // Las cadenas llegan por data-client-copy, como el resto del JS de cliente.
   const { feedback } = JSON.parse(document.body.dataset.clientCopy!) as ClientCopy;
 
   const root = document.querySelector<HTMLElement>('[data-bold-checkout]');
@@ -236,7 +244,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     const priceSlot = document.querySelector<HTMLElement>('[data-bold-price]');
     const currencySlot = document.querySelector<HTMLElement>('[data-bold-currency]');
 
-    /** Bold cobra enteros sin decimales, asi que no se formatean centavos. */
     const formatAmount = (amount: number) => `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(amount)}`;
 
     const showPrice = (amount: number, currency: string) => {
@@ -253,10 +260,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
       priceSlot.dataset.state = 'error';
     };
 
-    const referenceOffer = document.querySelector<HTMLElement>('[data-reference-offer]');
-    const referenceAmountSlot = referenceOffer?.querySelector<HTMLElement>('[data-reference-amount]') ?? null;
-    const referencePrices: Partial<Record<string, number>> = JSON.parse(referenceOffer?.dataset.referencePrices ?? '{}');
-
     const currencyInputs = Array.from(
       document.querySelectorAll<HTMLInputElement>('[data-currency-picker] input[name="currency"]')
     );
@@ -264,11 +267,15 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
     const selectedCurrency = () => currencyInputs.find((input) => input.checked)?.value ?? '';
 
+    const referenceOffer = document.querySelector<HTMLElement>('[data-reference-offer]');
+    const referenceAmountSlot = referenceOffer?.querySelector<HTMLElement>('[data-reference-amount]') ?? null;
+    const referencePrices: Partial<Record<string, number>> = JSON.parse(referenceOffer?.dataset.referencePrices ?? '{}');
+
     const showReference = (currency: string) => {
       if (!referenceOffer) return;
       const listed = discountedReference(referencePrices, prices, currency);
       referenceOffer.hidden = listed === undefined;
-      if (listed !== undefined && referenceAmountSlot) referenceAmountSlot.textContent = formatAmount(listed);
+      if (listed !== undefined && referenceAmountSlot) referenceAmountSlot.textContent = `${formatAmount(listed)} ${currency}`;
     };
 
     const showSelectedPrice = () => {
@@ -331,7 +338,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
       submit.classList.toggle('btn-primary', view.variant === 'primary');
       submit.classList.toggle('btn-dark', view.variant === 'dark');
       if (labelNode) labelNode.textContent = labels[view.text];
-      // El Layout lee esta marca para no pisar el boton mientras el flujo lo gobierna.
       form.dataset.checkoutPhase = phase;
       if (view.locked) submit.disabled = view.disabled;
       else document.dispatchEvent(new Event('squai:form-sync'));
@@ -486,76 +492,127 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   }
   .checkout-column,
   .checkout-form-column { min-width: 0; }
-  .checkout-column { display: flex; flex-direction: column; gap: calc(var(--u) * 24); }
+  .checkout-column { display: flex; flex-direction: column; gap: calc(var(--u) * 28); }
   .checkout-column h2 { color: var(--midnight); }
-  .checkout-copy { display: flex; flex-direction: column; gap: 0.75rem; max-width: calc(var(--u) * 620); color: var(--neutral-11); }
+  .checkout-summary { display: flex; flex-direction: column; gap: calc(var(--u) * 24); max-width: calc(var(--u) * 620); }
+  .checkout-block { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
+  .checkout-block-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: max(20px, calc(var(--u) * 24));
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--midnight);
+  }
+  .checkout-list { display: flex; flex-direction: column; gap: 0.5rem; margin: 0; padding: 0; list-style: none; color: var(--neutral-12); }
+  .checkout-list li { position: relative; padding-left: 1.25rem; }
+  .checkout-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.56em;
+    width: 0.44rem;
+    height: 0.44rem;
+    border-radius: 9999px;
+    background: var(--periwinkle-11);
+  }
+  .checkout-seats { margin: 0; color: var(--midnight); }
+  .checkout-seats strong { font-family: var(--font-display); font-weight: 700; }
 
+  .checkout-pricing {
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
   .one-signup-label {
     display: block;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.625rem;
     padding: 0;
     font-family: var(--font-display);
-    font-size: var(--fs-small);
+    font-size: max(15px, calc(var(--u) * 16));
     font-weight: 700;
-    color: var(--periwinkle-12);
+    color: var(--midnight);
   }
-  .currency-picker { margin: 0; padding: 0.25rem 0 0; border: 0; min-width: 0; }
-  .currency-options { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .currency-picker { margin: 0; padding: 0; border: 0; min-width: 0; }
+  .currency-options { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
   .currency-option { position: relative; display: inline-flex; cursor: pointer; }
   .currency-option span {
-    padding: 0.625rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.625rem 1.125rem;
     border: 2px solid var(--periwinkle-12);
     border-radius: 9999px;
-    background: transparent;
+    background: #fff;
     color: var(--periwinkle-12);
     font-family: var(--font-display);
-    font-size: 14px;
+    font-size: max(15px, calc(var(--u) * 16));
     font-weight: 700;
-    line-height: 1.43;
+    line-height: 1.3;
     white-space: nowrap;
     transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .currency-option:hover span { background: var(--periwinkle-3); }
+  .currency-option:hover span { background: var(--periwinkle-4); }
   .currency-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
   .currency-option input:checked + span { background: var(--periwinkle-12); color: var(--canvas); }
   .currency-option input:focus-visible + span { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
 
-  .investment-price { display: flex; flex-direction: column; gap: calc(var(--u) * 12); padding-top: 0.5rem; }
-  .price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem; }
-  .price-label { font-weight: 500; color: var(--neutral-11); }
-  .price-line { display: flex; align-items: baseline; gap: 0.22em; color: var(--midnight); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .price-currency { font-size: 0.6em; }
+  .checkout-price-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .checkout-reference-offer { display: flex; flex-direction: column; gap: 0.5rem; }
+  .checkout-reference-offer[hidden] { display: none; }
+  .checkout-price-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.22em;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 3.8vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--midnight);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .price-currency { font-size: 0.42em; font-weight: 700; letter-spacing: -0.02em; color: var(--periwinkle-12); }
   .price-amount[data-state='loading'] {
     display: inline-block;
     min-width: 4.2em;
-    height: 0.9em;
-    border-radius: 8px;
-    background: var(--periwinkle-4);
+    height: 0.88em;
+    border-radius: 10px;
+    background: var(--periwinkle-5);
     animation: price-pulse 1.4s ease-in-out infinite;
   }
-  @keyframes price-pulse { 50% { opacity: 0.4; } }
-  .reference-offer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
-  .reference-price { color: var(--neutral-11); font-family: var(--font-display); font-size: var(--fs-small); font-weight: 700; }
-  .discount-badge {
-    padding: 4px 12px;
-    border-radius: 9999px;
+  @keyframes price-pulse { 50% { opacity: 0.45; } }
+  .checkout-reference-line {
+    margin: 0.125rem 0 0;
+    font-family: var(--font-display);
+    font-size: max(17px, calc(var(--u) * 20));
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--neutral-11);
+  }
+  .reference-price { text-decoration-thickness: 2px; }
+  .checkout-discount-line {
+    margin: 0.125rem 0 0;
+    align-self: flex-start;
+    padding: 0.4375rem 0.875rem;
+    border-radius: 12px;
     background: var(--gold-9);
     color: var(--midnight);
     font-family: var(--font-display);
-    font-size: 15px;
+    font-size: max(15px, calc(var(--u) * 18));
     font-weight: 700;
+    line-height: 1.35;
   }
-  .discount-deadline { color: var(--neutral-11); }
-  .price-note { margin: 0; font-family: var(--font-display); font-size: 16px; font-weight: 700; line-height: 1.5; color: var(--midnight); }
-  .price-detail { color: var(--neutral-11); }
-  .payment-methods { display: flex; flex-direction: column; gap: 0.25rem; }
-  .payment-list { display: flex; flex-wrap: wrap; gap: 0 0.5rem; margin: 0; padding: 0; list-style: none; color: var(--neutral-11); }
-  .payment-list li:not(:last-child)::after { content: ' ·'; }
 
   .checkout-card { display: flex; flex-direction: column; gap: 1.5rem; text-align: left; }
   .checkout-card-heading { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
   .checkout-card-heading h3 { color: var(--midnight); }
-  .checkout-card-subtitle { color: var(--neutral-11); }
   .checkout-card form { display: flex; flex-direction: column; gap: 1.5rem; }
   .checkout-card form > .form-instructions { margin: 0; font-size: 14px; color: var(--neutral-11); }
   .one-signup-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
@@ -587,6 +644,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   .one-signup :global(.field:focus-visible) { outline: 2px solid var(--periwinkle-11); outline-offset: 3px; }
   .one-signup :global(.field[aria-invalid='true']) { box-shadow: inset 0 0 0 2px #B3261E; }
 
+  .form-submit { display: flex; flex-direction: column; gap: 1rem; margin: 0; padding-top: 0.25rem; }
   .one-signup :global(.consent-field) { --group-gap: 7px; }
   .consent-row { display: flex; align-items: flex-start; gap: 10px; }
   .consent-checkbox { flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--periwinkle-12); }
@@ -600,7 +658,6 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
     text-underline-offset: 2px;
   }
   .consent-label a:hover { color: var(--periwinkle-11); }
-  .form-submit { display: flex; flex-direction: column; gap: 1.5rem; margin: 0; padding-top: 0.25rem; }
   .secure-note { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 14px; line-height: 1.43; color: var(--neutral-11); }
   .secure-note svg { flex: none; color: var(--periwinkle-11); }
   .one-signup :global(.field-error:empty) { margin-top: calc(var(--group-gap) * -1); }
@@ -636,7 +693,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
 
   @media (min-width: 640px) {
     .one-signup-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .currency-option span { padding-inline: 1.5rem; font-size: 16px; line-height: 1.5; }
+    .currency-option span { padding-inline: 1.5rem; font-size: max(16px, calc(var(--u) * 17)); }
   }
   @media (min-width: 1024px) {
     .one-signup { padding-inline: calc(var(--u) * 112); }

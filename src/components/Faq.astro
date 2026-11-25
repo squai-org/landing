@@ -2,13 +2,14 @@
 import DriftBlock from './DriftBlock.astro';
 import OneBackdrop from './OneBackdrop.astro';
 import { getSiteContent, type Faq } from '../lib/content';
+import { parseFaqParagraph } from '../lib/faq';
 import { pillBlockPresets } from '../lib/pill-blocks';
 import '../styles/one-sections.css';
 
 interface Props {
   items: Faq[];
   title?: string;
-  intro?: { lead: string; categoriesLabel: string; allLabel: string };
+  intro?: { lead?: string; categoriesLabel: string; allLabel: string };
 }
 
 const { labels, services } = await getSiteContent();
@@ -62,7 +63,7 @@ const filters = grouped && intro
     <div class="faq-aside">
       <div class="faq-heading">
         <h2 id="faq-title" class:list={grouped ? ['one-h2', 'faq-title'] : ['display', 'd-h1', 'faq-title']}>{title}</h2>
-        {grouped && intro && <p class="one-lead faq-lead">{intro.lead}</p>}
+        {grouped && intro?.lead && <p class="one-lead faq-lead">{intro.lead}</p>}
       </div>
       {
         filters.length > 0 && intro && (
@@ -129,15 +130,32 @@ const filters = grouped && intro
                       <div id={`faq-panel-${f.index}`} data-faq-panel={String(f.index)} hidden={!open} class="faq-panel">
                         <div class="faq-panel-inner">
                           {
-                            f.a.map((paragraph) => (
-                              <p class:list={['faq-answer', grouped ? 'one-body' : 'lead']}>
-                                {
-                                  paragraph
-                                    .split(serviceNamePattern)
-                                    .map((part) => serviceNames.has(part) ? <strong>{part}</strong> : part)
-                                }
-                              </p>
-                            ))
+                            f.a.map((paragraph) => {
+                              const block = parseFaqParagraph(paragraph);
+                              return block.type === 'list' ? (
+                                <ul class:list={['faq-answer', 'faq-answer-list', grouped ? 'one-body' : 'lead']}>
+                                  {
+                                    block.items.map((item) => (
+                                      <li>
+                                        {
+                                          item
+                                            .split(serviceNamePattern)
+                                            .map((part) => (serviceNames.has(part) ? <strong>{part}</strong> : part))
+                                        }
+                                      </li>
+                                    ))
+                                  }
+                                </ul>
+                              ) : (
+                                <p class:list={['faq-answer', grouped ? 'one-body' : 'lead']}>
+                                  {
+                                    block.text
+                                      .split(serviceNamePattern)
+                                      .map((part) => (serviceNames.has(part) ? <strong>{part}</strong> : part))
+                                  }
+                                </p>
+                              );
+                            })
                           }
                         </div>
                       </div>
@@ -288,6 +306,13 @@ const filters = grouped && intro
   .faq-panel { overflow: hidden; }
   .faq-panel-inner { padding: 0 clamp(22px, 2.2vw, 34px) clamp(22px, 2.2vw, 30px); }
   .faq-answer { max-width: 70ch; color: var(--ink-body); }
+  .faq-answer-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 6px;
+    list-style: disc;
+  }
   .faq-answer + .faq-answer { margin-top: 12px; }
 
   .faq-shell.is-grouped {

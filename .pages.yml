@@ -366,13 +366,6 @@ content:
                     label: Cargo
                     type: string
                     required: true
-                  - name: linkedin
-                    label: LinkedIn
-                    description: URL https completa. Vacío oculta el enlace.
-                    type: string
-                    pattern:
-                      regex: ^$|^https://
-                      message: Usa una URL que empiece por https:// o deja el campo vacío.
                   - name: founder
                     label: Es fundador
                     description: Marca a quienes el sitio declara como fundadores (JSON-LD y sección de equipo de Squai One).
@@ -515,6 +508,17 @@ content:
                 label: Subtítulo
                 type: text
                 required: true
+              - name: ctaLabel
+                label: Texto del botón del encabezado
+                description: Vacío usa el texto del botón principal.
+                type: string
+              - name: supportSchedule
+                label: Línea de horario y oferta
+                description: Si la llenas, reemplaza las fechas y el horario que salen de la base de datos.
+                type: string
+              - name: supportOffer
+                label: Línea extra bajo el horario
+                type: string
               - name: note
                 label: Apunte a mano
                 description: Etiqueta oscura junto a la foto.
@@ -615,7 +619,7 @@ content:
                 required: true
               - name: seats
                 label: Texto de cupo
-                description: No lleva cifras: el cupo real vive en la base de datos.
+                description: "No lleva cifras: el cupo real vive en la base de datos."
                 type: string
                 required: true
               - name: cards
@@ -826,6 +830,15 @@ content:
                 label: Apunte a mano
                 type: string
                 required: true
+              - name: photoAlts
+                label: Descripción de las fotos
+                description: Seis, en el orden de las fotos. Texto alternativo para lectores de pantalla.
+                type: string
+                required: true
+                list:
+                  min: 6
+                  max: 6
+                  collapsible: false
               - name: profiles
                 label: Perfiles
                 type: object
@@ -862,9 +875,12 @@ content:
                 label: Bajada
                 type: string
                 required: true
+              - name: handwritten
+                label: Apunte a mano
+                type: string
               - name: pills
                 label: Etiquetas
-                description: Una por línea. Los colores y las posiciones se reparten en orden; el diseño tiene cinco.
+                description: Una por línea. Los colores y las posiciones se reparten en orden; el diseño tiene seis.
                 type: string
                 required: true
                 list:
@@ -887,11 +903,6 @@ content:
                 required: true
               - name: handwritten
                 label: Apunte a mano
-                type: string
-                required: true
-              - name: stepLabel
-                label: Etiqueta del número de paso
-                description: Se muestra como "Paso 1", "Paso 2"...
                 type: string
                 required: true
               - name: steps
@@ -952,16 +963,6 @@ content:
                 label: Resumen
                 type: string
                 required: true
-              - name: moduleLabel
-                label: Etiqueta de módulo
-                description: Se muestra como "Módulo 1", "Módulo 2"...
-                type: string
-                required: true
-              - name: sessionLabel
-                label: Etiqueta de sesión
-                description: Se muestra como "Sesión 1", "Sesión 2"...
-                type: string
-                required: true
               - name: topicsLabel
                 label: Título de la lista de temas
                 type: string
@@ -975,7 +976,7 @@ content:
                 description: Opcional. Por defecto, "Ver sesiones siguientes".
                 type: string
               - name: modules
-                label: Módulos
+                label: Contenidos del programa
                 type: object
                 required: true
                 list:
@@ -990,17 +991,8 @@ content:
                   - name: d
                     label: Descripción
                     type: text
-                    description: Opcional. Ya no se muestra en la página.
                   - name: topics
                     label: Temas
-                    type: string
-                    required: true
-                    list:
-                      min: 1
-                      collapsible: false
-                  - name: sessions
-                    label: Sesiones del módulo
-                    description: Una línea por sesión, en orden. Los módulos se numeran uno tras otro.
                     type: string
                     required: true
                     list:
@@ -1030,40 +1022,6 @@ content:
                           value: /illustrations/sesiones/sesion-8.svg
                   - name: alt
                     label: Texto alternativo de la ilustración
-                  - name: sessionArt
-                    label: Ilustración por sesión
-                    description: Opcional. Una por cada sesión del módulo, en orden. Sin ellas, todas las sesiones usan la ilustración del módulo.
-                    type: object
-                    list:
-                      collapsible:
-                        summary: '{alt}'
-                    fields:
-                      - name: illustration
-                        label: Ilustración
-                        type: select
-                        required: true
-                        options:
-                          values:
-                            - label: Chip con chispa
-                              value: /illustrations/sesiones/sesion-1.svg
-                            - label: Globos con error y acierto
-                              value: /illustrations/sesiones/sesion-2.svg
-                            - label: Mensaje a medio escribir
-                              value: /illustrations/sesiones/sesion-3.svg
-                            - label: Documentos y formato
-                              value: /illustrations/sesiones/sesion-4.svg
-                            - label: Lupa
-                              value: /illustrations/sesiones/sesion-5.svg
-                            - label: Escudo con candado
-                              value: /illustrations/sesiones/sesion-6.svg
-                            - label: Correo y reloj
-                              value: /illustrations/sesiones/sesion-7.svg
-                            - label: Camino con bandera
-                              value: /illustrations/sesiones/sesion-8.svg
-                      - name: alt
-                        label: Texto alternativo de la ilustración
-                        type: string
-                        required: true
       - name: one-franja
         label: Franja de datos
         description: Dos cintas con datos del programa, antes de Quiénes enseñan. Fecha y horario salen de la cohorte; en una cinta, un item con cohorte no lleva texto.
@@ -1151,22 +1109,14 @@ content:
                     label: Cita
                     type: text
                     required: true
-              - name: stats
-                label: Cifras
-                description: Fila de cifras bajo las tarjetas de mentores.
-                type: object
-                list:
-                  collapsible:
-                    summary: '{value}'
-                fields:
-                  - name: value
-                    label: Cifra
+                  - name: role
+                    label: Cargo en el programa
+                    description: Vacío usa el cargo de Inicio → Equipo.
                     type: string
-                    required: true
-                  - name: label
-                    label: Descripción
-                    type: string
-                    required: true
+                  - name: bio
+                    label: Bio en el programa
+                    description: Vacío usa la descripción de Inicio → Equipo.
+                    type: text
       - name: one-testimonios
         label: Testimonios
         type: file
@@ -1181,9 +1131,6 @@ content:
                 label: Título
                 type: string
                 required: true
-              - name: lead
-                label: Bajada
-                type: text
               - name: quotes
                 label: Testimonios
                 type: object
@@ -1252,6 +1199,59 @@ content:
                 label: Fecha límite del descuento
                 description: Texto libre, por ejemplo «15 de diciembre».
                 type: string
+      - name: one-whatsapp
+        label: WhatsApp de la página
+        description: Opcional. Lo que llenes aquí reemplaza el botón flotante de WhatsApp general solo en la página de Squai One.
+        type: file
+        path: src/content/services/squai-one.json
+        format: json
+        fields:
+          - name: whatsapp
+            label: false
+            type: object
+            fields:
+              - name: label
+                label: Nombre accesible del botón
+                type: string
+              - name: message
+                label: Mensaje precargado en el chat
+                type: string
+              - name: tooltip
+                label: Texto emergente junto al botón
+                type: string
+              - name: panel
+                label: Panel de temas rápidos
+                type: object
+                fields:
+                  - name: dialogLabel
+                    label: Nombre accesible del panel
+                    type: string
+                  - name: title
+                    label: Título
+                    type: string
+                  - name: subtitle
+                    label: Subtítulo
+                    type: string
+                  - name: close
+                    label: Nombre accesible del botón de cerrar
+                    type: string
+                  - name: topics
+                    label: Temas
+                    type: object
+                    list:
+                      min: 1
+                      max: 5
+                      collapsible:
+                        summary: '{label}'
+                    fields:
+                      - name: label
+                        label: Texto del tema
+                        type: string
+                        required: true
+                      - name: message
+                        label: Mensaje precargado
+                        type: string
+                        required: true
       - name: one-navegacion
         label: Menú de la página
         description: Elementos del menú superior que solo se ven en la página de Squai One, y el botón que lleva a la página de la empresa.
@@ -1299,7 +1299,6 @@ content:
               - name: lead
                 label: Texto de apoyo
                 type: string
-                required: true
               - name: categoriesLabel
                 label: Título de la lista de categorías
                 type: string
@@ -1865,6 +1864,189 @@ content:
                         pattern:
                           regex: \{service\}
                           message: La plantilla tiene que contener {service}.
+                      - name: websiteDescription
+                        label: Descripción del sitio para buscadores
+                        description: Va en los datos estructurados (WebSite).
+                        type: text
+                        required: true
+                      - name: areaServed
+                        label: Zona donde trabaja Squai
+                        type: string
+                        required: true
+                      - name: knowsAbout
+                        label: Temas que domina Squai
+                        description: Uno por línea. Van en los datos estructurados de la organización.
+                        type: string
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: false
+                      - name: servicesListName
+                        label: Nombre de la lista de servicios
+                        type: string
+                        required: true
+                      - name: course
+                        label: Datos estructurados del programa
+                        type: object
+                        required: true
+                        fields:
+                          - name: credential
+                            label: Certificado que se entrega
+                            type: string
+                            required: true
+                          - name: mode
+                            label: Modalidad
+                            type: string
+                            required: true
+                          - name: teaches
+                            label: Lo que enseña
+                            description: Uno por línea.
+                            type: string
+                            required: true
+                            list:
+                              min: 1
+                              collapsible: false
+                          - name: workload
+                            label: Resumen de la carga
+                            description: Se arma con los datos de Squai One → Datos clave.
+                            type: object
+                            required: true
+                            fields:
+                              - name: summary
+                                label: Plantilla del resumen
+                                description: Usa {sessions}, {length}, {perWeek} y {weeks}.
+                                type: string
+                                required: true
+                              - name: session
+                                label: Sesión
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: week
+                                label: Semana
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: hour
+                                label: Hora
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: minute
+                                label: Minuto
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: halfHour
+                                label: Horas y media
+                                description: Usa {hours}.
+                                type: string
+                                required: true
+                              - name: hoursAndMinutes
+                                label: Horas y minutos
+                                description: Usa {hours} y {minutes}.
+                                type: string
+                                required: true
+          - name: seo-llms
+            label: Resumen para asistentes de IA (llms.txt)
+            type: file
+            path: src/content/copies.json
+            format: json
+            fields:
+              - name: site
+                label: false
+                type: object
+                fields:
+                  - name: llms
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: language
+                        label: Idioma de trabajo
+                        type: string
+                        required: true
+                      - name: goalsTitle
+                        label: Título de lo que ayuda a lograr
+                        type: string
+                        required: true
+                      - name: goals
+                        label: Lo que ayuda a lograr
+                        description: Uno por línea.
+                        type: string
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: false
+                      - name: servicesTitle
+                        label: Título de servicios
+                        type: string
+                        required: true
+                      - name: programTitle
+                        label: Título del programa actual
+                        type: string
+                        required: true
+                      - name: programNote
+                        label: Nota del programa
+                        description: Usa {url}; ahí va el enlace a la inscripción.
+                        type: string
+                        required: true
+                      - name: pagesTitle
+                        label: Título de páginas
+                        type: string
+                        required: true
+                      - name: homeLabel
+                        label: Nombre de la página de inicio
+                        type: string
+                        required: true
+                      - name: homeNote
+                        label: Nota de la página de inicio
+                        type: string
+                        required: true
+                      - name: faqTitle
+                        label: Título de preguntas frecuentes
+                        type: string
+                        required: true
+                      - name: contactTitle
+                        label: Título de contacto
+                        type: string
+                        required: true
+                      - name: emailLabel
+                        label: Etiqueta del correo
+                        type: string
+                        required: true
           - name: seo-inicio
             label: Inicio
             type: file
@@ -2063,6 +2245,9 @@ content:
                         label: Mensaje precargado en el chat
                         type: string
                         required: true
+                      - name: tooltip
+                        label: Texto emergente junto al botón
+                        type: string
                       - name: panel
                         label: Panel de temas rápidos
                         type: object
@@ -2103,6 +2288,31 @@ content:
                       - name: label
                         label: Nombre accesible del botón
                         type: string
+                  - name: carousel
+                    label: Carruseles
+                    type: object
+                    required: true
+                    fields:
+                      - name: roleDescription
+                        label: Cómo lo anuncia el lector de pantalla
+                        type: string
+                        required: true
+                  - name: cohort
+                    label: Fechas de la cohorte
+                    description: Las fechas salen de la base de datos; aquí solo el texto que las rodea.
+                    type: object
+                    required: true
+                    fields:
+                      - name: from
+                        label: Solo fecha de inicio
+                        description: Usa {start}.
+                        type: string
+                        required: true
+                      - name: range
+                        label: Inicio y fin
+                        description: Usa {start} y {end}.
+                        type: string
+                        required: true
                   - name: skip
                     label: Enlace "Saltar al contenido"
                     type: string
@@ -2522,19 +2732,38 @@ content:
                         label: Título
                         type: string
                         required: true
-                      - name: copy
-                        label: Párrafos
-                        type: text
+                      - name: includesTitle
+                        label: Título de lo que incluye
+                        type: string
+                        required: true
+                      - name: includesItems
+                        label: Lo que incluye
+                        type: string
                         required: true
                         list:
                           min: 1
-                          collapsible: true
-                      - name: formTitle
-                        label: Título del formulario
+                          collapsible: false
+                      - name: datesTitle
+                        label: Título de fechas
                         type: string
                         required: true
-                      - name: formSubtitle
-                        label: Subtítulo del formulario
+                      - name: datesItems
+                        label: Fechas
+                        type: string
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: false
+                      - name: seatsLabel
+                        label: Etiqueta de cupos
+                        type: string
+                        required: true
+                      - name: seatsText
+                        label: Texto de cupos
+                        type: string
+                        required: true
+                      - name: formTitle
+                        label: Título del formulario
                         type: string
                         required: true
                       - name: secureNote
@@ -2598,54 +2827,6 @@ content:
                             label: Texto de cliente ya inscrito
                             type: string
                             required: true
-                      - name: investment
-                        label: Inversión
-                        type: object
-                        required: true
-                        fields:
-                          - name: eyebrow
-                            label: Antetítulo
-                            type: string
-                            required: true
-                          - name: copy
-                            label: Párrafos
-                            type: text
-                            required: true
-                            list:
-                              min: 1
-                              collapsible: true
-                          - name: referenceLabel
-                            label: Etiqueta del Precio de referencia
-                            description: La lee el lector de pantalla antes del precio tachado. El valor del precio se edita en Squai One → Inversión.
-                            type: string
-                            required: true
-                          - name: discountLabel
-                            label: Texto del descuento
-                            description: Debe incluir {percent}, que se reemplaza por el porcentaje de descuento.
-                            type: string
-                            required: true
-                          - name: deadlineLabel
-                            label: Texto de la fecha límite
-                            description: Debe incluir {date}, que se reemplaza por la fecha límite del descuento.
-                            type: string
-                            required: true
-                      - name: paymentMethods
-                        label: Medios de pago
-                        description: Solo escribe los que Bold tiene activos. Bre-B no se lista hasta confirmarlo en Bold.
-                        type: object
-                        required: true
-                        fields:
-                          - name: label
-                            label: Título de la lista
-                            type: string
-                            required: true
-                          - name: items
-                            label: Medios
-                            type: string
-                            required: true
-                            list:
-                              min: 1
-                              collapsible: false
                       - name: currency
                         label: Selector de moneda
                         description: El precio de cada moneda vive en D1 (program_prices), no aquí.
@@ -2662,6 +2843,26 @@ content:
                             required: true
                           - name: usd
                             label: Opción dólares
+                            type: string
+                            required: true
+                      - name: investment
+                        label: Inversión
+                        type: object
+                        required: true
+                        fields:
+                          - name: referenceLabel
+                            label: Etiqueta del Precio de referencia
+                            description: La lee el lector de pantalla antes del precio tachado. El valor del precio se edita en Squai One → Inversión.
+                            type: string
+                            required: true
+                          - name: discountLabel
+                            label: Texto del descuento
+                            description: Debe incluir {percent}, que se reemplaza por el porcentaje de descuento.
+                            type: string
+                            required: true
+                          - name: deadlineLabel
+                            label: Texto de la fecha límite
+                            description: Debe incluir {date}, que se reemplaza por la fecha límite del descuento.
                             type: string
                             required: true
                       - name: button
@@ -2703,7 +2904,7 @@ content:
                             required: true
                       - name: resume
                         label: Página para retomar el pago
-                        description: Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace vive en src/config/checkout.ts (resumeExpiryDays): no lo repitas en estos textos.
+                        description: "Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace vive en src/config/checkout.ts (resumeExpiryDays): no lo repitas en estos textos."
                         type: object
                         required: true
                         fields:

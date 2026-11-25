@@ -3,9 +3,8 @@ import Button from './Button.astro';
 import CarouselArrows from './CarouselArrows.astro';
 import OneCornerBlocks from './OneCornerBlocks.astro';
 import { slideMotionAt } from '../lib/session-carousel';
-import { sessionsOf } from '../lib/syllabus-sessions';
 import type { OneCornerPreset } from '../lib/one-corner-presets';
-import type { Service } from '../lib/content';
+import { getSiteContent, type Service } from '../lib/content';
 import '../styles/one-sections.css';
 
 interface Props {
@@ -14,7 +13,7 @@ interface Props {
 }
 
 const { syllabus, cta } = Astro.props;
-const sessions = sessionsOf(syllabus);
+const items = syllabus.modules;
 const ctaHref = cta.modal ? undefined : `#${cta.target}`;
 
 interface SlideStyle {
@@ -29,6 +28,7 @@ const slideStyles: SlideStyle[] = [
   { bg: 'var(--periwinkle-4)', block: 'var(--gold-9)', preset: 'mod-3' },
   { bg: 'var(--gold-3)', block: 'var(--periwinkle-9)', preset: 'mod-4' },
 ];
+const { ui } = await getSiteContent();
 ---
 
 <section id="temario" class="syllabus one-u" aria-labelledby="syllabus-title" data-sessions>
@@ -49,19 +49,19 @@ const slideStyles: SlideStyle[] = [
   <div
     class="sessions-track"
     role="region"
-    aria-roledescription="carrusel"
-    aria-label={`Las ${sessions.length} sesiones del programa`}
+    aria-roledescription={ui.carousel.roleDescription}
+    aria-label={syllabus.title}
     tabindex="0"
     data-sessions-track
   >
     <ol class="sessions-list">
       {
-        sessions.map((session, index) => {
+        items.map((item, index) => {
           const style = slideStyles[index % slideStyles.length]!;
           const motion = slideMotionAt(index);
           return (
             <li class="session-slide syllabus-session" style={`--session-rot:${-motion.rotate}deg`} data-session-slide>
-              <article class="session-slide-inner" aria-labelledby={`session-${session.number}-title`}>
+              <article class="session-slide-inner" aria-labelledby={`syllabus-topic-${index + 1}-title`}>
                 <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
 
                 <div class="session-slide-bg" style={`--card-bg:${style.bg}`} aria-hidden="true">
@@ -72,8 +72,8 @@ const slideStyles: SlideStyle[] = [
                   <div class="session-slide-figure">
                     <img
                       class="session-slide-art"
-                      src={session.illustration}
-                      alt={session.alt}
+                      src={item.illustration}
+                      alt={item.alt}
                       width="1400"
                       height="1365"
                       loading="lazy"
@@ -83,13 +83,10 @@ const slideStyles: SlideStyle[] = [
                   </div>
 
                   <div class="session-slide-copy">
-                    <p class="one-small session-slide-meta">
-                      <span class="syllabus-session-tag">{syllabus.sessionLabel} {session.number}</span>
-                      <span class="session-slide-module">{syllabus.moduleLabel} {session.moduleNumber}</span>
-                    </p>
-                    <h3 id={`session-${session.number}-title`} class="one-h3">{session.focus}</h3>
+                    <h3 id={`syllabus-topic-${index + 1}-title`} class="one-h3">{item.t}</h3>
+                    {item.d && <p class="one-small session-slide-desc">{item.d}</p>}
                     <ul class="one-small session-slide-topics" aria-label={syllabus.topicsLabel}>
-                      {session.topics.map((topic) => <li>{topic}</li>)}
+                      {item.topics.map((topic) => <li>{topic}</li>)}
                     </ul>
                   </div>
                 </div>
@@ -99,7 +96,7 @@ const slideStyles: SlideStyle[] = [
                   href={ctaHref}
                   data-scroll-to={cta.modal ? undefined : cta.target}
                   data-open-modal={cta.modal || undefined}
-                  aria-label={`${cta.label}: sesión ${session.number}, ${session.focus}`}
+                  aria-label={`${cta.label}: ${item.t}`}
                 ></a>
 
                 <div class="session-slide-cta" aria-hidden="true">
@@ -151,13 +148,16 @@ const slideStyles: SlideStyle[] = [
   .syllabus-note-wide {
     display: none;
     position: absolute;
-    top: calc(var(--u) * 150);
-    left: calc(var(--u) * 116);
-    max-width: 18ch;
+    top: calc(var(--u) * 136);
+    left: calc(var(--u) * 64);
+    max-width: 16ch;
     rotate: -10deg;
     text-align: left;
   }
   .syllabus-carousel { position: relative; margin-top: calc(var(--books-header-pb) * -1); }
+  .syllabus-session .session-slide-copy { gap: calc(var(--u) * 8); }
+  .syllabus-session .session-slide-desc,
+  .syllabus-session .session-slide-topics { line-height: 1.38; }
   .syllabus-arrows {
     position: absolute;
     right: var(--gutter);

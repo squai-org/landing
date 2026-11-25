@@ -11,18 +11,9 @@ describe('pagina de Squai One: inversion', () => {
     page = await readFile(path.join(dist, 'servicios/squai-one.html'), 'utf8');
   });
 
-  it('lista los medios de pago del contenido', () => {
-    expect(page).toContain('Medios de pago');
-    for (const method of ['PSE', 'Nequi', 'Botón Bancolombia']) expect(page).toMatch(new RegExp(`<li[^>]*>${method}</li>`));
-  });
-
-  it('no afirma Bre-B mientras el contenido no lo liste', () => {
-    expect(page).not.toMatch(/Bre-?B/i);
-  });
-
-  it('sin Precio de referencia en el contenido no pinta tachado ni descuento', () => {
-    expect(page).not.toContain('data-reference-offer');
-    expect(page).not.toContain('class="discount-badge');
+  it('el Precio de referencia queda oculto hasta comparar con el precio vigente', () => {
+    expect(page).toMatch(/<div[^>]*data-reference-offer[^>]*hidden/);
+    expect(page).toContain('20% de descuento hasta el 31 de diciembre.');
   });
 
   it('el precio vigente espera a la base de datos con estado de carga', () => {

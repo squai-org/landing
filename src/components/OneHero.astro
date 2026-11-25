@@ -4,7 +4,7 @@ import Button from './Button.astro';
 import OneBackdrop from './OneBackdrop.astro';
 import { endpoints } from '../config/endpoints';
 import { checkout } from '../config/checkout';
-import type { Service } from '../lib/content';
+import { getSiteContent, type Service } from '../lib/content';
 import persona from '../assets/one/persona-laptop.webp';
 import '../styles/one-sections.css';
 
@@ -15,10 +15,11 @@ interface Props {
 const { service } = Astro.props;
 const hero = service.hero!;
 const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
+const { ui } = await getSiteContent();
 ---
 
 <div class="one-hero-band one-u">
-  <section class="one-hero" data-hero aria-labelledby="one-hero-title" data-cohort-endpoint={cohortEndpoint}>
+  <section class="one-hero" data-hero aria-labelledby="one-hero-title" data-cohort-endpoint={cohortEndpoint} data-cohort-from={ui.cohort.from} data-cohort-range={ui.cohort.range}>
     <OneBackdrop
       shape="hero"
       colors={['#969bfc', '#777ae3']}
@@ -33,11 +34,20 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
       <h1 id="one-hero-title" class="one-h1 one-hero-title">{hero.title}</h1>
       <p class="one-hero-lead">{hero.lead}</p>
       <div class="one-hero-action">
-        <Button variant="dark" arrow href={`#${service.cta.target}`} data-scroll-to={service.cta.target}>{service.cta.label}</Button>
+        <Button variant="dark" arrow href={`#${service.cta.target}`} data-scroll-to={service.cta.target}>{hero.ctaLabel ?? service.cta.label}</Button>
       </div>
-      <p class="one-small one-hero-schedule">
-        <span data-cohort-schedule>{hero.schedulePending}</span> · <span data-cohort-dates>{hero.datesPending}</span>
-      </p>
+      <div class="one-hero-support">
+        {
+          hero.supportSchedule ? (
+            <p class="one-small one-hero-schedule">{hero.supportSchedule}</p>
+          ) : (
+            <p class="one-small one-hero-schedule">
+              <span data-cohort-schedule>{hero.schedulePending}</span> · <span data-cohort-dates>{hero.datesPending}</span>
+            </p>
+          )
+        }
+        {hero.supportOffer && <p class="one-small one-hero-offer">{hero.supportOffer}</p>}
+      </div>
     </div>
 
     <div class="one-hero-stage">
@@ -108,9 +118,22 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
     column-gap: 1.25rem;
     margin-top: var(--hero-gap-cta);
   }
-  .one-hero-schedule {
+  .one-hero-support {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 6);
+    max-width: min(100%, calc(var(--u) * 540));
     margin-top: calc(var(--u) * 14);
+    color: var(--midnight);
+  }
+  .one-hero-schedule {
+    margin: 0;
     font-weight: 700;
+    color: var(--midnight);
+  }
+  .one-hero-offer {
+    margin: 0;
+    font-weight: 500;
     color: var(--midnight);
   }
   .one-hero-stage {
@@ -271,6 +294,6 @@ const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
     }
     .one-hero-tag { font-size: calc(var(--u) * 28); white-space: nowrap; }
     .one-hero-tag-note { right: auto; left: -10%; top: 56%; }
-    .one-hero-tag-sticker { right: auto; left: 59%; top: 70%; }
+    .one-hero-tag-sticker { right: auto; left: 59%; top: 70%; max-width: calc(var(--u) * 340); white-space: normal; text-wrap: balance; }
   }
 </style>

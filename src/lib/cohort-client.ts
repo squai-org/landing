@@ -10,12 +10,14 @@ const fill = (root: ParentNode, selector: string, value: string | null | undefin
 };
 
 export const showCohort = async (root: ParentNode = document): Promise<void> => {
-  const endpoint = root.querySelector<HTMLElement>('[data-cohort-endpoint]')?.dataset.cohortEndpoint;
-  if (!endpoint) return;
+  const source = root.querySelector<HTMLElement>('[data-cohort-endpoint]');
+  const endpoint = source?.dataset.cohortEndpoint;
+  if (!source || !endpoint) return;
+  const labels = { from: source.dataset.cohortFrom ?? '', range: source.dataset.cohortRange ?? '' };
 
   const program = await fetchProgram(endpoint);
   if (!program) return;
 
-  fill(root, '[data-cohort-dates]', formatCohortDates(program.startsOn, program.endsOn));
+  fill(root, '[data-cohort-dates]', formatCohortDates(program.startsOn, program.endsOn, labels));
   fill(root, '[data-cohort-schedule]', program.schedule?.trim());
 };
