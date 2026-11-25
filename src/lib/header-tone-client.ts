@@ -1,9 +1,6 @@
-import { headerToneAt, isHeaderTone, type HeaderTone, type ToneBand } from './header-tone';
+import { BUTTON_VARIANT_ON, headerToneAt, isHeaderTone, surfaceOf, toneOrLight, type HeaderTone, type ToneBand } from './header-tone';
 
-const SWAPPABLE_VARIANTS: Record<'light' | 'dark', { from: string; to: string }> = {
-  dark: { from: 'btn-dark', to: 'btn-white' },
-  light: { from: 'btn-white', to: 'btn-dark' },
-};
+const buttonClass = (surface: 'light' | 'dark') => `btn-${BUTTON_VARIANT_ON[surface]}`;
 
 export function bindHeaderTone() {
   const header = document.querySelector<HTMLElement>('[data-header]');
@@ -14,15 +11,14 @@ export function bindHeaderTone() {
   if (sections.length === 0) return;
   let ticking = false;
 
-  const surface = (tone: HeaderTone) => (tone === 'dark' ? 'dark' : 'light');
-
   const apply = (tone: HeaderTone) => {
     if (header.dataset.tone === tone) return;
-    const previous = surface(isHeaderTone(header.dataset.tone) ? header.dataset.tone : 'light');
+    const previous = surfaceOf(toneOrLight(header.dataset.tone));
     header.dataset.tone = tone;
-    const next = surface(tone);
+    const next = surfaceOf(tone);
     if (previous === next) return;
-    const { from, to } = SWAPPABLE_VARIANTS[next];
+    const from = buttonClass(previous);
+    const to = buttonClass(next);
     swappable.forEach((element) => {
       element.classList.remove(from);
       element.classList.add(to);
@@ -39,7 +35,7 @@ export function bindHeaderTone() {
       const rect = section.getBoundingClientRect();
       bands.push({ top: rect.top, bottom: rect.bottom, tone });
     }
-    const current = isHeaderTone(header.dataset.tone) ? header.dataset.tone : 'light';
+    const current = toneOrLight(header.dataset.tone);
     apply(headerToneAt(bands, probe, current));
   };
 
