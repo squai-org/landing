@@ -91,12 +91,13 @@ describe('panel de WhatsApp: componente', () => {
 describe('volver arriba', () => {
   const source = read('src/components/ScrollTopButton.astro');
 
-  it('es un círculo blanco de 48 px abajo a la izquierda desde md', () => {
+  it('es un círculo canvas de 48 px abajo a la izquierda desde md', () => {
     expect(source).toMatch(/width: 48px/);
     expect(source).toMatch(/height: 48px/);
     expect(source).toMatch(/border-radius: 50%/);
     expect(source).not.toMatch(/position: fixed/);
-    expect(source).toContain('var(--surface)');
+    expect(source).toContain('background: var(--canvas);');
+    expect(source).not.toContain('var(--surface)');
     expect(source).toMatch(/@media \(min-width: 768px\)/);
   });
 
