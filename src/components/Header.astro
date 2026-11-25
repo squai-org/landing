@@ -5,9 +5,10 @@ import DriftBlock from './DriftBlock.astro';
 import SocialLinks from './SocialLinks.astro';
 import { getSiteContent } from '../lib/content';
 import { pillBlockPresets } from '../lib/pill-blocks';
+import type { HeaderTone } from '../lib/header-tone';
 
 interface Props {
-  tone?: 'light' | 'dark';
+  tone?: HeaderTone;
 }
 
 const { tone = 'light' } = Astro.props;
@@ -18,7 +19,8 @@ const serviceLinks = services.map((service) => ({ name: service.name, subtitle: 
 const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath === '/servicios/squai-learn' ? 'learn' : undefined;
 const isSquaiOne = currentPath === '/servicios/squai-one';
 const serviceNav = services.find((service) => currentPath === `/servicios/${service.slug}`)?.nav;
-const squaiOneCtaVariant = tone === 'dark' ? 'white' : 'dark';
+const onDark = tone === 'dark';
+const squaiOneCtaVariant = onDark ? 'white' : 'dark';
 const ctaVariant = isSquaiOne ? squaiOneCtaVariant : 'primary';
 interface PageCta {
   label: string;
@@ -35,7 +37,7 @@ const pageCtaFor = (): PageCta => {
   };
 };
 const pageCta = pageCtaFor();
-const toggleVariant = tone === 'dark' ? 'white' : 'dark';
+const toggleVariant = onDark ? 'white' : 'dark';
 const pagePills = serviceNav
   ? serviceNav.items.map((item) => ({ label: item.label, target: item.target, href: `#${item.target}`, services: false }))
   : navLinks.map((link) => ({ label: link.label, target: link.target, href: `/#${link.target}`, services: link.target === 'servicios' }));
@@ -44,17 +46,18 @@ const pagePills = serviceNav
 <header class="site-header" data-header data-tone={tone} data-scrolled="false" data-hidden="false">
   <div class="site-header-row" data-header-row>
     <div class="header-brand">
-      <a href="/" class="logo-link logo-pill" aria-label={ui.navigation.home}>
+      <a href="/" class="logo-link header-logo" aria-label={ui.navigation.home}>
         <Logo size={46} />
       </a>
     </div>
 
-    <Button variant={ctaVariant} class="header-bar-cta" data-header-bar-cta {...pageCta.target}>{pageCta.label}</Button>
+    <Button variant={ctaVariant} class="header-bar-cta" data-header-bar-cta data-tone-swap={isSquaiOne ? '' : undefined} {...pageCta.target}>{pageCta.label}</Button>
 
     <button
       type="button"
       class={`btn btn-${toggleVariant} btn-split nav-toggle`}
       data-nav-toggle
+      data-tone-swap
       aria-expanded="false"
       aria-controls="site-nav"
       data-menu-label={ui.navigation.menuLabel}
@@ -134,7 +137,7 @@ const pagePills = serviceNav
             })
           }
           <li class="nav-cta-wrap">
-            <Button variant={ctaVariant} arrow class="nav-cta" {...pageCta.target} aria-current={pageCta.current}>{pageCta.label}</Button>
+            <Button variant={ctaVariant} arrow class="nav-cta" data-tone-swap={isSquaiOne ? '' : undefined} {...pageCta.target} aria-current={pageCta.current}>{pageCta.label}</Button>
           </li>
         </ul>
         <div class="site-nav-social">
@@ -187,19 +190,21 @@ const pagePills = serviceNav
   .site-header-row > * { pointer-events: auto; }
 
   .header-brand { position: relative; z-index: 2; display: flex; align-items: center; }
-  .logo-pill {
+  .header-logo {
+    --logo-size: var(--pill-h);
     --wordmark-color: var(--midnight);
-    --logo-size: calc(var(--pill-h) * 0.742);
-    justify-content: center;
     height: var(--pill-h);
-    padding: 0 calc(var(--pill-h) * 0.258);
-    border-radius: 9999px;
-    background: var(--canvas);
     color: var(--midnight);
     white-space: nowrap;
   }
-  .logo-pill:hover { color: var(--midnight); }
-  .logo-pill:focus-visible { outline-offset: 4px; }
+  .header-logo:hover { color: var(--wordmark-color); }
+  .header-logo:focus-visible { outline-offset: 4px; }
+  .site-header[data-tone='dark'] .header-logo { --wordmark-color: var(--canvas); }
+  .site-header[data-tone='brand'] .header-logo {
+    --wordmark-color: var(--midnight);
+    --logo-mark: var(--midnight);
+    --logo-block: var(--midnight);
+  }
 
   .header-bar-cta { display: none; }
   .nav-toggle { display: none; position: relative; z-index: 2; }
@@ -416,6 +421,7 @@ const pagePills = serviceNav
 <script>
   import { animateIn, animateOut, tweens } from '../lib/motion';
   import { bindHeaderVisibility } from '../lib/header-visibility-client';
+  import { bindHeaderTone } from '../lib/header-tone-client';
 
   const header = document.querySelector<HTMLElement>('[data-header]');
   const navToggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
@@ -547,6 +553,7 @@ const pagePills = serviceNav
   });
 
   bindHeaderVisibility();
+  bindHeaderTone();
 
   window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
     if (!event.matches || !navMenu) return;

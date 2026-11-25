@@ -6,7 +6,7 @@ const { program, heroLines, heroSubtitle, heroVerbs, ui, labels } = await getSit
 const statusAttributes = programStatusAttributes({ program, ui });
 ---
 
-<section class="hero" data-hero data-hero-copy={JSON.stringify({ verbs: heroVerbs, ...ui.hero })}>
+<section class="hero" data-hero data-hero-copy={JSON.stringify({ verbs: heroVerbs, ...ui.hero })} data-header-tone="dark">
   <img class="brand-shape hero-shape hero-shape-gold" src="/images/shape-hero-gold.svg" alt="" aria-hidden="true" />
   <img class="brand-shape hero-shape hero-shape-periwinkle" src="/images/shape-hero-periwinkle.svg" alt="" aria-hidden="true" />
 
