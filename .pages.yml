@@ -843,6 +843,108 @@ content:
                     label: Descripción
                     type: text
                     required: true
+              - name: notForYou
+                label: No es para ti si
+                type: object
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: handwritten
+                    label: Apunte a mano
+                    type: string
+                    required: true
+                  - name: items
+                    label: Puntos
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{t}'
+                    fields:
+                      - name: t
+                        label: Título
+                        type: string
+                        required: true
+                      - name: d
+                        label: Descripción
+                        type: text
+                        required: false
+              - name: requirements
+                label: Lo que necesitas
+                type: object
+                fields:
+                  - name: title
+                    label: Título
+                    type: string
+                    required: true
+                  - name: handwritten
+                    label: Apunte a mano
+                    type: string
+                    required: true
+                  - name: items
+                    label: Requisitos
+                    type: object
+                    required: true
+                    list:
+                      min: 1
+                      collapsible:
+                        summary: '{t}'
+                    fields:
+                      - name: t
+                        label: Título
+                        type: string
+                        required: true
+                      - name: d
+                        label: Descripción
+                        type: text
+                        required: false
+                      - name: leftIllustration
+                        label: Ilustración izquierda
+                        type: select
+                        required: true
+                        options:
+                          values:
+                            - label: Computador (izquierda)
+                              value: /illustrations/requisitos/computador-izq.svg
+                            - label: Computador y libreta (derecha)
+                              value: /illustrations/requisitos/computador-der.svg
+                            - label: Conexión Wi-Fi (izquierda)
+                              value: /illustrations/requisitos/internet-izq.svg
+                            - label: Navegador conectado (derecha)
+                              value: /illustrations/requisitos/internet-der.svg
+                            - label: Cuenta verificada (izquierda)
+                              value: /illustrations/requisitos/cuenta-ia-izq.svg
+                            - label: Burbujas de IA (derecha)
+                              value: /illustrations/requisitos/cuenta-ia-der.svg
+                      - name: leftAlt
+                        label: Texto alternativo izquierdo
+                        type: string
+                        required: true
+                      - name: rightIllustration
+                        label: Ilustración derecha
+                        type: select
+                        required: true
+                        options:
+                          values:
+                            - label: Computador (izquierda)
+                              value: /illustrations/requisitos/computador-izq.svg
+                            - label: Computador y libreta (derecha)
+                              value: /illustrations/requisitos/computador-der.svg
+                            - label: Conexión Wi-Fi (izquierda)
+                              value: /illustrations/requisitos/internet-izq.svg
+                            - label: Navegador conectado (derecha)
+                              value: /illustrations/requisitos/internet-der.svg
+                            - label: Cuenta verificada (izquierda)
+                              value: /illustrations/requisitos/cuenta-ia-izq.svg
+                            - label: Burbujas de IA (derecha)
+                              value: /illustrations/requisitos/cuenta-ia-der.svg
+                      - name: rightAlt
+                        label: Texto alternativo derecho
+                        type: string
+                        required: true
       - name: one-logros
         label: Qué vas a lograr
         description: Etiquetas manuscritas entre Para quién es y Cómo funciona.

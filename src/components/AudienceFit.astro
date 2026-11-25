@@ -10,6 +10,8 @@ import charts from '../assets/one/para-ti/pexels-3184292.jpeg';
 import officeTalk from '../assets/one/para-ti/pexels-3182765.jpeg';
 import laptopDesk from '../assets/one/para-ti/pexels-4050315.jpeg';
 import colleagues from '../assets/one/para-ti/pexels-3153198.jpeg';
+import shrugMan from '../assets/one/para-ti/pexels-8638716.jpeg';
+import shrugWoman from '../assets/one/para-ti/pexels-3958872.jpeg';
 import '../styles/one-sections.css';
 
 interface Props {
@@ -23,6 +25,31 @@ interface Photo {
   src: ImageMetadata;
   alt: string;
   position: string;
+}
+
+interface Art {
+  src: string;
+  alt: string;
+}
+
+type StepMedia =
+  | { kind: 'photo'; pair: [Photo, Photo] }
+  | { kind: 'art'; pair: [Art, Art] };
+
+interface FitStep {
+  index: number;
+  blockIndex: number;
+  itemIndex: number;
+  t: string;
+  d?: string;
+  media: StepMedia;
+}
+
+interface FitBlock {
+  blockIndex: number;
+  title: string;
+  handwritten: string;
+  items: FitStep[];
 }
 
 const photoPairs: [Photo, Photo][] = [
@@ -40,16 +67,90 @@ const photoPairs: [Photo, Photo][] = [
   ],
 ];
 
+const notForYouPair: [Photo, Photo] = [
+  { src: shrugMan, alt: 'Persona con gafas levanta los hombros y las manos con gesto escéptico', position: 'center 18%' },
+  { src: shrugWoman, alt: 'Mujer en camisa blanca levanta ambas manos encogiéndose de hombros', position: 'center 25%' },
+];
+
 const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
+
+const rawBlocks: { title: string; handwritten: string; items: { t: string; d?: string; media: StepMedia }[] }[] = [
+  {
+    title: fit.title,
+    handwritten: fit.handwritten,
+    items: fit.profiles.map((profile, index) => ({
+      t: profile.t,
+      d: profile.d,
+      media: { kind: 'photo', pair: pairFor(index) },
+    })),
+  },
+];
+
+if (fit.notForYou) {
+  rawBlocks.push({
+    title: fit.notForYou.title,
+    handwritten: fit.notForYou.handwritten,
+    items: fit.notForYou.items.map((item) => ({
+      t: item.t,
+      d: item.d,
+      media: { kind: 'photo', pair: notForYouPair },
+    })),
+  });
+}
+
+if (fit.requirements) {
+  rawBlocks.push({
+    title: fit.requirements.title,
+    handwritten: fit.requirements.handwritten,
+    items: fit.requirements.items.map((item) => ({
+      t: item.t,
+      d: item.d,
+      media: {
+        kind: 'art',
+        pair: [
+          { src: item.leftIllustration, alt: item.leftAlt },
+          { src: item.rightIllustration, alt: item.rightAlt },
+        ],
+      },
+    })),
+  });
+}
+
+const steps: FitStep[] = [];
+const blocks: FitBlock[] = rawBlocks.map((block, blockIndex) => {
+  const items = block.items.map((item, itemIndex) => {
+    const step: FitStep = {
+      index: steps.length,
+      blockIndex,
+      itemIndex,
+      t: item.t,
+      d: item.d,
+      media: item.media,
+    };
+    steps.push(step);
+    return step;
+  });
+  return {
+    blockIndex,
+    title: block.title,
+    handwritten: block.handwritten,
+    items,
+  };
+});
+const blockCounts = blocks.map((block) => block.items.length);
 ---
 
-<section id="para-quien" class="one-fit one-u" aria-labelledby="fit-title" data-fit>
+<section id="para-quien" class="one-fit one-u" aria-labelledby="fit-title" data-fit data-fit-counts={JSON.stringify(blockCounts)}>
   <OneBackdrop shape="benefits" colors={['#5a5bb6', '#777ae3']} opacities={[0.35, 0.18]} flip="x" small />
 
   <div class="one-fit-content">
-    <div class="one-fit-heading">
-      <h2 id="fit-title" class="one-h2">{fit.title}</h2>
-      <p class="one-hand one-fit-note">{fit.handwritten}</p>
+    <div class="one-fit-heading" data-fit-heading>
+      <h2 id="fit-title" class="one-h2">
+        {blocks.map((block) => <span data-fit-title-part={block.blockIndex} hidden={block.blockIndex !== 0}>{block.title}</span>)}
+      </h2>
+      <p class="one-hand one-fit-note">
+        {blocks.map((block) => <span data-fit-note-part={block.blockIndex} hidden={block.blockIndex !== 0}>{block.handwritten}</span>)}
+      </p>
     </div>
 
     <div class="one-fit-stage">
@@ -58,44 +159,67 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
           [0, 1].map((side) => (
             <div class:list={['one-fit-preview', side === 0 ? 'is-left' : 'is-right']} data-fit-preview={side}>
               <div class="one-fit-photo">
-                {fit.profiles.map((_, index) => {
-                  const photo = pairFor(index)[side]!;
-                  return (
+                {steps.map((step) =>
+                  step.media.kind === 'photo' ? (
                     <Image
-                      src={photo.src}
-                      alt={photo.alt}
+                      src={step.media.pair[side]!.src}
+                      alt={step.media.pair[side]!.alt}
                       widths={[350, 700]}
                       sizes="(min-width: 992px) 18vw, 50vw"
                       loading="lazy"
-                      style={`object-position:${photo.position}`}
-                      data-fit-photo={index}
-                      hidden={index !== 0}
+                      style={`object-position:${step.media.pair[side]!.position}`}
+                      data-fit-photo={step.index}
+                      hidden={step.index !== 0}
                     />
-                  );
-                })}
+                  ) : (
+                    <img
+                      class="one-fit-art"
+                      src={step.media.pair[side]!.src}
+                      alt={step.media.pair[side]!.alt}
+                      loading="lazy"
+                      data-fit-photo={step.index}
+                      hidden={step.index !== 0}
+                    />
+                  )
+                )}
               </div>
             </div>
           ))
         }
       </div>
 
-      <ul class="one-fit-list">
-        {
-          fit.profiles.map((profile, index) => (
-            <li class="one-fit-item" data-selected={index === 0 ? 'true' : 'false'}>
-              <button type="button" class="one-fit-button" data-fit-option={index} aria-pressed={index === 0 ? 'true' : 'false'} aria-controls="fit-example">
-                <span class="one-fit-label">{profile.t}</span>
-                <span class="one-fit-label-active" aria-hidden="true">{profile.t}</span>
-              </button>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        blocks.map((block) => (
+          <ul class="one-fit-list" data-fit-block={block.blockIndex} hidden={block.blockIndex !== 0}>
+            {
+              block.items.map((step) => (
+                <li class="one-fit-item" data-fit-step={step.index} data-selected={step.index === 0 ? 'true' : 'false'}>
+                  <button type="button" class="one-fit-button" data-fit-option={step.index} aria-pressed={step.index === 0 ? 'true' : 'false'} aria-controls="fit-example">
+                    <span class="one-fit-label">{step.t}</span>
+                    <span class="one-fit-label-active" aria-hidden="true">{step.t}</span>
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        ))
+      }
     </div>
 
     <div class="one-fit-bottom">
-      <div id="fit-example" aria-live="polite">
-        {fit.profiles.map((profile, index) => <p class="one-lead one-fit-example" data-fit-example={index} hidden={index !== 0}>{profile.d}</p>)}
+      <div id="fit-example" aria-live="polite" data-fit-example-wrap hidden={!steps[0]?.d}>
+        {
+          steps.map((step) => (
+            <p
+              class="one-lead one-fit-example"
+              data-fit-example={step.index}
+              data-empty={step.d ? undefined : 'true'}
+              hidden={step.index !== 0 || !step.d}
+            >
+              {step.d ?? ''}
+            </p>
+          ))
+        }
       </div>
 
       <div class="one-fit-cta">
@@ -110,18 +234,24 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     </div>
   </div>
 
-  <div class="one-fit-runway" aria-hidden="true" data-fit-runway style={`--fit-profiles: ${fit.profiles.length}`}></div>
+  <div class="one-fit-runway" aria-hidden="true" data-fit-runway style={`--fit-profiles: ${steps.length}`}></div>
 </section>
 
 <script>
   import { animate, onReducedMotionChange, prefersReducedMotion, springs, tweens } from '../lib/motion';
-  import { profileAt, scrollDrivesProfile, scrollTopFor } from '../lib/fit-scroll';
+  import { profileAt, scrollDrivesProfile, scrollTopFor, stepLocation } from '../lib/fit-scroll';
 
   const section = document.querySelector<HTMLElement>('[data-fit]');
   if (section) {
-    const items = Array.from(section.querySelectorAll<HTMLElement>('.one-fit-item'));
+    const counts: number[] = JSON.parse(section.dataset.fitCounts ?? '[]');
+    const items = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-step]'));
     const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-fit-option]'));
+    const lists = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-block]'));
+    const titleParts = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-title-part]'));
+    const noteParts = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-note-part]'));
+    const heading = section.querySelector<HTMLElement>('[data-fit-heading]');
     const examples = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-example]'));
+    const exampleWrap = section.querySelector<HTMLElement>('[data-fit-example-wrap]');
     const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-fit-preview]'));
     const runway = section.querySelector<HTMLElement>('[data-fit-runway]');
     let reduced = prefersReducedMotion();
@@ -131,19 +261,49 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     let settled = false;
 
     let selected = 0;
+    let shownBlock = 0;
     let shownExample = 0;
     let pointer = { x: 0, y: 0 };
+
+    const showBlock = (nextBlock: number) => {
+      if (nextBlock === shownBlock) return;
+      const previousList = lists[shownBlock];
+      const nextList = lists[nextBlock];
+      shownBlock = nextBlock;
+      const reveal = () => {
+        titleParts.forEach((part) => (part.hidden = Number(part.dataset.fitTitlePart) !== nextBlock));
+        noteParts.forEach((part) => (part.hidden = Number(part.dataset.fitNotePart) !== nextBlock));
+        lists.forEach((list) => (list.hidden = list !== nextList));
+        if (!reduced && settled) {
+          if (heading) animate(heading, { opacity: [0, 1], y: [8, 0] }, tweens.audienceExample);
+          if (nextList) animate(nextList, { opacity: [0, 1], y: [8, 0] }, tweens.audienceExample);
+        }
+      };
+      if (reduced || !settled) {
+        reveal();
+        return;
+      }
+      const animations: Promise<unknown>[] = [];
+      if (heading) animations.push(animate(heading, { opacity: 0, y: -6 }, tweens.audienceExample).finished);
+      if (previousList) animations.push(animate(previousList, { opacity: 0, y: -6 }, tweens.audienceExample).finished);
+      Promise.all(animations).then(() => {
+        if (shownBlock === nextBlock) reveal();
+      });
+    };
 
     const showExample = (next: number) => {
       if (next === shownExample) return;
       const current = examples[shownExample]!;
       const incoming = examples[next]!;
+      const currentHasText = current.dataset.empty !== 'true';
+      const incomingHasText = incoming.dataset.empty !== 'true';
       shownExample = next;
       const reveal = () => {
-        examples.forEach((example) => (example.hidden = example !== incoming));
-        if (!reduced) animate(incoming, { opacity: [0, 1], y: [8, 0] }, tweens.audienceExample);
+        examples.forEach((example) => (example.hidden = example !== incoming || !incomingHasText));
+        if (exampleWrap) exampleWrap.hidden = !incomingHasText;
+        if (!reduced && settled && incomingHasText) animate(incoming, { opacity: [0, 1], y: [8, 0] }, tweens.audienceExample);
       };
-      if (reduced) {
+      if (reduced || !settled || !currentHasText) {
         reveal();
         return;
       }
@@ -153,9 +313,11 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     };
 
     const render = () => {
-      const rowY = selected * 54;
+      const location = stepLocation(selected, counts);
+      const rowY = location.itemIndex * 54;
       items.forEach((item, index) => (item.dataset.selected = String(selected === index)));
       buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(selected === index)));
+      showBlock(location.blockIndex);
       previews.forEach((preview, side) => {
         const left = side === 0;
         const x = left ? pointer.x * -0.7 : pointer.x * 0.85;
@@ -282,18 +444,20 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     background: var(--periwinkle-2);
   }
   .one-fit-photo :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .one-fit-photo :global(img.one-fit-art) { object-fit: contain; padding: calc(var(--u) * 14); }
   .one-fit-list {
     position: relative;
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: calc(var(--u) * 1120);
+    max-width: calc(var(--u) * 960);
     margin: 0 auto;
     padding: 0;
     list-style: none;
     text-align: center;
   }
+  .one-fit-list[hidden] { display: none; }
   .one-fit-item { width: 100%; padding: calc(var(--u) * 10) 0; }
   .one-fit-button {
     position: relative;
@@ -330,7 +494,8 @@ const pairFor = (index: number) => photoPairs[index % photoPairs.length]!;
     align-items: center;
     justify-content: center;
     font-family: var(--font-hand);
-    font-size: calc(var(--fs-h2) * 0.8);
+    font-size: calc(var(--fs-h2) * 0.74);
+    letter-spacing: -0.02em;
     line-height: 1;
     color: var(--gold-9);
     opacity: 0;

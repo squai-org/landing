@@ -122,14 +122,14 @@ describe('Es para ti como landing-design', () => {
     expect(rule(short, '.one-fit-runway')).toMatch(/display: none/);
   });
 
-  it('el tramo de scroll da 70svh por perfil', () => {
+  it('el tramo de scroll da 70svh por paso', () => {
     expect(rule(audienceCss, '.one-fit')).toMatch(/--fit-step: 70svh/);
     expect(rule(audienceCss, '.one-fit-runway')).toMatch(/height: calc\(var\(--fit-profiles\) \* var\(--fit-step\)\)/);
-    expect(audience).toMatch(/<div class="one-fit-runway" aria-hidden="true" data-fit-runway style=\{`--fit-profiles: \$\{fit\.profiles\.length\}`\}><\/div>/);
+    expect(audience).toMatch(/<div class="one-fit-runway" aria-hidden="true" data-fit-runway style=\{`--fit-profiles: \$\{steps\.length\}`\}><\/div>/);
   });
 
   it('el scroll y el click se resuelven con el modulo puro del tramo', () => {
-    expect(audience).toContain("import { profileAt, scrollDrivesProfile, scrollTopFor } from '../lib/fit-scroll'");
+    expect(audience).toContain("import { profileAt, scrollDrivesProfile, scrollTopFor, stepLocation } from '../lib/fit-scroll'");
     expect(audience).toMatch(/behavior: reduced \? 'instant' : 'smooth'/);
   });
 

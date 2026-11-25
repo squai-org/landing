@@ -50,14 +50,20 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     expect(tags).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  it('Es para ti no lleva tarjetas de requisitos ni el cierre de bases', () => {
+  it('Es para ti integra los tres bloques en el mismo tramo de scroll', () => {
     const fit = sectionOf(page, 'para-quien');
 
-    expect(fit).not.toContain('one-fit-pair');
-    expect(fit).not.toContain('one-fit-card');
-    expect(fit).not.toContain('No es para ti si');
-    expect(fit).not.toContain('Lo que necesitas');
-    expect(fit).not.toContain('Puedes empezar sin haber usado la IA antes');
+    expect(fit).toContain('¿Es para ti?');
+    expect(fit).toContain('Puedes empezar sin haber usado la IA antes.');
+    expect(fit).toContain('No es para ti si...');
+    expect(fit).toContain('No te vendemos humo.');
+    expect(fit).toContain('Reemplazar todo con IA');
+    expect(fit).toContain('Lo que necesitas');
+    expect(fit).toContain('También puedes comprar una libreta para tomar apuntes');
+    expect(fit).toContain('Un computador.');
+    expect(fit).toContain('Conexión a internet.');
+    expect(fit).toContain('Una cuenta gratuita de IA');
+    expect(fit).toContain('Cualquier herramienta como Claude, ChatGPT o Gemini. Si todavía no la tienes, te ayudamos a crearla en la primera sesión.');
     expect(fit).toContain('Inscribirme al programa');
   });
 

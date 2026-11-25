@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 1400">
+  <g stroke="#0A0C1A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M276 544 C202 590 198 730 246 802 C282 854 342 848 370 822 L456 822 C498 846 538 824 544 764 C550 704 528 624 510 554 Z" fill="#0A0C1A"/>
+    <path d="M108 1345 C114 1140 150 1002 240 940 C288 908 334 896 386 896 C440 896 488 914 536 952 C614 1016 648 1146 654 1345 Z" fill="#FFFFFF"/>
+    <path d="M204 1345 C210 1245 212 1158 208 1102" fill="none"/>
+    <path d="M554 1345 C548 1235 542 1150 536 1094" fill="none"/>
+    <path d="M342 802 V868 C366 884 408 884 430 868 V802" fill="#FFFFFF"/>
+    <path d="M312 852 C356 864 416 864 460 852 C472 888 472 916 462 940 C412 954 362 954 312 940 C302 916 302 888 312 852 Z" fill="#F9C24D"/>
+    <path d="M276 646 C276 550 330 494 400 494 C476 494 524 550 524 646 C524 742 472 820 398 820 C330 820 276 754 276 646 Z" fill="#FFFFFF"/>
+    <path d="M274 608 C294 520 358 474 426 484 C478 492 518 532 528 588 C482 558 430 554 378 574 C338 590 308 606 274 608 Z" fill="#0A0C1A"/>
+    <path d="M358 614 Q376 602 396 614" fill="none"/>
+    <path d="M442 614 Q460 602 478 614" fill="none"/>
+    <circle cx="378" cy="648" r="10" fill="#0A0C1A"/>
+    <circle cx="460" cy="648" r="10" fill="#0A0C1A"/>
+    <path d="M422 658 C430 682 436 698 422 708 C412 714 402 710 398 704" fill="none"/>
+    <path d="M362 742 C388 764 434 764 458 740" fill="none"/>
+  </g>
+  <g transform="translate(510 112)" stroke="#0A0C1A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="44" y="42" width="376" height="316" rx="34" fill="#FFFFFF"/>
+    <circle cx="150" cy="166" r="54" fill="#8A8EF9"/>
+    <circle cx="150" cy="148" r="18" fill="#FFFFFF"/>
+    <path d="M116 206 C126 182 174 182 184 206" fill="#FFFFFF"/>
+    <path d="M238 134 H368 M238 176 H342 M98 274 H292" fill="none"/>
+    <circle cx="368" cy="274" r="46" fill="#F9C24D"/>
+    <path d="M348 274 L362 288 L392 256" fill="none"/>
+    <path d="M90 22 Q100 50 128 60 Q100 70 90 98 Q80 70 52 60 Q80 50 90 22 Z" fill="#F9C24D"/>
+  </g>
+</svg>

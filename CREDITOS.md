@@ -14,6 +14,7 @@ Los dos personajes de `public/illustrations/peeps/` son `peep-standing-14` y `pe
 | `public/illustrations/sesiones/sesion-1.svg`, 4, 5, 6, 7, 8 | Temario (un módulo cada una) |
 | `public/illustrations/pasos/paso-4.svg` | Cómo funciona (paso 3) y reproductor de la Presentación en video (recortado con CSS, sin copia) |
 | `public/illustrations/peeps/peep-standing-14.svg`, `public/illustrations/peeps/peep-standing-30.svg` | Personajes que rodean el video de la Presentación, invertidos en horizontal con CSS |
+| `public/illustrations/requisitos/computador-izq.svg`, `computador-der.svg`, `internet-izq.svg`, `internet-der.svg`, `cuenta-ia-izq.svg`, `cuenta-ia-der.svg` | Lo que necesitas (sección Para quién es de Squai One). Ilustraciones vectoriales con el trazo de Squai en Midnight, blanco, Gold #F9C24D y Periwinkle #8A8EF9. Sin comentarios ni metadatos del generador. |
 | `public/images/shape-*.svg` | Formas decorativas de las secciones |
 
 ## Fotografías
@@ -35,6 +36,8 @@ Sección ¿Es para ti? de Squai One. Descargadas de [Pexels](https://www.pexels.
 | `src/assets/one/para-ti/pexels-3182765.jpeg` | [3182765](https://www.pexels.com/photo/3182765/) | Dos personas conversan de pie en una oficina |
 | `src/assets/one/para-ti/pexels-4050315.jpeg` | [4050315](https://www.pexels.com/photo/4050315/) | Persona trabaja en su portátil desde una mesa blanca, vista desde arriba |
 | `src/assets/one/para-ti/pexels-3153198.jpeg` | [3153198](https://www.pexels.com/photo/3153198/) | Grupo de colegas se ríe frente a un portátil |
+| `src/assets/one/para-ti/pexels-8638716.jpeg` | [8638716](https://www.pexels.com/photo/8638716/) | Persona con gafas levanta los hombros y las manos con gesto escéptico |
+| `src/assets/one/para-ti/pexels-3958872.jpeg` | [3958872](https://www.pexels.com/photo/3958872/) | Mujer en camisa blanca levanta ambas manos encogiéndose de hombros |
 
 ## Tipografías
 

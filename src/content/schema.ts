@@ -67,10 +67,37 @@ export const factIllustrations = [
   '/illustrations/incluye/incluye-3.svg',
   '/illustrations/incluye/incluye-4.svg',
 ] as const;
+export const requirementIllustrations = [
+  '/illustrations/requisitos/computador-izq.svg',
+  '/illustrations/requisitos/computador-der.svg',
+  '/illustrations/requisitos/internet-izq.svg',
+  '/illustrations/requisitos/internet-der.svg',
+  '/illustrations/requisitos/cuenta-ia-izq.svg',
+  '/illustrations/requisitos/cuenta-ia-der.svg',
+] as const;
+const fitEntry = z.object({ t: text, d: optional(text) });
+const requirementEntry = z.object({
+  t: text,
+  d: optional(text),
+  leftIllustration: z.enum(requirementIllustrations),
+  leftAlt: text,
+  rightIllustration: z.enum(requirementIllustrations),
+  rightAlt: text,
+});
 const audienceFit = z.object({
   title: text,
   handwritten: text,
   profiles: z.array(card).min(1),
+  notForYou: z.object({
+    title: text,
+    handwritten: text,
+    items: z.array(fitEntry).min(1),
+  }).optional(),
+  requirements: z.object({
+    title: text,
+    handwritten: text,
+    items: z.array(requirementEntry).min(1),
+  }).optional(),
 });
 const howItWorks = z.object({
   title: text,

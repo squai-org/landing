@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 1400">
+  <g stroke="#0A0C1A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M106 1345 C112 1140 150 1002 240 940 C288 908 334 896 386 896 C440 896 488 914 536 952 C614 1016 648 1146 654 1345 Z" fill="#FFFFFF"/>
+    <path d="M312 908 L394 1138 L476 908 C422 918 366 918 312 908 Z" fill="#8A8EF9"/>
+    <path d="M204 1345 C210 1245 212 1158 208 1102" fill="none"/>
+    <path d="M554 1345 C548 1235 542 1150 536 1094" fill="none"/>
+    <path d="M344 804 V906 C366 926 408 926 430 906 V804" fill="#FFFFFF"/>
+    <path d="M276 646 C276 550 330 494 400 494 C476 494 524 550 524 646 C524 742 472 824 398 824 C330 824 276 756 276 646 Z" fill="#FFFFFF"/>
+    <path d="M274 666 C250 640 244 660 248 688 C252 710 268 716 284 708" fill="#FFFFFF"/>
+    <path d="M256 614 C252 510 310 434 396 436 C482 438 534 494 538 576 C504 534 446 520 390 546 C348 566 302 588 256 614 Z" fill="#0A0C1A"/>
+    <circle cx="372" cy="648" r="34" fill="#FFFFFF"/>
+    <circle cx="468" cy="648" r="34" fill="#FFFFFF"/>
+    <path d="M406 648 H434 M276 644 H338" fill="none"/>
+    <circle cx="374" cy="648" r="9" fill="#0A0C1A"/>
+    <circle cx="470" cy="648" r="9" fill="#0A0C1A"/>
+    <path d="M424 664 C434 688 438 704 422 712 C412 718 402 714 398 708" fill="none"/>
+    <path d="M366 746 Q410 778 456 744" fill="none"/>
+  </g>
+  <g transform="translate(495 100)" stroke="#0A0C1A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="30" y="34" width="276" height="148" rx="28" fill="#FFFFFF"/>
+    <path d="M74 90 H248 M74 128 H194" fill="none"/>
+    <rect x="136" y="138" width="290" height="154" rx="28" fill="#8A8EF9"/>
+    <path d="M182 198 H364 M182 236 H308" fill="none" stroke="#FFFFFF"/>
+    <path d="M226 350 C226 320 250 296 280 296 H414 C444 296 468 320 468 350 V386 C468 416 444 440 414 440 H314 L256 476 V440 H280 C250 440 226 416 226 386 Z" fill="#F9C24D"/>
+    <path d="M350 326 Q362 356 392 368 Q362 380 350 410 Q338 380 308 368 Q338 356 350 326 Z" fill="#FFFFFF"/>
+  </g>
+</svg>

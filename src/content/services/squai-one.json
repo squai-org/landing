@@ -119,7 +119,7 @@
   },
   "audienceFit": {
     "title": "¿Es para ti?",
-    "handwritten": "Sin humo: te lo decimos de frente",
+    "handwritten": "Puedes empezar sin haber usado la IA antes.",
     "profiles": [
       {
         "t": "Trabajas en una empresa",
@@ -133,7 +133,45 @@
         "t": "Te da curiosidad",
         "d": "Quieres aprovecharla, pero solo encuentras tutoriales confusos y promesas exageradas, y no sabes por dónde empezar."
       }
-    ]
+    ],
+    "notForYou": {
+      "title": "No es para ti si...",
+      "handwritten": "No te vendemos humo.",
+      "items": [
+        {
+          "t": "Reemplazar todo con IA",
+          "d": "Buscas construir agentes (asistentes que trabajan solos) para hacerte rico. Preferimos no venderte lo que no necesitas, porque con lo básico bien aprendido ya se logra mucho."
+        }
+      ]
+    },
+    "requirements": {
+      "title": "Lo que necesitas",
+      "handwritten": "También puedes comprar una libreta para tomar apuntes",
+      "items": [
+        {
+          "t": "Un computador.",
+          "leftIllustration": "/illustrations/requisitos/computador-izq.svg",
+          "leftAlt": "Persona sonriente junto a un computador portátil",
+          "rightIllustration": "/illustrations/requisitos/computador-der.svg",
+          "rightAlt": "Persona con gafas junto a una pantalla y una libreta de apuntes"
+        },
+        {
+          "t": "Conexión a internet.",
+          "leftIllustration": "/illustrations/requisitos/internet-izq.svg",
+          "leftAlt": "Persona con audífonos junto a un router con señal Wi-Fi",
+          "rightIllustration": "/illustrations/requisitos/internet-der.svg",
+          "rightAlt": "Persona con gorro y gafas junto a un navegador conectado"
+        },
+        {
+          "t": "Una cuenta gratuita de IA",
+          "d": "Cualquier herramienta como Claude, ChatGPT o Gemini. Si todavía no la tienes, te ayudamos a crearla en la primera sesión.",
+          "leftIllustration": "/illustrations/requisitos/cuenta-ia-izq.svg",
+          "leftAlt": "Persona junto a una tarjeta de cuenta gratuita verificada",
+          "rightIllustration": "/illustrations/requisitos/cuenta-ia-der.svg",
+          "rightAlt": "Persona junto a burbujas de conversación con IA"
+        }
+      ]
+    }
   },
   "howItWorks": {
     "title": "Cómo funciona",

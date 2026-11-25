@@ -76,8 +76,8 @@ describe('personajes de Presentacion', () => {
 });
 
 describe('fondo del formulario de inscripcion', () => {
-  it('la forma usa #e1e4fd opaco', () => {
-    expect(read('src/components/Checkout.astro')).toContain(`<OneBackdrop shape="signup" colors={['#e1e4fd']} opacities={[1]}`);
+  it('la forma usa #fcf0db opaco', () => {
+    expect(read('src/components/Checkout.astro')).toContain(`<OneBackdrop shape="signup" colors={['#fcf0db']} opacities={[1]}`);
   });
 });
 

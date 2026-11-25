@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 1400">
+  <g stroke="#0A0C1A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M106 1345 C112 1140 150 1002 240 940 C288 908 334 896 386 896 C440 896 488 914 536 952 C614 1016 648 1146 654 1345 Z" fill="#FFFFFF"/>
+    <path d="M312 910 L352 996 L394 946 L436 996 L474 910" fill="#FFFFFF"/>
+    <path d="M352 996 V1345" fill="none"/>
+    <path d="M204 1345 C210 1245 212 1158 208 1102" fill="none"/>
+    <path d="M554 1345 C548 1235 542 1150 536 1094" fill="none"/>
+    <path d="M344 804 V906 C366 926 408 926 430 906 V804" fill="#FFFFFF"/>
+    <path d="M276 648 C276 552 330 496 400 496 C476 496 524 552 524 648 C524 744 472 824 398 824 C330 824 276 756 276 648 Z" fill="#FFFFFF"/>
+    <path d="M276 668 C252 642 246 662 250 690 C254 712 270 718 286 710" fill="#FFFFFF"/>
+    <path d="M266 566 C272 476 326 422 402 422 C478 422 530 476 534 566 Z" fill="#8A8EF9"/>
+    <rect x="254" y="544" width="292" height="48" rx="22" fill="#F9C24D"/>
+    <circle cx="402" cy="404" r="24" fill="#F9C24D"/>
+    <circle cx="372" cy="646" r="32" fill="#FFFFFF"/>
+    <circle cx="468" cy="646" r="32" fill="#FFFFFF"/>
+    <path d="M404 646 H436 M280 644 H340" fill="none"/>
+    <circle cx="374" cy="646" r="9" fill="#0A0C1A"/>
+    <circle cx="470" cy="646" r="9" fill="#0A0C1A"/>
+    <path d="M424 662 C434 686 438 702 422 710 C412 716 402 712 398 706" fill="none"/>
+    <path d="M366 744 Q410 770 452 742" fill="none"/>
+  </g>
+  <g transform="translate(505 110)" stroke="#0A0C1A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="34" y="34" width="388" height="334" rx="34" fill="#FFFFFF"/>
+    <path d="M34 108 H422" fill="none"/>
+    <circle cx="76" cy="71" r="11" fill="#F9C24D"/>
+    <circle cx="114" cy="71" r="11" fill="#8A8EF9"/>
+    <path d="M154 71 H354" fill="none"/>
+    <circle cx="228" cy="238" r="92" fill="#8A8EF9"/>
+    <ellipse cx="228" cy="238" rx="44" ry="92" fill="none"/>
+    <path d="M136 238 H320 M152 192 H304 M152 284 H304" fill="none"/>
+    <circle cx="378" cy="116" r="34" fill="#F9C24D"/>
+    <path d="M364 116 L375 127 L396 104" fill="none"/>
+  </g>
+</svg>
