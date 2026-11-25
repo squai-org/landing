@@ -76,6 +76,7 @@ const audienceFit = z.object({
 });
 const beforeSignup = z.object({
   notForYou: z.object({ title: text, body: text, handwritten: text, photoAlt: text }),
+  needs: z.object({ title: text, items: z.array(text).min(1), logosAlt: text, note: text }),
 });
 const howItWorks = z.object({
   title: text,

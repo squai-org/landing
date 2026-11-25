@@ -55,3 +55,63 @@ describe('Squai One: Requisitos, fila No es para ti si...', () => {
     expect(fit).not.toContain('Lo que necesitas');
   });
 });
+
+describe('Squai One: Requisitos, fila Lo que necesitas y Nota', () => {
+  let page = '';
+  let section = '';
+
+  beforeAll(async () => {
+    page = await readFile(path.join(dist, 'servicios/squai-one.html'), 'utf8');
+    section = sectionOf(page, 'requisitos');
+  });
+
+  it('tiene exactamente dos h2 y no salta niveles', () => {
+    const headings = [...section.matchAll(/<h([1-6])\b[^>]*>([^<]*)<\/h\1>/g)].map((m) => [m[1], m[2]]);
+
+    expect(headings).toEqual([
+      ['2', 'No es para ti si...'],
+      ['2', 'Lo que necesitas'],
+    ]);
+  });
+
+  it('muestra los tres items literales', () => {
+    expect(section).toContain('Un computador.');
+    expect(section).toContain('Conexión a internet.');
+    expect(section).toContain(
+      'Una cuenta gratuita en alguna herramienta de IA, como Claude, ChatGPT o Gemini. Si todavía no la tienes, te ayudamos a crearla en la primera sesión.'
+    );
+  });
+
+  it('muestra la Nota literal con Nota: en negrita y sin fuente manuscrita', () => {
+    const note = section.match(/<p\b[^>]*class="[^"]*one-needs-footnote[^"]*"[^>]*>[\s\S]*?<\/p>/)?.[0] ?? '';
+
+    expect(note).toMatch(/<strong\b[^>]*>Nota:<\/strong>/);
+    expect(note).toContain(
+      'Las versiones gratuitas permiten hacer muchas cosas, pero tienen un límite de uso. Más adelante puedes considerar una cuenta de pago, según lo que quieras hacer y cuánto uses la IA.'
+    );
+    expect(note).not.toContain('one-hand');
+  });
+
+  it('la Nota va despues de las dos filas', () => {
+    expect(section.indexOf('one-needs-footnote')).toBeGreaterThan(section.lastIndexOf('data-needs-row'));
+  });
+
+  it('muestra ChatGPT, Claude y Gemini con alt y no Grok', () => {
+    const logos = section.match(/<[^>]*data-needs-logos[^>]*>/)?.[0] ?? '';
+
+    expect(logos).toMatch(/role="img"/);
+    expect(logos).toMatch(/aria-label="[^"]*ChatGPT[^"]*Claude[^"]*Gemini[^"]*"/);
+    expect(section).toContain('claude-color');
+    expect(section).toContain('gemini-color');
+    expect(section).toMatch(/one-needs-chatgpt[\s\S]*?<span[^>]*>ChatGPT<\/span>/);
+    expect(section.toLowerCase()).not.toContain('grok');
+  });
+
+  it('los logos son SVG sin comentarios ni scripts', async () => {
+    const dir = path.join(import.meta.dirname, '../../public/illustrations/logos');
+    for (const name of ['claude-color', 'claude-text', 'gemini-color', 'gemini-text', 'openai']) {
+      const svg = await readFile(path.join(dir, `${name}.svg`), 'utf8');
+      expect(svg).not.toMatch(/<!--|<script|<title|<metadata|style=/);
+    }
+  });
+});

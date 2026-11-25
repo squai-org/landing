@@ -9,7 +9,11 @@ interface Props {
   beforeSignup: NonNullable<Service['beforeSignup']>;
 }
 
-const { notForYou } = Astro.props.beforeSignup;
+const { notForYou, needs } = Astro.props.beforeSignup;
+const logos = [
+  { name: 'claude', icon: '/illustrations/logos/claude-color.svg', text: '/illustrations/logos/claude-text.svg' },
+  { name: 'gemini', icon: '/illustrations/logos/gemini-color.svg', text: '/illustrations/logos/gemini-text.svg' },
+];
 ---
 
 <section id="requisitos" class="one-needs one-u" aria-labelledby="needs-title">
@@ -26,6 +30,29 @@ const { notForYou } = Astro.props.beforeSignup;
         <Image src={shrug} alt={notForYou.photoAlt} widths={[480, 800, 1200]} sizes="(min-width: 992px) 45vw, 100vw" loading="lazy" />
       </div>
     </div>
+
+    <div class="one-needs-row one-needs-row-reverse" data-needs-row>
+      <div class="one-needs-copy" data-needs-copy>
+        <h2 class="one-h2">{needs.title}</h2>
+        <ul class="one-lead one-needs-list">
+          {needs.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="one-needs-logos" data-needs-logos role="img" aria-label={needs.logosAlt} data-needs-photo>
+        <div class="one-needs-logo one-needs-chatgpt" aria-hidden="true">
+          <img src="/illustrations/logos/openai.svg" alt="" loading="lazy" />
+          <span>ChatGPT</span>
+        </div>
+        {logos.map((logo) => (
+          <div class={`one-needs-logo one-needs-${logo.name}`} aria-hidden="true">
+            <img src={logo.icon} alt="" loading="lazy" />
+            <img class="one-needs-wordmark" src={logo.text} alt="" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <p class="one-lead one-needs-footnote"><strong>Nota:</strong> {needs.note}</p>
   </div>
 </section>
 
@@ -57,13 +84,26 @@ const { notForYou } = Astro.props.beforeSignup;
     align-items: center;
     gap: calc(var(--u) * 48);
   }
+  .one-needs-shell { display: flex; flex-direction: column; gap: calc(var(--u) * 96); }
   .one-needs-copy { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 24); }
   .one-needs-body { max-width: calc(var(--u) * 760); }
   .one-needs-note { display: inline-block; color: var(--periwinkle-11); rotate: -2deg; }
+  .one-needs-list { display: flex; flex-direction: column; gap: calc(var(--u) * 16); margin: 0; padding-left: 1.25em; max-width: calc(var(--u) * 760); }
+  .one-needs-logos { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 40); }
+  .one-needs-logo { display: flex; align-items: center; gap: calc(var(--u) * 16); }
+  .one-needs-logo img { display: block; height: calc(var(--u) * 72); width: auto; }
+  .one-needs-logo .one-needs-wordmark { height: calc(var(--u) * 48); }
+  .one-needs-logo span { font-family: var(--font-display); font-weight: 700; font-size: calc(var(--u) * 48); line-height: 1; }
+  .one-needs-chatgpt { rotate: -3deg; }
+  .one-needs-claude { rotate: 2deg; margin-left: calc(var(--u) * 48); }
+  .one-needs-gemini { rotate: -2deg; margin-left: calc(var(--u) * 16); }
+  .one-needs-footnote { align-self: center; max-width: calc(var(--u) * 800); margin: 0; text-align: center; color: var(--periwinkle-11); font-family: var(--font-body); }
+  .one-needs-footnote strong { font-family: var(--font-display); font-weight: 700; }
   .one-needs-photo { overflow: hidden; border-radius: var(--card-r); }
   .one-needs-photo :global(img) { display: block; width: 100%; height: 100%; aspect-ratio: 4 / 5; object-fit: cover; transform: scaleX(-1); }
   @media (min-width: 992px) {
     .one-needs-row { grid-template-columns: 1fr 1fr; gap: calc(var(--u) * 80); }
     .one-needs-photo :global(img) { aspect-ratio: 1 / 1; }
+    .one-needs-row-reverse .one-needs-logos { order: -1; }
   }
 </style>

@@ -124,6 +124,16 @@
       "body": "Buscas construir agentes (asistentes que trabajan solos) para hacerte rico. Preferimos no venderte lo que no necesitas, porque con lo básico bien aprendido ya se logra mucho.",
       "handwritten": "No te vendemos humo.",
       "photoAlt": "Persona con gafas que se encoge de hombros"
+    },
+    "needs": {
+      "title": "Lo que necesitas",
+      "items": [
+        "Un computador.",
+        "Conexión a internet.",
+        "Una cuenta gratuita en alguna herramienta de IA, como Claude, ChatGPT o Gemini. Si todavía no la tienes, te ayudamos a crearla en la primera sesión."
+      ],
+      "logosAlt": "Logos de ChatGPT, Claude y Gemini",
+      "note": "Las versiones gratuitas permiten hacer muchas cosas, pero tienen un límite de uso. Más adelante puedes considerar una cuenta de pago, según lo que quieras hacer y cuánto uses la IA."
     }
   },
   "audienceFit": {
