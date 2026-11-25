@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -113,5 +114,18 @@ describe('Squai One: Requisitos, fila Lo que necesitas y Nota', () => {
       const svg = await readFile(path.join(dir, `${name}.svg`), 'utf8');
       expect(svg).not.toMatch(/<!--|<script|<title|<metadata|style=/);
     }
+  });
+});
+
+describe('Squai One: Requisitos, ganchos de revelado', () => {
+  const source = readFileSync(path.join(import.meta.dirname, '../../src/components/OneRequirements.astro'), 'utf8');
+
+  it('cada fila marca su lado de medios con data-needs-media y ya no hay data-needs-photo', () => {
+    expect(source.match(/data-needs-media/g)?.length).toBeGreaterThanOrEqual(3);
+    expect(source).not.toContain('data-needs-photo');
+  });
+
+  it('.one-needs-shell se declara una sola vez', () => {
+    expect(source.match(/\.one-needs-shell \{/g)).toHaveLength(1);
   });
 });

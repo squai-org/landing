@@ -26,7 +26,7 @@ const logos = [
         <p class="one-lead one-needs-body">{notForYou.body}</p>
         <p class="one-hand one-needs-note">{notForYou.handwritten}</p>
       </div>
-      <div class="one-needs-photo" data-needs-photo>
+      <div class="one-needs-photo" data-needs-media>
         <Image src={shrug} alt={notForYou.photoAlt} widths={[480, 800, 1200]} sizes="(min-width: 992px) 45vw, 100vw" loading="lazy" />
       </div>
     </div>
@@ -38,7 +38,7 @@ const logos = [
           {needs.items.map((item) => <li>{item}</li>)}
         </ul>
       </div>
-      <div class="one-needs-logos" data-needs-logos role="img" aria-label={needs.logosAlt} data-needs-photo>
+      <div class="one-needs-logos" data-needs-logos role="img" aria-label={needs.logosAlt} data-needs-media>
         <div class="one-needs-logo one-needs-chatgpt" aria-hidden="true">
           <img src="/illustrations/logos/openai.svg" alt="" loading="lazy" />
           <span>ChatGPT</span>
@@ -61,9 +61,9 @@ const logos = [
 
   document.querySelectorAll<HTMLElement>('[data-needs-row]').forEach((row) => {
     const copy = row.querySelector<HTMLElement>('[data-needs-copy]');
-    const photo = row.querySelector<HTMLElement>('[data-needs-photo]');
+    const media = row.querySelector<HTMLElement>('[data-needs-media]');
     if (copy) revealOnView(copy, { opacity: 0, y: 48 }, { opacity: 1, y: 0 }, springs.flowCard);
-    if (photo) revealOnView(photo, { opacity: 0, y: 72 }, { opacity: 1, y: 0 }, { ...springs.flowCard, delay: 0.08 });
+    if (media) revealOnView(media, { opacity: 0, y: 72 }, { opacity: 1, y: 0 }, { ...springs.flowCard, delay: 0.08 });
   });
 </script>
 
@@ -77,14 +77,13 @@ const logos = [
     background: #fff;
     color: var(--midnight);
   }
-  .one-needs-shell { position: relative; z-index: 1; }
+  .one-needs-shell { position: relative; z-index: 1; display: flex; flex-direction: column; gap: calc(var(--u) * 96); }
   .one-needs-row {
     display: grid;
     grid-template-columns: 1fr;
     align-items: center;
     gap: calc(var(--u) * 48);
   }
-  .one-needs-shell { display: flex; flex-direction: column; gap: calc(var(--u) * 96); }
   .one-needs-copy { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 24); }
   .one-needs-body { max-width: calc(var(--u) * 760); }
   .one-needs-note { display: inline-block; color: var(--periwinkle-11); rotate: -2deg; }

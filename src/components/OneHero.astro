@@ -173,7 +173,11 @@ const { ui } = await getSiteContent();
     box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
   .one-hero-tag-note { rotate: -4deg; }
-  .one-hero-tag-sticker { rotate: 3deg; }
+  .one-hero-tag-sticker {
+    padding: calc(var(--u) * 14) calc(var(--u) * 24);
+    border-radius: calc(var(--u) * 28);
+    rotate: 3deg;
+  }
 
   @media (max-width: 1023px) {
     .one-hero {
@@ -264,10 +268,6 @@ const { ui } = await getSiteContent();
     .one-hero-tag-note {
       padding: calc(var(--u) * 10) calc(var(--u) * 16);
       border-radius: var(--tag-r);
-    }
-    .one-hero-tag-sticker {
-      padding: calc(var(--u) * 14) calc(var(--u) * 24);
-      border-radius: calc(var(--u) * 28);
     }
   }
 

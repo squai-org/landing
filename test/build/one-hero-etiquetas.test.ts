@@ -103,13 +103,13 @@ describe('etiquetas del hero de Squai One en escritorio', () => {
 });
 
 describe('etiqueta sticker del hero de Squai One', () => {
-  it('con tablet lleva mas padding y un radio redondeado proporcional, no de pildora', () => {
-    const tablet = block('@media (min-width: 640px)');
-    const sticker = rule(tablet, '.one-hero-tag-sticker');
+  it('desde movil lleva mas padding y un radio redondeado proporcional, no de pildora', () => {
+    const sticker = rule(hero, '.one-hero-tag-sticker');
 
     expect(sticker).toMatch(/padding: calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 24\);/);
     expect(sticker).toMatch(/border-radius: calc\(var\(--u\) \* 28\);/);
     expect(sticker).not.toMatch(/9999px/);
+    expect(rule(block('@media (min-width: 640px)'), '.one-hero-tag-sticker')).toBe('');
   });
 
   it('en escritorio, que envuelve el texto, mantiene el mismo criterio con mas aire', () => {
