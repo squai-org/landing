@@ -70,10 +70,12 @@ const logos = [
 <style>
   .one-needs {
     position: relative;
-    z-index: 10;
+    z-index: 15;
     width: 100%;
     overflow-x: clip;
+    margin-top: calc(var(--edge-r) * -1);
     padding: var(--section-py) var(--gutter) calc(var(--section-py) + var(--edge-r));
+    border-radius: var(--edge-r);
     background: #fff;
     color: var(--midnight);
   }

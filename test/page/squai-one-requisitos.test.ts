@@ -147,3 +147,14 @@ describe('Squai One: Requisitos, ajustes de la Nota y los logos', () => {
     expect(/\.one-needs-logo span \{[^}]*font-size: calc\(var\(--u\) \* 72\);/.test(source)).toBe(true);
   });
 });
+
+describe('Squai One: Requisitos, borde con Es para ti', () => {
+  const source = readFileSync(path.join(import.meta.dirname, '../../src/components/OneRequirements.astro'), 'utf8');
+  const rule = /\.one-needs \{[^}]*\}/.exec(source)?.[0] ?? '';
+
+  it('sube --edge-r sobre Es para ti con esquinas redondeadas, por encima de ella', () => {
+    expect(rule).toContain('margin-top: calc(var(--edge-r) * -1);');
+    expect(rule).toContain('border-radius: var(--edge-r);');
+    expect(rule).toContain('z-index: 15;');
+  });
+});
