@@ -266,8 +266,8 @@ const { ui } = await getSiteContent();
       border-radius: var(--tag-r);
     }
     .one-hero-tag-sticker {
-      padding: calc(var(--u) * 12) calc(var(--u) * 22);
-      border-radius: 9999px;
+      padding: calc(var(--u) * 14) calc(var(--u) * 24);
+      border-radius: calc(var(--u) * 28);
     }
   }
 
@@ -294,6 +294,14 @@ const { ui } = await getSiteContent();
     }
     .one-hero-tag { font-size: calc(var(--u) * 28); white-space: nowrap; }
     .one-hero-tag-note { right: auto; left: -10%; top: 56%; }
-    .one-hero-tag-sticker { right: auto; left: 59%; top: 70%; max-width: calc(var(--u) * 340); white-space: normal; text-wrap: balance; }
+    .one-hero-tag-sticker {
+      right: auto;
+      left: 59%; top: 70%;
+      max-width: calc(var(--u) * 390);
+      padding: calc(var(--u) * 18) calc(var(--u) * 32);
+      border-radius: calc(var(--u) * 32);
+      white-space: normal;
+      text-wrap: balance;
+    }
   }
 </style>
