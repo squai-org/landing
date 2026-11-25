@@ -45,25 +45,9 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   <div class="one-signup-grid">
     <div class="checkout-column" data-signup-enter="intro">
       <h2 id="one-signup-title" class="one-h2">{ui.checkout.title}</h2>
-      <div class="checkout-summary">
-        <div class="checkout-block">
-          <h3 class="checkout-block-title">{ui.checkout.includesTitle}</h3>
-          <ul class="checkout-list">
-            {ui.checkout.includesItems.map((item) => <li class="one-body">{item}</li>)}
-          </ul>
-        </div>
-
-        <div class="checkout-block">
-          <h3 class="checkout-block-title">{ui.checkout.datesTitle}</h3>
-          <ul class="checkout-list">
-            {ui.checkout.datesItems.map((item) => <li class="one-body">{item}</li>)}
-          </ul>
-        </div>
-
-        <p class="one-body checkout-seats">
-          <strong>{ui.checkout.seatsLabel}</strong> {ui.checkout.seatsText}
-        </p>
-      </div>
+      <p class="one-body checkout-seats">
+        <strong>{ui.checkout.seatsLabel}</strong> {ui.checkout.seatsText}
+      </p>
     </div>
 
     <div class="checkout-form-column" data-signup-enter="form">
@@ -213,15 +197,31 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
         </form>
       </div>
     </div>
+
+    <div class="checkout-summary" data-signup-enter="intro">
+      <div class="checkout-block checkout-includes">
+        <h3 class="checkout-block-title">{ui.checkout.includesTitle}</h3>
+        <ul class="checkout-list">
+          {ui.checkout.includesItems.map((item) => <li class="one-body">{item}</li>)}
+        </ul>
+      </div>
+
+      <div class="checkout-block checkout-dates">
+        <h3 class="checkout-block-title">{ui.checkout.datesTitle}</h3>
+        <ul class="checkout-list">
+          {ui.checkout.datesItems.map((item) => <li class="one-body">{item}</li>)}
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
 <script>
   import { revealOnView, tweens } from '../lib/motion';
 
-  const intro = document.querySelector<HTMLElement>('[data-signup-enter="intro"]');
+  const intros = document.querySelectorAll<HTMLElement>('[data-signup-enter="intro"]');
   const formColumn = document.querySelector<HTMLElement>('[data-signup-enter="form"]');
-  if (intro) revealOnView(intro, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, tweens.formReveal, 0.25);
+  intros.forEach((intro) => revealOnView(intro, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, tweens.formReveal, 0.25));
   if (formColumn) revealOnView(formColumn, { opacity: 0, y: 28 }, { opacity: 1, y: 0 }, tweens.formCardReveal, 0.2);
 </script>
 
@@ -502,7 +502,7 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   .checkout-form-column { min-width: 0; }
   .checkout-column { display: flex; flex-direction: column; gap: calc(var(--u) * 28); }
   .checkout-column h2 { color: var(--midnight); }
-  .checkout-summary { display: flex; flex-direction: column; gap: calc(var(--u) * 24); max-width: calc(var(--u) * 620); }
+  .checkout-summary { display: flex; flex-direction: column; gap: calc(var(--u) * 24); max-width: calc(var(--u) * 620); min-width: 0; }
   .checkout-block { display: flex; flex-direction: column; gap: calc(var(--u) * 10); }
   .checkout-block-title {
     margin: 0;
@@ -708,8 +708,10 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
   @media (min-width: 1024px) {
     .one-signup { padding-inline: calc(var(--u) * 112); }
     .one-signup-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-    .checkout-column { grid-column: span 5 / span 5; }
-    .checkout-form-column { grid-column: span 7 / span 7; }
+    .one-signup-grid { grid-template-rows: auto 1fr; row-gap: calc(var(--u) * 28); }
+    .checkout-column { grid-column: 1 / span 5; }
+    .checkout-summary { grid-column: 1 / span 5; }
+    .checkout-form-column { grid-column: 6 / -1; grid-row: 1 / span 2; }
     .checkout-card-heading { flex-direction: row; align-items: baseline; justify-content: space-between; }
     .checkout-card form { gap: 10px; }
     .checkout-card .one-signup-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }

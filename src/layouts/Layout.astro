@@ -184,8 +184,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       const teamMembers = Array.from(section.querySelectorAll<HTMLElement>('.team-member'));
       teamMembers.forEach((member, index) => addReveal(member, 'card', (index % 2) * 70));
 
-      const checkoutColumn = section.querySelector<HTMLElement>('.checkout-column');
-      if (checkoutColumn) addReveal(checkoutColumn, 'copy');
+      section.querySelectorAll<HTMLElement>('.checkout-column, .checkout-summary').forEach((column) => addReveal(column, 'copy'));
 
       const teamHeading = section.querySelector<HTMLElement>('.team-heading');
       if (teamHeading) {
@@ -199,7 +198,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
       Array.from(root.children).forEach((child, index) => {
         const el = child as HTMLElement;
-        if (targets.has(el) || el.querySelector('.bento-card, .team-member, .checkout-column')) return;
+        if (targets.has(el) || el.querySelector('.bento-card, .team-member, .checkout-column, .checkout-summary')) return;
 
         const isSidebar = root.classList.contains('grid-sidebar');
         const kind = isSidebar
