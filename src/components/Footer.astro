@@ -18,7 +18,7 @@ const siteLinks = footerCols.flatMap((col) => col.links).filter((link) => !link.
 const isExternal = (href?: string) => Boolean(href?.startsWith('http'));
 ---
 
-<footer class:list={['site-footer', { 'site-footer--overlap': overlap }]} data-surface="deep">
+<footer class:list={['site-footer', { 'site-footer--overlap': overlap }]} data-surface="deep" data-header-tone="dark">
   <div class="footer-main">
     <div class="footer-grid">
       <div class="footer-brand">

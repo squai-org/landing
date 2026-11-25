@@ -1,4 +1,5 @@
 ---
+import { headerToneOfCard } from '../lib/header-tone';
 import type { CapabilityGroup } from '../lib/content';
 
 interface Props {
@@ -9,13 +10,13 @@ interface Props {
 const { headline, groups } = Astro.props;
 ---
 
-<section class="section tint">
+<section class="section tint" data-header-tone="light">
   <div class="shell">
     <h2 class="display d-h1 capabilities-title">{headline}</h2>
     <div class="bento capabilities-grid">
       {
         groups.map((g) => (
-          <div class={`bento-card span-2 capability-card ${g.tone}`}>
+          <div class={`bento-card span-2 capability-card ${g.tone}`} data-header-tone={headerToneOfCard(g.tone)}>
             <h3 class="display d-h2">{g.t}</h3>
             <ul class="capability-list">
               {g.items.map((item) => (

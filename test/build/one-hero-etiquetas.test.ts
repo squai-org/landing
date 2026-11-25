@@ -102,6 +102,54 @@ describe('etiquetas del hero de Squai One en escritorio', () => {
   });
 });
 
+describe('etiquetas de color bajo el CTA del hero', () => {
+  const chip = rule(hero, '.one-hero-chip');
+  const luminance = (hex: string) => {
+    const channels = [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16) / 255);
+    const [r, g, b] = channels.map((value) => (value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+  };
+  const contrast = (a: string, b: string) => {
+    const [high, low] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (high! + 0.05) / (low! + 0.05);
+  };
+  const palette: Record<string, string> = { '--midnight': '#0A0E33', '--canvas': '#F4F6FF', '--surface': '#FFFFFF', '--gold-9': '#f9c24d' };
+  const css = readFileSync(path.join(import.meta.dirname, '../../src/styles/global.css'), 'utf8');
+  const token = (name: string) => new RegExp(`${name}:\s*(#[0-9a-fA-F]{6})`).exec(css)?.[1] ?? palette[name]!;
+  const colors = (variant: string) => {
+    const body = rule(hero, `.one-hero-chip-${variant}`);
+    const ref = (property: string) => /var\((--[\w-]+)\)/.exec(new RegExp(`${property}: ([^;]*);`).exec(body)?.[1] ?? '')?.[1] ?? '';
+    return { background: token(ref('background')), color: token(ref('color')) };
+  };
+
+  it('son planas: cuerpo, negrita, radio completo, sin rotacion ni letra a mano', () => {
+    expect(chip).toMatch(/font-weight: 700;/);
+    expect(chip).toMatch(/font-size: var\(--fs-small\);/);
+    expect(chip).toMatch(/border-radius: 9999px;/);
+    expect(chip).not.toMatch(/rotate|font-hand|font-family/);
+  });
+
+  it('van en una fila flexible que salta de linea', () => {
+    const row = rule(hero, '.one-hero-chips');
+    expect(row).toMatch(/display: flex;/);
+    expect(row).toMatch(/flex-wrap: wrap;/);
+    expect(chip).toMatch(/max-width: 100%;/);
+  });
+
+  it('inicio, horario y oferta usan su par de colores', () => {
+    expect(rule(hero, '.one-hero-chip-start')).toMatch(/background: var\(--midnight\);\s*color: var\(--canvas\);/);
+    expect(rule(hero, '.one-hero-chip-schedule')).toMatch(/background: var\(--surface\);\s*color: var\(--midnight\);/);
+    expect(rule(hero, '.one-hero-chip-offer')).toMatch(/background: var\(--gold-9\);\s*color: var\(--midnight\);/);
+  });
+
+  it('el texto de cada etiqueta cumple contraste AA sobre su fondo', () => {
+    for (const variant of ['start', 'schedule', 'offer']) {
+      const { background, color } = colors(variant);
+      expect(contrast(color, background)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
+
 describe('etiqueta sticker del hero de Squai One', () => {
   it('desde movil lleva mas padding y un radio redondeado proporcional, no de pildora', () => {
     const sticker = rule(hero, '.one-hero-tag-sticker');

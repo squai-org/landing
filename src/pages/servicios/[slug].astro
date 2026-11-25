@@ -51,7 +51,7 @@ const seo = serviceSeo(service, content.seo.serviceTitle);
 const offering = service.keyFacts
   ? courseSchema(content, service, service.keyFacts.load, pageUrl)
   : serviceSchema(content, service, pageUrl);
-const headerTone = service.hero ? 'light' : 'dark';
+const headerTone = service.hero ? 'brand' : 'dark';
 
 const schemas = [
   organizationSchema(content),
@@ -116,7 +116,7 @@ const schemas = [
   {
     service.cta.modal ? (
       <div class="content-shell content-shell-joined">
-      <section class="section tint">
+      <section class="section tint" data-header-tone="light">
         <div class="shell service-contact-shell">
           <h2 class="display d-h2 service-contact-title">
             {service.contactCopy}

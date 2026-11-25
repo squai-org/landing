@@ -55,6 +55,7 @@
         "program": "Empieza aquí",
         "contactCta": "Agenda tu llamada",
         "oneCta": "Inscribirme",
+        "oneHome": "Ir al inicio de Squai One",
         "menuLabel": "Menú",
         "closeLabel": "Cerrar"
       },
@@ -130,7 +131,7 @@
         "organization": "Organización",
         "role": "Tu rol",
         "countryCode": "Indicativo",
-        "phone": "Número de teléfono",
+        "phone": "Teléfono o WhatsApp",
         "whatsapp": "WhatsApp",
         "teamSize": "Personas que se formarían",
         "referralSourceProgram": "¿Cómo descubriste este programa?",

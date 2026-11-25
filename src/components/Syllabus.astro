@@ -1,4 +1,5 @@
 ---
+import type { HeaderTone } from '../lib/header-tone';
 import Button from './Button.astro';
 import CarouselArrows from './CarouselArrows.astro';
 import OneCornerBlocks from './OneCornerBlocks.astro';
@@ -20,18 +21,19 @@ interface SlideStyle {
   bg: string;
   block: string;
   preset: OneCornerPreset;
+  headerTone?: HeaderTone;
 }
 
 const slideStyles: SlideStyle[] = [
-  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-12)', preset: 'mod-1' },
-  { bg: 'var(--gold-9)', block: 'var(--periwinkle-9)', preset: 'mod-2' },
+  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-12)', preset: 'mod-1', headerTone: 'brand' },
+  { bg: 'var(--gold-9)', block: 'var(--periwinkle-9)', preset: 'mod-2', headerTone: 'brand' },
   { bg: 'var(--periwinkle-4)', block: 'var(--gold-9)', preset: 'mod-3' },
   { bg: 'var(--gold-3)', block: 'var(--periwinkle-9)', preset: 'mod-4' },
 ];
 const { ui } = await getSiteContent();
 ---
 
-<section id="temario" class="syllabus one-u" aria-labelledby="syllabus-title" data-sessions>
+<section id="temario" class="syllabus one-u" aria-labelledby="syllabus-title" data-sessions data-header-tone="light">
   <header class="syllabus-header">
     <p class="one-hand syllabus-note syllabus-note-wide">{syllabus.handwritten}</p>
     <div class="syllabus-heading">
@@ -64,7 +66,7 @@ const { ui } = await getSiteContent();
               <article class="session-slide-inner" aria-labelledby={`syllabus-topic-${index + 1}-title`}>
                 <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
 
-                <div class="session-slide-bg" style={`--card-bg:${style.bg}`} aria-hidden="true">
+                <div class="session-slide-bg" data-header-tone={style.headerTone} style={`--card-bg:${style.bg}`} aria-hidden="true">
                   <div class="session-slide-bottom"></div>
                 </div>
 

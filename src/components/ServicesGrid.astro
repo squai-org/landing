@@ -1,10 +1,11 @@
 ---
+import { headerToneOfCard } from '../lib/header-tone';
 import Button from './Button.astro';
 import { getSiteContent } from '../lib/content';
 const { services, labels } = await getSiteContent();
 ---
 
-<section id="servicios" class="section tint">
+<section id="servicios" class="section tint" data-header-tone="light">
   <div class="shell">
     <h2 class="display d-h1 services-title">{labels.services}</h2>
   </div>
@@ -12,7 +13,7 @@ const { services, labels } = await getSiteContent();
   <div class="bento services-grid">
     {
       services.map((s) => (
-        <div class={`bento-card service-card ${s.span} ${s.tone}`}>
+        <div class={`bento-card service-card ${s.span} ${s.tone}`} data-header-tone={headerToneOfCard(s.tone)}>
           <div class="service-card-copy">
             <span class="service-eyebrow">
               <span class="service-eyebrow-dot" style={`background:${s.accent}`}></span>

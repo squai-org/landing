@@ -4,6 +4,7 @@ import Button from './Button.astro';
 import OneBackdrop from './OneBackdrop.astro';
 import { endpoints } from '../config/endpoints';
 import { checkout } from '../config/checkout';
+import { ONE_HERO_ID } from '../config/one';
 import { getSiteContent, type Service } from '../lib/content';
 import persona from '../assets/one/persona-laptop.webp';
 import '../styles/one-sections.css';
@@ -14,12 +15,18 @@ interface Props {
 
 const { service } = Astro.props;
 const hero = service.hero!;
+const chipVariants = ['start', 'schedule'] as const;
+const chips = (hero.supportSchedule ?? '')
+  .split('·')
+  .map((segment) => segment.trim())
+  .filter(Boolean)
+  .map((label, index) => ({ label, variant: chipVariants[index] ?? 'offer' }));
 const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
 const { ui } = await getSiteContent();
 ---
 
 <div class="one-hero-band one-u">
-  <section class="one-hero" data-hero aria-labelledby="one-hero-title" data-cohort-endpoint={cohortEndpoint} data-cohort-from={ui.cohort.from} data-cohort-range={ui.cohort.range}>
+  <section id={ONE_HERO_ID} class="one-hero" data-hero aria-labelledby="one-hero-title" data-cohort-endpoint={cohortEndpoint} data-cohort-from={ui.cohort.from} data-cohort-range={ui.cohort.range} data-header-tone="brand">
     <OneBackdrop
       shape="hero"
       colors={['#969bfc', '#777ae3']}
@@ -36,18 +43,26 @@ const { ui } = await getSiteContent();
       <div class="one-hero-action">
         <Button variant="dark" arrow href={`#${service.cta.target}`} data-scroll-to={service.cta.target}>{hero.ctaLabel ?? service.cta.label}</Button>
       </div>
-      <div class="one-hero-support">
+      <ul class="one-hero-chips">
         {
-          hero.supportSchedule ? (
-            <p class="one-small one-hero-schedule">{hero.supportSchedule}</p>
-          ) : (
-            <p class="one-small one-hero-schedule">
-              <span data-cohort-schedule>{hero.schedulePending}</span> · <span data-cohort-dates>{hero.datesPending}</span>
-            </p>
+          chips.map((chip) => (
+            <li class={`one-hero-chip one-hero-chip-${chip.variant}`}>{chip.label}</li>
+          ))
+        }
+        {
+          !hero.supportSchedule && (
+            <>
+              <li class="one-hero-chip one-hero-chip-start">
+                <span data-cohort-dates>{hero.datesPending}</span>
+              </li>
+              <li class="one-hero-chip one-hero-chip-schedule">
+                <span data-cohort-schedule>{hero.schedulePending}</span>
+              </li>
+            </>
           )
         }
-        {hero.supportOffer && <p class="one-small one-hero-offer">{hero.supportOffer}</p>}
-      </div>
+        {hero.supportOffer && <li class="one-hero-chip one-hero-chip-offer">{hero.supportOffer}</li>}
+      </ul>
     </div>
 
     <div class="one-hero-stage">
@@ -118,22 +133,34 @@ const { ui } = await getSiteContent();
     column-gap: 1.25rem;
     margin-top: var(--hero-gap-cta);
   }
-  .one-hero-support {
+  .one-hero-chips {
     display: flex;
-    flex-direction: column;
-    gap: calc(var(--u) * 6);
+    flex-wrap: wrap;
+    gap: calc(var(--u) * 8);
     max-width: min(100%, calc(var(--u) * 540));
-    margin-top: calc(var(--u) * 14);
-    color: var(--midnight);
+    margin: calc(var(--u) * 14) 0 0;
+    padding: 0;
+    list-style: none;
   }
-  .one-hero-schedule {
+  .one-hero-chip {
+    max-width: 100%;
     margin: 0;
+    padding: calc(var(--u) * 6) calc(var(--u) * 14);
+    border-radius: 9999px;
+    font-size: var(--fs-small);
     font-weight: 700;
+    line-height: 1.25;
+  }
+  .one-hero-chip-start {
+    background: var(--midnight);
+    color: var(--canvas);
+  }
+  .one-hero-chip-schedule {
+    background: var(--surface);
     color: var(--midnight);
   }
-  .one-hero-offer {
-    margin: 0;
-    font-weight: 500;
+  .one-hero-chip-offer {
+    background: var(--gold-9);
     color: var(--midnight);
   }
   .one-hero-stage {

@@ -1,9 +1,10 @@
 ---
+import { headerToneOfCard } from '../lib/header-tone';
 import { getSiteContent } from '../lib/content';
 const { capabilities, whatWeDo } = await getSiteContent();
 ---
 
-<section id="que-hacemos" class="section tint">
+<section id="que-hacemos" class="section tint" data-header-tone="light">
   <div class="shell">
     <h2 class="display d-h1 what-title">{whatWeDo.title}</h2>
     <div class="what-copy">
@@ -13,7 +14,7 @@ const { capabilities, whatWeDo } = await getSiteContent();
     <div class="bento what-grid">
       {
         capabilities.map((c) => (
-          <div class={`bento-card ${c.span} ${c.tone}`}>
+          <div class={`bento-card ${c.span} ${c.tone}`} data-header-tone={headerToneOfCard(c.tone)}>
             <h3 class="display d-h2">{c.t}</h3>
             <p class="body">{c.d}</p>
           </div>

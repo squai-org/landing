@@ -1,4 +1,5 @@
 ---
+import type { HeaderTone } from '../lib/header-tone';
 import Button from './Button.astro';
 import CarouselArrows from './CarouselArrows.astro';
 import OneCornerBlocks from './OneCornerBlocks.astro';
@@ -19,18 +20,19 @@ interface CardStyle {
   bg: string;
   block: string;
   preset: OneCornerPreset;
+  headerTone?: HeaderTone;
 }
 
 const cardStyles: CardStyle[] = [
   { bg: 'var(--periwinkle-2)', block: 'var(--periwinkle-6)', preset: 'mod-1' },
   { bg: 'var(--periwinkle-4)', block: 'var(--periwinkle-7)', preset: 'mod-2' },
   { bg: 'var(--periwinkle-3)', block: 'var(--periwinkle-8)', preset: 'mod-3' },
-  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-11)', preset: 'mod-4' },
+  { bg: 'var(--periwinkle-9)', block: 'var(--periwinkle-11)', preset: 'mod-4', headerTone: 'brand' },
 ];
 const { ui } = await getSiteContent();
 ---
 
-<section class="one-facts one-u" id="datos-clave" aria-labelledby="one-facts-title" data-sessions>
+<section class="one-facts one-u" id="datos-clave" aria-labelledby="one-facts-title" data-sessions data-header-tone="light">
   <div class="one-facts-heading">
     <h2 id="one-facts-title" class="one-h2">{facts.title}</h2>
     <p class="one-lead one-facts-lead">{facts.lead}</p>
@@ -63,7 +65,7 @@ const { ui } = await getSiteContent();
                 <article class="session-slide-inner" aria-labelledby={`one-fact-${index + 1}-title`}>
                   <OneCornerBlocks preset={style.preset} color={style.block} hoverOnly />
 
-                  <div class="session-slide-bg" style={`--card-bg:${style.bg}`} aria-hidden="true">
+                  <div class="session-slide-bg" data-header-tone={style.headerTone} style={`--card-bg:${style.bg}`} aria-hidden="true">
                     <div class="session-slide-bottom" />
                   </div>
 

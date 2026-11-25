@@ -11,14 +11,14 @@ interface Props {
 
 const { flow, cta } = Astro.props;
 const stepStyles = [
-  { bg: 'var(--periwinkle-9)', rotate: 2.2, y: 4 },
+  { bg: 'var(--periwinkle-9)', headerTone: 'brand', rotate: 2.2, y: 4 },
   { bg: '#fff', rotate: -1.4, y: -4 },
-  { bg: 'var(--periwinkle-9)', rotate: 1.5, y: 8 },
+  { bg: 'var(--periwinkle-9)', headerTone: 'brand', rotate: 1.5, y: 8 },
   { bg: '#fff', rotate: -2.2, y: 0 },
 ];
 ---
 
-<section id="como-funciona" class="one-flow one-u" aria-labelledby="flow-title">
+<section id="como-funciona" class="one-flow one-u" aria-labelledby="flow-title" data-header-tone="light">
   <div class="one-flow-band">
     <OneBackdrop shape="flow" colors={['#d2d7fc']} opacities={[0.65]} align="xMidYMax" />
 
@@ -39,7 +39,7 @@ const stepStyles = [
             const style = stepStyles[index % stepStyles.length]!;
             return (
               <li class="flow-step" style={`z-index:${10 + index}`} data-step={index} data-rest-rotate={style.rotate} data-rest-y={style.y}>
-                <div class="one-flow-card" style={`--card-bg:${style.bg};transform:translateY(${style.y}px) rotate(${style.rotate}deg)`}>
+                <div class="one-flow-card" data-header-tone={style.headerTone} style={`--card-bg:${style.bg};transform:translateY(${style.y}px) rotate(${style.rotate}deg)`}>
                   <div class="one-flow-label">
                     <h3 class="one-h3">{step.t}</h3>
                   </div>

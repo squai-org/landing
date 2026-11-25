@@ -34,6 +34,21 @@ describe('hero y datos clave de Squai One', () => {
     expect(html).toMatch(/<span[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/span>/);
   });
 
+  it('el hero pinta una etiqueta por segmento del horario con su variante de color', () => {
+    const chips = [...html.matchAll(/<li class="one-hero-chip one-hero-chip-(\w+)"[^>]*>([^<]*)<\/li>/g)].map((match) => [match[1], match[2]]);
+    expect(chips).toEqual([
+      ['start', 'Inicia 26 de ene'],
+      ['schedule', 'Mar y jue 6:30 p. m. COL'],
+      ['offer', '20% dto. hasta el 31 de dic ($440.000 COP / 147 USD)'],
+    ]);
+  });
+
+  it('las etiquetas del hero no llevan iconos', () => {
+    const list = /<ul class="one-hero-chips"[^>]*>([\s\S]*?)<\/ul>/.exec(html)?.[1] ?? '';
+    expect(list).not.toBe('');
+    expect(list).not.toMatch(/<svg|<img/);
+  });
+
   it('pide la cohorte al endpoint de lectura del Programa', () => {
     expect(html).toContain('data-cohort-endpoint="/api/checkout/program/squai-one"');
   });

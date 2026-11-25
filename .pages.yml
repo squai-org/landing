@@ -2282,6 +2282,10 @@ content:
                         label: Botón de inscripción (Squai One)
                         type: string
                         required: true
+                      - name: oneHome
+                        label: Logo en Squai One (lector de pantalla)
+                        type: string
+                        required: true
                       - name: menuLabel
                         label: Texto visible del botón de menú
                         type: string

@@ -45,12 +45,21 @@ describe('pildoras del header a la misma altura', () => {
     expect(rule).toContain('height: var(--pill-h)');
   });
 
-  it('la pildora del logo mide --pill-h y el logo escala con ella', () => {
-    const rule = /\.logo-pill \{([^}]*)\}/.exec(css)?.[1] ?? '';
+  it('el logo del header no tiene pildora y mide 1 vez --pill-h', () => {
+    const rule = /\.header-logo \{([^}]*)\}/.exec(css)?.[1] ?? '';
     expect(rule).toContain('height: var(--pill-h)');
-    expect(rule).toMatch(/--logo-size: calc\(var\(--pill-h\) \* [\d.]+\)/);
-    expect(rule).not.toMatch(/padding: 8px 16px/);
+    expect(rule).toContain('--logo-size: var(--pill-h);');
+    expect(rule).not.toMatch(/background|border-radius|padding/);
+    expect(css).not.toContain('logo-pill');
     expect(logo).toContain('font-size:var(--logo-size, ${size}px)');
+  });
+
+  it('cada tono resuelve el logo con sus variables de color', () => {
+    expect(css).toMatch(/\[data-tone='dark'\] \.header-logo \{ --wordmark-color: var\(--canvas\); \}/);
+    const brand = /\[data-tone='brand'\] \.header-logo \{([^}]*)\}/.exec(css)?.[1] ?? '';
+    for (const variable of ['--wordmark-color', '--logo-mark', '--logo-block']) {
+      expect(brand).toContain(`${variable}: var(--midnight);`);
+    }
   });
 });
 

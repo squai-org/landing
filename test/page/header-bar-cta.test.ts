@@ -57,7 +57,7 @@ describe('CTA de la barra compacta del header', () => {
 
   it('la barra queda en el orden logo, CTA y boton de menu, fuera del panel del menu', async () => {
     const header = headerOf(await page('servicios/squai-grow.html'));
-    const logo = header.indexOf('logo-pill');
+    const logo = header.indexOf('header-logo');
     const bar = header.indexOf('header-bar-cta');
     const toggle = header.indexOf('data-nav-toggle');
     const panel = header.indexOf('data-nav-panel');
@@ -70,5 +70,25 @@ describe('CTA de la barra compacta del header', () => {
     const header = headerOf(await page('index.html'));
     const toggle = /<button[^>]*data-nav-toggle[\s\S]*?<\/button>/.exec(header)?.[0] ?? '';
     expect(/data-nav-toggle-label[^>]*>([^<]*)</.exec(toggle)?.[1]).toBe('Menú');
+  });
+});
+
+describe('logo del header', () => {
+  const logoOf = async (file: string) => ctaElement(headerOf(await page(file)), 'header-logo')!.open;
+
+  it('en Squai One lleva al hero con scroll suave y anuncia el inicio de Squai One', async () => {
+    const html = await page('servicios/squai-one.html');
+    const logo = await logoOf('servicios/squai-one.html');
+    const target = attr(logo, 'data-scroll-to')!;
+    expect(attr(logo, 'href')).toBe(`#${target}`);
+    expect(attr(logo, 'aria-label')).toBe('Ir al inicio de Squai One');
+    expect(html).toMatch(new RegExp(`<section\\b[^>]*\\sid="${target}"`));
+  });
+
+  it.each(['index.html', 'terminos-de-servicio.html', 'servicios/squai-grow.html', 'servicios/squai-learn.html'])('%s sigue llevando a /', async (file) => {
+    const logo = await logoOf(file);
+    expect(attr(logo, 'href')).toBe('/');
+    expect(attr(logo, 'data-scroll-to')).toBeUndefined();
+    expect(attr(logo, 'aria-label')).toBe('Squai — inicio');
   });
 });
