@@ -73,7 +73,7 @@ const logos = [
     z-index: 10;
     width: 100%;
     overflow-x: clip;
-    padding: var(--section-py) var(--gutter);
+    padding: var(--section-py) var(--gutter) calc(var(--section-py) + var(--edge-r));
     background: #fff;
     color: var(--midnight);
   }
@@ -88,7 +88,7 @@ const logos = [
   .one-needs-body { max-width: calc(var(--u) * 760); }
   .one-needs-note { display: inline-block; color: var(--periwinkle-11); rotate: -2deg; }
   .one-needs-list { display: flex; flex-direction: column; gap: calc(var(--u) * 16); margin: 0; padding-left: 1.25em; max-width: calc(var(--u) * 760); }
-  .one-needs-logos { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 40); }
+  .one-needs-logos { display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 56); }
   .one-needs-logo { display: flex; align-items: center; gap: calc(var(--u) * 16); }
   .one-needs-logo img { display: block; height: calc(var(--u) * 72); width: auto; }
   .one-needs-logo .one-needs-wordmark { height: calc(var(--u) * 48); }
@@ -104,5 +104,9 @@ const logos = [
     .one-needs-row { grid-template-columns: 1fr 1fr; gap: calc(var(--u) * 80); }
     .one-needs-photo :global(img) { aspect-ratio: 1 / 1; }
     .one-needs-row-reverse .one-needs-logos { order: -1; }
+    .one-needs-logo { gap: calc(var(--u) * 24); }
+    .one-needs-logo img { height: calc(var(--u) * 112); }
+    .one-needs-logo .one-needs-wordmark { height: calc(var(--u) * 72); }
+    .one-needs-logo span { font-size: calc(var(--u) * 72); }
   }
 </style>

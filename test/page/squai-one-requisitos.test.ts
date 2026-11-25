@@ -129,3 +129,21 @@ describe('Squai One: Requisitos, ganchos de revelado', () => {
     expect(source.match(/\.one-needs-shell \{/g)).toHaveLength(1);
   });
 });
+
+describe('Squai One: Requisitos, ajustes de la Nota y los logos', () => {
+  const source = readFileSync(path.join(import.meta.dirname, '../../src/components/OneRequirements.astro'), 'utf8');
+
+  it('suma --edge-r al padding inferior para que Lo que vas a lograr no tape la Nota', () => {
+    expect(/\.one-needs \{[^}]*padding: var\(--section-py\) var\(--gutter\) calc\(var\(--section-py\) \+ var\(--edge-r\)\);/.test(source)).toBe(true);
+  });
+
+  it('los logos van centrados en su columna', () => {
+    expect(/\.one-needs-logos \{[^}]*align-items: center;/.test(source)).toBe(true);
+  });
+
+  it('los logos son mas grandes en escritorio', () => {
+    expect(/\.one-needs-logo img \{[^}]*height: calc\(var\(--u\) \* 112\);/.test(source)).toBe(true);
+    expect(/\.one-needs-logo \.one-needs-wordmark \{[^}]*height: calc\(var\(--u\) \* 72\);/.test(source)).toBe(true);
+    expect(/\.one-needs-logo span \{[^}]*font-size: calc\(var\(--u\) \* 72\);/.test(source)).toBe(true);
+  });
+});
