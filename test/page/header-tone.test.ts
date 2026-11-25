@@ -63,3 +63,30 @@ describe('tono del header por seccion en el HTML compilado', () => {
     }
   });
 });
+
+describe('tono del header sobre piezas de color dentro de una seccion', () => {
+  let pages: string[] = [];
+
+  beforeAll(async () => {
+    pages = await Promise.all((await htmlFiles(dist)).map((file) => readFile(file, 'utf8')));
+  });
+
+  it('las tarjetas bento de color declaran el tono que pide su fondo', () => {
+    const cards = pages.flatMap((html) => openTags(html, 'div').filter((tag) => /class="bento-card[^"]*"/.test(tag)));
+    const expected = (tag: string) => {
+      const classes = /class="([^"]*)"/.exec(tag)![1]!.split(' ');
+      if (classes.includes('dark')) return 'dark';
+      return ['peri', 'teal', 'gold'].some((tone) => classes.includes(tone)) ? 'brand' : undefined;
+    };
+
+    expect(cards.some((tag) => expected(tag) === 'brand')).toBe(true);
+    for (const tag of cards) expect(toneOf(tag), tag).toBe(expected(tag));
+  });
+
+  it('las tarjetas periwinkle y doradas intensas de Squai One piden el logo monocromo', () => {
+    const saturated = pages.flatMap((html) => openTags(html, 'div').filter((tag) => /--card-bg:var\(--(periwinkle|gold)-9\)/.test(tag)));
+
+    expect(saturated.length).toBeGreaterThan(0);
+    for (const tag of saturated) expect(toneOf(tag), tag).toBe('brand');
+  });
+});
