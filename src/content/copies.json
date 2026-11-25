@@ -85,6 +85,13 @@
       "scrollTop": {
         "label": "Volver arriba"
       },
+      "carousel": {
+        "roleDescription": "carrusel"
+      },
+      "cohort": {
+        "from": "Desde el {start}",
+        "range": "Del {start} al {end}"
+      },
       "skip": "Saltar al contenido",
       "motion": {
         "pause": "Pausar animaciones",
@@ -433,7 +440,57 @@
       "imageAlt": "Squai: capacitación y formación en inteligencia artificial",
       "serviceTitle": "{service} — Squai",
       "title": "Capacitación y formación en inteligencia artificial | Squai",
-      "description": "Capacitación en inteligencia artificial para personas, empresas e instituciones educativas. Programas prácticos, en vivo y sin necesidad de perfil técnico."
+      "description": "Capacitación en inteligencia artificial para personas, empresas e instituciones educativas. Programas prácticos, en vivo y sin necesidad de perfil técnico.",
+      "websiteDescription": "Capacitación y formación en inteligencia artificial para personas, empresas e instituciones educativas.",
+      "areaServed": "Latinoamérica",
+      "knowsAbout": [
+        "Inteligencia artificial generativa",
+        "Entrenamiento en inteligencia artificial",
+        "Formación en inteligencia artificial",
+        "Adopción de inteligencia artificial",
+        "Capacitación en inteligencia artificial",
+        "Uso seguro y ético de inteligencia artificial"
+      ],
+      "servicesListName": "Servicios de Squai",
+      "course": {
+        "credential": "Certificado digital de finalización",
+        "mode": "Online, en vivo",
+        "teaches": [
+          "Fundamentos de inteligencia artificial generativa",
+          "Uso práctico de herramientas de inteligencia artificial",
+          "Evaluación y mejora de respuestas generadas por IA",
+          "Uso seguro y responsable de la inteligencia artificial"
+        ],
+        "workload": {
+          "summary": "{sessions} de {length}, {perWeek} por semana durante {weeks}",
+          "session": { "one": "sesión", "many": "sesiones" },
+          "week": { "one": "semana", "many": "semanas" },
+          "hour": { "one": "hora", "many": "horas" },
+          "minute": { "one": "minuto", "many": "minutos" },
+          "halfHour": "{hours} y media",
+          "hoursAndMinutes": "{hours} y {minutes}"
+        }
+      }
+    },
+    "llms": {
+      "language": "Squai trabaja en español.",
+      "goalsTitle": "Qué ayuda a lograr Squai",
+      "goals": [
+        "Aprender inteligencia artificial con práctica y sin tecnicismos.",
+        "Capacitar equipos para integrar IA en tareas y procesos reales.",
+        "Adoptar la inteligencia artificial con criterios de seguridad, ética y revisión humana.",
+        "Integrar inteligencia artificial en instituciones educativas para usar IA.",
+        "Formar docentes, estudiantes e instituciones educativas para usar IA."
+      ],
+      "servicesTitle": "Servicios",
+      "programTitle": "Programa actual",
+      "programNote": "Si las inscripciones están abiertas, el precio y el pago están en [la página del programa]({url}).",
+      "pagesTitle": "Páginas",
+      "homeLabel": "Inicio",
+      "homeNote": "qué hace Squai, servicios, equipo y preguntas frecuentes.",
+      "faqTitle": "Preguntas frecuentes",
+      "contactTitle": "Contacto",
+      "emailLabel": "Correo"
     },
     "company": {
       "legalName": "Squai S.A.S.",

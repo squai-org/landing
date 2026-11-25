@@ -121,6 +121,14 @@
   "audienceFit": {
     "title": "¿Es para ti?",
     "handwritten": "Sin humo: te lo decimos de frente",
+    "photoAlts": [
+      "Equipo reunido alrededor de una mesa con portátiles",
+      "Líder de equipo sonríe con su grupo trabajando detrás",
+      "Manos revisan gráficas impresas sobre una mesa",
+      "Dos personas conversan de pie en una oficina",
+      "Persona trabaja en su portátil desde una mesa blanca, vista desde arriba",
+      "Grupo de colegas se ríe frente a un portátil"
+    ],
     "profiles": [
       {
         "t": "Trabajas en una empresa",

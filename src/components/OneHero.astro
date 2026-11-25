@@ -4,7 +4,7 @@ import Button from './Button.astro';
 import OneBackdrop from './OneBackdrop.astro';
 import { endpoints } from '../config/endpoints';
 import { checkout } from '../config/checkout';
-import type { Service } from '../lib/content';
+import { getSiteContent, type Service } from '../lib/content';
 import persona from '../assets/one/persona-laptop.webp';
 import '../styles/one-sections.css';
 
@@ -15,10 +15,11 @@ interface Props {
 const { service } = Astro.props;
 const hero = service.hero!;
 const cohortEndpoint = `${endpoints.checkoutProgram}/${checkout.program}`;
+const { ui } = await getSiteContent();
 ---
 
 <div class="one-hero-band one-u">
-  <section class="one-hero" data-hero aria-labelledby="one-hero-title" data-cohort-endpoint={cohortEndpoint}>
+  <section class="one-hero" data-hero aria-labelledby="one-hero-title" data-cohort-endpoint={cohortEndpoint} data-cohort-from={ui.cohort.from} data-cohort-range={ui.cohort.range}>
     <OneBackdrop
       shape="hero"
       colors={['#969bfc', '#777ae3']}

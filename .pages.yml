@@ -619,7 +619,7 @@ content:
                 required: true
               - name: seats
                 label: Texto de cupo
-                description: No lleva cifras: el cupo real vive en la base de datos.
+                description: "No lleva cifras: el cupo real vive en la base de datos."
                 type: string
                 required: true
               - name: cards
@@ -830,6 +830,15 @@ content:
                 label: Apunte a mano
                 type: string
                 required: true
+              - name: photoAlts
+                label: Descripción de las fotos
+                description: Seis, en el orden de las fotos. Texto alternativo para lectores de pantalla.
+                type: string
+                required: true
+                list:
+                  min: 6
+                  max: 6
+                  collapsible: false
               - name: profiles
                 label: Perfiles
                 type: object
@@ -1855,6 +1864,189 @@ content:
                         pattern:
                           regex: \{service\}
                           message: La plantilla tiene que contener {service}.
+                      - name: websiteDescription
+                        label: Descripción del sitio para buscadores
+                        description: Va en los datos estructurados (WebSite).
+                        type: text
+                        required: true
+                      - name: areaServed
+                        label: Zona donde trabaja Squai
+                        type: string
+                        required: true
+                      - name: knowsAbout
+                        label: Temas que domina Squai
+                        description: Uno por línea. Van en los datos estructurados de la organización.
+                        type: string
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: false
+                      - name: servicesListName
+                        label: Nombre de la lista de servicios
+                        type: string
+                        required: true
+                      - name: course
+                        label: Datos estructurados del programa
+                        type: object
+                        required: true
+                        fields:
+                          - name: credential
+                            label: Certificado que se entrega
+                            type: string
+                            required: true
+                          - name: mode
+                            label: Modalidad
+                            type: string
+                            required: true
+                          - name: teaches
+                            label: Lo que enseña
+                            description: Uno por línea.
+                            type: string
+                            required: true
+                            list:
+                              min: 1
+                              collapsible: false
+                          - name: workload
+                            label: Resumen de la carga
+                            description: Se arma con los datos de Squai One → Datos clave.
+                            type: object
+                            required: true
+                            fields:
+                              - name: summary
+                                label: Plantilla del resumen
+                                description: Usa {sessions}, {length}, {perWeek} y {weeks}.
+                                type: string
+                                required: true
+                              - name: session
+                                label: Sesión
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: week
+                                label: Semana
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: hour
+                                label: Hora
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: minute
+                                label: Minuto
+                                type: object
+                                required: true
+                                fields:
+                                  - name: one
+                                    label: Singular
+                                    type: string
+                                    required: true
+                                  - name: many
+                                    label: Plural
+                                    type: string
+                                    required: true
+                              - name: halfHour
+                                label: Horas y media
+                                description: Usa {hours}.
+                                type: string
+                                required: true
+                              - name: hoursAndMinutes
+                                label: Horas y minutos
+                                description: Usa {hours} y {minutes}.
+                                type: string
+                                required: true
+          - name: seo-llms
+            label: Resumen para asistentes de IA (llms.txt)
+            type: file
+            path: src/content/copies.json
+            format: json
+            fields:
+              - name: site
+                label: false
+                type: object
+                fields:
+                  - name: llms
+                    label: false
+                    type: object
+                    required: true
+                    fields:
+                      - name: language
+                        label: Idioma de trabajo
+                        type: string
+                        required: true
+                      - name: goalsTitle
+                        label: Título de lo que ayuda a lograr
+                        type: string
+                        required: true
+                      - name: goals
+                        label: Lo que ayuda a lograr
+                        description: Uno por línea.
+                        type: string
+                        required: true
+                        list:
+                          min: 1
+                          collapsible: false
+                      - name: servicesTitle
+                        label: Título de servicios
+                        type: string
+                        required: true
+                      - name: programTitle
+                        label: Título del programa actual
+                        type: string
+                        required: true
+                      - name: programNote
+                        label: Nota del programa
+                        description: Usa {url}; ahí va el enlace a la inscripción.
+                        type: string
+                        required: true
+                      - name: pagesTitle
+                        label: Título de páginas
+                        type: string
+                        required: true
+                      - name: homeLabel
+                        label: Nombre de la página de inicio
+                        type: string
+                        required: true
+                      - name: homeNote
+                        label: Nota de la página de inicio
+                        type: string
+                        required: true
+                      - name: faqTitle
+                        label: Título de preguntas frecuentes
+                        type: string
+                        required: true
+                      - name: contactTitle
+                        label: Título de contacto
+                        type: string
+                        required: true
+                      - name: emailLabel
+                        label: Etiqueta del correo
+                        type: string
+                        required: true
           - name: seo-inicio
             label: Inicio
             type: file
@@ -2096,6 +2288,31 @@ content:
                       - name: label
                         label: Nombre accesible del botón
                         type: string
+                  - name: carousel
+                    label: Carruseles
+                    type: object
+                    required: true
+                    fields:
+                      - name: roleDescription
+                        label: Cómo lo anuncia el lector de pantalla
+                        type: string
+                        required: true
+                  - name: cohort
+                    label: Fechas de la cohorte
+                    description: Las fechas salen de la base de datos; aquí solo el texto que las rodea.
+                    type: object
+                    required: true
+                    fields:
+                      - name: from
+                        label: Solo fecha de inicio
+                        description: Usa {start}.
+                        type: string
+                        required: true
+                      - name: range
+                        label: Inicio y fin
+                        description: Usa {start} y {end}.
+                        type: string
+                        required: true
                   - name: skip
                     label: Enlace "Saltar al contenido"
                     type: string
@@ -2687,7 +2904,7 @@ content:
                             required: true
                       - name: resume
                         label: Página para retomar el pago
-                        description: Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace vive en src/config/checkout.ts (resumeExpiryDays): no lo repitas en estos textos.
+                        description: "Página /retomar, a la que llevan el correo de recuperación y el abandono del modal de Bold. Abre el pago directo; estos textos solo se ven mientras carga o si no se puede pagar. El plazo del enlace vive en src/config/checkout.ts (resumeExpiryDays): no lo repitas en estos textos."
                         type: object
                         required: true
                         fields:

@@ -49,12 +49,12 @@ const seo = serviceSeo(service, content.seo.serviceTitle);
 
 const offering = service.keyFacts
   ? courseSchema(content, service, service.keyFacts.load, pageUrl)
-  : serviceSchema(service, pageUrl);
+  : serviceSchema(content, service, pageUrl);
 const headerTone = service.hero ? 'light' : 'dark';
 
 const schemas = [
   organizationSchema(content),
-  websiteSchema(),
+  websiteSchema(content),
   webPageSchema({ url: pageUrl, title: seo.title, description: seo.description }),
   breadcrumbSchema([
     { name: 'Inicio', path: '/' },

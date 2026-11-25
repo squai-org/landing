@@ -4,7 +4,7 @@ import CarouselArrows from './CarouselArrows.astro';
 import OneCornerBlocks from './OneCornerBlocks.astro';
 import { slideMotionAt } from '../lib/session-carousel';
 import type { OneCornerPreset } from '../lib/one-corner-presets';
-import type { Service } from '../lib/content';
+import { getSiteContent, type Service } from '../lib/content';
 import '../styles/one-sections.css';
 
 interface Props {
@@ -28,6 +28,7 @@ const slideStyles: SlideStyle[] = [
   { bg: 'var(--periwinkle-4)', block: 'var(--gold-9)', preset: 'mod-3' },
   { bg: 'var(--gold-3)', block: 'var(--periwinkle-9)', preset: 'mod-4' },
 ];
+const { ui } = await getSiteContent();
 ---
 
 <section id="temario" class="syllabus one-u" aria-labelledby="syllabus-title" data-sessions>
@@ -48,7 +49,7 @@ const slideStyles: SlideStyle[] = [
   <div
     class="sessions-track"
     role="region"
-    aria-roledescription="carrusel"
+    aria-roledescription={ui.carousel.roleDescription}
     aria-label={syllabus.title}
     tabindex="0"
     data-sessions-track

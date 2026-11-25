@@ -76,15 +76,8 @@ export const organizationSchema = (content: SiteContent): Json => {
     },
     image: absoluteUrl(DEFAULT_OG_IMAGE),
     knowsLanguage: ['es'],
-    knowsAbout: [
-      'Inteligencia artificial generativa',
-      'Entrenamiento en inteligencia artificial',
-      'Formación en inteligencia artificial',
-      'Adopción de inteligencia artificial',
-      'Capacitación en inteligencia artificial',
-      'Uso seguro y ético de inteligencia artificial',
-    ],
-    areaServed: { '@type': 'Place', name: 'Latinoamérica' },
+    knowsAbout: content.seo.knowsAbout,
+    areaServed: { '@type': 'Place', name: content.seo.areaServed },
     ...(sameAs.length ? { sameAs } : {}),
     founder: founders.map((person) => ({
       '@type': 'Person',
@@ -100,12 +93,12 @@ export const organizationSchema = (content: SiteContent): Json => {
   };
 };
 
-export const websiteSchema = (): Json => ({
+export const websiteSchema = (content: SiteContent): Json => ({
   '@type': 'WebSite',
   '@id': SITE_ID,
   url: SITE_URL,
   name: SITE_NAME,
-  description: 'Capacitación y formación en inteligencia artificial para personas, empresas e instituciones educativas.',
+  description: content.seo.websiteDescription,
   inLanguage: SITE_LANG,
   publisher: { '@id': ORG_ID },
 });
@@ -150,13 +143,8 @@ export const courseSchema = (content: SiteContent, service: Service, load: Cours
   url: pageUrl,
   inLanguage: SITE_LANG,
   timeRequired: isoDuration(load),
-  educationalCredentialAwarded: 'Certificado digital de finalización',
-  teaches: [
-    'Fundamentos de inteligencia artificial generativa',
-    'Uso práctico de herramientas de inteligencia artificial',
-    'Evaluación y mejora de respuestas generadas por IA',
-    'Uso seguro y responsable de la inteligencia artificial',
-  ],
+  educationalCredentialAwarded: content.seo.course.credential,
+  teaches: content.seo.course.teaches,
   provider: {
     '@type': 'Organization',
     '@id': ORG_ID,
@@ -167,14 +155,14 @@ export const courseSchema = (content: SiteContent, service: Service, load: Cours
     '@type': 'CourseInstance',
     '@id': `${pageUrl}#program-instance`,
     name: content.program.name,
-    courseMode: 'Online, en vivo',
-    courseWorkload: courseLoadSummary(load),
+    courseMode: content.seo.course.mode,
+    courseWorkload: courseLoadSummary(load, content.seo.course.workload),
     duration: isoDuration(load),
     inLanguage: SITE_LANG,
   },
 });
 
-export const serviceSchema = (service: Service, pageUrl: string): Json => ({
+export const serviceSchema = (content: SiteContent, service: Service, pageUrl: string): Json => ({
   '@type': 'Service',
   '@id': `${pageUrl}#service`,
   name: service.name,
@@ -182,14 +170,14 @@ export const serviceSchema = (service: Service, pageUrl: string): Json => ({
   description: service.slogan,
   url: pageUrl,
   provider: { '@id': ORG_ID },
-  areaServed: { '@type': 'Place', name: 'Latinoamérica' },
+  areaServed: { '@type': 'Place', name: content.seo.areaServed },
   availableLanguage: ['Spanish'],
   audience: { '@type': 'Audience', audienceType: service.menuAudience },
 });
 
-export const servicesItemList = (services: Service[]): Json => ({
+export const servicesItemList = (services: Service[], name: string): Json => ({
   '@type': 'ItemList',
-  name: 'Servicios de Squai',
+  name,
   itemListElement: services.map((service, index) => ({
     '@type': 'ListItem',
     position: index + 1,
@@ -200,8 +188,8 @@ export const servicesItemList = (services: Service[]): Json => ({
 
 export const homeGraph = (content: SiteContent): Json[] => [
   organizationSchema(content),
-  websiteSchema(),
+  websiteSchema(content),
   webPageSchema({ url: `${SITE_URL}/`, title: content.seo.title, description: content.seo.description }),
-  servicesItemList(content.services),
+  servicesItemList(content.services, content.seo.servicesListName),
   faqSchema(content.faqs, `${SITE_URL}/`),
 ];

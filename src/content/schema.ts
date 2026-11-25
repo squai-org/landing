@@ -26,6 +26,7 @@ const span = text.regex(/^span-[2-6](?: row-[2-5])?$/);
 // foto nueva es un cambio de codigo, no editorial.
 export const teamPhotos = ['/images/team1.webp', '/images/team2.webp', '/images/team3.webp', '/images/team4.webp', '/images/team5.webp', '/images/team6.webp'] as const;
 const faq = z.object({ q: text, a: paragraphs, category: optional(text) });
+const countWords = z.object({ one: text, many: text });
 const optionalAmount = optional(z.number().int().positive());
 const investment = z.object({
   referencePrice: z.object({ COP: optionalAmount, USD: optionalAmount }).default({}),
@@ -70,6 +71,7 @@ export const factIllustrations = [
 const audienceFit = z.object({
   title: text,
   handwritten: text,
+  photoAlts: z.array(text).length(6),
   profiles: z.array(card).min(1),
 });
 const howItWorks = z.object({
@@ -223,7 +225,44 @@ export const siteSchema = z.object({
     }).refine((item) => Boolean(item.t) !== Boolean(item.labelKey), 'Provide t or labelKey')
       .refine((item) => Boolean(item.target || item.href), 'Provide a target or href')),
   }).refine((item) => Boolean(item.h) !== Boolean(item.headingKey), 'Provide h or headingKey')),
-  seo: z.object({ title: text, description: text, imageAlt: text, serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}') }),
+  seo: z.object({
+    title: text,
+    description: text,
+    imageAlt: text,
+    serviceTitle: text.refine((value) => value.includes('{service}'), 'Include {service}'),
+    websiteDescription: text,
+    areaServed: text,
+    knowsAbout: z.array(text).min(1),
+    servicesListName: text,
+    course: z.object({
+      credential: text,
+      mode: text,
+      teaches: z.array(text).min(1),
+      workload: z.object({
+        summary: text.refine((value) => ['{sessions}', '{length}', '{perWeek}', '{weeks}'].every((key) => value.includes(key)), 'Include {sessions}, {length}, {perWeek} and {weeks}'),
+        session: countWords,
+        week: countWords,
+        hour: countWords,
+        minute: countWords,
+        halfHour: text.refine((value) => value.includes('{hours}'), 'Include {hours}'),
+        hoursAndMinutes: text.refine((value) => value.includes('{hours}') && value.includes('{minutes}'), 'Include {hours} and {minutes}'),
+      }),
+    }),
+  }),
+  llms: z.object({
+    language: text,
+    goalsTitle: text,
+    goals: z.array(text).min(1),
+    servicesTitle: text,
+    programTitle: text,
+    programNote: text.refine((value) => value.includes('{url}'), 'Include {url}'),
+    pagesTitle: text,
+    homeLabel: text,
+    homeNote: text,
+    faqTitle: text,
+    contactTitle: text,
+    emailLabel: text,
+  }),
   company: z.object({ legalName: text, nit: text, address: text, phone: text, contact: text }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
@@ -231,6 +270,11 @@ export const siteSchema = z.object({
     motion: z.object({ pause: text, resume: text }),
     whatsapp: z.object({ label: text, message: text, tooltip: optional(text), panel: z.object({ dialogLabel: text, title: text, subtitle: text, close: text, topics: z.array(z.object({ label: text, message: text })).min(1).max(5) }).optional() }),
     scrollTop: z.object({ label: text }).optional(),
+    carousel: z.object({ roleDescription: text }),
+    cohort: z.object({
+      from: text.refine((value) => value.includes('{start}'), 'Include {start}'),
+      range: text.refine((value) => value.includes('{start}') && value.includes('{end}'), 'Include {start} and {end}'),
+    }),
     hero: z.object({ pause: text, resume: text, services: text, scroll: text, cta: text }),
     services: z.object({ payback: text }),
     team: z.object({ intro: paragraphs, memberAlt: text.refine((value) => value.includes('{name}') && value.includes('{role}'), 'Include {name} and {role}') }),
