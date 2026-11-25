@@ -5,7 +5,8 @@ import DriftBlock from './DriftBlock.astro';
 import SocialLinks from './SocialLinks.astro';
 import { getSiteContent } from '../lib/content';
 import { pillBlockPresets } from '../lib/pill-blocks';
-import type { HeaderTone } from '../lib/header-tone';
+import { BUTTON_VARIANT_ON, surfaceOf, type HeaderTone } from '../lib/header-tone';
+import { ONE_HERO_ID } from '../config/one';
 
 interface Props {
   tone?: HeaderTone;
@@ -18,11 +19,9 @@ const currentPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '')
 const serviceLinks = services.map((service) => ({ name: service.name, subtitle: service.menuAudience, href: `/servicios/${service.slug}` }));
 const navModal = currentPath === '/servicios/squai-grow' ? 'grow' : currentPath === '/servicios/squai-learn' ? 'learn' : undefined;
 const isSquaiOne = currentPath === '/servicios/squai-one';
-const oneHeroId = 'inicio';
 const serviceNav = services.find((service) => currentPath === `/servicios/${service.slug}`)?.nav;
-const onDark = tone === 'dark';
-const squaiOneCtaVariant = onDark ? 'white' : 'dark';
-const ctaVariant = isSquaiOne ? squaiOneCtaVariant : 'primary';
+const onSurfaceVariant = BUTTON_VARIANT_ON[surfaceOf(tone)];
+const ctaVariant = isSquaiOne ? onSurfaceVariant : 'primary';
 interface PageCta {
   label: string;
   target: Record<string, string>;
@@ -37,9 +36,9 @@ const pageCtaFor = (): PageCta => {
     current: currentPath.startsWith('/servicios') ? 'page' : undefined,
   };
 };
-const logoTarget = isSquaiOne ? { href: `#${oneHeroId}`, 'data-scroll-to': oneHeroId } : { href: '/' };
+const logoTarget = isSquaiOne ? { href: `#${ONE_HERO_ID}`, 'data-scroll-to': ONE_HERO_ID } : { href: '/' };
 const pageCta = pageCtaFor();
-const toggleVariant = onDark ? 'white' : 'dark';
+const toggleVariant = onSurfaceVariant;
 const pagePills = serviceNav
   ? serviceNav.items.map((item) => ({ label: item.label, target: item.target, href: `#${item.target}`, services: false }))
   : navLinks.map((link) => ({ label: link.label, target: link.target, href: `/#${link.target}`, services: link.target === 'servicios' }));

@@ -110,11 +110,11 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
           <input type="hidden" name="program" value={checkout.program} />
 
           <div class="one-signup-row">
-          <label class="field-group" for="checkout-full-name">
-            <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
-            <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" placeholder={ui.forms.placeholders?.fullName} class="field" aria-describedby="checkout-full-name-error" />
-            <span id="checkout-full-name-error" role="alert" class="field-error" data-field-error="full_name"></span>
-          </label>
+            <label class="field-group" for="checkout-full-name">
+              <span class="field-label">{ui.forms.fullName} <span aria-hidden="true">*</span></span>
+              <input id="checkout-full-name" type="text" name="full_name" required autocomplete="name" placeholder={ui.forms.placeholders?.fullName} class="field" aria-describedby="checkout-full-name-error" />
+              <span id="checkout-full-name-error" role="alert" class="field-error" data-field-error="full_name"></span>
+            </label>
             <label class="field-group" for="checkout-email">
               <span class="field-label">{ui.forms.email} <span aria-hidden="true">*</span></span>
               <input id="checkout-email" type="email" name="email" required autocomplete="email" placeholder={ui.forms.placeholders?.email} class="field" aria-describedby="checkout-email-error" />
@@ -126,47 +126,47 @@ const currencyLabels: Record<Currency, string> = { COP: ui.checkout.currency.cop
             <div class="field-group" role="group" aria-labelledby="checkout-phone-label">
               <span class="field-label" id="checkout-phone-label">{ui.forms.phone} <span aria-hidden="true">*</span></span>
               <div class="one-signup-phone">
-              <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} labelHidden />
-              <label class="field-group" for="checkout-phone">
-                <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" placeholder={ui.forms.placeholders?.phone} class="field" aria-describedby="checkout-phone-error" />
-                <span id="checkout-phone-error" role="alert" class="field-error" data-field-error="phone"></span>
-              </label>
+                <CountryCodeSelect idPrefix="checkout" label={ui.forms.countryCode} labelHidden />
+                <label class="field-group" for="checkout-phone">
+                  <input id="checkout-phone" type="tel" name="phone" required autocomplete="tel-national" inputmode="tel" placeholder={ui.forms.placeholders?.phone} class="field" aria-describedby="checkout-phone-error" />
+                  <span id="checkout-phone-error" role="alert" class="field-error" data-field-error="phone"></span>
+                </label>
               </div>
             </div>
-          <CustomSelect
-            idPrefix="checkout"
-            name="referral_source"
-            label={ui.forms.referralSourceProgram}
-            placeholder={ui.forms.select}
-            options={ui.forms.referralSources}
-            required={false}
-            optionalLabel={ui.forms.optional}
-          />
+            <CustomSelect
+              idPrefix="checkout"
+              name="referral_source"
+              label={ui.forms.referralSourceProgram}
+              placeholder={ui.forms.select}
+              options={ui.forms.referralSources}
+              required={false}
+              optionalLabel={ui.forms.optional}
+            />
           </div>
 
           <div class="checkout-consent-row" data-consent-row>
-          <div class="checkout-consents">
-          <label class="field-group consent-field" for="checkout-terms-consent">
-            <span class="consent-row">
-              <input id="checkout-terms-consent" type="checkbox" name="terms_consent" required class="consent-checkbox" aria-describedby="checkout-terms-consent-error" />
-              <span class="consent-label">
-                {ui.forms.termsConsentPrefix}<a href={legalPaths.terms} target="_blank" rel="noopener">{ui.forms.termsConsentLink}</a>{ui.forms.termsConsentSuffix}
-              </span>
-            </span>
-            <span id="checkout-terms-consent-error" role="alert" class="field-error" data-field-error="terms_consent"></span>
-          </label>
+            <div class="checkout-consents">
+              <label class="field-group consent-field" for="checkout-terms-consent">
+                <span class="consent-row">
+                  <input id="checkout-terms-consent" type="checkbox" name="terms_consent" required class="consent-checkbox" aria-describedby="checkout-terms-consent-error" />
+                  <span class="consent-label">
+                    {ui.forms.termsConsentPrefix}<a href={legalPaths.terms} target="_blank" rel="noopener">{ui.forms.termsConsentLink}</a>{ui.forms.termsConsentSuffix}
+                  </span>
+                </span>
+                <span id="checkout-terms-consent-error" role="alert" class="field-error" data-field-error="terms_consent"></span>
+              </label>
 
-          <label class="field-group consent-field" for="checkout-privacy-consent">
-            <span class="consent-row">
-              <input id="checkout-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="checkout-privacy-consent-error" />
-              <span class="consent-label">
-                {ui.forms.privacyConsentPrefix}<a href={legalPaths.privacy} target="_blank" rel="noopener">{ui.forms.privacyConsentLink}</a>{ui.forms.privacyConsentSuffix}
-              </span>
-            </span>
-            <span id="checkout-privacy-consent-error" role="alert" class="field-error" data-field-error="privacy_consent"></span>
-          </label>
-          </div>
-          <Turnstile action="checkout" />
+              <label class="field-group consent-field" for="checkout-privacy-consent">
+                <span class="consent-row">
+                  <input id="checkout-privacy-consent" type="checkbox" name="privacy_consent" required class="consent-checkbox" aria-describedby="checkout-privacy-consent-error" />
+                  <span class="consent-label">
+                    {ui.forms.privacyConsentPrefix}<a href={legalPaths.privacy} target="_blank" rel="noopener">{ui.forms.privacyConsentLink}</a>{ui.forms.privacyConsentSuffix}
+                  </span>
+                </span>
+                <span id="checkout-privacy-consent-error" role="alert" class="field-error" data-field-error="privacy_consent"></span>
+              </label>
+            </div>
+            <Turnstile action="checkout" />
           </div>
 
           <div class="form-submit" data-sales-panel="form">
