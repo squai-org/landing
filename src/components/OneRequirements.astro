@@ -61,7 +61,7 @@ const { notForYou } = Astro.props.beforeSignup;
   .one-needs-body { max-width: calc(var(--u) * 760); }
   .one-needs-note { display: inline-block; color: var(--periwinkle-11); rotate: -2deg; }
   .one-needs-photo { overflow: hidden; border-radius: var(--card-r); }
-  .one-needs-photo :global(img) { display: block; width: 100%; height: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .one-needs-photo :global(img) { display: block; width: 100%; height: 100%; aspect-ratio: 4 / 5; object-fit: cover; transform: scaleX(-1); }
   @media (min-width: 992px) {
     .one-needs-row { grid-template-columns: 1fr 1fr; gap: calc(var(--u) * 80); }
     .one-needs-photo :global(img) { aspect-ratio: 1 / 1; }
