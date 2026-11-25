@@ -129,6 +129,27 @@ describe('pagina de Squai One: contrato del formulario', () => {
     }
   });
 
+  it('el telefono tiene una sola etiqueta visible y el indicativo conserva su nombre accesible', () => {
+    const labelTags = openingTags(form, 'span').filter((tag) => attribute(tag, 'class') === 'field-label');
+    const visibleText = form.replace(/<[^>]+>/g, ' ');
+
+    expect(visibleText.match(/Teléfono o WhatsApp/g)).toHaveLength(1);
+    expect(form).toMatch(/Teléfono o WhatsApp\s*<span aria-hidden="true"[^>]*>\*<\/span>/);
+    expect(visibleText).not.toContain('Número de teléfono');
+    expect(labelTags.some((tag) => attribute(tag, 'id') === 'checkout-country-code-label')).toBe(false);
+    const countryLabel = openingTags(form, 'span').find((tag) => attribute(tag, 'id') === 'checkout-country-code-label')!;
+    expect(attribute(countryLabel, 'class')).toBe('sr-only');
+    expect(form).toMatch(/id="checkout-country-code-label"[^>]*>\s*Indicativo/);
+  });
+
+  it('como descubriste es opcional y lo dice', () => {
+    const referral = enclosingElement(form, 'data-select-name="referral_source"', 'div');
+
+    expect(hasAttribute(referral, 'data-select-required')).toBe(false);
+    expect(referral).not.toMatch(/aria-hidden="true"[^>]*>\*/);
+    expect(referral).toContain('(opcional)');
+  });
+
   it('tiene un unico boton de envio con su etiqueta', () => {
     const submits = submitButtons(form);
 
@@ -183,7 +204,7 @@ describe('pagina de Squai One: contrato del formulario', () => {
     const referral = enclosingElement(form, 'data-select-name="referral_source"', 'div');
     const country = enclosingElement(form, 'data-country-select', 'div');
 
-    for (const name of customSelectAttributes) expect(hasAttribute(referral, name), `referral_source ${name}`).toBe(true);
+    for (const name of customSelectAttributes.filter((attributeName) => attributeName !== 'data-select-required')) expect(hasAttribute(referral, name), `referral_source ${name}`).toBe(true);
     for (const name of countrySelectAttributes) expect(hasAttribute(country, name), `country_code ${name}`).toBe(true);
     expect(attribute(firstTag(referral, 'div'), 'data-custom-select')).toBe('');
     expect(openingTags(referral, 'button').filter((tag) => hasAttribute(tag, 'data-select-option'))).not.toHaveLength(0);

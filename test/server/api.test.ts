@@ -89,6 +89,12 @@ describe('POST /api/contact', () => {
     expect(res.status).toBe(400);
   });
 
+  it('rechaza un contacto sin referral_source', async () => {
+    const { referral_source: _omitted, ...withoutReferral } = contactPayload;
+    const res = await post('/api/contact', withoutReferral);
+    expect(res.status).toBe(400);
+  });
+
   it('rechaza un referral_source fuera del catálogo', async () => {
     const res = await post('/api/contact', { ...contactPayload, referral_source: 'radio' });
     expect(res.status).toBe(400);

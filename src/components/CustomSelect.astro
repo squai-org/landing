@@ -6,9 +6,10 @@ export interface Props {
   placeholder: string;
   options: { value: string; label: string }[];
   required?: boolean;
+  optionalLabel?: string;
 }
 
-const { idPrefix, name, label, placeholder, options, required = true } = Astro.props;
+const { idPrefix, name, label, placeholder, options, required = true, optionalLabel } = Astro.props;
 
 const fieldId = `${idPrefix}-${name}`;
 const errorId = `${fieldId}-error`;
@@ -22,7 +23,7 @@ const errorId = `${fieldId}-error`;
   data-select-message={placeholder}
 >
   <span class="field-label" id={`${fieldId}-label`}>
-    {label} {required && <span aria-hidden="true">*</span>}
+    {label} {required && <span aria-hidden="true">*</span>}{optionalLabel && <span class="field-optional">{optionalLabel}</span>}
   </span>
   <button
     type="button"

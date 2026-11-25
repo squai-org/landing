@@ -116,7 +116,7 @@ export const createCheckoutSession = async (
   return openOrder(
     env,
     keys,
-    { program, currency: input.currency, customerId, referralSource: input.referral_source },
+    { program, currency: input.currency, customerId, referralSource: input.referral_source ?? null },
     meta
   );
 };
