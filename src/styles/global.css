@@ -265,9 +265,9 @@
     --u: calc(100vw / 1920);
     --gutter: calc(var(--u) * 40);
     --section-py: calc(var(--u) * 140);
-    --btn-h: calc(var(--u) * 56);
-    --btn-fs: max(16px, calc(var(--u) * 20));
-    --btn-px: calc(var(--u) * 20);
+    --btn-h: max(48px, calc(var(--u) * 64));
+    --btn-fs: max(16px, calc(var(--u) * 22));
+    --btn-px: calc(var(--u) * 24);
     --pill-h: calc(var(--u) * 56);
     --pill-fs: max(16px, calc(var(--u) * 24));
     --social: calc(var(--u) * 48);

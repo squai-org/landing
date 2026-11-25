@@ -51,6 +51,16 @@ describe('tokens de landing-design en :root', () => {
     ).toEqual([]);
   });
 
+  it('escritorio (992): botones CTA de 64u con minimo de 48px', () => {
+    expect(
+      missingFrom(desktop, {
+        '--btn-h': 'max(48px, calc(var(--u) * 64))',
+        '--btn-fs': 'max(16px, calc(var(--u) * 22))',
+        '--btn-px': 'calc(var(--u) * 24)',
+      })
+    ).toEqual([]);
+  });
+
   it('tableta (768): etiquetas, nota del hero, badge y carrusel', () => {
     expect(
       missingFrom(tablet, {
