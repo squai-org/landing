@@ -266,7 +266,7 @@ export const siteSchema = z.object({
   company: z.object({ legalName: text, nit: text, address: text, phone: text, contact: text }),
   legal: z.object({ terms: legalPage, privacy: legalPage }),
   ui: z.object({
-    navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, servicesSubmenu: text, menuLabel: text, closeLabel: text }),
+    navigation: z.object({ home: text, open: text, close: text, main: text, program: text, contactCta: text, oneCta: text, oneHome: text, servicesSubmenu: text, menuLabel: text, closeLabel: text }),
     motion: z.object({ pause: text, resume: text }),
     whatsapp: z.object({ label: text, message: text, tooltip: optional(text), panel: z.object({ dialogLabel: text, title: text, subtitle: text, close: text, topics: z.array(z.object({ label: text, message: text })).min(1).max(5) }).optional() }),
     scrollTop: z.object({ label: text }).optional(),
