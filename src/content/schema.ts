@@ -74,6 +74,9 @@ const audienceFit = z.object({
   photoAlts: z.array(text).length(6),
   profiles: z.array(card).min(1),
 });
+const beforeSignup = z.object({
+  notForYou: z.object({ title: text, body: text, handwritten: text, photoAlt: text }),
+});
 const howItWorks = z.object({
   title: text,
   handwritten: text,
@@ -121,6 +124,7 @@ export const serviceSchema = z.object({
   challenge: z.object({ cards: z.array(card).min(1) }).optional(),
   capabilities: z.object({ groups: z.array(capabilityGroup).min(1) }).optional(),
   audienceFit: audienceFit.optional(),
+  beforeSignup: beforeSignup.optional(),
   howItWorks: howItWorks.optional(),
   syllabus: syllabus.optional(),
   cta: z.object({ label: text, modal: z.enum(['', 'grow', 'learn']).default(''), target: z.string().default('') }),

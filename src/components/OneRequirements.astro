@@ -1,0 +1,69 @@
+---
+import { Image } from 'astro:assets';
+import OneBackdrop from './OneBackdrop.astro';
+import type { Service } from '../lib/content';
+import shrug from '../assets/one/requisitos/pexels-8638716.jpeg';
+import '../styles/one-sections.css';
+
+interface Props {
+  beforeSignup: NonNullable<Service['beforeSignup']>;
+}
+
+const { notForYou } = Astro.props.beforeSignup;
+---
+
+<section id="requisitos" class="one-needs one-u" aria-labelledby="needs-title">
+  <OneBackdrop shape="faq" colors={['#eef0fd']} opacities={[0.9]} align="xMinYMin" />
+
+  <div class="one-needs-shell">
+    <div class="one-needs-row" data-needs-row>
+      <div class="one-needs-copy" data-needs-copy>
+        <h2 id="needs-title" class="one-h2">{notForYou.title}</h2>
+        <p class="one-lead one-needs-body">{notForYou.body}</p>
+        <p class="one-hand one-needs-note">{notForYou.handwritten}</p>
+      </div>
+      <div class="one-needs-photo" data-needs-photo>
+        <Image src={shrug} alt={notForYou.photoAlt} widths={[480, 800, 1200]} sizes="(min-width: 992px) 45vw, 100vw" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { revealOnView, springs } from '../lib/motion';
+
+  document.querySelectorAll<HTMLElement>('[data-needs-row]').forEach((row) => {
+    const copy = row.querySelector<HTMLElement>('[data-needs-copy]');
+    const photo = row.querySelector<HTMLElement>('[data-needs-photo]');
+    if (copy) revealOnView(copy, { opacity: 0, y: 48 }, { opacity: 1, y: 0 }, springs.flowCard);
+    if (photo) revealOnView(photo, { opacity: 0, y: 72 }, { opacity: 1, y: 0 }, { ...springs.flowCard, delay: 0.08 });
+  });
+</script>
+
+<style>
+  .one-needs {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    overflow-x: clip;
+    padding: var(--section-py) var(--gutter);
+    background: #fff;
+    color: var(--midnight);
+  }
+  .one-needs-shell { position: relative; z-index: 1; }
+  .one-needs-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: calc(var(--u) * 48);
+  }
+  .one-needs-copy { display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * 24); }
+  .one-needs-body { max-width: calc(var(--u) * 760); }
+  .one-needs-note { display: inline-block; color: var(--periwinkle-11); rotate: -2deg; }
+  .one-needs-photo { overflow: hidden; border-radius: var(--card-r); }
+  .one-needs-photo :global(img) { display: block; width: 100%; height: 100%; aspect-ratio: 4 / 5; object-fit: cover; transform: scaleX(-1); }
+  @media (min-width: 992px) {
+    .one-needs-row { grid-template-columns: 1fr 1fr; gap: calc(var(--u) * 80); }
+    .one-needs-photo :global(img) { aspect-ratio: 1 / 1; }
+  }
+</style>

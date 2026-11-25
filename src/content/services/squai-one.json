@@ -118,9 +118,17 @@
     "mediaNote": "Muy pronto...",
     "mediaNoteReady": "Con subtítulos en español"
   },
+  "beforeSignup": {
+    "notForYou": {
+      "title": "No es para ti si...",
+      "body": "Buscas construir agentes (asistentes que trabajan solos) para hacerte rico. Preferimos no venderte lo que no necesitas, porque con lo básico bien aprendido ya se logra mucho.",
+      "handwritten": "No te vendemos humo.",
+      "photoAlt": "Persona con gafas que se encoge de hombros"
+    }
+  },
   "audienceFit": {
     "title": "¿Es para ti?",
-    "handwritten": "Sin humo: te lo decimos de frente",
+    "handwritten": "Puedes empezar sin haber usado la IA antes.",
     "photoAlts": [
       "Equipo reunido alrededor de una mesa con portátiles",
       "Líder de equipo sonríe con su grupo trabajando detrás",
