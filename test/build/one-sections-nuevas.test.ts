@@ -6,7 +6,6 @@ import { serviceSchema } from '../../src/content/schema';
 const root = path.join(import.meta.dirname, '../..');
 const read = async (file: string) => (await readFile(path.join(root, file), 'utf8')).replace(/\r\n/g, '\n');
 const loadOne = async () => JSON.parse(await read('src/content/services/squai-one.json')) as Record<string, unknown>;
-const parseOne = async () => serviceSchema.parse(await loadOne());
 
 const formOf = async (node: string) => {
   const pages = await read('.pages.yml');
@@ -17,19 +16,6 @@ const formOf = async (node: string) => {
 };
 
 describe('Que vas a lograr', () => {
-  it('los datos son los de landing-design', async () => {
-    const { outcomes } = await parseOne();
-    expect(outcomes?.title).toBe('Lo que vas a lograr.');
-    expect(outcomes?.pills).toEqual([
-      'Automatizar lo que repites',
-      'Ordenar tu trabajo',
-      'Crear sin sonar genérico',
-      'Respuestas que sí sirven',
-      'Cuidar tu información',
-      'Saber cuándo confiar',
-    ]);
-  });
-
   it('es opcional: los servicios sin la seccion siguen validando', async () => {
     const { outcomes: _outcomes, ...rest } = await loadOne();
     expect(serviceSchema.safeParse(rest).success).toBe(true);
@@ -47,26 +33,6 @@ describe('Que vas a lograr', () => {
 });
 
 describe('Franja de datos', () => {
-  it('las dos cintas tienen contenido', async () => {
-    const { marquee } = await parseOne();
-    expect(marquee?.lineA.length).toBeGreaterThan(0);
-    expect(marquee?.lineB).toEqual([
-      '8 sesiones en vivo',
-      'Grabación por 1 mes',
-      'Comunidad en WhatsApp',
-      'Guías y recursos',
-      'Proyecto personal',
-      'Certificado Squai',
-    ]);
-  });
-
-  it('fecha y horario salen de la cohorte, no del texto editorial', async () => {
-    const { marquee } = await parseOne();
-    const cohortItems = marquee?.lineA.filter((item) => item.cohort) ?? [];
-    expect(cohortItems.map((item) => item.cohort)).toEqual(['dates', 'schedule']);
-    expect(cohortItems.every((item) => item.text === undefined)).toBe(true);
-  });
-
   it('un item sin texto ni cohorte se rechaza', async () => {
     const marquee = { lineA: [{ text: '', cohort: '' }], lineB: ['x'] };
     expect(serviceSchema.safeParse({ ...(await loadOne()), marquee }).success).toBe(false);
@@ -79,18 +45,6 @@ describe('Franja de datos', () => {
 });
 
 describe('Mentores: sello, cita, rol y bio', () => {
-  it('cada fundador tiene sello y cita', async () => {
-    const { team } = await parseOne();
-    expect(team?.mentors?.map((mentor) => mentor.name)).toEqual(['Laura Villada', 'Sebastián Rico']);
-    expect(team?.mentors?.map((mentor) => mentor.badge)).toEqual(['Cofundadora', 'Cofundador']);
-    expect(team?.mentors?.every((mentor) => mentor.quote.length > 0)).toBe(true);
-  });
-
-  it('cada mentor trae su rol y su bio para el programa', async () => {
-    const { team } = await parseOne();
-    expect(team?.mentors?.every((mentor) => Boolean(mentor.role && mentor.bio))).toBe(true);
-  });
-
   it('sello, cita, rol y bio son opcionales', async () => {
     expect(serviceSchema.safeParse({ ...(await loadOne()), team: { title: 'T', closing: 'C' } }).success).toBe(true);
   });

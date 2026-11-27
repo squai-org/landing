@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { decodeHtml, escapeRegExp, site } from './content';
 
 const dist = path.join(import.meta.dirname, '../../dist');
 
@@ -94,20 +95,20 @@ describe('pagina de Squai One: contrato del formulario', () => {
     }
   });
 
-  it('los campos llevan placeholders del diseno y la nota de pago seguro sigue al boton', () => {
-    const placeholder = (id: string) => attribute(openingTags(form, 'input').find((tag) => attribute(tag, 'id') === id)!, 'placeholder');
+  it('los campos llevan los placeholders del contenido y la nota de pago seguro sigue al boton', () => {
+    const placeholder = (id: string) => {
+      const value = attribute(openingTags(form, 'input').find((tag) => attribute(tag, 'id') === id)!, 'placeholder');
+      return value === undefined ? undefined : decodeHtml(value);
+    };
+    const { placeholders } = site.ui.forms;
 
-    expect(placeholder('checkout-full-name')).toBe('Ej. Laura Gómez');
-    expect(placeholder('checkout-email')).toBe('laura@tuempresa.com');
-    expect(placeholder('checkout-phone')).toBe('300 000 0000');
+    expect(placeholder('checkout-full-name')).toBe(placeholders?.fullName);
+    expect(placeholder('checkout-email')).toBe(placeholders?.email);
+    expect(placeholder('checkout-phone')).toBe(placeholders?.phone);
 
     const submitPanel = enclosingElement(form, 'data-sales-panel="form"', 'div');
-    expect(submitPanel).toContain('Pago seguro en línea · Confirmación por correo');
+    expect(decodeHtml(submitPanel)).toContain(site.ui.checkout.secureNote);
     expect(submitPanel).toContain('<svg');
-  });
-
-  it('no repite la fila de precio del diseno', () => {
-    expect(page).not.toContain('Valor del programa');
   });
 
   it('tiene exactamente los campos de produccion', () => {
@@ -131,15 +132,15 @@ describe('pagina de Squai One: contrato del formulario', () => {
 
   it('el telefono tiene una sola etiqueta visible y el indicativo conserva su nombre accesible', () => {
     const labelTags = openingTags(form, 'span').filter((tag) => attribute(tag, 'class') === 'field-label');
-    const visibleText = form.replace(/<[^>]+>/g, ' ');
+    const visibleText = decodeHtml(form.replace(/<[^>]+>/g, ' '));
+    const { phone, countryCode } = site.ui.forms;
 
-    expect(visibleText.match(/Teléfono o WhatsApp/g)).toHaveLength(1);
-    expect(form).toMatch(/Teléfono o WhatsApp\s*<span aria-hidden="true"[^>]*>\*<\/span>/);
-    expect(visibleText).not.toContain('Número de teléfono');
+    expect(visibleText.split(phone)).toHaveLength(2);
+    expect(decodeHtml(form)).toMatch(new RegExp(`${escapeRegExp(phone)}\\s*<span aria-hidden="true"[^>]*>\\*</span>`));
     expect(labelTags.some((tag) => attribute(tag, 'id') === 'checkout-country-code-label')).toBe(false);
     const countryLabel = openingTags(form, 'span').find((tag) => attribute(tag, 'id') === 'checkout-country-code-label')!;
     expect(attribute(countryLabel, 'class')).toBe('sr-only');
-    expect(form).toMatch(/id="checkout-country-code-label"[^>]*>\s*Indicativo/);
+    expect(decodeHtml(form)).toMatch(new RegExp(`id="checkout-country-code-label"[^>]*>\\s*${escapeRegExp(countryCode)}`));
   });
 
   it('como descubriste es opcional y lo dice', () => {
@@ -147,7 +148,7 @@ describe('pagina de Squai One: contrato del formulario', () => {
 
     expect(hasAttribute(referral, 'data-select-required')).toBe(false);
     expect(referral).not.toMatch(/aria-hidden="true"[^>]*>\*/);
-    expect(referral).toContain('(opcional)');
+    expect(decodeHtml(referral)).toContain(site.ui.forms.optional);
   });
 
   it('los checks de terminos y privacidad van antes que el Turnstile dentro del mismo grupo', () => {
@@ -188,9 +189,10 @@ describe('pagina de Squai One: contrato del formulario', () => {
 
   it('Campos obligatorios va al inicio del formulario, antes del primer campo', () => {
     const heading = enclosingElement(container, 'checkout-card-heading', 'div');
-    const note = form.indexOf('Campos obligatorios');
+    const note = form.indexOf('form-instructions');
 
-    expect(heading).not.toContain('Campos obligatorios');
+    expect(heading).not.toContain('form-instructions');
+    expect(decodeHtml(form)).toContain(site.ui.forms.required);
     expect(note).toBeGreaterThan(-1);
     expect(note).toBeLessThan(form.indexOf('name="full_name"'));
   });

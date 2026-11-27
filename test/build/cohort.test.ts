@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatCohortDates } from '../../src/lib/cohort';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-
-const copies = JSON.parse(readFileSync(path.join(import.meta.dirname, '../../src/content/copies.json'), 'utf8'));
-
-const labels = copies.site.ui.cohort;
+const labels = { from: 'Desde el {start}', range: 'Del {start} al {end}' };
 
 describe('formatCohortDates', () => {
   it('escribe el rango de la cohorte en espanol', () => {

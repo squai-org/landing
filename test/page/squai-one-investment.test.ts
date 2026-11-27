@@ -12,9 +12,7 @@ describe('pagina de Squai One: inversion', () => {
   });
 
   it('el Precio de referencia queda oculto hasta comparar con el precio vigente', () => {
-    expect(page).toMatch(/<div[^>]*data-reference-offer[^>]*hidden/);
-    expect(page).toContain('20% de descuento hasta el 31 de diciembre.');
-  });
+    expect(page).toMatch(/<div[^>]*data-reference-offer[^>]*hidden/);  });
 
   it('el precio vigente espera a la base de datos con estado de carga', () => {
     expect(page).toMatch(/data-bold-price[^>]*data-state="loading"/);

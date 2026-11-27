@@ -1,40 +1,11 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { whatsappUrl } from '../../src/lib/whatsapp';
 
 const root = path.join(import.meta.dirname, '../..');
 const read = (file: string) => readFileSync(path.join(root, file), 'utf8').replace(/\r\n/g, '\n');
 
-const copies = JSON.parse(read('src/content/copies.json')) as {
-  site: {
-    company: { phone: string };
-    ui: {
-      whatsapp: { panel: { title: string; subtitle: string; close: string; topics: { label: string; message: string }[] } };
-      scrollTop: { label: string };
-    };
-  };
-};
-const { panel } = copies.site.ui.whatsapp;
-
 describe('panel de WhatsApp: contenido', () => {
-  it('tiene tres temas con mensaje propio', () => {
-    expect(panel.topics).toHaveLength(3);
-    for (const topic of panel.topics) {
-      expect(topic.label.length).toBeGreaterThan(0);
-      expect(topic.message.length).toBeGreaterThan(0);
-    }
-    expect(new Set(panel.topics.map((topic) => topic.message)).size).toBe(3);
-  });
-
-  it('cada tema apunta a wa.me/573143802400 con su mensaje precargado', () => {
-    for (const topic of panel.topics) {
-      expect(whatsappUrl(copies.site.company.phone, topic.message)).toBe(
-        `https://wa.me/573143802400?text=${encodeURIComponent(topic.message)}`,
-      );
-    }
-  });
-
   it('el contrato editorial admite el panel y el texto de volver arriba', () => {
     const schema = read('src/content/schema.ts');
     expect(schema).toMatch(/whatsapp: z\.object\(\{[^\n]*panel:/);
@@ -42,10 +13,6 @@ describe('panel de WhatsApp: contenido', () => {
     const cms = read('.pages.yml');
     expect(cms).toContain('name: panel');
     expect(cms).toContain('name: scrollTop');
-  });
-
-  it('el texto de volver arriba existe', () => {
-    expect(copies.site.ui.scrollTop.label).toBe('Volver arriba');
   });
 });
 

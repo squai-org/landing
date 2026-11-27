@@ -52,6 +52,7 @@ Squai's marketing site (https://squai.io): a static Astro site plus a lead-captu
 * `pnpm install` on pnpm 11 writes a `pnpm-workspace.yaml` stub. It is gitignored; never commit it. pnpm 9 requires a `packages:` field in that file and the production build dies with `ERROR packages field missing or empty` before installing anything.
 
 * Never commit `.claude/worktrees/`: agent worktrees become gitlinks without `.gitmodules` and Workers Builds dies with "error occurred while updating repository submodules".
+* No tests that assert literal copy or item counts from `src/content/`: Pages CMS edits land on `develop` and break the build. Derive expectations from the content (`test/page/content.ts`) or enforce the rule in `schema.ts`.
 
 ## Maintenance
 
