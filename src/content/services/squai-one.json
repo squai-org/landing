@@ -179,28 +179,27 @@
   },
   "syllabus": {
     "title": "Lo que vemos en las 8 sesiones",
-    "handwritten": "Terminas en 4 semanas",
-    "summary": "Repartimos las 20 horas del programa para que aprendas paso a paso sin abrumarte.",
+    "handwritten": "Empezamos por lo básico, de verdad básico",
+    "summary": "Repartimos las 20 horas para que aprendas paso a paso sin abrumarte.",
     "topicsLabel": "Lo que vemos",
     "modules": [
       {
         "t": "Qué es la IA y cómo funciona",
-        "d": "Ves cómo aprende y por qué a veces inventa respuestas con seguridad.",
+        "d": "Ves qué pasa por dentro cuando le preguntas algo.",
         "topics": [
           "Qué es la IA y qué mitos la rodean",
-          "Cómo aprende y cómo decide qué responder",
-          "Por qué inventa información y cuándo desconfiar"
+          "Cómo aprende y cómo decide qué responderte",
+          "Por qué a veces se inventa las cosas y cuándo desconfiar"
         ],
         "illustration": "/illustrations/sesiones/sesion-1.svg",
         "alt": "Persona señala hacia arriba junto a un chip con una chispa"
       },
       {
         "t": "Conceptos básicos y uso seguro de la IA",
-        "d": "Aprendes a pedirle las cosas con claridad, a comprobar lo que responde y a decidir qué información compartir con ella.",
+        "d": "Aprendes a pedirle las cosas con claridad y a decidir qué compartirle.",
         "topics": [
           "Qué es una instrucción (prompt) y cómo se escribe bien",
-          "Contexto, memoria y límites de uso (tokens)",
-          "Cómo mejorar un resultado y evitar que solo te dé la razón",
+          "Qué información darle, qué recuerda y cuáles son sus límites (contexto, memoria y tokens)",
           "Cómo detectar errores, información inventada y sesgos",
           "Qué pasa con lo que escribes y cómo proteger tu información"
         ],
@@ -209,10 +208,10 @@
       },
       {
         "t": "De tareas sencillas a procesos paso a paso",
-        "d": "Aprendes a usar la IA en procesos que se repiten paso a paso, más allá de un chat.",
+        "d": "Aprendes a usar la IA en las tareas que repites, más allá de un chat.",
         "topics": [
-          "Chats sueltos, proyectos y habilidades",
-          "Tareas programadas: pedirle a la IA que actúe en un horario",
+          "Diferencia entre chats sueltos y proyectos",
+          "Habilidades: instrucciones que la IA reutiliza",
           "Cómo elegir la forma de usarla según la tarea"
         ],
         "illustration": "/illustrations/sesiones/sesion-7.svg",
@@ -220,7 +219,7 @@
       },
       {
         "t": "Productividad y planeación",
-        "d": "Organizas tu información y tus pendientes para decidir, con ayuda de la IA, qué tareas atender primero.",
+        "d": "Organizas tus pendientes y decides con la IA qué atender primero.",
         "topics": [
           "Reunir la información en un solo lugar",
           "Organizar tus tareas para decidir qué atender primero",
@@ -231,11 +230,11 @@
       },
       {
         "t": "Crear documentos, presentaciones e imágenes",
-        "d": "Preparas documentos, presentaciones e imágenes con la IA y los ajustas hasta que suenen y se vean como tuyos.",
+        "d": "Los creas con IA y los ajustas hasta que suenen y se vean como tuyos.",
         "topics": [
           "Cómo armar un documento o una presentación por secciones",
           "Plantillas que puedes reutilizar",
-          "Imágenes con estilo propio, y cómo editarlas"
+          "Imágenes con estilo propio y cómo editarlas"
         ],
         "illustration": "/illustrations/sesiones/sesion-4.svg",
         "alt": "Persona lee una hoja junto a documentos con una lista y un bloque de formato"
@@ -246,7 +245,7 @@
         "topics": [
           "Cómo plantear la pregunta que quieres responder",
           "Resumir, comparar y buscar patrones",
-          "Tablas y revisión de las conclusiones"
+          "Armar tablas y revisar las conclusiones"
         ],
         "illustration": "/illustrations/sesiones/sesion-5.svg",
         "alt": "Persona con gafas trabaja en su portátil junto a un documento y una lupa"
