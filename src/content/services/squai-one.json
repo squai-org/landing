@@ -292,21 +292,21 @@
   },
   "team": {
     "title": "Quiénes te enseñan",
-    "closing": "Aprendes de quienes saben explicar desde las bases y han llevado la IA a equipos de trabajo, para que lo que aprendes sirva en la práctica.",
+    "closing": "Llevamos años enseñando y usando la IA en nuestro trabajo, así que te la explicamos como se usa en la práctica.",
     "mentors": [
       {
         "name": "Laura Villada",
         "badge": "Cofundadora",
-        "role": "Estratega de adopción de IA. Magíster en ingeniería.",
-        "bio": "Fue docente durante 5 años y directora de operaciones en una empresa de tecnología en EE. UU., donde se encargó de optimizar procesos con IA y de su adopción en los equipos.",
-        "quote": "Cuando entiendes por qué falla una respuesta, dejas de improvisar y empiezas a ahorrar tiempo cada día."
+        "quote": "Lo complicado se entiende cuando alguien te lo explica desde las bases.",
+        "role": "Estratega en adopción de IA. Magíster en ingeniería.",
+        "bio": "Fue docente durante 5 años y directora de operaciones en una empresa de tecnología de EE. UU., donde llevó la IA a los procesos y a los equipos."
       },
       {
         "name": "Sebastián Rico",
         "badge": "Cofundador",
+        "quote": "No hace falta saber de tecnología para sacarle provecho a la IA.",
         "role": "Ingeniero de IA",
-        "bio": "Lleva más de 8 años en tecnología, liderando equipos y guiando a personas de distintos roles. Ha desarrollado soluciones con IA, y entender en detalle cómo funciona le permite explicarla de forma sencilla.",
-        "quote": "Las herramientas cambian rápido, pero el criterio para pedir bien y verificar datos se queda contigo."
+        "bio": "Lleva más de 8 años en tecnología, donde ha liderado equipos, desarrollado soluciones con IA y guiado a personas de distintos roles en cómo usarla."
       }
     ]
   },
