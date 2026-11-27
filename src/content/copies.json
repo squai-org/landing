@@ -222,13 +222,13 @@
         "datesTitle": "Fechas",
         "datesItems": [
           "Inscripciones hasta el 22 de enero de 2027",
-          "El programa inicia el 26 de enero y termina el 18 de febrero de 2027",
+          "Del 26 de enero al 18 de febrero de 2027",
           "Sesiones los martes y jueves, de 6:30 a 9:00 p. m. (hora de Colombia)"
         ],
         "seatsLabel": "Cupos:",
         "seatsText": "Grupo de máximo 30 personas.",
         "formTitle": "Fundamentos de Inteligencia Artificial Generativa.",
-        "secureNote": "Pago seguro en línea · Confirmación por correo",
+        "secureNote": "Pago seguro con tarjeta, PSE, Nequi o Bre-B. Confirmación por correo",
         "thanks": {
           "checking": "Estamos confirmando tu pago con Bold…",
           "approvedTitle": "¡Listo! Tu cupo quedó reservado",
