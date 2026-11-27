@@ -430,7 +430,7 @@
     "companyLabel": "Conoce Squai"
   },
   "whatsapp": {
-    "message": "Hola, estoy viendo la página de Squai One y tengo una duda antes de inscribirme.",
+    "message": "Hola, estoy viendo la página del programa de Fundamentos de IA y tengo una duda antes de inscribirme.",
     "tooltip": "¿Dudas antes de inscribirte?",
     "panel": {
       "dialogLabel": "Dudas rápidas sobre Squai One por WhatsApp",
@@ -447,12 +447,12 @@
           "message": "Hola, tengo una duda sobre las fechas, horarios o las 8 sesiones en vivo de Squai One."
         },
         {
-          "label": "Medios de pago o 20 % de descuento",
+          "label": "¿Cuáles son los medios de pago?",
           "message": "Hola, quiero consultar los medios de pago o cómo asegurar mi cupo con el 20 % de descuento en Squai One."
         },
         {
-          "label": "Inscribir a varias personas de mi equipo",
-          "message": "Hola, me interesa inscribir a varias personas de mi equipo en Squai One. ¿Cómo funcionaría?"
+          "label": "Quiero inscribir a varias personas de mi equipo/empresa",
+          "message": "Hola, me interesa inscribir a varias personas de mi equipo en el programa de Fundamentos de IA. ¿Cómo funcionaría?"
         }
       ]
     }
