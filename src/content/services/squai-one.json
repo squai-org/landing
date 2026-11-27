@@ -135,15 +135,15 @@
     "profiles": [
       {
         "t": "Trabajas en una empresa",
-        "d": "La IA ya llegó a tu oficina, pero le pides algo y te devuelve un texto tan raro que tardas más arreglándolo que haciéndolo tú."
+        "d": "Ya probaste la IA, pero no sabes cómo ser más productivo con ella."
       },
       {
         "t": "Trabajas por tu cuenta o tienes un negocio",
-        "d": "Haces de todo y quieres que la IA te ahorre tiempo, sin probar diez herramientas distintas ni sentir que vas atrasado."
+        "d": "Haces de todo y quieres que la IA te quite parte de esa carga."
       },
       {
         "t": "Te da curiosidad",
-        "d": "Quieres aprovecharla, pero solo encuentras tutoriales confusos y promesas exageradas, y no sabes por dónde empezar."
+        "d": "Quieres entender qué es y cómo usarla para estudiar, organizarte o sacar adelante tus propios proyectos."
       }
     ]
   },
