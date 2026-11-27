@@ -333,73 +333,73 @@
   "faqs": [
     {
       "q": "¿En qué se diferencia de los cursos y videos gratis?",
+      "category": "Programa",
       "a": [
-        "Los videos gratis suelen no tener un método de enseñanza definido ni a alguien que responda tus dudas. Aquí aprendes con un método pensado para quien empieza: vamos de las bases a la práctica, con explicaciones, ejemplos en vivo y tiempo para que practiques en tu propia herramienta de IA. Las sesiones son en vivo y en un grupo de máximo 30 personas, así que tus dudas se resuelven en el momento y aprendes también de las preguntas y los casos de las demás personas. Combinamos años dando clase con años usando la IA en empresas. Durante todo el programa trabajas en un proyecto personal."
-      ],
-      "category": "Programa"
+        "Muchos tutoriales los hacen personas que no han probado la IA en un trabajo. Aquí aprendes con quienes la usamos en el nuestro, en sesiones en vivo de máximo 30 personas donde practicas y resuelves tus dudas en el momento."
+      ]
     },
     {
       "q": "¿Cuál es el horario en mi país?",
+      "category": "Programa",
       "a": [
-        "Las sesiones son los martes y jueves, de 6:30 a 9:00 p. m. en Colombia. En otros países:\n\n- México (Ciudad de México): de 5:30 a 8:00 p. m.\n- Perú y Ecuador: de 6:30 a 9:00 p. m.\n- Venezuela: de 7:30 a 10:00 p. m.\n- Argentina, Chile y Uruguay: de 8:30 a 11:00 p. m."
-      ],
-      "category": "Programa"
+        "Las sesiones son los martes y jueves:\n\n- Colombia, Perú y Ecuador: de 6:30 a 9:00 p. m.\n- México (Ciudad de México): de 5:30 a 8:00 p. m.\n- Venezuela: de 7:30 a 10:00 p. m.\n- Argentina, Chile y Uruguay: de 8:30 a 11:00 p. m."
+      ]
     },
     {
       "q": "¿Qué pasa si falto a una sesión?",
+      "category": "Programa",
       "a": [
-        "Todas las sesiones quedan grabadas. Si faltas a una, puedes verla en grabación hasta un mes después de la última sesión y no te quedas atrás."
-      ],
-      "category": "Programa"
+        "Todas las sesiones quedan grabadas. Si faltas a una, puedes ver la grabación y no te quedas atrás."
+      ]
     },
     {
       "q": "¿Cómo me conecto a las sesiones?",
+      "category": "Programa",
       "a": [
-        "Una semana antes del inicio recibes por correo el enlace para conectarte a las sesiones y la invitación a la comunidad de WhatsApp."
-      ],
-      "category": "Programa"
+        "Una semana antes del inicio te llega por correo el enlace a las sesiones y la invitación a la comunidad de WhatsApp. Si no lo ves, revisa la carpeta de spam."
+      ]
     },
     {
       "q": "¿Qué certificado recibo?",
+      "category": "Programa",
       "a": [
-        "Al terminar el programa recibes un certificado de Squai que acredita que completaste Fundamentos de Inteligencia Artificial Generativa. Lo recibes si asistes al menos al 80% de las sesiones (7 de las 8). Si avisas con anticipación y justificas una falta, no se cuenta como ausencia."
-      ],
-      "category": "Programa"
+        "Al terminar el programa recibes un certificado de Squai que acredita que completaste Fundamentos de Inteligencia Artificial Generativa. Lo recibes si asistes al menos al 80% de las sesiones (7 de las 8). Si justificas una falta, no se cuenta como ausencia."
+      ]
     },
     {
       "q": "¿Necesito saber de tecnología?",
+      "category": "Requisitos",
       "a": [
-        "No necesitas saber de tecnología, porque te explicamos todo desde las bases y sin tecnicismos. Solo necesitas un computador, conexión a internet y una cuenta gratuita en alguna herramienta de IA."
-      ],
-      "category": "Requisitos"
+        "No. Si sabes mandar un correo, puedes seguir el programa. Empezamos desde cero, y si aparece una palabra técnica, te la explicamos en el momento."
+      ]
     },
     {
       "q": "¿Tengo que pagar alguna herramienta de IA?",
+      "category": "Requisitos",
       "a": [
-        "No necesitas pagar ninguna herramienta para empezar, porque puedes usar la versión gratuita de Claude, ChatGPT o Gemini. Las versiones gratuitas permiten hacer muchas cosas, pero tienen un límite de uso. Más adelante puedes considerar una cuenta de pago, según lo que quieras hacer y cuánto uses la IA."
-      ],
-      "category": "Requisitos"
+        "No para empezar, porque puedes usar la versión gratuita de Claude, ChatGPT o Gemini. Tiene un límite de uso, así que más adelante, según cuánto la uses, puedes pensar en una cuenta de pago."
+      ]
     },
     {
       "q": "Si ya uso la IA, ¿me sirve el programa?",
+      "category": "Requisitos",
       "a": [
-        "Sí te sirve, porque entender cómo funciona la IA por dentro te ayuda a usarla mejor y a sacarle más provecho. Ves con claridad cosas que quizá antes no habías entendido bien, como por qué a veces inventa respuestas, qué información conviene compartirle y cómo usar la IA en tareas que se repiten."
-      ],
-      "category": "Requisitos"
+        "Sí. Entender cómo funciona por dentro te ayuda a usarla mejor: por qué a veces se inventa las cosas, qué información conviene compartirle y cómo usarla en las tareas que repites. Además, lo que aprendes te sirve con cualquier herramienta de IA."
+      ]
     },
     {
       "q": "¿Cómo pago?",
+      "category": "Inscripción y pagos",
       "a": [
-        "En el botón de inscripción ves los medios de pago disponibles: tarjeta débito o crédito, PSE, Nequi y Bre-B. Si estás fuera de Colombia, puedes pagar con tu tarjeta débito o crédito."
-      ],
-      "category": "Inscripción y pagos"
+        "Después de llenar el formulario, en el boton de inscripción, ves los medios de pago: tarjeta débito o crédito, PSE, Nequi y Bre-B. Si estás fuera de Colombia, pagas con tarjeta débito o crédito."
+      ]
     },
     {
       "q": "¿Qué pasa si no puedo asistir o seguir el programa?",
+      "category": "Inscripción y pagos",
       "a": [
-        "Si no puedes asistir, puedes ceder tu cupo a otra persona. Si por una causa de fuerza mayor, como un accidente o una enfermedad, no puedes iniciar el programa o seguir con él, te devolvemos el dinero."
-      ],
-      "category": "Inscripción y pagos"
+        "Puedes cederle tu cupo a otra persona. Y si por motivos de fuerza mayor, no puedes empezar el programa, te devolvemos el dinero."
+      ]
     }
   ],
   "seoTitle": "Programa en vivo para aprender inteligencia artificial | Squai",
