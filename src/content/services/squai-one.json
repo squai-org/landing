@@ -47,7 +47,7 @@
     "cards": [
       {
         "title": "Virtual y en vivo",
-        "description": "Te conectas desde donde estés y aprendes con nosotros en tiempo real.",
+        "description": "Te conectas desde donde estés y aprendes con nosotros en directo.",
         "illustration": "/illustrations/datos/en-vivo.svg"
       },
       {
@@ -62,7 +62,7 @@
       },
       {
         "title": "Grupo de máximo 30 personas",
-        "description": "Resuelves tus dudas en cada sesión y aprendes de las preguntas de los demás.",
+        "description": "Resuelves tus dudas en cada sesión.",
         "illustration": "/illustrations/datos/grupo.svg"
       },
       {
@@ -77,7 +77,7 @@
       },
       {
         "title": "Certificado al terminar",
-        "description": "Lo sumas a tu hoja de vida o lo guardas como prueba de un reto cumplido.",
+        "description": "Para tu hoja de vida o como prueba de un reto cumplido.",
         "illustration": "/illustrations/incluye/incluye-4.svg"
       }
     ]
