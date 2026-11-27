@@ -145,17 +145,35 @@
         "privacyConsentLink": "Política de Privacidad",
         "privacyConsentSuffix": " de Squai.",
         "placeholders": {
-          "fullName": "Ej. Laura Gómez",
-          "email": "laura@tuempresa.com",
+          "fullName": "Ej. Camilo Gómez",
+          "email": "camilo@correo.com",
           "phone": "300 000 0000"
         },
         "referralSources": [
-          { "value": "instagram", "label": "Instagram" },
-          { "value": "linkedin", "label": "LinkedIn" },
-          { "value": "tiktok", "label": "Tiktok" },
-          { "value": "youtube", "label": "Youtube" },
-          { "value": "google", "label": "Google" },
-          { "value": "otras", "label": "Otras" }
+          {
+            "value": "instagram",
+            "label": "Instagram"
+          },
+          {
+            "value": "linkedin",
+            "label": "LinkedIn"
+          },
+          {
+            "value": "tiktok",
+            "label": "Tiktok"
+          },
+          {
+            "value": "youtube",
+            "label": "Youtube"
+          },
+          {
+            "value": "google",
+            "label": "Google"
+          },
+          {
+            "value": "otras",
+            "label": "Otras"
+          }
         ],
         "teamSizes": [
           {
@@ -464,10 +482,22 @@
         ],
         "workload": {
           "summary": "{sessions} de {length}, {perWeek} por semana durante {weeks}",
-          "session": { "one": "sesión", "many": "sesiones" },
-          "week": { "one": "semana", "many": "semanas" },
-          "hour": { "one": "hora", "many": "horas" },
-          "minute": { "one": "minuto", "many": "minutos" },
+          "session": {
+            "one": "sesión",
+            "many": "sesiones"
+          },
+          "week": {
+            "one": "semana",
+            "many": "semanas"
+          },
+          "hour": {
+            "one": "hora",
+            "many": "horas"
+          },
+          "minute": {
+            "one": "minuto",
+            "many": "minutos"
+          },
           "halfHour": "{hours} y media",
           "hoursAndMinutes": "{hours} y {minutes}"
         }
