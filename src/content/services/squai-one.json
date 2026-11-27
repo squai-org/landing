@@ -90,12 +90,12 @@
   "tone": "peri",
   "order": 1,
   "video": {
-    "title": "En menos de 2 minutos te contamos cómo es aprender con nosotros",
+    "title": "Antes de inscribirte, conócenos",
     "playLabel": "Reproducir",
     "iframeTitle": "Video de presentación de Squai One con Laura y Sebastián",
     "caption": "Somos Laura y Sebastián",
     "posterAlt": "Ilustración de un reproductor de video con un signo de interrogación",
-    "lead": "Hemos dado charlas a más de 200 personas y acompañado a profesionales y equipos de distintas áreas.",
+    "lead": "Más de 300 personas han aprendido IA con nosotros en charlas, capacitaciones y consultorías.",
     "cta": {
       "label": "Quiero inscribirme",
       "target": "inscripcion"
