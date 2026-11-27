@@ -27,8 +27,8 @@
   },
   "keyFacts": {
     "title": "Lo que necesitas saber.",
-    "lead": "Formato, ritmo y todo lo que incluye tu inscripción en un vistazo.",
-    "handwritten": "Un mes, dos clases por semana",
+    "lead": "Así es el programa y esto es lo que recibes al inscribirte, sin letra pequeña",
+    "handwritten": "Solo un mes, con dos clases a la semana",
     "load": {
       "weeks": 4,
       "sessionsPerWeek": 2,
@@ -46,44 +46,29 @@
     "seats": "Grupos pequeños y cupos limitados para que tus preguntas se escuchen",
     "cards": [
       {
-        "title": "Programa virtual con sesiones en vivo",
-        "description": "Entras desde donde estés a sesiones en directo, sin videos pregrabados.",
+        "title": "Virtual y en vivo",
+        "description": "Te conectas desde donde estés y aprendes con nosotros en tiempo real.",
         "illustration": "/illustrations/datos/en-vivo.svg"
       },
       {
-        "title": "Terminas en 4 semanas",
-        "description": "Son 2 sesiones por semana, de 2 horas y media cada una, con tiempo para practicar.",
+        "title": "8 sesiones",
+        "description": "Martes y jueves, de 6:30 a 9:00 p. m. (hora de Colombia)",
         "illustration": "/illustrations/incluye/incluye-1.svg"
       },
       {
         "title": "Sesiones grabadas",
-        "description": "Si faltas a una sesión, la ves grabada y no te quedas atrás.",
+        "description": "Si faltas a una, la ves después y te pones al día.",
         "illustration": "/illustrations/incluye/incluye-2.svg"
       },
       {
-        "title": "Sin conocimientos previos",
-        "description": "No necesitas haber usado la IA antes, porque explicamos todo desde las bases y sin palabras raras.",
-        "illustration": "/illustrations/datos/sin-conocimientos.svg"
-      },
-      {
         "title": "Grupo de máximo 30 personas",
-        "description": "Aprendes en comunidad y con casos de otras personas, y cada sesión tiene espacio para tus dudas.",
+        "description": "Resuelves tus dudas en cada sesión y aprendes de las preguntas de los demás.",
         "illustration": "/illustrations/datos/grupo.svg"
       },
       {
         "title": "Comunidad en WhatsApp",
-        "description": "Resuelves tus dudas entre sesiones y aprendes también de las preguntas de las demás personas.",
+        "description": "Preguntas tus dudas sin esperar a la siguiente clase.",
         "illustration": "/illustrations/datos/comunidad.svg"
-      },
-      {
-        "title": "Fundamentos que sirven con cualquier IA",
-        "description": "Entiendes cómo funciona la IA, así que no dependes de una sola aplicación.",
-        "illustration": "/illustrations/datos/cualquier-ia.svg"
-      },
-      {
-        "title": "Mentores que saben explicar y aplicar",
-        "description": "Combinamos años dando clase con años en empresas, así que te explicamos cómo usar la IA en la práctica.",
-        "illustration": "/illustrations/datos/mentores.svg"
       },
       {
         "title": "Guías y recursos",
