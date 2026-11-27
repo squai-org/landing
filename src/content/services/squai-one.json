@@ -149,29 +149,29 @@
   },
   "howItWorks": {
     "title": "Cómo funciona",
-    "handwritten": "Un programa preparado para ti",
+    "handwritten": "No te soltamos hasta que termines",
     "steps": [
       {
         "t": "Antes de empezar",
-        "d": "Una semana antes del inicio recibes por correo la invitación a la comunidad de WhatsApp y los datos para conectarte a las sesiones. Ahí puedes resolver tus dudas antes de la primera clase.",
+        "d": "Una semana antes te llegan por correo el enlace a las sesiones y la invitación a la comunidad de WhatsApp.",
         "illustration": "/illustrations/pasos/paso-2.svg",
         "alt": "Persona toma café junto a un sobre abierto con una llave de acceso"
       },
       {
         "t": "En cada sesión",
-        "d": "Hay explicaciones, ejemplos en vivo y una parte práctica en la que entras a tu herramienta de IA y practicas. Las dudas se resuelven en el momento, así que no avanzamos hasta que todo quede claro.",
+        "d": "Explicamos, te mostramos ejemplos en vivo y practicas en tu propia herramienta de IA.",
         "illustration": "/illustrations/pasos/paso-3.svg",
         "alt": "Persona explica algo junto a una videollamada con dos participantes"
       },
       {
         "t": "Entre sesiones",
-        "d": "Eliges tu proyecto personal en la primera semana y lo vas trabajando con lo que aprendes. Si algo se te queda sin entender, lo preguntas en la comunidad de WhatsApp, donde resolveremos tus dudas.",
+        "d": "Avanzas en tu proyecto personal con lo que vas aprendiendo y la ayuda de la comunidad.",
         "illustration": "/illustrations/pasos/paso-4.svg",
         "alt": "Persona revisa su celular junto a la grabación de una clase y un globo con una pregunta"
       },
       {
         "t": "Al terminar",
-        "d": "La comunidad de WhatsApp sigue abierta después del programa, y puedes volver a ver las grabaciones hasta un mes después de la última sesión. Al completar el programa recibes tu certificado.",
+        "d": "Recibes tu certificado y puedes ver las grabaciones hasta un mes después.",
         "illustration": "/illustrations/incluye/incluye-4.svg",
         "alt": "Persona sostiene un certificado de finalización"
       }
