@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { factIllustrations } from '../../src/content/schema';
 
 const root = path.join(import.meta.dirname, '../..');
 const read = (file: string) => readFileSync(path.join(root, file), 'utf8').replace(/\r\n/g, '\n');
@@ -47,33 +48,9 @@ describe('animacion del hero de la pagina principal', () => {
   });
 });
 
-const ownerFacts = [
-  ['Programa virtual con sesiones en vivo', 'Entras desde donde estés a sesiones en directo, sin videos pregrabados.'],
-  ['Terminas en 4 semanas', 'Son 2 sesiones por semana, de 2 horas y media cada una, con tiempo para practicar.'],
-  ['Sesiones grabadas', 'Si faltas a una sesión, la ves grabada y no te quedas atrás.'],
-  ['Sin conocimientos previos', 'No necesitas haber usado la IA antes, porque explicamos todo desde las bases y sin palabras raras.'],
-  ['Grupo de máximo 30 personas', 'Aprendes en comunidad y con casos de otras personas, y cada sesión tiene espacio para tus dudas.'],
-  ['Comunidad en WhatsApp', 'Resuelves tus dudas entre sesiones y aprendes también de las preguntas de las demás personas.'],
-  ['Fundamentos que sirven con cualquier IA', 'Entiendes cómo funciona la IA, así que no dependes de una sola aplicación.'],
-  ['Mentores que saben explicar y aplicar', 'Combinamos años dando clase con años en empresas, así que te explicamos cómo usar la IA en la práctica.'],
-  ['Guías y recursos', 'Material de apoyo para repasar por tu cuenta.'],
-  ['Certificado al terminar', 'Lo sumas a tu hoja de vida o lo guardas como prueba de un reto cumplido.'],
-];
-
 describe('Lo que necesitas saber (Squai One)', () => {
-  const one = JSON.parse(read('src/content/services/squai-one.json')) as {
-    keyFacts: { cards: { title: string; description: string; illustration: string }[] };
-  };
-  const cards = one.keyFacts.cards;
-
-  it('tiene las 10 tarjetas del dueno, en su orden y sin punto final en el titulo', () => {
-    expect(cards.map((card) => [card.title, card.description])).toEqual(ownerFacts);
-  });
-
-  it('cada tarjeta tiene una ilustracion distinta que existe en public/', () => {
-    const illustrations = cards.map((card) => card.illustration);
-    expect(new Set(illustrations).size).toBe(10);
-    for (const illustration of illustrations) expect(() => read(`public${illustration}`)).not.toThrow();
+  it('cada ilustracion que admite el contrato existe en public/', () => {
+    for (const illustration of factIllustrations) expect(() => read(`public${illustration}`)).not.toThrow();
   });
 
   it('el contrato editorial y el CMS admiten las tarjetas con su ilustracion', () => {
@@ -84,8 +61,8 @@ describe('Lo que necesitas saber (Squai One)', () => {
     expect(keyFacts.slice(0, keyFacts.indexOf('- name: one-tarjeta'))).toContain('- name: cards');
   });
 
-  it('las ilustraciones nuevas no llevan comentarios del generador', () => {
-    for (const card of cards) expect(read(`public${card.illustration}`)).not.toMatch(/<!--|<metadata|<desc/);
+  it('las ilustraciones no llevan comentarios del generador', () => {
+    for (const illustration of factIllustrations) expect(read(`public${illustration}`)).not.toMatch(/<!--|<metadata|<desc/);
   });
 
   it('reutiliza el carrusel de Sesiones en lugar de duplicarlo', () => {

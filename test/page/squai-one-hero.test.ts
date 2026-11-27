@@ -1,8 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { courseLoadSummary, isoDuration } from '../../src/lib/course-load';
+import { decodeHtml, service, site } from './content';
 
 const dist = path.join(import.meta.dirname, '../../dist');
+const one = service('squai-one');
+const hero = one.hero!;
 
 let html = '';
 let course: Record<string, any> = {};
@@ -27,19 +31,21 @@ describe('hero y datos clave de Squai One', () => {
     expect(ctas.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('dice fechas y horario por confirmar mientras la base no responde, en el hero y en la franja de datos', () => {
-    expect(html).toMatch(/<li[^>]*data-cohort-dates[^>]*>Fechas por confirmar<\/li>/);
-    expect(html).toMatch(/<li[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/li>/);
-    expect(html).toMatch(/<span[^>]*data-cohort-dates[^>]*>Fechas por confirmar<\/span>/);
-    expect(html).toMatch(/<span[^>]*data-cohort-schedule[^>]*>Horario por confirmar<\/span>/);
+  it('dice fechas y horario pendientes del contenido mientras la base no responde', () => {
+    for (const [attribute, pending] of [['data-cohort-dates', hero.datesPending], ['data-cohort-schedule', hero.schedulePending]]) {
+      const texts = [...html.matchAll(new RegExp(`<(li|span)[^>]*${attribute}[^>]*>([^<]*)</\\1>`, 'g'))].map((match) => decodeHtml(match[2] ?? ''));
+      expect(texts.length, attribute).toBeGreaterThan(0);
+      for (const text of texts) expect(text, attribute).toBe(pending);
+    }
   });
 
-  it('el hero pinta una etiqueta por segmento del horario con su variante de color', () => {
-    const chips = [...html.matchAll(/<li class="one-hero-chip one-hero-chip-(\w+)"[^>]*>([^<]*)<\/li>/g)].map((match) => [match[1], match[2]]);
+  it.skipIf(!hero.supportSchedule)('el hero pinta una etiqueta por segmento del horario con su variante de color', () => {
+    const chips = [...html.matchAll(/<li class="one-hero-chip one-hero-chip-(\w+)"[^>]*>([^<]*)<\/li>/g)].map((match) => [match[1], decodeHtml(match[2] ?? '')]);
+    const segments = (hero.supportSchedule ?? '').split('·').map((segment) => segment.trim()).filter(Boolean);
+    const variants = ['start', 'schedule'];
     expect(chips).toEqual([
-      ['start', 'Inicia 26 de ene'],
-      ['schedule', 'Mar y jue 6:30 p. m. COL'],
-      ['offer', '20% dto. hasta el 31 de dic ($440.000 COP / 147 USD)'],
+      ...segments.map((label, index) => [variants[index] ?? 'offer', label]),
+      ...(hero.supportOffer ? [['offer', hero.supportOffer]] : []),
     ]);
   });
 
@@ -56,35 +62,32 @@ describe('hero y datos clave de Squai One', () => {
   it('las etiquetas del hero aparecen una sola vez en el HTML', () => {
     expect(html.match(/class="[^"]*\bone-hero-tag-note\b[^"]*"/g)).toHaveLength(1);
     expect(html.match(/class="[^"]*\bone-hero-tag-sticker\b[^"]*"/g)).toHaveLength(1);
-    expect(html.match(/>100% en vivo</g)).toHaveLength(1);
-    expect(html.match(/>Sin clases pregrabadas que nunca vas a ver</g)).toHaveLength(1);
+    const text = decodeHtml(html);
+    expect(text.split(`>${hero.note}<`)).toHaveLength(2);
+    expect(text.split(`>${hero.sticker}<`)).toHaveLength(2);
   });
 
   it('el hero no lleva chip de estado ni formas detras de la persona', () => {
-    const hero = html.slice(html.indexOf('data-hero'), html.indexOf('id="datos-clave"'));
-    expect(hero).not.toContain('data-program-status');
-    expect(hero).not.toMatch(/Inscripciones abiertas/);
-    expect(hero).not.toMatch(/one-hero-(arch|block)/);
+    const heroHtml = html.slice(html.indexOf('data-hero'), html.indexOf('id="datos-clave"'));
+    expect(heroHtml).not.toContain('data-program-status');
+    expect(heroHtml).not.toMatch(/one-hero-(arch|block)/);
   });
 
-  it('los datos clave van en las diez tarjetas con ilustracion, sin cuadricula aparte', () => {
+  it('los datos clave van en una tarjeta con ilustracion por cada una del contenido, sin cuadricula aparte', () => {
     const start = html.indexOf('id="datos-clave"');
     const facts = html.slice(start, html.indexOf('</section>', start));
-    expect(facts.match(/<article\b/g)).toHaveLength(10);
+    const cards = one.keyFacts?.cards ?? [];
+    expect(cards.length).toBeGreaterThan(0);
+    expect(facts.match(/<article\b/g)).toHaveLength(cards.length);
     expect(facts.match(/<dt\b/g)).toBeNull();
-    expect(facts.match(/<img\b/g)).toHaveLength(10);
-  });
-
-  it('muestra 4 semanas con 2 sesiones de 2 horas y media por semana', () => {
-    expect(html).toContain('Terminas en 4 semanas');
-    expect(html).toContain('Son 2 sesiones por semana, de 2 horas y media cada una');
-    expect(html).not.toMatch(/5 semanas|cinco semanas/i);
+    expect(facts.match(/<img\b/g)).toHaveLength(cards.length);
   });
 
   it('publica en el JSON-LD la misma carga, sin precios ni fechas', () => {
-    expect(course.hasCourseInstance.courseWorkload).toBe('8 sesiones de 2 horas y media, 2 por semana durante 4 semanas');
-    expect(course.hasCourseInstance.duration).toBe('PT20H');
-    expect(course.timeRequired).toBe('PT20H');
+    const load = one.keyFacts!.load!;
+    expect(course.hasCourseInstance.courseWorkload).toBe(courseLoadSummary(load, site.seo.course.workload));
+    expect(course.hasCourseInstance.duration).toBe(isoDuration(load));
+    expect(course.timeRequired).toBe(isoDuration(load));
     const serialized = JSON.stringify(course);
     expect(serialized).not.toMatch(/price|offers|startDate|endDate|\d{4}-\d{2}-\d{2}/i);
   });

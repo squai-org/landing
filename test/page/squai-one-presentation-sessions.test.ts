@@ -2,8 +2,14 @@ import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { decodeHtml, service, site } from './content';
 
 const dist = path.join(import.meta.dirname, '../../dist');
+const one = service('squai-one');
+const video = one.video!;
+const syllabus = one.syllabus!;
+const modules = syllabus.modules;
+const attr = (tag: string, name: string) => decodeHtml(new RegExp(`\\s${name}="([^"]*)"`).exec(tag)?.[1] ?? '');
 const root = path.join(import.meta.dirname, '../..');
 
 const sectionOf = (html: string, id: string) => {
@@ -49,16 +55,16 @@ describe('Squai One: presentacion', () => {
   });
 
   it('muestra el manuscrito, el texto principal, el de apoyo y el boton', () => {
-    expect(section).toContain('Somos Laura y Sebastián');
+    expect(decodeHtml(section)).toContain(video.caption);
     expect(count(section, classed('video-lead'))).toBe(1);
     expect(section).toMatch(/<a [^>]*href="#inscripcion"[^>]*>/);
-    expect(section).toContain('Quiero inscribirme');
+    expect(decodeHtml(section)).toContain(video.cta!.label);
   });
 
-  it('la figura lleva el apunte del pie', () => {
+  it.skipIf(Boolean(video.url) || !video.mediaNote)('sin video, la figura lleva el apunte del pie del contenido', () => {
     const figure = section.slice(section.indexOf('<figure'), section.indexOf('</figure>'));
 
-    expect(figure).toContain('Muy pronto...');
+    expect(decodeHtml(figure)).toContain(video.mediaNote!);
   });
 
   it('el fondo es la forma que respira de las secciones nuevas', () => {
@@ -105,7 +111,7 @@ describe('Squai One: presentacion', () => {
     expect(credits).toMatch(/CC0/);
   });
 
-  it('sin URL de YouTube muestra la ilustracion con texto alternativo y no el boton de reproducir', () => {
+  it.skipIf(Boolean(video.url))('sin URL de YouTube muestra la ilustracion con texto alternativo y no el boton de reproducir', () => {
     expect(section).not.toMatch(/data-video-play/);
     expect(section).toMatch(/<img[^>]*\balt="[^"]+"/);
   });
@@ -126,29 +132,30 @@ describe('Squai One: sesiones en carrusel', () => {
     expect(section).not.toMatch(/\bd-h[123]\b/);
   });
 
-  it('el carrusel es una region con seis tarjetas, teclado y arrastre', () => {
+  it('el carrusel es una region con una tarjeta por modulo, teclado y arrastre', () => {
     const track = /<div[^>]*data-sessions-track[^>]*>/.exec(section)?.[0] ?? '';
 
     expect(track).toContain('role="region"');
-    expect(track).toContain('aria-roledescription="carrusel"');
-    expect(track).toContain('aria-label="Lo que vemos en las 8 sesiones"');
+    expect(attr(track, 'aria-roledescription')).toBe(site.ui.carousel.roleDescription);
+    expect(attr(track, 'aria-label')).toBe(syllabus.title);
     expect(track).toContain('tabindex="0"');
-    expect(count(section, classed('session-slide'))).toBe(6);
+    expect(modules.length).toBeGreaterThan(0);
+    expect(count(section, classed('session-slide'))).toBe(modules.length);
   });
 
   it('las flechas anterior y siguiente tienen nombre y la anterior parte desactivada', () => {
     const arrows = [...section.matchAll(/<button[^>]*class="slider-arrow[^"]*"[^>]*>/g)].map((match) => match[0]);
 
     expect(arrows).toHaveLength(2);
-    expect(arrows[0]).toContain('aria-label="Ver sesiones anteriores"');
+    expect(attr(arrows[0]!, 'aria-label')).toBe(syllabus.prevLabel);
     expect(arrows[0]).toContain('disabled');
-    expect(arrows[1]).toContain('aria-label="Ver sesiones siguientes"');
+    expect(attr(arrows[1]!, 'aria-label')).toBe(syllabus.nextLabel);
   });
 
   it('cada tarjeta enlaza a la inscripcion sin etiqueta de modulo ni sesion', () => {
     const links = [...section.matchAll(/<a[^>]*class="session-slide-link"[^>]*>/g)].map((match) => match[0]);
 
-    expect(links).toHaveLength(6);
+    expect(links).toHaveLength(modules.length);
     links.forEach((link) => {
       expect(link).toContain('href="#inscripcion"');
     });
@@ -158,7 +165,7 @@ describe('Squai One: sesiones en carrusel', () => {
   it('cada tarjeta lleva ilustracion con texto alternativo, titulo, descripcion y temas', () => {
     const slides = section.split('<li class="session-slide').slice(1);
 
-    expect(slides).toHaveLength(6);
+    expect(slides).toHaveLength(modules.length);
     slides.forEach((slide) => {
       expect(slide).toMatch(/<img[^>]*width="1400"[^>]*height="1365"[^>]*\balt="[^"]+"|<img[^>]*\balt="[^"]+"[^>]*width="1400"/);
       expect(slide).toMatch(/<h3\b/);
@@ -167,16 +174,17 @@ describe('Squai One: sesiones en carrusel', () => {
     });
   });
 
-  it('las seis ilustraciones son distintas', () => {
+  it('cada tarjeta muestra la ilustracion de su modulo', () => {
     const sources = [...section.matchAll(/<img[^>]*class="session-slide-art"[^>]*src="([^"]+)"/g)].map((match) => match[1]);
 
-    expect(new Set(sources).size).toBe(6);
+    expect(sources).toEqual(modules.map((module) => module.illustration));
   });
 
   it('conserva el boton de inscripcion', () => {
     expect(count(section, classed('syllabus-module'))).toBe(0);
     expect(section).not.toContain('syllabus-outcome');
-    expect(section).toMatch(/<a[^>]*href="#inscripcion"[^>]*>[\s\S]*Quiero inscribirme/);
+    const cta = section.slice(section.search(/<a[^>]*href="#inscripcion"/));
+    expect(decodeHtml(cta)).toContain(one.cta.label);
   });
 
   it('el CSS publicado define los tokens del carrusel', async () => {

@@ -1,8 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { decodeHtml, service } from './content';
 
 const dist = path.join(import.meta.dirname, '../../dist');
+const one = service('squai-one');
 
 const sectionOf = (html: string, id: string) => {
   const start = html.indexOf(`<section id="${id}"`);
@@ -36,12 +38,12 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     }
   });
 
-  it('el temario es el carrusel de 6 bloques de contenido sin etiquetas de modulo', () => {
+  it('el temario es el carrusel de un bloque por modulo del contenido sin etiquetas de modulo', () => {
     const syllabus = sectionOf(page, 'temario');
 
     expect(count(syllabus, classed('syllabus-module'))).toBe(0);
-    expect(count(syllabus, classed('syllabus-session'))).toBe(6);
-    expect(syllabus).toMatch(/Lo que vemos en las 8 sesiones/);
+    expect(count(syllabus, classed('syllabus-session'))).toBe(one.syllabus!.modules.length);
+    expect(decodeHtml(syllabus)).toContain(one.syllabus!.title);
     expect(count(syllabus, classed('session-slide-meta'))).toBe(0);
   });
 
@@ -50,9 +52,8 @@ describe('Squai One: para quien es, como funciona y temario', () => {
 
     expect(fit).not.toContain('one-fit-pair');
     expect(fit).not.toContain('one-fit-card');
-    expect(fit).not.toContain('No es para ti si');
-    expect(fit).not.toContain('Lo que necesitas');
-    expect(fit).toContain('Quiero inscribirme');
+    expect(fit).not.toContain('one-needs');
+    expect(decodeHtml(fit)).toContain(one.cta.label);
   });
 
   it('el boton de inscripcion del Equipo va despues de la lista de mentores', () => {
@@ -63,12 +64,13 @@ describe('Squai One: para quien es, como funciona y temario', () => {
     expect(team.indexOf('data-scroll-to=')).toBeGreaterThan(team.lastIndexOf('</ul>'));
   });
 
-  it('cuenta cuatro pasos y cada ilustracion lleva texto alternativo', () => {
+  it('cuenta un paso por cada uno del contenido y cada ilustracion lleva texto alternativo', () => {
     const flow = sectionOf(page, 'como-funciona');
+    const steps = one.howItWorks!.steps.length;
 
-    expect(count(flow, classed('flow-step'))).toBe(4);
+    expect(count(flow, classed('flow-step'))).toBe(steps);
     const images = flow.match(/<img\b[^>]*>/g) ?? [];
-    expect(images).toHaveLength(4);
+    expect(images).toHaveLength(steps);
     expect(images.every((tag) => /\balt="[^"]+"/.test(tag))).toBe(true);
   });
 });

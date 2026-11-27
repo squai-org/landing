@@ -2,7 +2,7 @@ import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../src/server/index';
 import { email } from '../../src/config/email';
-import { company } from '../../src/server/lib/copy';
+import { company, confirmationEmailCopy } from '../../src/server/lib/copy';
 import {
   APPROVED_SALE_BODY,
   APPROVED_SALE_SIGNATURE,
@@ -140,17 +140,17 @@ describe('correo de confirmacion de inscripcion', () => {
         AMOUNT_BASE: '$369.748',
         AMOUNT_VAT: '$70.252',
         CURRENCY: 'COP',
-        PAYMENT_METHOD: 'Tarjeta de crédito',
+        PAYMENT_METHOD: confirmationEmailCopy.paymentMethods.CREDIT_CARD,
         START_DATE: '12 de enero de 2027',
         END_DATE: '13 de febrero de 2027',
         SCHEDULE: 'Martes y jueves, 7:00 a 9:00 p. m. (hora de Colombia)',
-        DURATION: '5 semanas',
-        SESSIONS_LINK_INFO: 'antes del 12 de enero de 2027',
-        COMPANY_NAME: 'Squai S.A.S.',
-        COMPANY_NIT: '902.071.792',
+        DURATION: confirmationEmailCopy.durationMany.replace('{weeks}', '5'),
+        SESSIONS_LINK_INFO: confirmationEmailCopy.sessionsLinkBefore.replace('{date}', '12 de enero de 2027'),
+        COMPANY_NAME: company.legalName,
+        COMPANY_NIT: company.nit,
         COMPANY_ADDRESS: company.address,
         COMPANY_PHONE: company.phone,
-        COMPANY_CONTACT: 'team@squai.io',
+        COMPANY_CONTACT: company.contact,
         TERMS_URL: 'https://squai.io/terminos-de-servicio',
       },
     });

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { decodeHtml, site } from './content';
 
 const dist = path.join(import.meta.dirname, '../../dist');
 const page = (file: string) => readFile(path.join(dist, file), 'utf8');
@@ -19,17 +20,19 @@ const ctaElement = (header: string, className: string) => {
 };
 
 const attr = (tag: string, name: string) => new RegExp(`\\s${name}="([^"]*)"`).exec(tag)?.[1];
-const label = (body: string) => /data-split-text[^>]*>([^<]*)</.exec(body)?.[1];
+const label = (body: string) => decodeHtml(/data-split-text[^>]*>([^<]*)</.exec(body)?.[1] ?? '');
+const nav = site.ui.navigation;
 
 describe('CTA de la barra compacta del header', () => {
   it.each([
-    ['index.html', 'Empieza aquí', 'primary', { href: '/#servicios', 'data-scroll-to': 'servicios' }],
-    ['terminos-de-servicio.html', 'Empieza aquí', 'primary', { href: '/#servicios', 'data-scroll-to': 'servicios' }],
-    ['politica-de-privacidad.html', 'Empieza aquí', 'primary', { href: '/#servicios', 'data-scroll-to': 'servicios' }],
-    ['servicios/squai-grow.html', 'Agenda tu llamada', 'primary', { 'data-open-modal': 'grow' }],
-    ['servicios/squai-learn.html', 'Agenda tu llamada', 'primary', { 'data-open-modal': 'learn' }],
-    ['servicios/squai-one.html', 'Inscribirme', 'dark', { href: '#inscripcion', 'data-scroll-to': 'inscripcion' }],
-  ])('%s muestra "%s" con la variante %s y el mismo destino que el CTA de escritorio', async (file, text, variant, target) => {
+    ['index.html', 'program', 'primary', { href: '/#servicios', 'data-scroll-to': 'servicios' }],
+    ['terminos-de-servicio.html', 'program', 'primary', { href: '/#servicios', 'data-scroll-to': 'servicios' }],
+    ['politica-de-privacidad.html', 'program', 'primary', { href: '/#servicios', 'data-scroll-to': 'servicios' }],
+    ['servicios/squai-grow.html', 'contactCta', 'primary', { 'data-open-modal': 'grow' }],
+    ['servicios/squai-learn.html', 'contactCta', 'primary', { 'data-open-modal': 'learn' }],
+    ['servicios/squai-one.html', 'oneCta', 'dark', { href: '#inscripcion', 'data-scroll-to': 'inscripcion' }],
+  ] as const)('%s muestra el texto %s con la variante %s y el mismo destino que el CTA de escritorio', async (file, key, variant, target) => {
+    const text = nav[key];
     const header = headerOf(await page(file));
     const bar = ctaElement(header, 'header-bar-cta');
     const desktop = ctaElement(header, 'nav-cta');
@@ -66,10 +69,10 @@ describe('CTA de la barra compacta del header', () => {
     expect(bar).toBeLessThan(panel);
   });
 
-  it('el boton de menu conserva su nombre accesible "Menú"', async () => {
+  it('el boton de menu conserva su nombre accesible del contenido', async () => {
     const header = headerOf(await page('index.html'));
     const toggle = /<button[^>]*data-nav-toggle[\s\S]*?<\/button>/.exec(header)?.[0] ?? '';
-    expect(/data-nav-toggle-label[^>]*>([^<]*)</.exec(toggle)?.[1]).toBe('Menú');
+    expect(decodeHtml(/data-nav-toggle-label[^>]*>([^<]*)</.exec(toggle)?.[1] ?? '')).toBe(nav.menuLabel);
   });
 });
 
@@ -81,7 +84,7 @@ describe('logo del header', () => {
     const logo = await logoOf('servicios/squai-one.html');
     const target = attr(logo, 'data-scroll-to')!;
     expect(attr(logo, 'href')).toBe(`#${target}`);
-    expect(attr(logo, 'aria-label')).toBe('Ir al inicio de Squai One');
+    expect(decodeHtml(attr(logo, 'aria-label') ?? '')).toBe(nav.oneHome);
     expect(html).toMatch(new RegExp(`<section\\b[^>]*\\sid="${target}"`));
   });
 
@@ -89,6 +92,6 @@ describe('logo del header', () => {
     const logo = await logoOf(file);
     expect(attr(logo, 'href')).toBe('/');
     expect(attr(logo, 'data-scroll-to')).toBeUndefined();
-    expect(attr(logo, 'aria-label')).toBe('Squai — inicio');
+    expect(decodeHtml(attr(logo, 'aria-label') ?? '')).toBe(nav.home);
   });
 });

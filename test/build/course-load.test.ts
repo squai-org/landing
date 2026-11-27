@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { courseLoadSummary, durationInHours, isoDuration, sessionLength, totalMinutes, totalSessions } from '../../src/lib/course-load';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-
-const copies = JSON.parse(readFileSync(path.join(import.meta.dirname, '../../src/content/copies.json'), 'utf8'));
-
-const words = copies.site.seo.course.workload;
+const words = {
+  summary: '{sessions} de {length}, {perWeek} por semana durante {weeks}',
+  halfHour: '{hours} y media',
+  hoursAndMinutes: '{hours} y {minutes}',
+  session: { one: 'sesión', many: 'sesiones' },
+  week: { one: 'semana', many: 'semanas' },
+  hour: { one: 'hora', many: 'horas' },
+  minute: { one: 'minuto', many: 'minutos' },
+};
 
 const squaiOne = { weeks: 4, sessionsPerWeek: 2, sessionMinutes: 150 };
 

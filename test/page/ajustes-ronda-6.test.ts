@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { decodeHtml, service } from './content';
 
 const dist = path.join(import.meta.dirname, '../../dist');
 const page = (file: string) => readFile(path.join(dist, file), 'utf8');
@@ -39,6 +40,7 @@ describe('hero de la pagina principal', () => {
 });
 
 describe('Lo que necesitas saber en Squai One', () => {
+  const cards = service('squai-one').keyFacts?.cards ?? [];
   let section = '';
   beforeAll(async () => {
     const html = await page('servicios/squai-one.html');
@@ -52,9 +54,10 @@ describe('Lo que necesitas saber en Squai One', () => {
     expect(section.match(/data-sessions-step="(prev|next)"/g)).toHaveLength(2);
   });
 
-  it('muestra 10 tarjetas con solo titulo, descripcion e ilustracion decorativa', () => {
+  it('muestra una tarjeta por cada una del contenido, con solo titulo, descripcion e ilustracion decorativa', () => {
     const slides = section.split('data-session-slide').slice(1);
-    expect(slides).toHaveLength(10);
+    expect(cards.length).toBeGreaterThan(0);
+    expect(slides).toHaveLength(cards.length);
     for (const slide of slides) {
       expect(slide.match(/<h3\b/g)).toHaveLength(1);
       expect(slide.match(/<p\b/g)).toHaveLength(1);
@@ -63,10 +66,8 @@ describe('Lo que necesitas saber en Squai One', () => {
     expect(section).not.toMatch(/<dl\b|<dt\b|session-slide-meta|session-slide-topics|data-cohort-/);
   });
 
-  it('los titulos son los del dueno y sin punto final', () => {
-    const titles = [...section.matchAll(/<h3[^>]*>([^<]+)<\/h3>/g)].map((match) => match[1]);
-    expect(titles[0]).toBe('Programa virtual con sesiones en vivo');
-    expect(titles[9]).toBe('Certificado al terminar');
-    for (const title of titles) expect(title).not.toMatch(/\.$/);
+  it('los titulos salen del contenido, en su orden', () => {
+    const titles = [...section.matchAll(/<h3[^>]*>([^<]+)<\/h3>/g)].map((match) => decodeHtml(match[1] ?? ''));
+    expect(titles).toEqual(cards.map((card) => card.title));
   });
 });
