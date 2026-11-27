@@ -254,14 +254,14 @@
     ]
   },
   "outcomes": {
-    "title": "Lo que vas a lograr.",
-    "lead": "Seis cosas concretas que harás en tu trabajo con la IA que ya usas.",
+    "title": "Lo que vas a lograr",
+    "lead": "Vas a sacarle provecho a la IA y a darte cuenta cuando se está inventando las cosas",
     "handwritten": "A veces la IA enreda más que el que te debe plata.",
     "pills": [
-      "Automatizar lo que repites",
-      "Ordenar tu trabajo",
-      "Crear sin sonar genérico",
-      "Respuestas que sí sirven",
+      "Agilizar tus tareas",
+      "Ordenar tus pendientes",
+      "Crear con tu propio estilo",
+      "Pedirle mejor a la IA",
       "Cuidar tu información",
       "Saber cuándo confiar"
     ]
